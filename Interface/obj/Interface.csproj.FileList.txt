@@ -1,0 +1,15 @@
+bin\Release\Interface.dll
+bin\Release\Interface.pdb
+obj\Release\ResolveAssemblyReference.cache
+obj\Release\Interface.dll
+obj\Release\Interface.pdb
+bin\Debug\Interface.dll
+bin\Debug\Interface.pdb
+bin\Debug\Win32API.dll
+bin\Debug\Win32API.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\Interface.dll
+obj\Debug\Interface.pdb
+bin\Debug\Interop.SHDocVw.dll
+obj\Debug\Interop.SHDocVw.dll
+obj\Debug\Interface.csproj.ResolveComReference.cache

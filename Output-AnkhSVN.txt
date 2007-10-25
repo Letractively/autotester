@@ -1,0 +1,60 @@
+-----------------Synchronizing with solution explorer-----------------
+
+---------------------------------Done---------------------------------
+
+-----------------Synchronizing with solution explorer-----------------
+
+Time: 00:00:00.6562500
+---------------------------------Done---------------------------------
+
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestListBox.cs
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestComboBox.cs
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestCheckBox.cs
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestRadioButton.cs
+------------------------------Committing -----------------------------
+
+Modified file: program\cs\ShrinerainTools\AutoTester\Framework\ActionEngine.cs
+Modified file: program\cs\ShrinerainTools\AutoTester\Framework\CoreEngine.cs
+Modified file: program\cs\ShrinerainTools\AutoTester\Framework\ObjectEngine.cs
+Modified file: program\cs\ShrinerainTools\AutoTester\Framework\Parser.cs
+Modified file: program\cs\ShrinerainTools\AutoTester\Functional\TestObject.cs
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestCheckBox.cs
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestComboBox.cs
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestListBox.cs
+Modified file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject.cs
+Modified file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObjectPool.cs
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestRadioButton.cs
+Modified file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLUtility.csproj
+............
+Committed revision 128.
+---------------------------------Done---------------------------------
+
+Added directory: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestListBox.cs
+Deleted: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestListBox.cs
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestComboBox.cs
+Deleted: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestComboBox.cs
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestObject.cs
+Deleted: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject.cs
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestCheckBox.cs
+Deleted: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestCheckBox.cs
+Added file: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestRadioButton.cs
+Deleted: E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestRadioButton.cs
+------------------------------Committing -----------------------------
+
+Deleted file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestCheckBox.cs
+Deleted file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestComboBox.cs
+Deleted file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestListBox.cs
+Added directory: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestCheckBox.cs
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestComboBox.cs
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestListBox.cs
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestObject.cs
+Added file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject\HTMLTestRadioButton.cs
+Deleted file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestObject.cs
+Deleted file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLTestRadioButton.cs
+Modified file: program\cs\ShrinerainTools\AutoTester\HTMLUtility\HTMLUtility.csproj
+.
+Committed revision 129.
+---------------------------------Done---------------------------------
+

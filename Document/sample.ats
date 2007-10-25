@@ -1,0 +1,26 @@
+--This is sample code of AutoScript
+
+Load "E:\\program\\cs\\ShrinerainTools\\AutoTester\\HTMLUtility\\bin\\Debug\\HTMLUtility.dll";
+
+The browser is HTMLTestBrowser;                                --HTMLTestBrowser browser =new HTMLTestBrowser();
+ 
+Execute Start of brower where parameters="www.google.cn";      --browser.Start("www.google.cn");
+
+Execute GetObjectByName of browser where parameters="q";       --HTMLTestObject testObj=browser.GetObjectByName("q");
+
+The testObj = returnValue;                                  
+
+Execute Click of testObj;                                      --testObj.Click();
+
+Update "xxx" of testObj where property=".name";                --testObj.Name="xxx";
+
+Select values from testObj where property=".value";            --string values=testObj.Value;
+
+The expectValue="AutoScript";                                  --string expectValue="AutoScript";
+
+Compare expectValue with values;                               --Compare(expectValue,values);
+
+Print "Fail" if returnValue eq -1;                             --if(result == -1) 
+                                                                --{
+																	--Console.Writeline("Fail");
+																--}							
