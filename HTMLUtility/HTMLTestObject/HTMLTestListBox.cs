@@ -17,15 +17,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the item is selected.
         protected string _selectedValue;
-
         //all values of the listbox
         protected string[] _allValues;
 
         //size of listbox. if has more items than the size, we can see scroll bar.
-        protected int _size;
+        protected int _itemCountPerPage;
 
         //height of each item.
-        protected int _itemHeight;
+        private int _itemHeight;
 
         //handle for listbox, listbox is a windows control
         protected IntPtr _handle;
@@ -35,6 +34,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region properties
+
+        public int ItemCountPerPage
+        {
+            get { return _itemCountPerPage; }
+
+        }
+
+        public string SelectedValue
+        {
+            get { return _selectedValue; }
+
+        }
+
+        protected int ItemHeight
+        {
+            get { return _itemHeight; }
+        }
 
 
         #endregion
@@ -72,7 +88,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                this._size = int.Parse(element.getAttribute("size", 0).ToString());
+                this._itemCountPerPage = int.Parse(element.getAttribute("size", 0).ToString());
             }
             catch
             {
@@ -92,8 +108,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         this._handle = listboxHandle;
 
-                        Rectangle newRect = new Rectangle(tmpRect.left, tmpRect.top, tmpRect.Width, tmpRect.Height);
-                        this.Rect = newRect;
+                        //   Rectangle newRect = new Rectangle(tmpRect.left, tmpRect.top, tmpRect.Width, tmpRect.Height);
+                        //  this.Rect = newRect;
 
                         break;
                     }
@@ -123,13 +139,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                if (this._size < 1)
+                if (this.ItemCountPerPage < 1)
                 {
                     this._itemHeight = this.Rect.Height;
                 }
                 else
                 {
-                    this._itemHeight = this.Rect.Height / this._size;
+                    this._itemHeight = this.Rect.Height / this.ItemCountPerPage;
                 }
             }
         }
@@ -170,9 +186,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Hover();
+
                 Point itemPosition = GetItemPosition(index);
-                MouseOp.MoveTo(itemPosition.X, itemPosition.Y);
-                MouseOp.Click();
+                MouseOp.Click(itemPosition.X, itemPosition.Y);
 
                 _actionFinished.Set();
             }
@@ -185,11 +201,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual String[] GetAllValues()
         {
-
-            HTMLOptionElementClass optionClass;
             string[] values = new string[_htmlSelectClass.length];
             try
             {
+                HTMLOptionElementClass optionClass;
                 for (int i = 0; i < _htmlSelectClass.length; i++)
                 {
                     optionClass = (HTMLOptionElementClass)_htmlSelectClass.item(i, i);
@@ -215,7 +230,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void Focus()
         {
-
+            Hover();
+            MouseOp.Click();
         }
 
         public virtual object GetDefaultAction()
@@ -225,12 +241,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void PerformDefaultAction()
         {
-            Select("");
+            SelectByIndex(0);
         }
 
         public virtual string GetText()
         {
-            return this._selectedValue;
+            return this.SelectedValue;
         }
 
         public virtual string GetFontStyle()
@@ -261,20 +277,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                this._selectedValue = this._allValues[_htmlSelectClass.selectedIndex];
+                return this._allValues[_htmlSelectClass.selectedIndex];
             }
             catch
             {
-                this._selectedValue = "";
+                return "";
             }
 
-            return this._selectedValue;
         }
 
         protected virtual Point GetItemPosition(int index)
         {
 
             int startIndex = GetTopIndex();
+
             int positionFlag = -1; //0 for visible, 1 for smaller than TopIndex,2 for larger than LastIndex.
 
             if (index < startIndex)
@@ -283,7 +299,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else
             {
-                if (index > startIndex + this._size)
+                if (index > startIndex + this._itemCountPerPage)
                 {
                     positionFlag = 2;
                 }
@@ -299,11 +315,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             int itemX = this.Rect.Width / 3 + this.Rect.Left;
-            int itemY = this.Rect.Top + this._itemHeight / 2;
+            int itemY = this.Rect.Top + this.ItemHeight / 2;
 
             if (positionFlag == 0)
             {
-                itemY += (index - startIndex) * this._itemHeight;
+                itemY += (index - startIndex) * this.ItemHeight;
             }
             else if (positionFlag == 1)
             {
@@ -311,10 +327,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (positionFlag == 2)
             {
-                int expectedStartIndex = index - this._size + 1;
+                int expectedStartIndex = index - this._itemCountPerPage + 1;
                 Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_SETTOPINDEX), expectedStartIndex, 0);
 
-                itemY += (this._size-1) * this._itemHeight;
+                itemY += (this._itemCountPerPage - 1) * this.ItemHeight;
             }
 
             return new Point(itemX, itemY);
@@ -325,8 +341,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                int topIndex = Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_GETTOPINDEX), 0, 0);
-                return topIndex;
+                return Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_GETTOPINDEX), 0, 0);
             }
             catch
             {
@@ -337,7 +352,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected virtual int GetItemCountPerPage()
         {
-            return this._size;
+            return this._itemCountPerPage;
         }
 
         protected virtual int GetIndexByString(string value)
@@ -348,22 +363,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             value = value.ToUpper();
-            int index = -1;
+
             for (int i = 0; i < this._allValues.Length; i++)
             {
                 if (_allValues[i].ToUpper() == value)
                 {
-                    index = i;
-                    break;
+                    return i;
                 }
             }
 
-            if (index == -1)
-            {
-                throw new ItemNotFoundException("Can not find item: " + value);
-            }
+            throw new ItemNotFoundException("Can not find item: " + value);
 
-            return index;
         }
 
         #endregion
