@@ -1,0 +1,10 @@
+bin\Release\Win32API.dll
+bin\Release\Win32API.pdb
+obj\Release\ResolveAssemblyReference.cache
+obj\Release\Win32API.dll
+obj\Release\Win32API.pdb
+bin\Debug\Win32API.dll
+bin\Debug\Win32API.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\Win32API.dll
+obj\Debug\Win32API.pdb
