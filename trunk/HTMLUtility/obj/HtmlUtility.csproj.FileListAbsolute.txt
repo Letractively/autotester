@@ -42,3 +42,17 @@ E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\bin\Release\Functional.dll
 E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\bin\Release\Functional.pdb
 E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\bin\Debug\Functional.dll
 E:\program\cs\ShrinerainTools\AutoTester\HTMLUtility\bin\Debug\Functional.pdb
+E:\program\cs\AutoTester\HTMLUtility\obj\Debug\ResolveAssemblyReference.cache
+E:\program\cs\AutoTester\HTMLUtility\obj\Debug\Interop.SHDocVw.dll
+E:\program\cs\AutoTester\HTMLUtility\obj\Debug\HtmlUtility.csproj.ResolveComReference.cache
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\HTMLUtility.dll
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\HTMLUtility.pdb
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Functional.dll
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Interface.dll
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Win32API.dll
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Interop.SHDocVw.dll
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Interface.pdb
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Functional.pdb
+E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Win32API.pdb
+E:\program\cs\AutoTester\HTMLUtility\obj\Debug\HTMLUtility.dll
+E:\program\cs\AutoTester\HTMLUtility\obj\Debug\HTMLUtility.pdb

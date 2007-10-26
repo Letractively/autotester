@@ -40,3 +40,5 @@ E:\program\cs\ShrinerainTools\AutoTester\AutoTester\bin\Debug\Framework.pdb
 E:\program\cs\ShrinerainTools\AutoTester\AutoTester\bin\Debug\Functional.pdb
 E:\program\cs\ShrinerainTools\AutoTester\AutoTester\bin\Debug\DataUtility.dll
 E:\program\cs\ShrinerainTools\AutoTester\AutoTester\bin\Debug\DataUtility.pdb
+E:\program\cs\AutoTester\AutoTester\obj\Debug\AutoTester.exe
+E:\program\cs\AutoTester\AutoTester\obj\Debug\AutoTester.pdb
