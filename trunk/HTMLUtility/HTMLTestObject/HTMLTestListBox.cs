@@ -190,6 +190,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Point itemPosition = GetItemPosition(index);
                 MouseOp.Click(itemPosition.X, itemPosition.Y);
 
+                this._selectedValue = this._allValues[index];
+
                 _actionFinished.Set();
             }
             catch
@@ -246,7 +248,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual string GetText()
         {
-            return this.SelectedValue;
+            return this._selectedValue;
         }
 
         public virtual string GetFontStyle()
