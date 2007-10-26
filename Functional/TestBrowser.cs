@@ -16,8 +16,14 @@ namespace Shrinerain.AutoTester.Function
 
         protected static TestBrowser _testBrowser;
 
+        //Handle of IE.
         protected static IntPtr _mainHandle;
+
+        //handle of client area.
         protected static IntPtr _ieServerHandle;
+
+        //handle of shell doc.
+        protected static IntPtr _shellDocHandle;
 
         protected InternetExplorer _ie = null;
         protected HTMLDocument _HTMLDom = null;
@@ -619,31 +625,48 @@ namespace Shrinerain.AutoTester.Function
         //client rect: the web page rect, not include menu, address bar ect.
         protected virtual void GetClientRect()
         {
-            IntPtr ieHwd = IntPtr.Zero;
-            ieHwd = Win32API.FindWindow("IEFrame", null);
-            if (ieHwd != IntPtr.Zero)
+            if (_mainHandle != IntPtr.Zero)
             {
-                IntPtr child = Win32API.FindWindowEx(ieHwd, IntPtr.Zero, "Shell DocObject View", null);
+                if (_shellDocHandle == IntPtr.Zero)
+                {
+                    _shellDocHandle = Win32API.FindWindowEx(_mainHandle, IntPtr.Zero, "Shell DocObject View", null);
+                    if (_shellDocHandle == IntPtr.Zero)
+                    {
+                        throw new TestBrowserNotFoundException("Can not get IE Client location.");
+                    }
+                }
+
 
                 //determine the yellow warning bar, for example, if the web page contains ActiveX, we can see the yellow bar at the top of the web page.
                 //if the warning bar exist, we need to add 20 height to each html control.
-                IntPtr warnBar = Win32API.FindWindowEx(child, IntPtr.Zero, "#32770 (Dialog)", null);
+                IntPtr warnBar = Win32API.FindWindowEx(_shellDocHandle, IntPtr.Zero, "#32770 (Dialog)", null);
                 int addHeight = 0;
                 if (warnBar != IntPtr.Zero)
                 {
-                    addHeight = 20;
+                    Win32API.Rect warnRect = new Win32API.Rect();
+                    Win32API.GetClientRect(warnBar, ref warnRect);
+                    addHeight = warnRect.Height;
                 }
 
-                child = Win32API.FindWindowEx(child, IntPtr.Zero, "Internet Explorer_Server", null);
-                _ieServerHandle = child;
+                //Get the actual client area rect, which shows web page to the end user.
+                if (_ieServerHandle == IntPtr.Zero)
+                {
+                    _ieServerHandle = Win32API.FindWindowEx(_shellDocHandle, IntPtr.Zero, "Internet Explorer_Server", null);
+
+                    if (_ieServerHandle == IntPtr.Zero)
+                    {
+                        throw new TestBrowserNotFoundException("Can not get IE Client location.");
+                    }
+                }
 
                 Win32API.Rect tmpRect = new Win32API.Rect();
-                Win32API.GetWindowRect(child, ref tmpRect);
+                Win32API.GetWindowRect(_ieServerHandle, ref tmpRect);
 
                 _clientLeft = tmpRect.left;
                 _clientTop = tmpRect.top + addHeight;
                 _clientWidth = tmpRect.Width;
                 _clientHeight = tmpRect.Height;
+
             }
             else
             {
