@@ -265,10 +265,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        protected virtual int GetSelectedIndex()
-        {
-            return _htmlSelectClass.selectedIndex;
-        }
+        //protected virtual int GetSelectedIndex()
+        //{
+        //    return _htmlSelectClass.selectedIndex;
+        //}
 
         protected virtual string GetSelectedValue()
         {
@@ -292,6 +292,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
 
             int startIndex = GetTopIndex();
+
+            if (startIndex < 0 || startIndex >= this._allValues.Length)
+            {
+                throw new ItemNotFoundException("Can not get the position of item at index: " + ToString());
+            }
 
             int positionFlag = -1; //0 for visible, 1 for smaller than TopIndex,2 for larger than LastIndex.
 
@@ -352,10 +357,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        protected virtual int GetItemCountPerPage()
-        {
-            return this._itemCountPerPage;
-        }
+        //protected virtual int GetItemCountPerPage()
+        //{
+        //    return this._itemCountPerPage;
+        //}
 
         protected virtual int GetIndexByString(string value)
         {
