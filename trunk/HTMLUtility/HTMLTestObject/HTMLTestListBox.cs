@@ -194,9 +194,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch
+            catch (ItemNotFoundException)
             {
-                throw new CanNotPerformActionException("Can not perform click action.");
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CanNotPerformActionException(e.ToString());
             }
 
         }

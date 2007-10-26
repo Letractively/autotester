@@ -149,6 +149,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CanNotPerformActionException("Invalid item index: " + index.ToString());
             }
 
+            try
+            {
+                Point itemPosition = GetItemPosition(index);
+
+                _actionFinished.WaitOne();
+
+                Click();
+                MouseOp.Click(itemPosition.X, itemPosition.Y);
+
+                this._selectedValue = _allValues[index];
+
+                _actionFinished.Set();
+            }
+            catch (ItemNotFoundException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CanNotPerformActionException(e.ToString());
+            }
 
 
         }
@@ -278,6 +299,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new PropertyNotFoundException("Can not get the first visible item.");
             }
         }
+
+        protected virtual void Click()
+        {
+            Hover();
+
+            int right = this.Rect.Left + this.Rect.Width;
+            int height = this.Rect.Height;
+
+            int x = right - height / 2;
+            int y = this.Rect.Top + height / 2;
+
+            MouseOp.Click(x, y);
+        }
+
         #endregion
 
         #endregion
