@@ -13,3 +13,8 @@ E:\program\cs\ShrinerainTools\AutoTester\Win32API\bin\Release\Win32API.pdb
 E:\program\cs\ShrinerainTools\AutoTester\Win32API\obj\Release\ResolveAssemblyReference.cache
 E:\program\cs\ShrinerainTools\AutoTester\Win32API\obj\Release\Win32API.dll
 E:\program\cs\ShrinerainTools\AutoTester\Win32API\obj\Release\Win32API.pdb
+E:\program\cs\AutoTester\Win32API\obj\Debug\ResolveAssemblyReference.cache
+E:\program\cs\AutoTester\Win32API\obj\Debug\Win32API.dll
+E:\program\cs\AutoTester\Win32API\obj\Debug\Win32API.pdb
+E:\program\cs\AutoTester\Win32API\bin\Debug\Win32API.dll
+E:\program\cs\AutoTester\Win32API\bin\Debug\Win32API.pdb
