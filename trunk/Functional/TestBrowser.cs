@@ -470,6 +470,11 @@ namespace Shrinerain.AutoTester.Function
             throw new CanNotPerformActionException("Can not wait for new page");
         }
 
+        public virtual void MaxSize()
+        {
+            //
+        }
+
         #endregion
 
         #region Get IE Information
