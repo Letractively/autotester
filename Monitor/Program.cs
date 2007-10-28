@@ -27,7 +27,7 @@ namespace Shrinerain.AutoTester.Monitor
              Application.EnableVisualStyles();
              Application.SetCompatibleTextRenderingDefault(false);
 
-             Application.Run(new MonitorStarter());
+             Application.Run(new MainFrm());
         }
     }
 }

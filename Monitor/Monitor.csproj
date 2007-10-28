@@ -43,11 +43,11 @@
     <Compile Include="MonitorFrm.Designer.cs">
       <DependentUpon>MonitorFrm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MonitorStarter.cs">
+    <Compile Include="MainFrm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MonitorStarter.Designer.cs">
-      <DependentUpon>MonitorStarter.cs</DependentUpon>
+    <Compile Include="MainFrm.Designer.cs">
+      <DependentUpon>MainFrm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -55,9 +55,9 @@
       <DependentUpon>MonitorFrm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="MonitorStarter.resx">
+    <EmbeddedResource Include="MainFrm.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>MonitorStarter.cs</DependentUpon>
+      <DependentUpon>MainFrm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -81,6 +81,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AutoTester.ico" />
+    <None Include="Resources\copy.png" />
+    <None Include="Resources\pause3.png" />
+    <None Include="Resources\pause2.png" />
+    <None Include="Resources\Highlight2.PNG" />
+    <None Include="Resources\Pause.png" />
+    <None Include="Resources\start2.png" />
+    <None Include="Resources\clear.png" />
+    <None Include="Resources\stop.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
