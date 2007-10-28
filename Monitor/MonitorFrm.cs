@@ -45,7 +45,11 @@ namespace Shrinerain.AutoTester.Monitor
 
         private void Start()
         {
-
+            for (int i = 0; i < 100; i++)
+            {
+                AddLog("test a test.");
+                Thread.Sleep(500);
+            }
         }
 
         private void Pause()

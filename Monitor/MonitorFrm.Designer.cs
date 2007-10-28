@@ -28,6 +28,7 @@ namespace Shrinerain.AutoTester.Monitor
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Monitor));
             this.btnPause = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnCopy = new System.Windows.Forms.Button();
@@ -144,6 +145,7 @@ namespace Shrinerain.AutoTester.Monitor
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnPause);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "Monitor";
             this.Text = "AutoTester - Monitor";

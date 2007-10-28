@@ -28,13 +28,15 @@ namespace Shrinerain.AutoTester.Monitor
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MonitorStarter));
             this.SuspendLayout();
             // 
             // MonitorStarter
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(292, 273);
+            this.ClientSize = new System.Drawing.Size(178, 99);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MonitorStarter";
             this.ShowInTaskbar = false;
             this.Text = "MonitorStarter";
