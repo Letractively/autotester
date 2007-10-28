@@ -1,4 +1,4 @@
-namespace Monitor
+namespace Shrinerain.AutoTester.Monitor
 {
     partial class Monitor
     {
@@ -65,7 +65,7 @@ namespace Monitor
             // btnCopy
             // 
             this.btnCopy.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCopy.Location = new System.Drawing.Point(181, 8);
+            this.btnCopy.Location = new System.Drawing.Point(176, 8);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(50, 30);
             this.btnCopy.TabIndex = 5;
@@ -76,7 +76,7 @@ namespace Monitor
             // btnClear
             // 
             this.btnClear.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnClear.Location = new System.Drawing.Point(237, 8);
+            this.btnClear.Location = new System.Drawing.Point(232, 8);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(50, 30);
             this.btnClear.TabIndex = 6;

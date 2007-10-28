@@ -151,11 +151,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                Point itemPosition = GetItemPosition(index);
-
                 _actionFinished.WaitOne();
 
+                Point itemPosition = GetItemPosition(index);
+
                 Click();
+
                 MouseOp.Click(itemPosition.X, itemPosition.Y);
 
                 this._selectedValue = _allValues[index];
