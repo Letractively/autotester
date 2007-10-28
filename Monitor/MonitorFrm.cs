@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
 using System.Data;
 using System.Drawing;
 using System.Text;
@@ -11,11 +13,33 @@ namespace Shrinerain.AutoTester.Monitor
     public partial class Monitor : Form
     {
 
+        #region Fields
+        //add message to rich text box.
+        private delegate void AddLogDelegate(string m);
+        #endregion
+
         public Monitor()
         {
             InitializeComponent();
         }
 
+
+
+        #region public methods
+
+        public void AddLog(string m)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new AddLogDelegate(AddLog), m);
+            }
+            else
+            {
+                this.actionBox.Text += (m + "\n");
+            }
+        }
+
+        #endregion
 
         #region private methods
 
@@ -77,7 +101,10 @@ namespace Shrinerain.AutoTester.Monitor
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-
+            Thread t = new Thread(new ThreadStart(Start));
+            t.IsBackground = true;
+            t.Start();
+            // Start();
         }
 
         private void btnStop_Click(object sender, EventArgs e)
