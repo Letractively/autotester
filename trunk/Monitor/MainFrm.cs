@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Shrinerain.AutoTester.Monitor
 {
-    public partial class MonitorStarter : Form
+    public partial class MainFrm : Form
     {
         #region fields
 
@@ -16,13 +16,13 @@ namespace Shrinerain.AutoTester.Monitor
 
         public static Monitor Monitor
         {
-            get { return MonitorStarter._monitor; }
+            get { return MainFrm._monitor; }
         }
 
 
         #endregion
 
-        public MonitorStarter()
+        public MainFrm()
         {
             InitializeComponent();
             StartMonitor();
@@ -30,7 +30,7 @@ namespace Shrinerain.AutoTester.Monitor
 
         private void StartMonitor()
         {
-            this.Hide();
+           // this.Hide();
 
             _monitor = new Monitor();
             Monitor.TopMost = true;
