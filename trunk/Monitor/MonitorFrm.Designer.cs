@@ -121,7 +121,6 @@ namespace Shrinerain.AutoTester.Monitor
             // 
             // btnStart
             // 
-            this.btnStart.Enabled = false;
             this.btnStart.Font = new System.Drawing.Font("Webdings", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnStart.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
             this.btnStart.Location = new System.Drawing.Point(12, 8);
