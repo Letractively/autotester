@@ -262,7 +262,7 @@ namespace Shrinerain.AutoTester.Framework
 
         private void PerformBegin()
         {
-            this._started = true;
+            _started = true;
         }
 
         private void PerformGo(TestStep step)
