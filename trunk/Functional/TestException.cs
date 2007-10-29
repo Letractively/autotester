@@ -78,7 +78,23 @@ namespace Shrinerain.AutoTester.Function
     #region sub exceptions
 
     #region ie exceptions
-    public class TestBrowserNotFoundException : TestException
+
+    public class TestBrowserException : TestException
+    {
+        public TestBrowserException()
+            : this("TestBrowse exception.")
+        {
+
+        }
+
+        public TestBrowserException(string message)
+            : base(message)
+        {
+
+        }
+    };
+
+    public class TestBrowserNotFoundException : TestBrowserException
     {
         public TestBrowserNotFoundException()
             : this("Can not find Internet Explorer.")
@@ -91,7 +107,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotStartTestBrowserException : TestException
+    public class CanNotStartTestBrowserException : TestBrowserException
     {
         public CanNotStartTestBrowserException()
             : this("Can not start Internet Explorer.")
@@ -103,7 +119,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotAttachTestBrowserException : TestException
+    public class CanNotAttachTestBrowserException : TestBrowserException
     {
         public CanNotAttachTestBrowserException()
             : this("Can not hook Internet Explorer.")
@@ -115,7 +131,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotActiveTestBrowserException : TestException
+    public class CanNotActiveTestBrowserException : TestBrowserException
     {
         public CanNotActiveTestBrowserException()
             : this("Can not active Internet Explorer.")
@@ -128,7 +144,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotLoadUrlException : TestException
+    public class CanNotLoadUrlException : TestBrowserException
     {
         public CanNotLoadUrlException()
             : this("Can not load the url, please check the url")
@@ -140,7 +156,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     }
-    public class CanNotNavigateException : TestException
+    public class CanNotNavigateException : TestBrowserException
     {
         public CanNotNavigateException()
             : this("Can not navigate.")
@@ -156,7 +172,21 @@ namespace Shrinerain.AutoTester.Function
 
     #region config exceptions
 
-    public class CanNotLoadAutoConfigException : TestException
+    public class TestConfigException : TestException
+    {
+        public TestConfigException()
+            : this("Config expcetion.")
+        {
+
+        }
+        public TestConfigException(string message)
+            : base(message)
+        {
+
+        }
+    }
+
+    public class CanNotLoadAutoConfigException : TestConfigException
     {
         public CanNotLoadAutoConfigException()
             : this("AutoConfig error.")
@@ -171,7 +201,7 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class ConfigFileNotFoundException : TestException
+    public class ConfigFileNotFoundException : TestConfigException
     {
         public ConfigFileNotFoundException()
             : this("Config file not found.")
@@ -184,7 +214,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotOpenConfigFileException : TestException
+    public class CanNotOpenConfigFileException : TestConfigException
     {
         public CanNotOpenConfigFileException()
             : this("Can not open config file.")
@@ -197,7 +227,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class BadFormatConfigFileException : TestException
+    public class BadFormatConfigFileException : TestConfigException
     {
         public BadFormatConfigFileException()
             : this("Bad format config file.")
@@ -211,7 +241,7 @@ namespace Shrinerain.AutoTester.Function
         }
 
     };
-    public class DrivenFileNotFoundException : TestException
+    public class DrivenFileNotFoundException : TestConfigException
     {
         public DrivenFileNotFoundException()
             : this("Can not find driven file.")
@@ -224,7 +254,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotOpenDrivenFileException : TestException
+    public class CanNotOpenDrivenFileException : TestConfigException
     {
         public CanNotOpenDrivenFileException()
             : this("Can not open driven file.")
@@ -237,7 +267,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class BadFormatDrivenFileException : TestException
+    public class BadFormatDrivenFileException : TestConfigException
     {
         public BadFormatDrivenFileException()
             : this("Bad format driven file.")
@@ -251,7 +281,7 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class CanNotLoadTestStepsException : TestException
+    public class CanNotLoadTestStepsException : TestConfigException
     {
         public CanNotLoadTestStepsException()
             : this("Can not load test steps.")
@@ -264,7 +294,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotLoadDataPoolException : TestException
+    public class CanNotLoadDataPoolException : TestConfigException
     {
         public CanNotLoadDataPoolException()
             : this("Can not load data pool.")
@@ -277,7 +307,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     }
-    public class CanNotLoadSubException : TestException
+    public class CanNotLoadSubException : TestConfigException
     {
         public CanNotLoadSubException()
             : this("Can not load sub.")
@@ -291,7 +321,7 @@ namespace Shrinerain.AutoTester.Function
         }
 
     }
-    public class FolderNotFoundException : TestException
+    public class FolderNotFoundException : TestConfigException
     {
         public FolderNotFoundException()
             : this("Can not find the folder.")
@@ -304,7 +334,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class DllNotFoundException : TestException
+    public class DllNotFoundException : TestConfigException
     {
         public DllNotFoundException()
             : this("Can not find Dll.")
@@ -318,7 +348,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotLoadDllException : TestException
+    public class CanNotLoadDllException : TestConfigException
     {
         public CanNotLoadDllException()
             : this("Can not load dll.")
@@ -332,7 +362,7 @@ namespace Shrinerain.AutoTester.Function
         }
 
     };
-    public class InvalidDllException : TestException
+    public class InvalidDllException : TestConfigException
     {
         public InvalidDllException()
             : this("Invalid dll, can not load it.")
@@ -346,7 +376,7 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class TemplateFileNotFoundException : TestException
+    public class TemplateFileNotFoundException : TestConfigException
     {
         public TemplateFileNotFoundException()
             : this("Can not find log template.")
@@ -358,7 +388,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     }
-    public class InvalidTemplateException : TestException
+    public class InvalidTemplateException : TestConfigException
     {
         public InvalidTemplateException()
             : this("Invalid template file.")
@@ -374,7 +404,22 @@ namespace Shrinerain.AutoTester.Function
     #endregion
 
     #region object exceptions
-    public class ObjectNotFoundException : TestException
+
+    public class TestObjectException : TestException
+    {
+        public TestObjectException()
+            : this("Test object exception.")
+        {
+
+        }
+        public TestObjectException(string message)
+            : base(message)
+        {
+
+        }
+    };
+
+    public class ObjectNotFoundException : TestObjectException
     {
         public ObjectNotFoundException()
             : this("Can not found test object.")
@@ -387,7 +432,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotBuildObjectException : TestException
+    public class CanNotBuildObjectException : TestObjectException
     {
         public CanNotBuildObjectException()
             : this("Can not build test object.")
@@ -398,7 +443,7 @@ namespace Shrinerain.AutoTester.Function
         {
         }
     }
-    public class CanNotGetObjectPositionException : TestException
+    public class CanNotGetObjectPositionException : TestObjectException
     {
         public CanNotGetObjectPositionException()
             : this("Can not get the position of the object.")
@@ -410,7 +455,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     }
-    public class ItemNotFoundException : TestException
+    public class ItemNotFoundException : TestObjectException
     {
         public ItemNotFoundException()
             : this("Can not found sub item.")
@@ -423,7 +468,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class PropertyNotFoundException : TestException
+    public class PropertyNotFoundException : TestObjectException
     {
         public PropertyNotFoundException()
             : this("Can not find the property.")
@@ -436,7 +481,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotSetPropertyException : TestException
+    public class CanNotSetPropertyException : TestObjectException
     {
         public CanNotSetPropertyException()
             : this("Can not set the property.")
@@ -448,7 +493,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     }
-    public class CanNotPerformActionException : TestException
+    public class CanNotPerformActionException : TestObjectException
     {
         public CanNotPerformActionException()
             : this("Can not perform the action.")
@@ -462,7 +507,7 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class TimeoutException : TestException
+    public class TimeoutException : TestObjectException
     {
         public TimeoutException()
             : this("Time is out.")
@@ -476,7 +521,7 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class VerifyPointException : TestException
+    public class VerifyPointException : TestObjectException
     {
         public VerifyPointException()
             : this("Can not perform VP check.")
@@ -490,7 +535,7 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class CanNotHighlightObjectException : TestException
+    public class CanNotHighlightObjectException : TestObjectException
     {
         public CanNotHighlightObjectException()
             : this("Can not highlight the object.")
@@ -504,7 +549,6 @@ namespace Shrinerain.AutoTester.Function
         }
     };
     #endregion
-
 
     #region other exceptions
     public class TestEngineException : TestException

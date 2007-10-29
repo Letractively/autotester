@@ -14,6 +14,18 @@ namespace Shrinerain.AutoTester.Function
     {
         #region Fileds
 
+
+        protected struct TestBrowserStatus
+        {
+            public IntPtr _mainHandle;
+            public IntPtr _ieServerHandle;
+            public IntPtr _shellDocHandle;
+            public InternetExplorer _ie;
+            public HTMLDocument _HTMLDom;
+        };
+
+        protected static Stack<TestBrowserStatus> _statusStack = new Stack<TestBrowserStatus>(5);
+
         protected static TestBrowser _testBrowser;
 
         //Handle of IE.
@@ -27,7 +39,6 @@ namespace Shrinerain.AutoTester.Function
 
         protected InternetExplorer _ie = null;
         protected HTMLDocument _HTMLDom = null;
-        protected HTMLBody bodyElement = null;
 
         protected int _maxWaitSeconds = 120; //wait for 120 secs
         protected const int _interval = 3;   //every time sleep for 3 secs if IE is not found.
@@ -703,13 +714,9 @@ namespace Shrinerain.AutoTester.Function
         //the whole web page rect, include invisible part, for example, some web pages are too long to display, we need to scroll them.
         protected virtual void GetScrollRect()
         {
-            if (bodyElement == null)
-            {
-                bodyElement = (HTMLBody)this._HTMLDom.body;
-            }
-
             try
             {
+                HTMLBody bodyElement = (HTMLBody)this._HTMLDom.body;
                 _scrollWidth = bodyElement.scrollWidth;
                 _scrollHeight = bodyElement.scrollHeight;
 
@@ -734,6 +741,28 @@ namespace Shrinerain.AutoTester.Function
             GetScrollRect();
         }
 
+        protected virtual void GetPrevTestBrowserStatus()
+        {
+            if (_statusStack.Count > 0)
+            {
+                try
+                {
+                    TestBrowserStatus tmp = _statusStack.Pop();
+
+                    _mainHandle = tmp._mainHandle;
+                    _ieServerHandle = tmp._ieServerHandle;
+                    _shellDocHandle = tmp._shellDocHandle;
+                    _ie = tmp._ie;
+                    _HTMLDom = tmp._HTMLDom;
+                }
+                catch
+                {
+                    throw new CanNotAttachTestBrowserException("Can not get previous handle.");
+                }
+
+            }
+        }
+
         #endregion
 
         #region event
@@ -746,6 +775,21 @@ namespace Shrinerain.AutoTester.Function
             RegNavigateFailedEvent();
             RegRectChangeEvent();
             RegScrollEvent();
+            RegOnNewWindowEvent();
+
+        }
+
+        protected virtual void RegOnNewWindowEvent()
+        {
+            try
+            {
+                _ie.NewWindow3 += new DWebBrowserEvents2_NewWindow3EventHandler(OnNewWindow3);
+                _ie.NewWindow2 += new DWebBrowserEvents2_NewWindow2EventHandler(OnNewWindow2);
+            }
+            catch
+            {
+                throw new CanNotAttachTestBrowserException("Can not register new window event.");
+            }
 
         }
 
@@ -804,6 +848,21 @@ namespace Shrinerain.AutoTester.Function
         {
             throw new CanNotLoadUrlException();
         }
+
+
+        //fire when new web page pops up, eg. javascript: window.open
+        protected void OnNewWindow2(ref object ppDisp, ref bool Cancel)
+        {
+            System.Windows.Forms.MessageBox.Show("new window2!");
+            // throw new Exception("New window.");
+            //throw new Exception("The method or operation is not implemented.");
+        }
+
+        protected void OnNewWindow3(ref object ppDisp, ref bool Cancel, uint dwFlags, string bstrUrlContext, string bstrUrl)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
 
         //when document load complete, we can start to operate the html controls
         protected virtual void OnDocumentLoadComplete(object pDesp, ref object pUrl)
