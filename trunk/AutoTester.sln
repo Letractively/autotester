@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+# Visual C# Express 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Function", "Functional\Function.csproj", "{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoTester", "AutoTester\AutoTester.csproj", "{8ACBB6CF-E749-4E1D-93CD-56D4C5705B78}"
@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlexUtility", "FlexUtility\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilverLightUtility", "SilverLightUtility\SilverLightUtility.csproj", "{1975EA07-A727-4F04-8577-B97BC48AE473}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Monitor", "Monitor\Monitor.csproj", "{B21CB9F5-462E-4A2D-9A1B-8C9373F707B5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "Monitor\GUI.csproj", "{B21CB9F5-462E-4A2D-9A1B-8C9373F707B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

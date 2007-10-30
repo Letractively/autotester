@@ -437,7 +437,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
-        public virtual void WaitForNewPage()
+        public virtual void WaitForNextPage()
         {
 
         }
@@ -474,12 +474,24 @@ namespace Shrinerain.AutoTester.Function
                     else
                     {
                         TestBrowserStatus popStatus = new TestBrowserStatus();
-                        
-                        popStatus._HTMLDom = GetHTMLDomFromHandle(popWindowIEServerHandle);
-                        popStatus._ieServerHandle = popWindowIEServerHandle;
-                        popStatus._mainHandle = popWindowHandle;
+
+                        popStatus._ieServerHandle = _ieServerHandle;
+                        popStatus._mainHandle = _mainHandle;
+                        popStatus._HTMLDom = _HTMLDom;
 
                         _statusStack.Push(popStatus);
+
+                        _mainHandle = popWindowHandle;
+                        _ieServerHandle = popWindowIEServerHandle;
+                        _HTMLDom = GetHTMLDomFromHandle(popWindowIEServerHandle);
+
+                        GetSize();
+
+                        //popStatus._HTMLDom = GetHTMLDomFromHandle(popWindowIEServerHandle);
+                        //popStatus._ieServerHandle = popWindowIEServerHandle;
+                        //popStatus._mainHandle = popWindowHandle;
+
+                        //_statusStack.Push(popStatus);
 
                     }
                 }
@@ -926,7 +938,7 @@ namespace Shrinerain.AutoTester.Function
         {
             try
             {
-                _ie.NewWindow3 += new DWebBrowserEvents2_NewWindow3EventHandler(OnNewWindow3);
+                //  _ie.NewWindow3 += new DWebBrowserEvents2_NewWindow3EventHandler(OnNewWindow3);
                 _ie.NewWindow2 += new DWebBrowserEvents2_NewWindow2EventHandler(OnNewWindow2);
             }
             catch
