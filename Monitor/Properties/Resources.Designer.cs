@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Shrinerain.AutoTester.Monitor.Properties {
+namespace Shrinerain.AutoTester.GUI.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Shrinerain.AutoTester.Monitor.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Shrinerain.AutoTester.Monitor.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Shrinerain.AutoTester.GUI.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -74,13 +74,6 @@ namespace Shrinerain.AutoTester.Monitor.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap copy1 {
-            get {
-                object obj = ResourceManager.GetObject("copy1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap Highlight2 {
             get {
                 object obj = ResourceManager.GetObject("Highlight2", resourceCulture);
@@ -95,20 +88,6 @@ namespace Shrinerain.AutoTester.Monitor.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap pause2 {
-            get {
-                object obj = ResourceManager.GetObject("pause2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap pause3 {
-            get {
-                object obj = ResourceManager.GetObject("pause3", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap start2 {
             get {
                 object obj = ResourceManager.GetObject("start2", resourceCulture);
@@ -116,9 +95,9 @@ namespace Shrinerain.AutoTester.Monitor.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap stop {
+        internal static System.Drawing.Bitmap stop2 {
             get {
-                object obj = ResourceManager.GetObject("stop", resourceCulture);
+                object obj = ResourceManager.GetObject("stop2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
