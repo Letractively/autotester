@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shrinerain.AutoTester.Monitor</RootNamespace>
     <AssemblyName>Monitor</AssemblyName>
-    <ApplicationIcon>AutoTester.ico</ApplicationIcon>
+    <ApplicationIcon>AutoTester2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AutoTester.ico" />
+    <Content Include="AutoTester2.ico" />
     <None Include="Resources\copy.png" />
     <None Include="Resources\pause3.png" />
     <None Include="Resources\pause2.png" />

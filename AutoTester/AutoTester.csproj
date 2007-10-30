@@ -57,6 +57,10 @@
       <Project>{9B21D3ED-5BAC-4C66-BAB7-34CE7A076FFE}</Project>
       <Name>Interface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Win32API\Win32API.csproj">
+      <Project>{C27330C3-8F5D-46C6-9601-CDD96134E717}</Project>
+      <Name>Win32API</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

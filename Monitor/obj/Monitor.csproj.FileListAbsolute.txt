@@ -6,7 +6,6 @@ E:\program\cs\AutoTester\Monitor\obj\Debug\Monitor.csproj.GenerateResource.Cache
 E:\program\cs\AutoTester\Monitor\obj\Debug\Monitor.exe
 E:\program\cs\AutoTester\Monitor\obj\Debug\Monitor.pdb
 E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.Monitor.Monitor.resources
-E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.Monitor.MonitorStarter.resources
 E:\program\cs\AutoTester\Monitor\bin\Release\Monitor.exe
 E:\program\cs\AutoTester\Monitor\bin\Release\Monitor.pdb
 E:\program\cs\AutoTester\Monitor\obj\Release\ResolveAssemblyReference.cache
@@ -16,3 +15,4 @@ E:\program\cs\AutoTester\Monitor\obj\Release\Shrinerain.AutoTester.Monitor.Prope
 E:\program\cs\AutoTester\Monitor\obj\Release\Monitor.csproj.GenerateResource.Cache
 E:\program\cs\AutoTester\Monitor\obj\Release\Monitor.exe
 E:\program\cs\AutoTester\Monitor\obj\Release\Monitor.pdb
+E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.Monitor.MainFrm.resources

@@ -764,6 +764,8 @@ namespace Shrinerain.AutoTester.Win32
             WM_REFLECT = WM_USER + 0x1c00
         }
 
+
+        //define the window menu message.
         public enum WindowMenuMessage : int
         {
             SC_SIZE = 0xF000,
@@ -908,6 +910,11 @@ namespace Shrinerain.AutoTester.Win32
             [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
          ref IAccessible ppvObject);
 
+        [DllImport("oleacc.dll", PreserveSig = false)]
+        [return: MarshalAs(UnmanagedType.Interface)]
+        public static extern object ObjectFromLresult(UIntPtr lResult,
+             [MarshalAs(UnmanagedType.LPStruct)] Guid refiid, IntPtr wParam);
+
         [DllImport("user32.dll")]
         public static extern int GetWindowModuleFileName(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
 
@@ -948,7 +955,7 @@ namespace Shrinerain.AutoTester.Win32
         public static extern WindowStyles GetWindowLong(IntPtr hWnd, int index);
 
         [DllImport("User32.dll")]
-        public static extern int SendMessageTimeout(IntPtr hWnd, int uMsg, int wParam, int lParam, int fuFlags, int uTimeout, out int lpdwResult);
+        public static extern int SendMessageTimeout(IntPtr hWnd, int uMsg, int wParam, int lParam, int fuFlags, int uTimeout, out UIntPtr lpdwResult);
 
         [DllImport("User32.dll")]
         public static extern int GetClassLong(IntPtr hWnd, int index);
