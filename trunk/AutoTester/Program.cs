@@ -8,6 +8,7 @@ using Shrinerain.AutoTester.HTMLUtility;
 using Shrinerain.AutoTester.Function;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Framework;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester
 {
@@ -18,7 +19,7 @@ namespace Shrinerain.AutoTester
             // FrameworkEXE(args);
             FunctionTest();
             //   FrameworkTest();
-            // Console.ReadLine();
+            Console.ReadLine();
         }
 
 
@@ -73,24 +74,32 @@ namespace Shrinerain.AutoTester
         {
             HTMLTestBrowser myHost = HTMLTestBrowser.GetInstance();
             myHost.Start();
+            myHost.MaxSize();
 
-            string url = @"http://chs.gotdotnet.com/quickstart/aspplus/samples/webforms/ctrlref/webctrl/ListBox/VB/ListBox1.aspx";// @"E:\program\cs\ShrinerainTools\AutoTester\test.htm";// @"www.google.cn"; // // 
+            string url = @"http://127.0.0.1/AutoTester/";// @"www.google.cn"; // // 
             myHost.Load(url);
+
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
             //   HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByName("q");
             // obj1.Input("statestreet");
 
-           // HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google ËÑË÷", 0);
+            // HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google ËÑË÷", 0);
             //obj2.Click();
 
-         //   HTMLTestButton btn = (HTMLTestButton)pool.GetObjectByID("btn1");
-          //  btn.Click();
+            HTMLTestButton btn = (HTMLTestButton)pool.GetObjectByID("btn1");
+            btn.Click();
+            Thread.Sleep(1000);
+
+            myHost.WaitForPopWindow();
+
+            //btn = (HTMLTestButton)pool.GetObjectByID("btn2");
+            //btn.Click();
 
 
-            HTMLTestListBox listBox = (HTMLTestListBox)pool.GetObjectByID("ListBox1");
-            listBox.SelectByIndex(5);
+            //  HTMLTestListBox listBox = (HTMLTestListBox)pool.GetObjectByID("ListBox1");
+            // listBox.SelectByIndex(5);
         }
     }
 }

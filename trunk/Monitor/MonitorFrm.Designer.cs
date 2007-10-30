@@ -67,7 +67,6 @@ namespace Shrinerain.AutoTester.Monitor
             // btnStart
             // 
             this.btnStart.Enabled = false;
-            this.btnStart.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnStart.Font = new System.Drawing.Font("Webdings", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnStart.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnStart.Image = global::Shrinerain.AutoTester.Monitor.Properties.Resources.start2;
@@ -80,7 +79,6 @@ namespace Shrinerain.AutoTester.Monitor
             // 
             // btnHighlight
             // 
-            this.btnHighlight.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnHighlight.Font = new System.Drawing.Font("Webdings", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnHighlight.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnHighlight.Image = global::Shrinerain.AutoTester.Monitor.Properties.Resources.Highlight2;
@@ -93,11 +91,10 @@ namespace Shrinerain.AutoTester.Monitor
             // 
             // btnClear
             // 
-            this.btnClear.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnClear.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClear.ForeColor = System.Drawing.SystemColors.Control;
             this.btnClear.Image = global::Shrinerain.AutoTester.Monitor.Properties.Resources.clear;
-            this.btnClear.Location = new System.Drawing.Point(217, 11);
+            this.btnClear.Location = new System.Drawing.Point(217, 12);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(25, 25);
             this.btnClear.TabIndex = 6;
@@ -106,10 +103,9 @@ namespace Shrinerain.AutoTester.Monitor
             // 
             // btnCopy
             // 
-            this.btnCopy.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnCopy.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCopy.Image = global::Shrinerain.AutoTester.Monitor.Properties.Resources.copy1;
-            this.btnCopy.Location = new System.Drawing.Point(186, 11);
+            this.btnCopy.Location = new System.Drawing.Point(186, 12);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(25, 25);
             this.btnCopy.TabIndex = 5;
@@ -118,7 +114,6 @@ namespace Shrinerain.AutoTester.Monitor
             // 
             // btnStop
             // 
-            this.btnStop.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnStop.Font = new System.Drawing.Font("Webdings", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnStop.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnStop.Image = global::Shrinerain.AutoTester.Monitor.Properties.Resources.stop;
@@ -131,7 +126,6 @@ namespace Shrinerain.AutoTester.Monitor
             // 
             // btnPause
             // 
-            this.btnPause.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.btnPause.Font = new System.Drawing.Font("Webdings", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnPause.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnPause.Image = global::Shrinerain.AutoTester.Monitor.Properties.Resources.pause3;
