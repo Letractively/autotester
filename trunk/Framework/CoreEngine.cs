@@ -17,6 +17,12 @@ namespace Shrinerain.AutoTester.Framework
     {
         #region Fields
 
+
+        //event to pass message to other program.
+        public delegate void _frameworkInfoDelegate(string message);
+        public event _frameworkInfoDelegate OnNewMessage;
+
+
         private AutoConfig _autoConfig;
         private Parser _parser;
         private TestBrowser _browser;
@@ -79,7 +85,7 @@ namespace Shrinerain.AutoTester.Framework
 
         public CoreEngine()
         {
-
+            this.OnNewMessage += new _frameworkInfoDelegate(WriteMsgToConsole);
         }
 
         public CoreEngine(AutoConfig config, Parser parser)
@@ -104,9 +110,6 @@ namespace Shrinerain.AutoTester.Framework
             _index = 0;
             _currentTestSteps = _parser.GetAllMainTestSteps();
 
-            Console.WriteLine("Start to testing...");
-            Console.WriteLine("------------------------------------------------------------------");
-            Console.WriteLine("  \t\tCommand\tItem\tProperty\tAction\tData\tExpectResult\tActualResult");
             while (true)
             {
                 try
@@ -139,17 +142,20 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Fatal Error: " + e.ToString());
+                    OnNewMessage(e.Message);
                     break;
                 }
             }
-            Console.WriteLine("------------------------------------------------------------------");
-            Console.WriteLine("End.");
 
         }
 
         public void End()
         {
+
+            string endMsg = "\n------------------------------------------------------------------\n"
+            + "End.\n";
+
+            OnNewMessage(endMsg);
 
         }
 
@@ -157,14 +163,24 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private methods
 
-        private static void PrintHeaders()
+        private void WriteMsgToConsole(string message)
         {
-            Console.WriteLine();
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine("UAT Automation Framework v0.6 C# Edition");
-            Console.WriteLine("        Shrinerain@hotmail.com          ");
-            Console.WriteLine("----------------------------------------");
-            Console.WriteLine();
+            Console.Write(message);
+        }
+
+        private void PrintHeaders()
+        {
+            string headers =
+            "\n----------------------------------------\n"
+            + "UAT Automation Framework v0.6 C# Edition\n"
+            + "        Shrinerain@hotmail.com          \n"
+            + "----------------------------------------\n\n"
+            + "Start to testing...\n"
+            + "------------------------------------------------------------------\n"
+            + "  \t\tCommand\tItem\tProperty\tAction\tData\tExpectResult\tActualResult\n";
+
+            OnNewMessage(headers);
+
         }
 
         private void InitEngines()
@@ -201,7 +217,8 @@ namespace Shrinerain.AutoTester.Framework
                 PerformEnd();
             }
 
-            Console.WriteLine("Test Step:\t" + currentStep.ToString());
+            OnNewMessage(currentStep.ToString());
+            //Console.WriteLine("Test Step:\t" + currentStep.ToString());
 
             string command = currentStep._testCommand.ToUpper();
 

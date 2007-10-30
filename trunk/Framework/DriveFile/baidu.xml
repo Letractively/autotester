@@ -2,7 +2,7 @@
   <Project>
     <ProjectName>Baidu Test</ProjectName>
 	<ProjectDomain>HTML</ProjectDomain>
-    <DriveFile>E:\program\cs\ShrinerainTools\AutoTester\Framework\DriveFile\baidu.xls</DriveFile>
+    <DriveFile>E:\program\cs\AutoTester\Framework\DriveFile\baidu.xls</DriveFile>
     <Log>D:\Program\XDETester Script\AutomationFramework\Log\</Log>
 	<LogTemplate>D:\111.log</LogTemplate>
     <ScreenPrint>D:\Program\XDETester Script\AutomationFramework\ScreenPrint\</ScreenPrint>

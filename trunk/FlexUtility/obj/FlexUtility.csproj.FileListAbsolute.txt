@@ -1,0 +1,5 @@
+E:\program\cs\AutoTester\FlexUtility\bin\Debug\FlexUtility.dll
+E:\program\cs\AutoTester\FlexUtility\bin\Debug\FlexUtility.pdb
+E:\program\cs\AutoTester\FlexUtility\obj\Debug\ResolveAssemblyReference.cache
+E:\program\cs\AutoTester\FlexUtility\obj\Debug\FlexUtility.dll
+E:\program\cs\AutoTester\FlexUtility\obj\Debug\FlexUtility.pdb

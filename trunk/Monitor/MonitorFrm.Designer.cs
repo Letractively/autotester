@@ -150,9 +150,11 @@ namespace Shrinerain.AutoTester.GUI
             this.Controls.Add(this.btnPause);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Location = new System.Drawing.Point(600, 0);
             this.MaximizeBox = false;
             this.Name = "Monitor";
             this.Text = "AutoTester - Monitor";
+            this.TopMost = true;
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 

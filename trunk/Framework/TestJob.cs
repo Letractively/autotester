@@ -10,6 +10,9 @@ namespace Shrinerain.AutoTester.Framework
 
         #region fields
 
+        public delegate void _newMsgDelegate(string message);
+        public event _newMsgDelegate OnNewMsg;
+
         private string _projectConfigFile;
         private string _frameworkConfigFile;
 
@@ -48,7 +51,6 @@ namespace Shrinerain.AutoTester.Framework
 
         public TestJob()
         {
-
         }
 
         #endregion
@@ -74,6 +76,7 @@ namespace Shrinerain.AutoTester.Framework
             CoreEngine coreEngine = new CoreEngine();
             coreEngine.AutoConfig = autoConfig;
             coreEngine.KeywordParser = parser;
+            coreEngine.OnNewMessage += new CoreEngine._frameworkInfoDelegate(DeliverNewMsg);
             coreEngine.Start();
         }
 
@@ -85,6 +88,12 @@ namespace Shrinerain.AutoTester.Framework
         {
             return File.Exists(_projectConfigFile);
         }
+
+        private void DeliverNewMsg(string message)
+        {
+            OnNewMsg(message);
+        }
+
 
         #endregion
 
