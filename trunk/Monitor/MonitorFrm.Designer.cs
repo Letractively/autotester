@@ -45,9 +45,9 @@ namespace Shrinerain.AutoTester.GUI
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.actionBox);
-            this.groupBox1.Location = new System.Drawing.Point(2, 40);
+            this.groupBox1.Location = new System.Drawing.Point(2, 37);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(250, 76);
+            this.groupBox1.Size = new System.Drawing.Size(250, 70);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Actions";
@@ -56,10 +56,10 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.actionBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.actionBox.Location = new System.Drawing.Point(6, 14);
+            this.actionBox.Location = new System.Drawing.Point(6, 13);
             this.actionBox.Name = "actionBox";
             this.actionBox.ReadOnly = true;
-            this.actionBox.Size = new System.Drawing.Size(238, 57);
+            this.actionBox.Size = new System.Drawing.Size(238, 53);
             this.actionBox.TabIndex = 0;
             this.actionBox.Text = "";
             this.actionBox.WordWrap = false;
@@ -70,9 +70,9 @@ namespace Shrinerain.AutoTester.GUI
             this.btnStart.Font = new System.Drawing.Font("Webdings", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnStart.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnStart.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.start2;
-            this.btnStart.Location = new System.Drawing.Point(9, 9);
+            this.btnStart.Location = new System.Drawing.Point(9, 8);
             this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(25, 27);
+            this.btnStart.Size = new System.Drawing.Size(25, 25);
             this.btnStart.TabIndex = 2;
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
@@ -82,9 +82,9 @@ namespace Shrinerain.AutoTester.GUI
             this.btnHighlight.Font = new System.Drawing.Font("Webdings", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnHighlight.ForeColor = System.Drawing.SystemColors.ControlText;
             this.btnHighlight.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.Highlight2;
-            this.btnHighlight.Location = new System.Drawing.Point(102, 9);
+            this.btnHighlight.Location = new System.Drawing.Point(102, 8);
             this.btnHighlight.Name = "btnHighlight";
-            this.btnHighlight.Size = new System.Drawing.Size(25, 27);
+            this.btnHighlight.Size = new System.Drawing.Size(25, 25);
             this.btnHighlight.TabIndex = 4;
             this.btnHighlight.UseVisualStyleBackColor = true;
             this.btnHighlight.Click += new System.EventHandler(this.btnHighlight_Click);
@@ -94,9 +94,9 @@ namespace Shrinerain.AutoTester.GUI
             this.btnClear.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClear.ForeColor = System.Drawing.SystemColors.Control;
             this.btnClear.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.clear;
-            this.btnClear.Location = new System.Drawing.Point(221, 9);
+            this.btnClear.Location = new System.Drawing.Point(221, 8);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(25, 27);
+            this.btnClear.Size = new System.Drawing.Size(25, 25);
             this.btnClear.TabIndex = 6;
             this.btnClear.UseVisualStyleBackColor = true;
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
@@ -104,10 +104,10 @@ namespace Shrinerain.AutoTester.GUI
             // btnCopy
             // 
             this.btnCopy.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnCopy.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.copy1;
-            this.btnCopy.Location = new System.Drawing.Point(190, 9);
+            this.btnCopy.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.copy;
+            this.btnCopy.Location = new System.Drawing.Point(190, 8);
             this.btnCopy.Name = "btnCopy";
-            this.btnCopy.Size = new System.Drawing.Size(25, 27);
+            this.btnCopy.Size = new System.Drawing.Size(25, 25);
             this.btnCopy.TabIndex = 5;
             this.btnCopy.UseVisualStyleBackColor = true;
             this.btnCopy.Click += new System.EventHandler(this.btnCopy_Click);
@@ -116,10 +116,10 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.btnStop.Font = new System.Drawing.Font("Webdings", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnStop.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnStop.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.stop;
-            this.btnStop.Location = new System.Drawing.Point(40, 9);
+            this.btnStop.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.stop2;
+            this.btnStop.Location = new System.Drawing.Point(40, 8);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(25, 27);
+            this.btnStop.Size = new System.Drawing.Size(25, 25);
             this.btnStop.TabIndex = 3;
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
@@ -128,19 +128,19 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.btnPause.Font = new System.Drawing.Font("Webdings", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(2)));
             this.btnPause.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnPause.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.pause3;
-            this.btnPause.Location = new System.Drawing.Point(71, 9);
+            this.btnPause.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.Pause;
+            this.btnPause.Location = new System.Drawing.Point(71, 8);
             this.btnPause.Name = "btnPause";
-            this.btnPause.Size = new System.Drawing.Size(25, 27);
+            this.btnPause.Size = new System.Drawing.Size(25, 25);
             this.btnPause.TabIndex = 1;
             this.btnPause.UseVisualStyleBackColor = true;
             this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
             // 
             // Monitor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(254, 119);
+            this.ClientSize = new System.Drawing.Size(254, 110);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.btnHighlight);
             this.Controls.Add(this.groupBox1);
