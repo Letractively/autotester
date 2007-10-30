@@ -439,7 +439,7 @@ namespace Shrinerain.AutoTester.Function
 
         public virtual void WaitForNextPage()
         {
-
+            WaitDocumentLoadComplete();
         }
 
         public virtual void WaitForPopWindow()
