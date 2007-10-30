@@ -26,7 +26,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region Methods
 
-        private HTMLTestBrowser()
+        public HTMLTestBrowser()
         {
 
         }

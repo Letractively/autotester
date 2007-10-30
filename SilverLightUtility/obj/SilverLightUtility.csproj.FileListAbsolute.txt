@@ -1,0 +1,5 @@
+E:\program\cs\AutoTester\SilverLightUtility\bin\Debug\SilverLightUtility.dll
+E:\program\cs\AutoTester\SilverLightUtility\bin\Debug\SilverLightUtility.pdb
+E:\program\cs\AutoTester\SilverLightUtility\obj\Debug\ResolveAssemblyReference.cache
+E:\program\cs\AutoTester\SilverLightUtility\obj\Debug\SilverLightUtility.dll
+E:\program\cs\AutoTester\SilverLightUtility\obj\Debug\SilverLightUtility.pdb

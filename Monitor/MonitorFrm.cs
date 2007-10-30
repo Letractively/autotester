@@ -8,6 +8,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
+using Shrinerain.AutoTester.Win32;
+
 namespace Shrinerain.AutoTester.GUI
 {
     public partial class Monitor : Form
@@ -73,7 +75,9 @@ namespace Shrinerain.AutoTester.GUI
             }
             else
             {
-                this.actionBox.Text += (m + "\n");
+                m = m.Replace("\t", " ");
+                this.actionBox.AppendText(m + "\n");
+                this.actionBox.Focus();
             }
         }
 

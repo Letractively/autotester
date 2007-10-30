@@ -88,6 +88,13 @@ namespace Shrinerain.AutoTester.GUI.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap run3 {
+            get {
+                object obj = ResourceManager.GetObject("run3", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap start2 {
             get {
                 object obj = ResourceManager.GetObject("start2", resourceCulture);

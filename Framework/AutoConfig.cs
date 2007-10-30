@@ -325,7 +325,12 @@ namespace Shrinerain.AutoTester.Framework
 
             if (String.IsNullOrEmpty(dir))
             {
-                dir = Application.StartupPath;// Environment.CurrentDirectory;// Assembly.GetExecutingAssembly().Location;
+                dir = Application.StartupPath; //Assembly.GetExecutingAssembly().Location; //// Environment.CurrentDirectory;// 
+                if (dir.IndexOf("AutoTester") > 0)
+                {
+                    dir = dir.Substring(0, dir.IndexOf("AutoTester") + 11);
+                }
+
                 dir = Path.GetDirectoryName(dir);
             }
 
