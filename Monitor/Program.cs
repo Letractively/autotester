@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace Shrinerain.AutoTester.Monitor
+namespace Shrinerain.AutoTester.GUI
 {
     static class Program
     {

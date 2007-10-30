@@ -14,8 +14,9 @@ namespace Shrinerain.AutoTester.Interface
         void Refresh();
         void Load(String url);
         void Wait(int seconds);
-        void WaitForNewPage();
+        void WaitForNextPage();
         void WaitForNewWindow();
+        void WaitForPopWindow();
 
         void Move(int x, int y);
         void Resize(int width, int height);
