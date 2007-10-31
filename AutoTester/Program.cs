@@ -68,6 +68,7 @@ namespace Shrinerain.AutoTester
             myTestJob.FrameworkConfigFile = frameworkConfigFile;
 
             myTestJob.StartTesting();
+
         }
 
         static void FunctionTest()
@@ -82,10 +83,14 @@ namespace Shrinerain.AutoTester
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
+            //HTMLTestLink linkObj =(HTMLTestLink)pool.GetObjectByID("link1");
+
+           // linkObj.Click();
+
             //   HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByName("q");
             // obj1.Input("statestreet");
 
-            // HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google ËÑË÷", 0);
+             //HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google ËÑË÷", 0);
             //obj2.Click();
 
             HTMLTestButton btn = (HTMLTestButton)pool.GetObjectByID("btn1");
