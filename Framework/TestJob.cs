@@ -10,6 +10,7 @@ namespace Shrinerain.AutoTester.Framework
 
         #region fields
 
+        //event to deliver message to other program
         public delegate void _newMsgDelegate(string message);
         public event _newMsgDelegate OnNewMsg;
 
@@ -74,9 +75,9 @@ namespace Shrinerain.AutoTester.Framework
             parser.Close();
 
             CoreEngine coreEngine = new CoreEngine();
+            coreEngine.OnNewMessage += new CoreEngine._frameworkInfoDelegate(DeliverNewMsg);
             coreEngine.AutoConfig = autoConfig;
             coreEngine.KeywordParser = parser;
-            coreEngine.OnNewMessage += new CoreEngine._frameworkInfoDelegate(DeliverNewMsg);
             coreEngine.Start();
         }
 

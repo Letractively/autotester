@@ -10,6 +10,8 @@ namespace Shrinerain.AutoTester.Function.Interface
     {
         Point GetCenterPoint();
         Rectangle GetRect();
-        void Hover();
+        Bitmap GetControlPrint();
+
+        void Hover(); //move mouse to the top of control
     }
 }

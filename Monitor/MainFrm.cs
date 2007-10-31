@@ -111,7 +111,7 @@ namespace Shrinerain.AutoTester.GUI
         {
             if (this._projectConfigFile == null)
             {
-                MessageBox.Show("Error: No project config file found.");
+                MessageBox.Show("Error: No project config file found.","AutoTester");
             }
             else
             {
@@ -182,7 +182,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception e)
             {
-                MessageBox.Show("Can not parse config file: " + e.ToString());
+                MessageBox.Show("Error: Can not parse config file: " + e.ToString(), "AutoTester");
             }
 
 

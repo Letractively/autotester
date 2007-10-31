@@ -111,6 +111,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return Rect;
         }
 
+        public virtual Bitmap GetControlPrint()
+        {
+            return null;
+        }
+
         public virtual void Hover()
         {
             try

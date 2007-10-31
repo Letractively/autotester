@@ -18,7 +18,7 @@ namespace Shrinerain.AutoTester.Framework
         #region Fields
 
 
-        //event to pass message to other program.
+        //event to deliver message to other program.
         public delegate void _frameworkInfoDelegate(string message);
         public event _frameworkInfoDelegate OnNewMessage;
 
@@ -172,12 +172,12 @@ namespace Shrinerain.AutoTester.Framework
         {
             string headers =
             "\n----------------------------------------\n"
-            + "UAT Automation Framework v0.6 C# Edition\n"
+            + "UAT Automation Framework v0.7 C# Edition\n"
             + "        Shrinerain@hotmail.com          \n"
             + "----------------------------------------\n\n"
             + "Start to testing...\n"
             + "------------------------------------------------------------------\n"
-            + "  \t\tCommand\tItem\tProperty\tAction\tData\tExpectResult\tActualResult\n";
+            + "Command\tItem\tProperty\tAction\tData\tExpectResult\tActualResult\n";
 
             OnNewMessage(headers);
 
@@ -218,7 +218,6 @@ namespace Shrinerain.AutoTester.Framework
             }
 
             OnNewMessage(currentStep.ToString());
-            //Console.WriteLine("Test Step:\t" + currentStep.ToString());
 
             string command = currentStep._testCommand.ToUpper();
 
@@ -392,6 +391,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             // _index++;
         }
+
         #endregion
 
         #endregion
