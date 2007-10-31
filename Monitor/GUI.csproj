@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shrinerain.AutoTester.GUI</RootNamespace>
     <AssemblyName>AutoTester</AssemblyName>
-    <ApplicationIcon>AutoTester.ico</ApplicationIcon>
+    <ApplicationIcon>AutoTester2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
