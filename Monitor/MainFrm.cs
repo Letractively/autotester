@@ -258,7 +258,15 @@ namespace Shrinerain.AutoTester.GUI
 
         }
 
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            About about = new About();
+            about.Show();
+        }
+
         #endregion
+
+
 
     }
 }

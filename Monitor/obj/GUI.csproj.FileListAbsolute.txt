@@ -18,3 +18,4 @@ E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.GUI.Properties.
 E:\program\cs\AutoTester\Monitor\obj\Debug\GUI.csproj.GenerateResource.Cache
 E:\program\cs\AutoTester\Monitor\obj\Debug\AutoTester.exe
 E:\program\cs\AutoTester\Monitor\obj\Debug\AutoTester.pdb
+E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.GUI.About.resources
