@@ -64,7 +64,7 @@ namespace Shrinerain.AutoTester.Function
 
         #region public methods
 
-        #region property method
+        #region public method
         public virtual object GetPropertyByName(string propertyName)
         {
             if (String.IsNullOrEmpty(propertyName))
@@ -109,6 +109,11 @@ namespace Shrinerain.AutoTester.Function
         public virtual bool IsInteractive()
         {
             return this._isInteractive;
+        }
+
+        public virtual void HightLight()
+        {
+
         }
 
         #endregion
