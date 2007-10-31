@@ -21,6 +21,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected object[] _childeren;
 
         protected HTMLLinkElement _linkElement;
+        protected HTMLAnchorElement _acnchorElement;
 
         #endregion
 
@@ -52,7 +53,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                _linkElement = (HTMLLinkElement)element;
+                _acnchorElement = (HTMLAnchorElement)element;
+                // _linkElement = (HTMLLinkElement)element;
             }
             catch (Exception e)
             {
@@ -61,7 +63,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                _linkText = _linkElement.innerText;
+                _linkText = _acnchorElement.innerText; //_linkElement.innerText;
             }
             catch
             {
@@ -88,7 +90,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                _href = _linkElement.href;
+                _href = _acnchorElement.href; //_linkElement.href;
             }
             catch
             {
