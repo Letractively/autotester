@@ -172,8 +172,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
 
-                int left = this._rect.Left;
-                int top = this._rect.Top;
+                int left = this._rect.Left - HTMLTestBrowser.ClientLeft;
+                int top = this._rect.Top - HTMLTestBrowser.ClientTop;
                 int width = this._rect.Width;
                 int height = this._rect.Height;
 
@@ -188,7 +188,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 Win32API.ReleaseDC(handle, hDC);
 
-                Thread.Sleep(500 * 1); // the red rect last for 0.5 seconds.
+                Thread.Sleep(100 * 1); // the red rect last for 0.1 seconds.
 
                 Win32API.InvalidateRect(handle, IntPtr.Zero, 1 /* TRUE */);
                 Win32API.UpdateWindow(handle);
