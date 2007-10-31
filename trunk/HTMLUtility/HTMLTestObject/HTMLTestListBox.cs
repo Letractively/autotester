@@ -192,7 +192,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 this._selectedValue = this._allValues[index];
 
-                _actionFinished.Set();
             }
             catch (ItemNotFoundException)
             {
@@ -201,6 +200,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception e)
             {
                 throw new CanNotPerformActionException(e.ToString());
+            }
+            finally
+            {
+                _actionFinished.Set();
             }
 
         }

@@ -487,6 +487,8 @@ namespace Shrinerain.AutoTester.Function
 
                         GetSize();
 
+                        break;
+
                         //popStatus._HTMLDom = GetHTMLDomFromHandle(popWindowIEServerHandle);
                         //popStatus._ieServerHandle = popWindowIEServerHandle;
                         //popStatus._mainHandle = popWindowHandle;

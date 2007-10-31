@@ -94,8 +94,8 @@ namespace Shrinerain.AutoTester
 
             myHost.WaitForPopWindow();
 
-            //btn = (HTMLTestButton)pool.GetObjectByID("btn2");
-            //btn.Click();
+            btn = (HTMLTestButton)pool.GetObjectByID("btn2");
+            btn.Click();
 
 
             //  HTMLTestListBox listBox = (HTMLTestListBox)pool.GetObjectByID("ListBox1");
