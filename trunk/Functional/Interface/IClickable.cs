@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Function.Interface
 {
-    public interface IClickable : IVisible, IInteractive
+    public interface IClickable : IInteractive
     {
         void Click();
         void DoubleClick();

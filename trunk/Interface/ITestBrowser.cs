@@ -13,13 +13,14 @@ namespace Shrinerain.AutoTester.Interface
         void Forward();
         void Refresh();
         void Load(String url);
-        void Wait(int seconds);
-        void WaitForNextPage();
-        void WaitForNewWindow();
-        void WaitForPopWindow();
+        void Wait(int seconds);  //wait for seconds, the default is 120s.
+        void WaitForNextPage(); //wait for next page, in the same internet explorer window.
+        void WaitForNewWindow(); // wait for another internet explorer window.
+        void WaitForPopWindow(); // wait for pop up page. in the same internet explorer window.
 
         void Move(int x, int y);
         void Resize(int width, int height);
+        void MaxSize(); //set the internet explorer to max size.
 
     }
 }
