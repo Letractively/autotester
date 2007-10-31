@@ -403,11 +403,12 @@ namespace Shrinerain.AutoTester.GUI
             this.btnClear.TabIndex = 18;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
+            this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
             // 
             // cbHighlight
             // 
             this.cbHighlight.AutoSize = true;
-            this.cbHighlight.Location = new System.Drawing.Point(88, 165);
+            this.cbHighlight.Location = new System.Drawing.Point(88, 166);
             this.cbHighlight.Name = "cbHighlight";
             this.cbHighlight.Size = new System.Drawing.Size(15, 14);
             this.cbHighlight.TabIndex = 17;
@@ -416,7 +417,7 @@ namespace Shrinerain.AutoTester.GUI
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(8, 165);
+            this.label7.Location = new System.Drawing.Point(8, 166);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(65, 12);
             this.label7.TabIndex = 16;
@@ -425,7 +426,7 @@ namespace Shrinerain.AutoTester.GUI
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(326, 140);
+            this.button3.Location = new System.Drawing.Point(326, 141);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(50, 18);
             this.button3.TabIndex = 15;
@@ -436,7 +437,7 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbScreenPrint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbScreenPrint.Location = new System.Drawing.Point(88, 139);
+            this.tbScreenPrint.Location = new System.Drawing.Point(88, 140);
             this.tbScreenPrint.Name = "tbScreenPrint";
             this.tbScreenPrint.Size = new System.Drawing.Size(232, 21);
             this.tbScreenPrint.TabIndex = 14;
@@ -444,7 +445,7 @@ namespace Shrinerain.AutoTester.GUI
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 142);
+            this.label6.Location = new System.Drawing.Point(8, 143);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(83, 12);
             this.label6.TabIndex = 13;
@@ -453,7 +454,7 @@ namespace Shrinerain.AutoTester.GUI
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(326, 114);
+            this.button2.Location = new System.Drawing.Point(326, 115);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(50, 18);
             this.button2.TabIndex = 12;
@@ -464,7 +465,7 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbLogTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbLogTemplate.Location = new System.Drawing.Point(88, 113);
+            this.tbLogTemplate.Location = new System.Drawing.Point(88, 114);
             this.tbLogTemplate.Name = "tbLogTemplate";
             this.tbLogTemplate.Size = new System.Drawing.Size(232, 21);
             this.tbLogTemplate.TabIndex = 11;
@@ -472,7 +473,7 @@ namespace Shrinerain.AutoTester.GUI
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 116);
+            this.label5.Location = new System.Drawing.Point(8, 117);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(83, 12);
             this.label5.TabIndex = 10;
@@ -481,7 +482,7 @@ namespace Shrinerain.AutoTester.GUI
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(326, 88);
+            this.button1.Location = new System.Drawing.Point(326, 89);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(50, 18);
             this.button1.TabIndex = 9;
@@ -492,7 +493,7 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbLogFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbLogFolder.Location = new System.Drawing.Point(88, 87);
+            this.tbLogFolder.Location = new System.Drawing.Point(88, 88);
             this.tbLogFolder.Name = "tbLogFolder";
             this.tbLogFolder.Size = new System.Drawing.Size(232, 21);
             this.tbLogFolder.TabIndex = 8;
@@ -500,7 +501,7 @@ namespace Shrinerain.AutoTester.GUI
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 90);
+            this.label4.Location = new System.Drawing.Point(8, 91);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(71, 12);
             this.label4.TabIndex = 7;
@@ -509,7 +510,7 @@ namespace Shrinerain.AutoTester.GUI
             // btnOpenDriveFile
             // 
             this.btnOpenDriveFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenDriveFile.Location = new System.Drawing.Point(326, 62);
+            this.btnOpenDriveFile.Location = new System.Drawing.Point(326, 63);
             this.btnOpenDriveFile.Name = "btnOpenDriveFile";
             this.btnOpenDriveFile.Size = new System.Drawing.Size(50, 18);
             this.btnOpenDriveFile.TabIndex = 6;
@@ -520,7 +521,7 @@ namespace Shrinerain.AutoTester.GUI
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 64);
+            this.label3.Location = new System.Drawing.Point(8, 65);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(71, 12);
             this.label3.TabIndex = 5;
@@ -531,7 +532,7 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbDriveFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbDriveFile.Location = new System.Drawing.Point(88, 61);
+            this.tbDriveFile.Location = new System.Drawing.Point(88, 62);
             this.tbDriveFile.Name = "tbDriveFile";
             this.tbDriveFile.Size = new System.Drawing.Size(232, 21);
             this.tbDriveFile.TabIndex = 4;
@@ -547,6 +548,7 @@ namespace Shrinerain.AutoTester.GUI
             this.cbProjectDomain.Name = "cbProjectDomain";
             this.cbProjectDomain.Size = new System.Drawing.Size(121, 20);
             this.cbProjectDomain.TabIndex = 3;
+            this.cbProjectDomain.Text = "HTML";
             // 
             // label2
             // 
@@ -630,7 +632,7 @@ namespace Shrinerain.AutoTester.GUI
             this.newToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem1.Image")));
             this.newToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newToolStripMenuItem1.Name = "newToolStripMenuItem1";
-            this.newToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.newToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
             this.newToolStripMenuItem1.Text = "&New Project";
             // 
             // openToolStripMenuItem1
@@ -638,33 +640,33 @@ namespace Shrinerain.AutoTester.GUI
             this.openToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem1.Image")));
             this.openToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripMenuItem1.Name = "openToolStripMenuItem1";
-            this.openToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
             this.openToolStripMenuItem1.Text = "&Open Project";
             this.openToolStripMenuItem1.Click += new System.EventHandler(this.openToolStripMenuItem1_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(139, 6);
             // 
             // saveToolStripMenuItem1
             // 
             this.saveToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem1.Image")));
             this.saveToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveToolStripMenuItem1.Name = "saveToolStripMenuItem1";
-            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
             this.saveToolStripMenuItem1.Text = "&Save";
             // 
             // saveAsToolStripMenuItem1
             // 
             this.saveAsToolStripMenuItem1.Name = "saveAsToolStripMenuItem1";
-            this.saveAsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveAsToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
             this.saveAsToolStripMenuItem1.Text = "Save &As";
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(139, 6);
             // 
             // printToolStripMenuItemRun
             // 
@@ -673,19 +675,19 @@ namespace Shrinerain.AutoTester.GUI
             this.printToolStripMenuItemRun.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.run3;
             this.printToolStripMenuItemRun.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.printToolStripMenuItemRun.Name = "printToolStripMenuItemRun";
-            this.printToolStripMenuItemRun.Size = new System.Drawing.Size(152, 22);
+            this.printToolStripMenuItemRun.Size = new System.Drawing.Size(142, 22);
             this.printToolStripMenuItemRun.Text = "&Run!";
             this.printToolStripMenuItemRun.Click += new System.EventHandler(this.printToolStripMenuItem1_Click);
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(139, 6);
             // 
             // exitToolStripMenuItem1
             // 
             this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
-            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
             this.exitToolStripMenuItem1.Text = "E&xit";
             // 
             // editToolStripMenuItem1
