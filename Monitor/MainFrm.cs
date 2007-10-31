@@ -72,17 +72,39 @@ namespace Shrinerain.AutoTester.GUI
 
         private void MonitorStart()
         {
-
+            try
+            {
+                _testJobThread.Resume();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error: Can not start testing: " + e.Message, "AutoTester");
+            }
         }
 
         private void MonitorStop()
         {
+            try
+            {
+                _testJobThread.Abort();
+            }
+            catch
+            {
+
+            }
 
         }
 
         private void MonitorPause()
         {
-
+            try
+            {
+                _testJobThread.Suspend();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error: Can not pause testing: " + e.Message, "AutoTester");
+            }
         }
 
         private void MonitorHighlight()
@@ -111,7 +133,7 @@ namespace Shrinerain.AutoTester.GUI
         {
             if (this._projectConfigFile == null)
             {
-                MessageBox.Show("Error: No project config file found.","AutoTester");
+                MessageBox.Show("Error: No project config file found.", "AutoTester");
             }
             else
             {

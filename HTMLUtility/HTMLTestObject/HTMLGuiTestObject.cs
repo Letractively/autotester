@@ -23,6 +23,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //sync event to ensure action is finished before next step.
         protected static AutoResetEvent _actionFinished = new AutoResetEvent(true);
 
+
+        //dthread to high light a rect.
+        private static Thread _highLightThread;
+
         #endregion
 
         #region properties
@@ -130,6 +134,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public override void HightLight()
+        {
+            _highLightThread = new Thread(new ThreadStart(HighLightRect));
+            _highLightThread.Start();
+        }
 
         #region gui actions
 
@@ -156,6 +165,40 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this.Rect = GetRect();
             }
 
+        }
+
+        protected void HighLightRect()
+        {
+            try
+            {
+
+                int left = this._rect.Left;
+                int top = this._rect.Top;
+                int width = this._rect.Width;
+                int height = this._rect.Height;
+
+                IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
+                IntPtr hDC = Win32API.GetWindowDC(handle);
+                using (Pen pen = new Pen(Color.Red, 2))
+                {
+                    using (Graphics g = Graphics.FromHdc(hDC))
+                    {
+                        g.DrawRectangle(pen, left, top, width, height);
+                    }
+                }
+                Win32API.ReleaseDC(handle, hDC);
+
+                Thread.Sleep(500 * 1); // the red rect last for 0.5 seconds.
+
+                Win32API.InvalidateRect(handle, IntPtr.Zero, 1 /* TRUE */);
+                Win32API.UpdateWindow(handle);
+                Win32API.RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, Win32API.RDW_FRAME | Win32API.RDW_INVALIDATE | Win32API.RDW_UPDATENOW | Win32API.RDW_ALLCHILDREN);
+
+            }
+            catch
+            {
+                throw new CanNotHighlightObjectException();
+            }
         }
 
         #endregion

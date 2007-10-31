@@ -39,6 +39,7 @@ namespace Shrinerain.AutoTester.Framework
 
         //flag for start or not. If false, will not perform any action.
         private bool _started = false;
+        private bool _isHighligh = false;
 
         //currently used test steps list. 
         private int _index = 0;  //actually, the line number start from 2 in the excel file.
@@ -75,6 +76,12 @@ namespace Shrinerain.AutoTester.Framework
                     _parser = value;
                 }
             }
+        }
+
+        public bool IsHighligh
+        {
+            get { return _isHighligh; }
+            set { _isHighligh = value; }
         }
 
         #endregion
@@ -202,6 +209,9 @@ namespace Shrinerain.AutoTester.Framework
                 this._logEngine = new LogEngine();
                 this._exEngine = new ExceptionEngine();
                 // this._dataEngine = new DataEngine();
+
+                this._isHighligh = this._autoConfig.IsHighlight;
+
             }
             catch
             {
@@ -316,6 +326,11 @@ namespace Shrinerain.AutoTester.Framework
             {
                 TestObject obj = _objEngine.GetTestObject(step);
 
+                if (this._isHighligh)
+                {
+                    obj.HightLight();
+                }
+
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
             }
 
@@ -391,6 +406,8 @@ namespace Shrinerain.AutoTester.Framework
         {
             // _index++;
         }
+
+
 
         #endregion
 
