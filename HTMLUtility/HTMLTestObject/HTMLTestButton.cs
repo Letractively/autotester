@@ -54,11 +54,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Hover();
                 MouseOp.Click();
 
-                _actionFinished.Set();
             }
             catch
             {
                 throw new CanNotPerformActionException("Can not perform click action.");
+            }
+            finally
+            {
+                _actionFinished.Set();
             }
         }
 
@@ -70,12 +73,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 Hover();
                 MouseOp.DoubleClick();
-
-                _actionFinished.Set();
             }
             catch
             {
                 throw new CanNotPerformActionException("Can not perform double click action.");
+            }
+            finally
+            {
+                _actionFinished.Set();
             }
         }
 
@@ -87,12 +92,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 Hover();
                 MouseOp.RightClick();
-
-                _actionFinished.Set();
             }
             catch
             {
                 throw new CanNotPerformActionException("Can not perform right click action.");
+            }
+            finally
+            {
+                _actionFinished.Set();
             }
         }
 

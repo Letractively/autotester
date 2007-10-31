@@ -464,9 +464,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.ListBox:
                     tmp = new HTMLTestListBox(element);
                     break;
-                //case HTMLTestObjectType.Link:
-                //    tmp = new HTMLTestLink(element);
-                //    break;
+                case HTMLTestObjectType.Link:
+                    tmp = new HTMLTestLink(element);
+                    break;
+                case HTMLTestObjectType.ComboBox:
+                    tmp = new HTMLTestComboBox(element);
+                    break;
                 default:
                     tmp = null;
                     break;
