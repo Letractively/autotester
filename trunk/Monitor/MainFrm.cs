@@ -115,19 +115,14 @@ namespace Shrinerain.AutoTester.GUI
 
         #endregion
 
-        private void btnOpenDriveFile_Click(object sender, EventArgs e)
-        {
 
-        }
+
+        #region private helper
 
         private void MainFrm_Load(object sender, EventArgs e)
         {
 
         }
-
-
-
-        #region private helper
 
         private void RunFramework()
         {
@@ -149,19 +144,6 @@ namespace Shrinerain.AutoTester.GUI
             job.FrameworkConfigFile = this._projectConfigFile;
             job.OnNewMsg += new TestJob._newMsgDelegate(_monitor.AddLog);
             job.StartTesting();
-        }
-
-        private void OnSelectIndexChanged(object sender, EventArgs e)
-        {
-            int index = this.tabProject.SelectedIndex;
-            if (index == 0) //if the first tab, then resize it to the origin size. .
-            {
-                SetWindowSize(400, 300);
-            }
-            else if (index == 1)
-            {
-
-            }
         }
 
         private void SetWindowSize(int width, int height)
@@ -191,7 +173,15 @@ namespace Shrinerain.AutoTester.GUI
                 this.tbDriveFile.Text = cfg.ProjectDriveFile;
                 this.tbLogFolder.Text = cfg.LogDir;
                 this.tbLogTemplate.Text = cfg.LogTemplate;
-                this.cbProjectDomain.SelectedText = cfg.ProjectDomain.ToUpper();
+                for (int i = 0; i < this.cbProjectDomain.Items.Count; i++)
+                {
+                    if (this.cbProjectDomain.Items[i].ToString().ToUpper() == cfg.ProjectDomain.ToUpper())
+                    {
+                        this.cbProjectDomain.SelectedIndex = i;
+                        break;
+                    }
+                }
+
                 if (cfg.IsHighlight)
                 {
                     this.cbHighlight.Checked = true;
@@ -207,12 +197,24 @@ namespace Shrinerain.AutoTester.GUI
                 MessageBox.Show("Error: Can not parse config file: " + e.ToString(), "AutoTester");
             }
 
+        }
 
-
-
+        private void ClearProjectSettings()
+        {
+            this.tbProjectName.Text = "";
+            this.tbScreenPrint.Text = "";
+            this.tbDriveFile.Text = "";
+            this.tbLogFolder.Text = "";
+            this.tbLogTemplate.Text = "";
+            this.cbProjectDomain.SelectedIndex = 0;
+            this.cbHighlight.Checked = false;
         }
 
         #endregion
+
+
+
+        #region action methods
 
         private void openToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -229,6 +231,34 @@ namespace Shrinerain.AutoTester.GUI
         {
             RunFramework();
         }
+
+        private void btnClear_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Warning: Clear Project settings?", "AutoTester", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                ClearProjectSettings();
+            }
+        }
+
+        private void OnSelectIndexChanged(object sender, EventArgs e)
+        {
+            int index = this.tabProject.SelectedIndex;
+            if (index == 0) //if the first tab, then resize it to the origin size. .
+            {
+                SetWindowSize(400, 300);
+            }
+            else if (index == 1)
+            {
+
+            }
+        }
+
+        private void btnOpenDriveFile_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        #endregion
 
     }
 }
