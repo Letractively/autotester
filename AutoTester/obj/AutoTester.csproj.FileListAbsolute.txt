@@ -58,3 +58,9 @@ E:\program\cs\AutoTester\AutoTester\bin\Debug\HTMLUtility.pdb
 E:\program\cs\AutoTester\AutoTester\bin\Debug\Functional.pdb
 E:\program\cs\AutoTester\AutoTester\bin\Debug\Win32API.pdb
 E:\program\cs\AutoTester\AutoTester\obj\Debug\ResolveAssemblyReference.cache
+E:\program\cs\AutoTester\AutoTester\bin\Release\Framework.dll
+E:\program\cs\AutoTester\AutoTester\bin\Release\Functional.dll
+E:\program\cs\AutoTester\AutoTester\bin\Release\DataUtility.dll
+E:\program\cs\AutoTester\AutoTester\bin\Release\DataUtility.pdb
+E:\program\cs\AutoTester\AutoTester\bin\Release\Framework.pdb
+E:\program\cs\AutoTester\AutoTester\bin\Release\Functional.pdb

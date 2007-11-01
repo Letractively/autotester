@@ -56,3 +56,5 @@ E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Functional.pdb
 E:\program\cs\AutoTester\HTMLUtility\bin\Debug\Win32API.pdb
 E:\program\cs\AutoTester\HTMLUtility\obj\Debug\HTMLUtility.dll
 E:\program\cs\AutoTester\HTMLUtility\obj\Debug\HTMLUtility.pdb
+E:\program\cs\AutoTester\HTMLUtility\bin\Release\Functional.dll
+E:\program\cs\AutoTester\HTMLUtility\bin\Release\Functional.pdb

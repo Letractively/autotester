@@ -1,7 +1,5 @@
 E:\program\cs\AutoTester\Interface\bin\Release\Interface.dll
 E:\program\cs\AutoTester\Interface\bin\Release\Interface.pdb
-E:\program\cs\AutoTester\Interface\bin\Release\Win32API.dll
-E:\program\cs\AutoTester\Interface\bin\Release\Win32API.pdb
 E:\program\cs\AutoTester\Interface\obj\Release\ResolveAssemblyReference.cache
 E:\program\cs\AutoTester\Interface\obj\Release\Interface.dll
 E:\program\cs\AutoTester\Interface\obj\Release\Interface.pdb

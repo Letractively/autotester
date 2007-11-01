@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Shrinerain.AutoTester.GUI</RootNamespace>
-    <AssemblyName>AutoTester</AssemblyName>
+    <AssemblyName>AutoTesterGUI</AssemblyName>
     <ApplicationIcon>AutoTester2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -92,6 +92,7 @@
   <ItemGroup>
     <Content Include="AutoTester.ico" />
     <Content Include="AutoTester2.ico" />
+    <None Include="app.config" />
     <None Include="Resources\run3.png" />
     <None Include="Resources\stop2.png" />
     <None Include="Resources\copy.png" />
