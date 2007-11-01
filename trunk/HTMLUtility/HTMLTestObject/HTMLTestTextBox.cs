@@ -66,14 +66,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Focus();
                 KeyboardOp.SendChars(value);
 
+                _actionFinished.Set();
+
             }
             catch
             {
                 throw new CanNotPerformActionException("Can not perform Input action");
-            }
-            finally
-            {
-                _actionFinished.Set();
             }
         }
 

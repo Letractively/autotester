@@ -112,14 +112,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Hover();
                 MouseOp.Click();
 
+                _actionFinished.Set();
+
             }
             catch
             {
                 throw new CanNotPerformActionException("Can not perform click action of link.");
-            }
-            finally
-            {
-                _actionFinished.Set();
             }
         }
 

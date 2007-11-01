@@ -386,6 +386,9 @@ namespace Shrinerain.AutoTester.Framework
                 }
 
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
+
+                //sleep for 0.5 second, or it will too fast.
+                Thread.Sleep(500 * 1);
             }
 
 

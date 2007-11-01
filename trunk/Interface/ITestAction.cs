@@ -25,6 +25,7 @@ namespace Shrinerain.AutoTester.Interface
         //Input actions
         void Input(Object obj, String chars);
         void InputKeys(Object obj, String keys);
+        void Clear(Object obj);
 
         //Select actions
         void Select(Object obj, String value);
@@ -58,7 +59,6 @@ namespace Shrinerain.AutoTester.Interface
         void Hover(Object obj);
         void Drag(Object obj, int endX, int endY);
         void SelectText(Object obj, String text);
-        void ClearText(Object obj);
         void MouseRoll(Object obj, int steps);
 
     }

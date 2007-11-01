@@ -86,6 +86,10 @@ namespace Shrinerain.AutoTester.Framework
             {
                 _testAction.UnCheck(obj);
             }
+            else if (action == "CLEAR")
+            {
+                _testAction.Clear(obj);
+            }
             else
             {
                 throw new CanNotPerformActionException("Unsupported action.");
