@@ -82,6 +82,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        public virtual void Clear()
+        {
+            try
+            {
+                this._sourceElement.setAttribute("value", "", 0);
+            }
+            catch
+            {
+                throw new CanNotPerformActionException("Can not perform clear action.");
+            }
+        }
+
         public virtual void Focus()
         {
             try

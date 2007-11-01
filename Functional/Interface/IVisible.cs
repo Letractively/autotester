@@ -9,7 +9,7 @@ namespace Shrinerain.AutoTester.Function.Interface
     public interface IVisible
     {
         Point GetCenterPoint();
-        Rectangle GetRect();
+        Rectangle GetRectOnScreen();
         Bitmap GetControlPrint();
 
         void Hover(); //move mouse to the top of control
