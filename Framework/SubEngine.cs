@@ -20,8 +20,9 @@ namespace Shrinerain.AutoTester.Framework
         private List<TestSub> _allTestSubs;
 
 
-        private Regex _dataPoolReg = new Regex(@"^{(\w\.)?value\d+}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private Regex _dataPoolReg = new Regex(@"^{(\w+\.)?value\d+}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private Regex _numberReg = new Regex(@"\d+", RegexOptions.Compiled);
+        private Regex _valueIndexReg = new Regex(@"\d+}$", RegexOptions.Compiled);
 
         #endregion
 
@@ -267,29 +268,51 @@ namespace Shrinerain.AutoTester.Framework
                 throw new CanNotLoadSubException("Can not load data pool by name:" + dataPoolName);
             }
 
+            List<TestStep> stepsWithData = new List<TestStep>(originSteps.Count * 2);
             List<string[]> datas = dataPool._data;
 
             foreach (string[] sArr in datas)
             {
-                foreach (TestStep t in originSteps)
+                for (int i = 0; i < originSteps.Count; i++)
                 {
-                    TestStep newStep = InsertDataToSingleTestStep(t, sArr);
-
-                    originSteps.Remove(t);
-                    originSteps.Add(newStep);
+                    TestStep newStep = InsertDataToSingleTestStep(originSteps[i], sArr);
+                    stepsWithData.Add(newStep);
                 }
             }
 
-            originSteps.Reverse();
-
-            return originSteps; ;
+            return stepsWithData;
         }
 
 
         private TestStep InsertDataToSingleTestStep(TestStep testStep, string[] data)
         {
+            int index = 0; //index of data value, eg: value1, value2
 
-            return new TestStep();
+            for (int i = 0; i < testStep.Size; i++)
+            {
+                if (GetDataIndex(testStep[i], out index))
+                {
+                    testStep[i] = data[index];
+                }
+            }
+
+            return testStep;
+        }
+
+        private bool GetDataIndex(string value, out int index)
+        {
+            index = -1;
+            if (_valueIndexReg.IsMatch(value))
+            {
+                string indexStr = _valueIndexReg.Match(value).Value;
+
+                //in drive file, the index start at 1. eg: value1, so we need to minus 1, make it start at 0
+                index = int.Parse(indexStr.Replace("}", "")) - 1;
+
+                return true;
+            }
+
+            return false;
         }
 
         #endregion

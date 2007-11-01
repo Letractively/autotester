@@ -17,16 +17,16 @@ namespace Shrinerain.AutoTester
         static void Main(string[] args)
         {
             // FrameworkEXE(args);
-            FunctionTest();
-            //   FrameworkTest();
+            //FunctionTest();
+               FrameworkTest();
             Console.ReadLine();
         }
 
 
         static void FrameworkTest()
         {
-            string projectConfigFile = @"E:\Program\CS\ShrinerainTools\AutoTester\Framework\DriveFile\baidu.xml";
-            string frameworkConfigFile = @"E:\Program\CS\ShrinerainTools\AutoTester\Framework\Framework.config";
+            string projectConfigFile = @"E:\Program\CS\AutoTester\Framework\DriveFile\baidu.xml";
+            string frameworkConfigFile = @"E:\Program\CS\AutoTester\Framework\Framework.config";
 
             TestJob myTestJob = new TestJob();
             myTestJob.ProjectConfigFile = projectConfigFile;
