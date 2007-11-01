@@ -424,11 +424,16 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
-        public virtual void Wait(int data)
+        public virtual void Wait(int seconds)
         {
-            if (data > 0)
+            if (seconds < 0)
             {
-                Thread.Sleep(data * 1000);
+                seconds = int.MaxValue;
+            }
+
+            if (seconds > 0)
+            {
+                Thread.Sleep(seconds * 1000);
             }
         }
 

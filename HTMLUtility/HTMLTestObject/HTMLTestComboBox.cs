@@ -160,8 +160,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 MouseOp.Click(itemPosition.X, itemPosition.Y);
 
                 this._selectedValue = _allValues[index];
-
-                _actionFinished.Set();
             }
             catch (ItemNotFoundException)
             {
@@ -171,7 +169,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CanNotPerformActionException(e.ToString());
             }
-
+            finally
+            {
+                _actionFinished.Set();
+            }
 
         }
 
@@ -312,6 +313,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int y = this.Rect.Top + height / 2;
 
             MouseOp.Click(x, y);
+        }
+
+        protected override void HighLightRect()
+        {
+            base.HighLightRect(true);
         }
 
         #endregion

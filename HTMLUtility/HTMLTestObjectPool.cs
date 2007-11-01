@@ -164,32 +164,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _tmpElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
                 int len = _tmpElementCol.length;
 
-                if (len < 1)
-                {
-                    continue;
-                }
-
-                string property = GetPropertyByTag(typeValue, tag);
-
-                if (String.IsNullOrEmpty(property))
-                {
-                    continue;
-                }
-
                 for (int i = 0; i < len; i++)
                 {
                     nameObj = (object)i;
                     indexObj = (object)i;
 
                     _tmpElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
+
+
                     try
                     {
-                        string propertyValue = _tmpElement.getAttribute(property, 0).ToString();
-                        if (String.IsNullOrEmpty(propertyValue))
+                        // check if it is a interactive object.
+                        if (!IsInteractive(_tmpElement))
                         {
                             continue;
                         }
-                        if (propertyValue.ToUpper() == values.ToUpper())
+
+                    }
+                    catch
+                    {
+
+                    }
+
+                    try
+                    {
+
+                        if (CheckObjectByType(_tmpElement, typeValue, values))
                         {
                             _testObj = BuildObjectByType(_tmpElement);
                             leftIndex--;
@@ -306,7 +306,66 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
 
         #region private methods
-        private static string GetPropertyByTag(HTMLTestObjectType type, string tag)
+
+        private static bool CheckObjectByType(IHTMLElement element, HTMLTestObjectType type, string value)
+        {
+            string tag = element.tagName.ToString();
+            string property = GetVisibleTextPropertyByTag(type, tag);
+
+            if (String.IsNullOrEmpty(property))
+            {
+                return false;
+            }
+
+            if (type == HTMLTestObjectType.ListBox || type == HTMLTestObjectType.ComboBox)
+            {
+                return CheckSelectObject(element, value);
+            }
+
+            string propertyValue = element.getAttribute(property, 0).ToString();
+            if (String.IsNullOrEmpty(propertyValue))
+            {
+                return false;
+            }
+            if (propertyValue.ToUpper() == value.ToUpper())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool CheckSelectObject(IHTMLElement element, string value)
+        {
+            bool result = false;
+
+            try
+            {
+                string items = element.getAttribute("innerHTML", 0).ToString().ToUpper();
+
+                //get the position of ">"
+                int pos1 = items.IndexOf(">");
+
+                //get the position of "<" 
+                int pos2 = items.IndexOf("<", pos1);
+
+                // then we can get the first item of select object.
+                string firstItem = items.Substring(pos1 + 1, pos2 - pos1 - 1);
+
+                if (firstItem == value.ToUpper())
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+
+            }
+
+            return result;
+        }
+
+        private static string GetVisibleTextPropertyByTag(HTMLTestObjectType type, string tag)
         {
             string property = null;
 
@@ -334,9 +393,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 property = "innerText";
             }
-            else if (tagValue == "xxx")
+            else if (tagValue == "SELECT")
             {
-                property = "";
+                property = "innerHTML";
+            }
+            else if (tagValue == "A")
+            {
+                property = "innerText";
             }
 
             return property;
@@ -352,6 +415,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else if (tag == "BR" || tag == "TR" || tag == "P" || tag == "TH")
             {
                 return false;
+            }
+
+            if (tag == "INPUT")
+            {
+                if (element.getAttribute("type", 0).ToString().ToUpper() == "HIDDEN")
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
 
             string isEnable = element.getAttribute("enable", 0).ToString();
@@ -383,6 +458,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return true;
         }
 
+        // convert the type text to html type enum. eg: button to HTMLTestObjectType.Button
         private static HTMLTestObjectType GetTypeByString(string type)
         {
             if (String.IsNullOrEmpty(type))
