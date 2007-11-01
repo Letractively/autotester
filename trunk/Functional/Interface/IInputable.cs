@@ -8,5 +8,6 @@ namespace Shrinerain.AutoTester.Function.Interface
     {
         void Input(string values);
         void InputKeys(string keys);
+        void Clear(); //clear text.
     }
 }

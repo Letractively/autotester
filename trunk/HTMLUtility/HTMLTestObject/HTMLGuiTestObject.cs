@@ -52,7 +52,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLGuiTestObject(IHTMLElement element)
             : base(element)
         {
-            this.GetRect();
+            this.GetRectOnScreen();
         }
 
         ~HTMLGuiTestObject()
@@ -89,7 +89,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
 
         //get the object rect
-        public virtual Rectangle GetRect()
+        public virtual Rectangle GetRectOnScreen()
         {
 
             int top = _sourceElement.offsetTop;
@@ -162,7 +162,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (right > currentWidth || buttom > currentHeight)
             {
                 this._sourceElement.scrollIntoView(toTop);
-                this.Rect = GetRect();
+                this.Rect = GetRectOnScreen();
             }
 
         }
