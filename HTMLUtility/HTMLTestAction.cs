@@ -112,6 +112,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
+        public void Clear(object obj)
+        {
+            _inputObj = (IInputable)obj;
+            _inputObj.Clear();
+        }
         #endregion
 
         #region list action
