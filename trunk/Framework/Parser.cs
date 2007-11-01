@@ -36,28 +36,13 @@ namespace Shrinerain.AutoTester.Framework
 
             if (String.IsNullOrEmpty(_strBuf))
             {
-                StringBuilder tmp = new StringBuilder();
-
-                tmp.Append(_testCommand);
-                tmp.Append("\t");
-                tmp.Append(_testItem);
-                tmp.Append("\t");
-                tmp.Append(_testProperty);
-                tmp.Append("\t");
-                tmp.Append(_testAction);
-                tmp.Append("\t");
-                tmp.Append(_testData);
-                tmp.Append("\t");
-                tmp.Append(_testVPProperty);
-                tmp.Append("\t");
-                tmp.Append(_testExpectResult);
-
-                _strBuf = tmp.ToString();
+                UpdateBuffer();
             }
 
             return _strBuf;
 
         }
+
 
         public string this[int index]
         {
@@ -72,6 +57,60 @@ namespace Shrinerain.AutoTester.Framework
                     return "";
                 }
             }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        _testCommand = value;
+                        break;
+                    case 1:
+                        _testItem = value;
+                        break;
+                    case 2:
+                        _testProperty = value;
+                        break;
+                    case 3:
+                        _testAction = value;
+                        break;
+                    case 4:
+                        _testData = value;
+                        break;
+                    case 5:
+                        _testVPProperty = value;
+                        break;
+                    case 6:
+                        _testExpectResult = value;
+                        break;
+                    default:
+                        break;
+                }
+
+                UpdateBuffer();
+
+            }
+
+        }
+
+        private void UpdateBuffer()
+        {
+            StringBuilder tmp = new StringBuilder();
+
+            tmp.Append(_testCommand);
+            tmp.Append("\t");
+            tmp.Append(_testItem);
+            tmp.Append("\t");
+            tmp.Append(_testProperty);
+            tmp.Append("\t");
+            tmp.Append(_testAction);
+            tmp.Append("\t");
+            tmp.Append(_testData);
+            tmp.Append("\t");
+            tmp.Append(_testVPProperty);
+            tmp.Append("\t");
+            tmp.Append(_testExpectResult);
+
+            _strBuf = tmp.ToString();
         }
 
     };

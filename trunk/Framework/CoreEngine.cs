@@ -177,6 +177,7 @@ namespace Shrinerain.AutoTester.Framework
 
         private void WriteMsgToConsole(string message)
         {
+            message = message.TrimEnd();
             Console.WriteLine(message);
         }
 

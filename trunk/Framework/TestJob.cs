@@ -92,7 +92,11 @@ namespace Shrinerain.AutoTester.Framework
 
         private void DeliverNewMsg(string message)
         {
-            OnNewMsg(message);
+            if (OnNewMsg != null)
+            {
+                OnNewMsg(message);
+            }
+
         }
 
 
