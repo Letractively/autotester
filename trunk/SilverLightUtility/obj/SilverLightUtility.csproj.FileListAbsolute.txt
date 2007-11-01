@@ -3,3 +3,8 @@ E:\program\cs\AutoTester\SilverLightUtility\bin\Debug\SilverLightUtility.pdb
 E:\program\cs\AutoTester\SilverLightUtility\obj\Debug\ResolveAssemblyReference.cache
 E:\program\cs\AutoTester\SilverLightUtility\obj\Debug\SilverLightUtility.dll
 E:\program\cs\AutoTester\SilverLightUtility\obj\Debug\SilverLightUtility.pdb
+E:\program\cs\AutoTester\SilverLightUtility\bin\Release\SilverLightUtility.dll
+E:\program\cs\AutoTester\SilverLightUtility\bin\Release\SilverLightUtility.pdb
+E:\program\cs\AutoTester\SilverLightUtility\obj\Release\ResolveAssemblyReference.cache
+E:\program\cs\AutoTester\SilverLightUtility\obj\Release\SilverLightUtility.dll
+E:\program\cs\AutoTester\SilverLightUtility\obj\Release\SilverLightUtility.pdb
