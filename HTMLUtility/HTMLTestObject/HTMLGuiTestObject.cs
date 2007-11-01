@@ -25,7 +25,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
 
         //dthread to high light a rect.
-       // private static Thread _highLightThread;
+        // private static Thread _highLightThread;
 
         #endregion
 
@@ -221,14 +221,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Win32API.UpdateWindow(handle);
                 Win32API.RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, Win32API.RDW_FRAME | Win32API.RDW_INVALIDATE | Win32API.RDW_UPDATENOW | Win32API.RDW_ALLCHILDREN);
 
+                _actionFinished.Set();
             }
             catch
             {
                 throw new CanNotHighlightObjectException();
-            }
-            finally
-            {
-                _actionFinished.Set();
             }
         }
 
