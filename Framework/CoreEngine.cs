@@ -339,7 +339,21 @@ namespace Shrinerain.AutoTester.Framework
 
         private void PerformVP(TestStep step)
         {
+            try
+            {
+                TestObject obj = _objEngine.GetTestObject(step);
 
+                if (this._isHighligh)
+                {
+                    obj.HightLight();
+                }
+
+                //_vpEngine.
+            }
+            catch
+            {
+                throw new VerifyPointException("Can not perform VP:" + step.ToString());
+            }
         }
 
         private void PerformCall(TestStep step)

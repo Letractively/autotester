@@ -8,24 +8,41 @@ namespace Shrinerain.AutoTester.Interface
 {
     public interface ITestVP
     {
-        bool PerformStringTest(String expectResutl, String actualResult);
+        bool PerformStringTest(Object testObj, String vpProperty, String expectResult, VPCheckType type);
 
-        bool PerformRegexTest(String expectRegex, String actualResult);
+        bool PerformRegexTest(Object testObj, String vpProperty, String expectReg, VPCheckType type);
 
-        bool PerformImageTest(String expectImg, String actualImg);
+        bool PerformImageTest(Object testObj, String expectImgPath, VPCheckType type);
 
-        bool PerformDataTableTest(Object expectTable, Object actualTable);
+        bool PerformDataTableTest(Object testObj, Object expectedDataTable, VPCheckType type);
 
-        bool PerformListBoxTest(Object expectListBox, Object actualList);
+        bool PerformListBoxTest(Object testObj, Object expectedListBox, VPCheckType type);
 
-        bool PerformComboBoxTest(Object expectComboBox, Object actualComboBox);
+        bool PerformComboBoxTest(Object testObj, Object expectedComboBox, VPCheckType type);
 
-        bool PerformTreeTest(Object expectTree, Object actualTree);
+        bool PerformTreeTest(Object testObj, Object expectedTree, VPCheckType type);
 
-        bool PerformPropertyTest(Object obj, String property, Object expectResult);
+        bool PerformPropertyTest(Object testObj, String vpProperty, Object expectResult, VPCheckType type);
 
-        bool PerformFileTest(String expectFile, String actualFile);
+        bool PerformFileTest(Object testObj, String expectedFile, VPCheckType type);
 
-        bool PerformNetworkTest(object network, object expectResult);
+        bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type);
+    }
+
+    public enum VPCheckType
+    {
+        Small,
+        SmallOrEqual,
+        Equal,
+        Larger,
+        LargerOrEqual,
+        Contain,
+        Exclude,
+        Cross,
+        Existed,
+        Text,
+        Binary,
+        Connected,
+        Disconnected
     }
 }
