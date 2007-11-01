@@ -172,7 +172,7 @@ namespace Shrinerain.AutoTester.Framework
 
         private void WriteMsgToConsole(string message)
         {
-            Console.Write(message);
+            Console.WriteLine(message);
         }
 
         private void PrintHeaders()
@@ -318,9 +318,53 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 else if (action == "WAIT")
                 {
+                    string data = step._testData.ToUpper().Replace(" ", "");
 
+                    int seconds;
+                    if (int.TryParse(data, out seconds))
+                    {
+                        _browser.Wait(seconds);
+                    }
+                    else
+                    {
+                        if (data == "NEXTPAGE")
+                        {
+                            _browser.WaitForNextPage();
+                        }
+                        else if (data == "POPWINDOW")
+                        {
+                            _browser.WaitForPopWindow();
+                        }
+                        else if (data == "NEWWINDOW")
+                        {
+                            _browser.WaitForNewWindow();
+                        }
+                    }
                 }
-
+                else if (action == "MAXSIZE")
+                {
+                    _browser.MaxSize();
+                }
+                else if (action == "CLOSE")
+                {
+                    _browser.Close();
+                }
+                else if (action == "REFRESH")
+                {
+                    _browser.Refresh();
+                }
+                else if (action == "FORWARD")
+                {
+                    _browser.Forward();
+                }
+                else if (action == "BACK")
+                {
+                    _browser.Back();
+                }
+                else
+                {
+                    throw new CanNotPerformActionException("Unsupported action: " + step._testAction);
+                }
             }
             else
             {
@@ -343,12 +387,20 @@ namespace Shrinerain.AutoTester.Framework
             {
                 TestObject obj = _objEngine.GetTestObject(step);
 
-                if (this._isHighligh)
-                {
+                //if (this._isHighligh)
+                //{
                     obj.HightLight();
+               // }
+
+                if (_vpEngine.PerformVPCheck(obj, step._testAction, step._testVPProperty, step._testExpectResult))
+                {
+                    OnNewMessage("*** Pass: " + step.ToString());
+                }
+                else
+                {
+                    OnNewMessage("*** Failed: " + step.ToString());
                 }
 
-                //_vpEngine.
             }
             catch
             {

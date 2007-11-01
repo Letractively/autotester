@@ -390,6 +390,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        protected override void HighLightRect()
+        {
+            base.HighLightRect(true);
+        }
+
         #endregion
 
         #endregion

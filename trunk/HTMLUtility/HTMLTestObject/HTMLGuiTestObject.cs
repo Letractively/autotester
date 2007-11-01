@@ -151,7 +151,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region private methods
 
         // if the object is out of page view, scroll it to make it visible.
-        protected void ScrollIntoView(bool toTop)
+        protected virtual void ScrollIntoView(bool toTop)
         {
             int right = this._rect.X + this._rect.Width;
             int buttom = this._rect.Y + this._rect.Height;
@@ -167,15 +167,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        protected void HighLightRect()
+        protected virtual void HighLightRect()
+        {
+            HighLightRect(false);
+        }
+
+        protected virtual void HighLightRect(bool isWindowsControl)
         {
             try
             {
-
-                int left = this._rect.Left - HTMLTestBrowser.ClientLeft;
-                int top = this._rect.Top - HTMLTestBrowser.ClientTop;
+                int left = this._rect.Left;
+                int top = this._rect.Top;
                 int width = this._rect.Width;
                 int height = this._rect.Height;
+
+                //if the control is not a windows standard control,we need to minus the browser top and left.
+                if (!isWindowsControl)
+                {
+                    left -= HTMLTestBrowser.ClientLeft;
+                    top -= HTMLTestBrowser.ClientTop;
+                }
+
 
                 IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
                 IntPtr hDC = Win32API.GetWindowDC(handle);

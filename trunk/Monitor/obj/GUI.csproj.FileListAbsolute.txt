@@ -1,5 +1,3 @@
-E:\program\cs\AutoTester\Monitor\bin\Debug\AutoTester.exe
-E:\program\cs\AutoTester\Monitor\bin\Debug\AutoTester.pdb
 E:\program\cs\AutoTester\Monitor\bin\Debug\Framework.dll
 E:\program\cs\AutoTester\Monitor\bin\Debug\Win32API.dll
 E:\program\cs\AutoTester\Monitor\bin\Debug\DataUtility.dll
@@ -16,8 +14,6 @@ E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.GUI.Monitor.res
 E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.GUI.MainFrm.resources
 E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.GUI.Properties.Resources.resources
 E:\program\cs\AutoTester\Monitor\obj\Debug\GUI.csproj.GenerateResource.Cache
-E:\program\cs\AutoTester\Monitor\obj\Debug\AutoTester.exe
-E:\program\cs\AutoTester\Monitor\obj\Debug\AutoTester.pdb
 E:\program\cs\AutoTester\Monitor\obj\Debug\Shrinerain.AutoTester.GUI.About.resources
 E:\program\cs\AutoTester\Monitor\obj\Release\ResolveAssemblyReference.cache
 E:\program\cs\AutoTester\Monitor\obj\Release\Shrinerain.AutoTester.GUI.About.resources
@@ -41,3 +37,8 @@ E:\program\cs\AutoTester\Monitor\bin\Release\Interface.pdb
 E:\program\cs\AutoTester\Monitor\obj\Release\AutoTesterGUI.exe
 E:\program\cs\AutoTester\Monitor\obj\Release\AutoTesterGUI.pdb
 E:\program\cs\AutoTester\Monitor\bin\Release\AutoTesterGUI.exe.config
+E:\program\cs\AutoTester\Monitor\bin\Debug\AutoTesterGUI.exe.config
+E:\program\cs\AutoTester\Monitor\bin\Debug\AutoTesterGUI.exe
+E:\program\cs\AutoTester\Monitor\bin\Debug\AutoTesterGUI.pdb
+E:\program\cs\AutoTester\Monitor\obj\Debug\AutoTesterGUI.exe
+E:\program\cs\AutoTester\Monitor\obj\Debug\AutoTesterGUI.pdb

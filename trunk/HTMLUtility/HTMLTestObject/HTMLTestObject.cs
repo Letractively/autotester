@@ -193,6 +193,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                propertyName = propertyName.Replace(".", "");
                 return this._sourceElement.getAttribute(propertyName, 0);
             }
             catch
@@ -204,6 +205,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                propertyName = propertyName.Replace(".", "");
                 this._sourceElement.setAttribute(propertyName, value, 0);
                 return true;
             }
