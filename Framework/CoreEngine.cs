@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+
 using Shrinerain.AutoTester.Function;
 using Shrinerain.AutoTester.Interface;
 
@@ -149,7 +151,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 catch (Exception e)
                 {
-                    OnNewMessage(e.Message);
+                    OnNewMessage(e.ToString());
                     break;
                 }
             }
@@ -163,6 +165,9 @@ namespace Shrinerain.AutoTester.Framework
             + "End.\n";
 
             OnNewMessage(endMsg);
+
+            //after testing finished. collect all resources.
+            GC.Collect();
 
         }
 
@@ -365,6 +370,10 @@ namespace Shrinerain.AutoTester.Framework
                 {
                     throw new CanNotPerformActionException("Unsupported action: " + step._testAction);
                 }
+
+                //sleep 1 seconds after browser action, or it will too fast.
+                Thread.Sleep(1000 * 1);
+
             }
             else
             {
@@ -386,11 +395,7 @@ namespace Shrinerain.AutoTester.Framework
             try
             {
                 TestObject obj = _objEngine.GetTestObject(step);
-
-                //if (this._isHighligh)
-                //{
-                    obj.HightLight();
-               // }
+                obj.HightLight();
 
                 if (_vpEngine.PerformVPCheck(obj, step._testAction, step._testVPProperty, step._testExpectResult))
                 {

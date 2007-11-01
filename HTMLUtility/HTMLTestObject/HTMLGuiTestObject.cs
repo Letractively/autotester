@@ -25,7 +25,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
 
         //dthread to high light a rect.
-        private static Thread _highLightThread;
+       // private static Thread _highLightThread;
 
         #endregion
 
@@ -136,8 +136,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public override void HightLight()
         {
-            _highLightThread = new Thread(new ThreadStart(HighLightRect));
-            _highLightThread.Start();
+            try
+            {
+                _actionFinished.WaitOne();
+
+                ThreadPool.QueueUserWorkItem(HighLightRectCallback, null);
+                // _highLightThread = new Thread(new ThreadStart(HighLightRect));
+                //  _highLightThread.Start();
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+
+            }
+
         }
 
         #region gui actions
@@ -167,7 +182,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        protected virtual void HighLightRect()
+        protected virtual void HighLightRectCallback(Object obj)
         {
             HighLightRect(false);
         }
@@ -200,7 +215,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 Win32API.ReleaseDC(handle, hDC);
 
-                Thread.Sleep(100 * 1); // the red rect last for 0.1 seconds.
+                Thread.Sleep(500 * 1); // the red rect last for 0.1 seconds.
 
                 Win32API.InvalidateRect(handle, IntPtr.Zero, 1 /* TRUE */);
                 Win32API.UpdateWindow(handle);
@@ -210,6 +225,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch
             {
                 throw new CanNotHighlightObjectException();
+            }
+            finally
+            {
+                _actionFinished.Set();
             }
         }
 

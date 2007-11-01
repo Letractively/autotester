@@ -390,7 +390,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        protected override void HighLightRect()
+        protected override void HighLightRectCallback(object obj)
         {
             base.HighLightRect(true);
         }
