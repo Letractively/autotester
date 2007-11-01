@@ -315,7 +315,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             MouseOp.Click(x, y);
         }
 
-        protected override void HighLightRect()
+        protected override void HighLightRectCallback(object obj)
         {
             base.HighLightRect(true);
         }
