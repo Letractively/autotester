@@ -287,7 +287,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else if (tag == "SELECT")
             {
                 int selectSize = int.Parse(element.getAttribute("size", 0).ToString().ToUpper());
-                if (selectSize == 1)
+                if (selectSize < 2)
                 {
                     return HTMLTestObjectType.ComboBox;
                 }

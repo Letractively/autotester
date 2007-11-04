@@ -299,7 +299,7 @@ namespace Shrinerain.AutoTester.Framework
 
         private void PerformGo(TestStep step)
         {
-            string item = step._testItem;
+            string item = step._testControl;
 
             if (item.ToUpper() == "BROWSER")
             {
@@ -387,8 +387,8 @@ namespace Shrinerain.AutoTester.Framework
 
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
 
-                //sleep for 0.5 second, or it will too fast.
-                Thread.Sleep(500 * 1);
+                //sleep for 1 second, or it will too fast.
+                Thread.Sleep(1000 * 1);
             }
 
 
@@ -419,7 +419,7 @@ namespace Shrinerain.AutoTester.Framework
 
         private void PerformCall(TestStep step)
         {
-            string subName = step._testItem;
+            string subName = step._testControl;
             List<TestStep> subSteps;
             subSteps = _subEngine.BuildTestStepBySubName(subName);
 

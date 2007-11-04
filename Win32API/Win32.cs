@@ -41,26 +41,7 @@ namespace Shrinerain.AutoTester.Win32
             public int x;
             public int y;
         }
-        [StructLayout(LayoutKind.Sequential)]
-        public struct INPUT
-        {
-            //     public int type; 
-            //     struct SendEvent{
-            //            MOUSEINPUT mi; 
-            //            KEYBDINPUT ki;
-            //            HARDWAREINPUT hi;
-            //           };
-        }
 
-        //[StructLayout(LayoutKind.Sequential)]
-        //public struct MOUSEINPUT {
-        //                          LONG dx;
-        //                          LONG dy;
-        //                          DWORD mouseData;
-        //                          DWORD dwFlags;
-        //                          DWORD time;
-        //                          ULONG_PTR dwExtraInfo;
-        //                          } 
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MouseHookStruct
@@ -507,6 +488,49 @@ namespace Shrinerain.AutoTester.Win32
             SW_SHOWDEFAULT = 10,
             SW_FORCEMINIMIZE = 11,
             SW_MAX = 11
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MOUSEINPUT
+        {
+            public int dx;
+            public int dy;
+            public uint mouseData;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KEYBDINPUT
+        {
+            public ushort wVk;
+            public ushort wScan;
+            public uint dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HARDWAREINPUT
+        {
+            public uint uMsg;
+            public ushort wParamL;
+            public ushort wParamH;
+        }
+
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct INPUT
+        {
+            [FieldOffset(0)]
+            public int type;
+            [FieldOffset(4)]
+            public MOUSEINPUT mi;
+            [FieldOffset(4)]
+            public KEYBDINPUT ki;
+            [FieldOffset(4)]
+            public HARDWAREINPUT hi;
         }
 
         public const int HIDE_WINDOW = 0;
@@ -984,7 +1008,7 @@ namespace Shrinerain.AutoTester.Win32
         public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int processId);
 
         [DllImport("User32.dll")]
-        public static extern UInt32 SendInput(UInt32 nInputs, INPUT pInputs, int cbSize);
+        public static extern UInt32 SendInput(UInt32 nInputs, INPUT[] pInputs, int cbSize);
 
         [DllImport("User32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int uMsg, int wParam, int lParam);
@@ -1027,6 +1051,9 @@ namespace Shrinerain.AutoTester.Win32
 
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hwnd, ref Rect rectangle);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetMessageExtraInfo();
 
         //[DllImport("user32.dll")]
         //public static extern IntPtr WindowFromPoint(Point pt);

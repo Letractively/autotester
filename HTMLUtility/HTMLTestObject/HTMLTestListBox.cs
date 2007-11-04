@@ -188,6 +188,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Hover();
 
                 Point itemPosition = GetItemPosition(index);
+
                 MouseOp.Click(itemPosition.X, itemPosition.Y);
 
                 this._selectedValue = this._allValues[index];

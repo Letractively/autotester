@@ -25,7 +25,7 @@ namespace Shrinerain.AutoTester
 
         static void FrameworkTest()
         {
-            string projectConfigFile = @"E:\Program\CS\AutoTester\Framework\DriveFile\baidu.xml";
+            string projectConfigFile = @"E:\program\cs\AutoTester\Document\StateStreet.xml";// @"E:\program\cs\AutoTester\Document\google.xml"; // 
             string frameworkConfigFile = @"E:\Program\CS\AutoTester\Framework\Framework.config";
 
             TestJob myTestJob = new TestJob();
@@ -79,7 +79,6 @@ namespace Shrinerain.AutoTester
 
             string url = @"http://127.0.0.1/AutoTester/";// @"www.google.cn"; // // 
             myHost.Load(url);
-
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
