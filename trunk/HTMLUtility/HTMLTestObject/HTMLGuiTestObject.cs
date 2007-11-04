@@ -18,7 +18,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region fields
 
-        private Rectangle _rect;
+        protected Rectangle _rect;
 
         //sync event to ensure action is finished before next step.
         protected static AutoResetEvent _actionFinished = new AutoResetEvent(true);

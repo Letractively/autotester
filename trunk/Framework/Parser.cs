@@ -14,7 +14,7 @@ namespace Shrinerain.AutoTester.Framework
 
         // test step mapped from excel drive file.
         public string _testCommand;
-        public string _testItem;
+        public string _testControl;
         public string _testProperty;
         public string _testAction;
         public string _testData;
@@ -65,7 +65,7 @@ namespace Shrinerain.AutoTester.Framework
                         _testCommand = value;
                         break;
                     case 1:
-                        _testItem = value;
+                        _testControl = value;
                         break;
                     case 2:
                         _testProperty = value;
@@ -98,7 +98,7 @@ namespace Shrinerain.AutoTester.Framework
 
             tmp.Append(_testCommand);
             tmp.Append("\t");
-            tmp.Append(_testItem);
+            tmp.Append(_testControl);
             tmp.Append("\t");
             tmp.Append(_testProperty);
             tmp.Append("\t");
@@ -300,7 +300,7 @@ namespace Shrinerain.AutoTester.Framework
                 {
                     TestStep tmp = new TestStep();
                     tmp._testCommand = _excelReader.ReadByIndex(0);
-                    tmp._testItem = _excelReader.ReadByIndex(1);
+                    tmp._testControl = _excelReader.ReadByIndex(1);
                     tmp._testProperty = _excelReader.ReadByIndex(2);
                     tmp._testAction = _excelReader.ReadByIndex(3);
                     tmp._testData = _excelReader.ReadByIndex(4);
@@ -373,7 +373,7 @@ namespace Shrinerain.AutoTester.Framework
 
                     TestStep tmp = new TestStep();
                     tmp._testCommand = _excelReader.ReadByIndex(0);
-                    tmp._testItem = _excelReader.ReadByIndex(1);
+                    tmp._testControl = _excelReader.ReadByIndex(1);
                     tmp._testProperty = _excelReader.ReadByIndex(2);
                     tmp._testAction = _excelReader.ReadByIndex(3);
                     tmp._testData = _excelReader.ReadByIndex(4);

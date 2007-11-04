@@ -6,5 +6,5 @@
     <Log>D:\Program\XDETester Script\AutomationFramework\Log\</Log>
 	<LogTemplate>D:\111.log</LogTemplate>
     <ScreenPrint>D:\Program\XDETester Script\AutomationFramework\ScreenPrint\</ScreenPrint>
-	<HighLight>No</HighLight>
+	<HighLight>Yes</HighLight>
   </Project>

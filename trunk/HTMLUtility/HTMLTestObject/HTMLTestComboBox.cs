@@ -151,15 +151,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                _actionFinished.WaitOne();
+
 
                 Point itemPosition = GetItemPosition(index);
 
                 Click();
 
+                //sleep for 0.5 second, make sure the use can see this action.
+                System.Threading.Thread.Sleep(500 * 1);
+
+                _actionFinished.WaitOne();
+
                 MouseOp.Click(itemPosition.X, itemPosition.Y);
 
                 this._selectedValue = _allValues[index];
+
+                _actionFinished.Set();
             }
             catch (ItemNotFoundException)
             {
@@ -168,10 +175,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception e)
             {
                 throw new CanNotPerformActionException(e.ToString());
-            }
-            finally
-            {
-                _actionFinished.Set();
             }
 
         }
@@ -282,10 +285,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
 
+            int itemX = this._rect.Left + this._rect.Width / 2;
+            int itemY = this._rect.Top + (this._rect.Height / 2) * 3;
 
-            int itemX = 0;
-            int itemY = 0;
+            bool isScrollBar = false;
 
+            if (this._allValues.Length > 30)
+            {
+                isScrollBar = true;
+            }
+
+            if (!isScrollBar)
+            {
+                itemY += this._itemHeight * index;
+            }
 
             return new Point(itemX, itemY);
         }
@@ -304,15 +317,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected virtual void Click()
         {
+            _actionFinished.WaitOne();
+
             Hover();
 
-            int right = this.Rect.Left + this.Rect.Width;
-            int height = this.Rect.Height;
+            int right = this._rect.Left + this._rect.Width;
+            int height = this._rect.Height;
 
             int x = right - height / 2;
             int y = this.Rect.Top + height / 2;
 
             MouseOp.Click(x, y);
+
+            _actionFinished.Set();
         }
 
         protected override void HighLightRectCallback(object obj)

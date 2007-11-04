@@ -157,6 +157,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             object nameObj = null;
             object indexObj = null;
+
+            //if the expected value is number like, we think it is stand for the index of the object, not text on it.
+            bool isByIndex = false;
+            int objIndex;
+            if (int.TryParse(values, out objIndex))
+            {
+                index = objIndex - 1;
+                isByIndex = true;
+            }
+
             int leftIndex = index;
 
             foreach (string tag in tags)
@@ -180,29 +190,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             continue;
                         }
 
-                    }
-                    catch
-                    {
-
-                    }
-
-                    try
-                    {
-
-                        if (CheckObjectByType(_tmpElement, typeValue, values))
+                        if (isByIndex)
                         {
-                            _testObj = BuildObjectByType(_tmpElement);
                             leftIndex--;
-                            if (leftIndex < 0)
-                            {
-                                return _testObj;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-
                         }
+                        else if (CheckObjectByType(_tmpElement, typeValue, values))
+                        {
+                            leftIndex--;
+                        }
+
+                        if (leftIndex < 0)
+                        {
+                            return BuildObjectByType(_tmpElement);
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
                     }
                     catch
                     {

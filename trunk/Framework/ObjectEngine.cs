@@ -46,7 +46,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             TestObject tmp = null;
 
-            string item = step._testItem;
+            string item = step._testControl;
             string property = step._testProperty;
 
             if (String.IsNullOrEmpty(item))

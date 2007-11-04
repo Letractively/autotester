@@ -78,7 +78,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error: Can not start testing: " + e.Message, "AutoTester");
+                AutoTesterErrorMsgBox("Error: Can not start testing: " + e.Message);
             }
         }
 
@@ -103,7 +103,8 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error: Can not pause testing: " + e.Message, "AutoTester");
+                AutoTesterErrorMsgBox("Error: Can not pause testing: " + e.Message);
+
             }
         }
 
@@ -128,13 +129,20 @@ namespace Shrinerain.AutoTester.GUI
         {
             if (this._projectConfigFile == null)
             {
-                MessageBox.Show("Error: No project config file found.", "AutoTester");
+                AutoTesterErrorMsgBox("Error: No project config file found.");
             }
             else
             {
-                StartMonitor();
-                _testJobThread = new Thread(new ThreadStart(StartTestJob));
-                _testJobThread.Start();
+                try
+                {
+                    StartMonitor();
+                    _testJobThread = new Thread(new ThreadStart(StartTestJob));
+                    _testJobThread.Start();
+                }
+                catch (Exception e)
+                {
+                    AutoTesterErrorMsgBox(e.ToString());
+                }
             }
         }
 
@@ -194,7 +202,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception e)
             {
-                MessageBox.Show("Error: Can not parse config file: " + e.ToString(), "AutoTester");
+                AutoTesterErrorMsgBox("Error: Can not parse config file: " + e.ToString());
             }
 
         }
@@ -208,6 +216,11 @@ namespace Shrinerain.AutoTester.GUI
             this.tbLogTemplate.Text = "";
             this.cbProjectDomain.SelectedIndex = 0;
             this.cbHighlight.Checked = false;
+        }
+
+        private void AutoTesterErrorMsgBox(string message)
+        {
+            MessageBox.Show(message, "AutoTester", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         #endregion
