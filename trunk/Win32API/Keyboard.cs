@@ -28,7 +28,7 @@ namespace Shrinerain.AutoTester.Win32
             for (int i = 0; i < str.Length; i++)
             {
 
-                if (i == 0 || (i > 1 && str[i - 1] != '\\')) //we didn't escape it.
+                if (i == 0 || (i > 0 && str[i - 1] != '\\')) //we didn't escape it.
                 {
                     specialKeys = true;
                     keysBuf = new StringBuilder(10);
