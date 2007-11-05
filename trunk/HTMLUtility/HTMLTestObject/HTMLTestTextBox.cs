@@ -18,6 +18,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected string _currentStr;
 
+        protected IHTMLInputTextElement _textElement;
+        protected IHTMLTextAreaElement _textAreaElement;
+
         #endregion
 
         #region properties
@@ -37,10 +40,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (this.Tag == "TEXTAERA")
                 {
                     _currentStr = element.getAttribute("innerText", 0).ToString();
+
+                    _textAreaElement = (IHTMLTextAreaElement)element;
                 }
                 else
                 {
                     _currentStr = element.getAttribute("value", 0).ToString();
+
+                    _textElement = (IHTMLInputTextElement)element;
                 }
             }
             catch

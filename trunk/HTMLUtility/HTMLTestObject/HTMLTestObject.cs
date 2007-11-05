@@ -68,7 +68,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region methods
 
-        #region creator
+        #region ctor
 
         protected HTMLTestObject()
             : base()
