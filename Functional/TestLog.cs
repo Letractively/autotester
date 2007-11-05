@@ -2,7 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Reflection;
+using System.Threading;
+using System.Diagnostics;
 
+using Shrinerain.AutoTester.Interface;
+using Shrinerain.AutoTester.Function;
 
 namespace Shrinerain.AutoTester.Function
 {
@@ -13,6 +18,10 @@ namespace Shrinerain.AutoTester.Function
 
         //buffer to save the template 
         protected StringBuilder _templateBuf;
+
+        //type for reflecting to get the property value.
+        protected Type _type;
+        protected object _testLogObject;
 
         //application information
         protected string _appInfo;
@@ -381,7 +390,48 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        protected void SetTemplateValueByName(string propertyName)
+        {
+            string value = GetFieldValueByName(propertyName);
 
+            if (String.IsNullOrEmpty(value))
+            {
+                throw new CanNotWriteLogException("Can not find property: " + propertyName);
+            }
+
+            try
+            {
+                this._templateBuf.Replace("<%=" + propertyName.ToUpper() + "%>", value);
+            }
+            catch
+            {
+                throw new CanNotWriteLogException("Can not write property+ " + propertyName);
+            }
+
+        }
+
+        protected string GetFieldValueByName(string propertyName)
+        {
+            if (_testLogObject == null)
+            {
+                _type = this.GetType();
+
+                _testLogObject = _type.InvokeMember(null,
+                    BindingFlags.DeclaredOnly |
+                    BindingFlags.Public | BindingFlags.NonPublic |
+                    BindingFlags.Instance | BindingFlags.CreateInstance, null, null, null);
+            }
+
+            try
+            {
+                return (string)_type.InvokeMember(propertyName, BindingFlags.GetProperty, null, _testLogObject, null);
+            }
+            catch
+            {
+                return null;
+            }
+
+        }
 
         #endregion
 
