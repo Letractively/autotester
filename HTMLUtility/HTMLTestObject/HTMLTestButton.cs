@@ -57,9 +57,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.Set();
 
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not perform click action.");
+                throw new CanNotPerformActionException("Can not perform click action: " + e.Message);
             }
         }
 
