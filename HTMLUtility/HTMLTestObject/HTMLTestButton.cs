@@ -17,6 +17,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected string _currentStr;
 
+        protected IHTMLInputElement _inputElement;
+
         #endregion
 
         #region properties
@@ -38,6 +40,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch
             {
                 this._currentStr = "";
+            }
+
+            try
+            {
+                this._inputElement = (IHTMLInputElement)element;
+            }
+            catch (Exception e)
+            {
+                throw new CanNotBuildObjectException("Can not build test button: " + e.Message);
             }
         }
 

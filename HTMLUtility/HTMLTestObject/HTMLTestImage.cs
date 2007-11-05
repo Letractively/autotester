@@ -60,8 +60,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 WebClient client = new WebClient();
                 client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                
-                client.DownloadFileAsync(this._src, des);
+
+                client.DownloadFileAsync(new System.Uri(this._src), des);
 
                 _actionFinished.WaitOne();
 

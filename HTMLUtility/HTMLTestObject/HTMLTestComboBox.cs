@@ -52,7 +52,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                _htmlSelectClass = (HTMLSelectElementClass)this._sourceElement;
+                _htmlSelectClass = (HTMLSelectElementClass)element;
             }
             catch
             {

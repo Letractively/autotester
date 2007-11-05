@@ -20,7 +20,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected object[] _childeren;
 
-        protected HTMLLinkElement _linkElement;
+        //  protected HTMLLinkElement _linkElement;
         protected HTMLAnchorElement _acnchorElement;
 
         #endregion
@@ -73,7 +73,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 if (String.IsNullOrEmpty(_linkText))
                 {
-                    _linkImgElement = (IHTMLImgElement)_linkElement.firstChild;
+                    _linkImgElement = (IHTMLImgElement)_acnchorElement.firstChild;
                 }
             }
             catch
