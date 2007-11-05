@@ -18,14 +18,14 @@ namespace Shrinerain.AutoTester
         {
             // FrameworkEXE(args);
             //FunctionTest();
-               FrameworkTest();
+            FrameworkTest();
             Console.ReadLine();
         }
 
 
         static void FrameworkTest()
         {
-            string projectConfigFile = @"E:\program\cs\AutoTester\Document\StateStreet.xml";// @"E:\program\cs\AutoTester\Document\google.xml"; // 
+            string projectConfigFile = @"E:\program\cs\AutoTester\Document\StateStreet.xml";//  @"E:\program\cs\AutoTester\Document\google.xml"; //  
             string frameworkConfigFile = @"E:\Program\CS\AutoTester\Framework\Framework.config";
 
             TestJob myTestJob = new TestJob();
@@ -84,12 +84,12 @@ namespace Shrinerain.AutoTester
 
             //HTMLTestLink linkObj =(HTMLTestLink)pool.GetObjectByID("link1");
 
-           // linkObj.Click();
+            // linkObj.Click();
 
             //   HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByName("q");
             // obj1.Input("statestreet");
 
-             //HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google ËÑË÷", 0);
+            //HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google ËÑË÷", 0);
             //obj2.Click();
 
             HTMLTestButton btn = (HTMLTestButton)pool.GetObjectByID("btn1");

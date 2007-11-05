@@ -345,6 +345,10 @@ namespace Shrinerain.AutoTester.Framework
                         {
                             _browser.WaitForNewWindow();
                         }
+                        else
+                        {
+                            throw new CanNotPerformActionException("Error: Bad data for Wait action: " + data);
+                        }
                     }
                 }
                 else if (action == "MAXSIZE")
@@ -372,7 +376,7 @@ namespace Shrinerain.AutoTester.Framework
                     throw new CanNotPerformActionException("Unsupported action: " + step._testAction);
                 }
 
-                //sleep 1 seconds after browser action, or it will too fast.
+                //sleep 1 seconds after browser action, make it looks like human actions
                 Thread.Sleep(1000 * 1);
 
             }
@@ -387,7 +391,7 @@ namespace Shrinerain.AutoTester.Framework
 
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
 
-                //sleep for 1 second, or it will too fast.
+                //sleep for 1 second, make it looks like human actions
                 Thread.Sleep(1000 * 1);
             }
 
