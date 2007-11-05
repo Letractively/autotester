@@ -165,7 +165,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        // if the object is out of page view, scroll it to make it visible.
+        // if the object is out of page view, scroll it to make it is visible.
         protected virtual void ScrollIntoView(bool toTop)
         {
             int right = this._rect.X + this._rect.Width;
@@ -197,6 +197,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 int height = this._rect.Height;
 
                 //if the control is not a windows standard control,we need to minus the browser top and left.
+                //because if it is NOT a windows control, then we consider it is a HTML control, when we get the handle,
+                //the handle is belonged to "Internet Explorer_Server", it not include the menu bar...
+                //so we need to minus the menu bar height and top to get the actual position.
                 if (!isWindowsControl)
                 {
                     left -= HTMLTestBrowser.ClientLeft;
@@ -215,7 +218,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 Win32API.ReleaseDC(handle, hDC);
 
-                Thread.Sleep(500 * 1); // the red rect last for 0.1 seconds.
+                Thread.Sleep(300 * 1); // the red rect last for 0.3 seconds.
 
                 Win32API.InvalidateRect(handle, IntPtr.Zero, 1 /* TRUE */);
                 Win32API.UpdateWindow(handle);
