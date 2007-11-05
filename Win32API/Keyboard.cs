@@ -27,11 +27,16 @@ namespace Shrinerain.AutoTester.Win32
 
             for (int i = 0; i < str.Length; i++)
             {
+                //sleep for 0.05 second, make it looks like human actions
+                System.Threading.Thread.Sleep(50 * 1);
 
-                if (i == 0 || (i > 0 && str[i - 1] != '\\')) //we didn't escape it.
+                if (str[i] == '{')
                 {
-                    specialKeys = true;
-                    keysBuf = new StringBuilder(10);
+                    if (i == 0 || (i > 0 && str[i - 1] != '\\')) //we didn't escape it.
+                    {
+                        specialKeys = true;
+                        keysBuf = new StringBuilder(10);
+                    }
                 }
 
                 if (specialKeys)

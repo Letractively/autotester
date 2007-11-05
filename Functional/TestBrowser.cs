@@ -263,6 +263,7 @@ namespace Shrinerain.AutoTester.Function
                 if (_ie != null)
                 {
                     RegIEEvent();
+
                     _ieStarted.Set();
                 }
                 else
@@ -618,12 +619,15 @@ namespace Shrinerain.AutoTester.Function
             {
                 seconds = 0;
             }
+
             _documentLoadComplete.WaitOne(seconds * 1000, true);
+
         }
 
         public virtual void WaitDocumentLoadComplete()
         {
             WaitDocumentLoadComplete(this._maxWaitSeconds);
+
         }
 
         //public virtual void WaitIEStart(int secondes)
@@ -1034,6 +1038,8 @@ namespace Shrinerain.AutoTester.Function
                 this._HTMLDom = (HTMLDocument)_ie.Document;
 
                 GetSize();
+
+                _documentLoadComplete.Set();
             }
             catch (TestBrowserNotFoundException)
             {
@@ -1043,7 +1049,7 @@ namespace Shrinerain.AutoTester.Function
             {
                 throw new CanNotAttachTestBrowserException("Can not parse html document.");
             }
-            _documentLoadComplete.Set();
+
         }
 
         //when the position or rect of ie is changed, we need to re-calculate the position of html controls.

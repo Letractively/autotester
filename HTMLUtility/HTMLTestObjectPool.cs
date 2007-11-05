@@ -410,14 +410,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return property;
         }
 
+        //check the object if it is visible, and it can interactive with users.
         private static bool IsInteractive(IHTMLElement element)
         {
             string tag = element.tagName.ToUpper();
+
             if (String.IsNullOrEmpty(tag))
             {
                 return false;
             }
-            else if (tag == "BR" || tag == "TR" || tag == "P" || tag == "TH")
+            else if (tag == "BR"
+                  || tag == "TR"
+                  || tag == "P"
+                  || tag == "TH"
+                  || tag == "SCRIPT"
+                  || tag == "FORM"
+                    )
             {
                 return false;
             }
@@ -428,36 +436,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     return false;
                 }
-                else
-                {
-                    return true;
-                }
+
             }
 
-            string isEnable = element.getAttribute("enable", 0).ToString();
-            if (!String.IsNullOrEmpty(isEnable))
+            if (element.getAttribute("enable", 0).ToString().ToUpper() == "FALSE")
             {
-                if (isEnable.ToUpper() == "TRUE")
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
 
-            string isVisiable = element.getAttribute("visibility", 0).ToString();
-            if (!String.IsNullOrEmpty(isVisiable))
+            if (element.getAttribute("visibility", 0).ToString().ToUpper() == "HIDDEN")
             {
-                if (isVisiable.ToUpper() == "VISIBLE")
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
 
             return true;
@@ -489,7 +478,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Image;
             }
-            else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST")
+            else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN")
             {
                 return HTMLTestObjectType.ComboBox;
             }

@@ -87,14 +87,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 this._sourceElement.setAttribute("value", "", 0);
+
+                _actionFinished.Set();
             }
             catch
             {
                 throw new CanNotPerformActionException("Can not perform clear action.");
-            }
-            finally
-            {
-                _actionFinished.Set();
             }
         }
 
