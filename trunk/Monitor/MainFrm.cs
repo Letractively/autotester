@@ -176,6 +176,9 @@ namespace Shrinerain.AutoTester.GUI
                 cfg.ProjectConfigFile = file;
                 cfg.ParseConfigFile();
 
+                this._driveFile = cfg.ProjectDriveFile;
+
+                //init textbox
                 this.tbProjectName.Text = cfg.ProjectName;
                 this.tbScreenPrint.Text = cfg.ScreenPrintDir;
                 this.tbDriveFile.Text = cfg.ProjectDriveFile;

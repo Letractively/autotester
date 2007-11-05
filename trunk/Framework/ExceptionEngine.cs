@@ -30,6 +30,11 @@ namespace Shrinerain.AutoTester.Framework
 
         public bool HandleException(TestException e)
         {
+            if (e != null)
+            {
+                _exception = e;
+            }
+
             if (e is TestEngineException)
             {
                 return false;

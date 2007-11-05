@@ -130,7 +130,7 @@ namespace Shrinerain.AutoTester.Framework
                     //can not go to next step.
                     if (!_exEngine.HandleException(e))
                     {
-                        //main test step, break
+                        //main test step, stop testing.
                         if (_testStepStack.Count == 0)
                         {
                             break;
@@ -146,7 +146,7 @@ namespace Shrinerain.AutoTester.Framework
                     else
                     {
                         //go to next step
-                        _index++;
+                        //_index++;
                     }
                 }
                 catch (Exception e)
@@ -237,45 +237,50 @@ namespace Shrinerain.AutoTester.Framework
 
             string command = currentStep._testCommand.ToUpper();
 
-            if (command == "COMMENTS" || command == "COMMENT")
-            {
-                PerformComments();
-            }
-            else if (command == "SKIP")
-            {
-                PerformSkip();
-            }
-            else if (command == "BEGIN" || command == "START")
+            if (command == "BEGIN" || command == "START")
             {
                 PerformBegin();
             }
-            else if (command == "GO")
+
+            if (this._started)
             {
-                PerformGo(currentStep);
-            }
-            else if (command == "VP")
-            {
-                PerformVP(currentStep);
-            }
-            else if (command == "JUMP")
-            {
-                PerformJump(currentStep);
-            }
-            else if (command == "END")
-            {
-                PerformEnd();
-            }
-            else if (command == "EXIT" || command == "RETURN")
-            {
-                PerformExit();
-            }
-            else if (command == "CALL")
-            {
-                PerformCall(currentStep);
-            }
-            else
-            {
-                throw new UnSupportedKeywordException("Command:" + command + " is not supported.");
+                if (command == "COMMENTS" || command == "COMMENT")
+                {
+                    PerformComments();
+                }
+                else if (command == "SKIP")
+                {
+                    PerformSkip();
+                }
+
+                else if (command == "GO")
+                {
+                    PerformGo(currentStep);
+                }
+                else if (command == "VP")
+                {
+                    PerformVP(currentStep);
+                }
+                else if (command == "JUMP")
+                {
+                    PerformJump(currentStep);
+                }
+                else if (command == "END")
+                {
+                    PerformEnd();
+                }
+                else if (command == "EXIT" || command == "RETURN")
+                {
+                    PerformExit();
+                }
+                else if (command == "CALL")
+                {
+                    PerformCall(currentStep);
+                }
+                else
+                {
+                    throw new UnSupportedKeywordException("Command:" + command + " is not supported.");
+                }
             }
 
         }
