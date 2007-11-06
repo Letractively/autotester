@@ -132,6 +132,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private help methods
 
+        protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
+        {
+            HTMLTestObjectPool.DocumentRefreshed();
+
+            base.OnDocumentLoadComplete(pDesp, ref pUrl);
+        }
+
         #endregion
 
         #endregion

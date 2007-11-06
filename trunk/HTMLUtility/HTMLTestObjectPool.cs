@@ -13,8 +13,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region fields
         private HTMLTestBrowser _htmlTestBrowser = null;
         private static bool _needRefresh = false;
-        private IHTMLElementCollection _allObjects;
+        private IHTMLElementCollection _allElements;
+        private object[] _allObjects;
+
         private TestObject _testObj;
+
 
         #endregion
 
@@ -247,15 +250,31 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
         public Object[] GetAllObjects()
         {
-            return null;
+            GetIEAllObjects();
+
+            _allObjects = new object[this._allElements.length];
+
+            object nameObj;
+            object indexObj;
+
+            for (int i = 0; i < this._allElements.length; i++)
+            {
+                nameObj = (object)i;
+                indexObj = (object)i;
+                _allObjects[i] = this._allElements.item(nameObj, indexObj);
+            }
+
+            return _allObjects;
         }
         #endregion
 
         #region help methods
-        public static void DocumentRefreshed(object pDesp, ref object pUrl)
+
+        public static void DocumentRefreshed()
         {
             _needRefresh = true;
         }
+
         private void GetIEAllObjects()
         {
             if (_needRefresh)
@@ -263,7 +282,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _needRefresh = false;
                 try
                 {
-                    this._allObjects = _htmlTestBrowser.GetAllObjects();
+                    this._allElements = _htmlTestBrowser.GetAllObjects();
                 }
                 catch
                 {
