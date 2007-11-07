@@ -134,6 +134,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
+            //Console.WriteLine("HTMLTestBrowser");
+
             HTMLTestObjectPool.DocumentRefreshed();
 
             base.OnDocumentLoadComplete(pDesp, ref pUrl);

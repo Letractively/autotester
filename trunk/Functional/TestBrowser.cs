@@ -67,6 +67,7 @@ namespace Shrinerain.AutoTester.Function
 
         #region Sync Event
 
+        protected AutoResetEvent _startDownload = new AutoResetEvent(false);
         protected AutoResetEvent _documentLoadComplete = new AutoResetEvent(false);
         protected AutoResetEvent _ieStarted = new AutoResetEvent(false);
         // protected AutoResetEvent _ieExisted = new AutoResetEvent(false);
@@ -620,6 +621,12 @@ namespace Shrinerain.AutoTester.Function
                 seconds = 0;
             }
 
+            // Console.WriteLine(DateTime.Now.ToString());
+
+            _startDownload.Reset();
+            _startDownload.WaitOne(seconds * 1000, true);
+
+            _documentLoadComplete.Reset();
             _documentLoadComplete.WaitOne(seconds * 1000, true);
 
         }
@@ -936,13 +943,25 @@ namespace Shrinerain.AutoTester.Function
         //register IE events
         protected virtual void RegIEEvent()
         {
-
+            RegStartDownloadEvent();
             RegDocumentLoadCompleteEvent();
             RegNavigateFailedEvent();
             RegRectChangeEvent();
             RegScrollEvent();
             RegOnNewWindowEvent();
 
+        }
+
+        protected virtual void RegStartDownloadEvent()
+        {
+            try
+            {
+                _ie.DownloadBegin += new DWebBrowserEvents2_DownloadBeginEventHandler(OnDownloadBegin);
+            }
+            catch
+            {
+                throw new CanNotAttachTestBrowserException("Can not register Downloadbegin event.");
+            }
         }
 
         protected virtual void RegOnNewWindowEvent()
@@ -1030,16 +1049,25 @@ namespace Shrinerain.AutoTester.Function
         }
 
 
+        protected virtual void OnDownloadBegin()
+        {
+            //Console.WriteLine("Download begin");
+            this._startDownload.Set();
+        }
+
         //when document load complete, we can start to operate the html controls
         protected virtual void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
             try
             {
+                //Console.WriteLine("TestBrowser");
+
                 this._HTMLDom = (HTMLDocument)_ie.Document;
 
                 GetSize();
 
-                _documentLoadComplete.Set();
+                // Thread.Sleep(1000 * 1);
+
             }
             catch (TestBrowserNotFoundException)
             {
@@ -1048,6 +1076,11 @@ namespace Shrinerain.AutoTester.Function
             catch
             {
                 throw new CanNotAttachTestBrowserException("Can not parse html document.");
+            }
+            finally
+            {
+                // Console.WriteLine("set");
+                _documentLoadComplete.Set();
             }
 
         }
