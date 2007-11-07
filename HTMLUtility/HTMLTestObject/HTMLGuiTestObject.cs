@@ -52,7 +52,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLGuiTestObject(IHTMLElement element)
             : base(element)
         {
-            this.GetRectOnScreen();
+            GetRectOnScreen();
         }
 
         ~HTMLGuiTestObject()
@@ -66,14 +66,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public override void Dispose()
         {
-            if (_actionFinished != null)
+            try
             {
-                _actionFinished.Close();
-                _actionFinished = null;
+                base.Dispose();
+                if (_actionFinished != null)
+                {
+                    _actionFinished.Close();
+                    _actionFinished = null;
+                }
+                GC.SuppressFinalize(this);
             }
-            GC.SuppressFinalize(this);
+            catch
+            {
 
-            base.Dispose();
+            }
+
 
         }
 
@@ -89,7 +96,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
 
         //get the object rect
-        public virtual Rectangle GetRectOnScreen()
+        public Rectangle GetRectOnScreen()
         {
 
             int top = _sourceElement.offsetTop;
@@ -144,13 +151,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 // _highLightThread = new Thread(new ThreadStart(HighLightRect));
                 //  _highLightThread.Start();
             }
-            catch
+            catch (CanNotHighlightObjectException)
             {
-
-            }
-            finally
-            {
-
+                throw;
             }
 
         }

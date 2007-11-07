@@ -17,6 +17,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected IHTMLInputElement _radioElement;
 
+        protected string _aroundText;
+
         #endregion
 
         #region properties
@@ -61,7 +63,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Click()
         {
-            throw new Exception("The method or operation is not implemented.");
+            Focus();
         }
 
         public void DoubleClick()
@@ -85,17 +87,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Focus()
         {
-            throw new Exception("The method or operation is not implemented.");
+            try
+            {
+                base.Hover();
+                MouseOp.Click();
+            }
+            catch (Exception e)
+            {
+                throw new CanNotPerformActionException("Can not focus on radiobox: " + e.Message);
+            }
         }
 
         public object GetDefaultAction()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return "Check";
         }
 
         public void PerformDefaultAction()
         {
-            throw new Exception("The method or operation is not implemented.");
+            Check();
         }
 
         #endregion
@@ -103,6 +113,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
+        protected virtual string GetAroundText(int position)
+        {
+            //position : 0 for right, 1 for up, 2 for left, 3 for down
+
+            return null;
+        }
 
         #endregion
 
