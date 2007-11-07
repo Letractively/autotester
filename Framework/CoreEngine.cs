@@ -397,7 +397,7 @@ namespace Shrinerain.AutoTester.Framework
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
 
                 //sleep for 1 second, make it looks like human actions
-                Thread.Sleep(1000 * 1);
+               // Thread.Sleep(1000 * 1);
             }
 
 
