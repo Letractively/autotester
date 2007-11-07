@@ -11,8 +11,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
     public sealed class HTMLTestObjectPool : ITestObjectPool
     {
         #region fields
-        private HTMLTestBrowser _htmlTestBrowser = null;
+
+        private HTMLTestBrowser _htmlTestBrowser;
         private static bool _needRefresh = false;
+
+        private IHTMLElement _tempElement;
         private IHTMLElementCollection _allElements;
         private object[] _allObjects;
 
@@ -58,8 +61,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                IHTMLElement htmlElement = _htmlTestBrowser.GetObjectByID(id);
-                _testObj = BuildObjectByType(htmlElement);
+                _tempElement = _htmlTestBrowser.GetObjectByID(id);
+                _testObj = BuildObjectByType(_tempElement);
                 return _testObj;
             }
             catch
@@ -76,8 +79,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 object nameObj = (object)name;
                 object indexObj = (object)0;
 
-                IHTMLElement htmlElement = (IHTMLElement)_htmlTestBrowser.GetObjectsByName(name).item(nameObj, indexObj);
-                _testObj = BuildObjectByType(htmlElement);
+                _tempElement = (IHTMLElement)_htmlTestBrowser.GetObjectsByName(name).item(nameObj, indexObj);
+                _testObj = BuildObjectByType(_tempElement);
                 return _testObj;
 
             }
@@ -108,18 +111,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     object nameObj = (object)i;
                     object indexObj = (object)i;
 
-                    IHTMLElement tmpElement = (IHTMLElement)tmpCollection.item(nameObj, indexObj);
+                    _tempElement = (IHTMLElement)tmpCollection.item(nameObj, indexObj);
 
                     try
                     {
-                        string propertyValue = tmpElement.getAttribute(property, 0).ToString();
+                        string propertyValue = _tempElement.getAttribute(property, 0).ToString();
                         if (String.IsNullOrEmpty(propertyValue))
                         {
                             continue;
                         }
-                        if (propertyValue.ToUpper() == value.ToUpper())
+                        if (String.Compare(propertyValue, value, true) == 0)
                         {
-                            _testObj = BuildObjectByType(tmpElement);
+                            _testObj = BuildObjectByType(_tempElement);
                             return _testObj;
                         }
                     }
@@ -156,7 +159,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             string[] tags = GetObjectTags(typeValue);
 
             IHTMLElementCollection _tmpElementCol;
-            IHTMLElement _tmpElement;
+            // IHTMLElement _tmpElement;
 
             object nameObj = null;
             object indexObj = null;
@@ -182,13 +185,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     nameObj = (object)i;
                     indexObj = (object)i;
 
-                    _tmpElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
+                    _tempElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
 
 
                     try
                     {
                         // check if it is a interactive object.
-                        if (!IsInteractive(_tmpElement))
+                        if (!IsInteractive(_tempElement))
                         {
                             continue;
                         }
@@ -197,14 +200,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             leftIndex--;
                         }
-                        else if (CheckObjectByType(_tmpElement, typeValue, values))
+                        else if (CheckObjectByType(_tempElement, typeValue, values))
                         {
                             leftIndex--;
                         }
 
                         if (leftIndex < 0)
                         {
-                            return BuildObjectByType(_tmpElement);
+                            _testObj = BuildObjectByType(_tempElement);
+                            return _testObj;
                         }
                         else
                         {
@@ -231,7 +235,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public Object GetObjectByPoint(int x, int y)
         {
-            return null;
+            try
+            {
+                _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
+                _testObj = BuildObjectByType(_tempElement);
+                return _testObj;
+            }
+            catch (Exception e)
+            {
+                throw new CanNotBuildObjectException("Can not build object: " + e.Message);
+            }
         }
 
         public Object GetObjectByRect(int top, int left, int width, int height)
@@ -351,7 +364,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
-            if (propertyValue.ToUpper() == value.ToUpper())
+            if (String.Compare(propertyValue, value, true) == 0)
             {
                 return true;
             }
@@ -365,7 +378,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                string items = element.getAttribute("innerHTML", 0).ToString().ToUpper();
+                string items = element.getAttribute("innerHTML", 0).ToString();
 
                 //get the position of ">"
                 int pos1 = items.IndexOf(">");
@@ -376,7 +389,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 // then we can get the first item of select object.
                 string firstItem = items.Substring(pos1 + 1, pos2 - pos1 - 1);
 
-                if (firstItem == value.ToUpper())
+                if (String.Compare(firstItem, value, true) == 0)
                 {
                     return true;
                 }

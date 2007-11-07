@@ -8,11 +8,12 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HtmlUtility")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("tc")]
+[assembly: AssemblyCompany("Shrinerain")]
 [assembly: AssemblyProduct("HtmlUtility")]
-[assembly: AssemblyCopyright("版权所有 (C) tc 2007")]
+[assembly: AssemblyCopyright("版权所有 (C) Shrinerain 2007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+
 
 // 将 ComVisible 设置为 false 使此程序集中的类型
 // 对 COM 组件不可见。如果需要从 COM 访问此程序集中的类型，

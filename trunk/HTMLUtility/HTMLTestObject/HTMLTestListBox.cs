@@ -207,7 +207,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        public virtual String[] GetAllValues()
+        public String[] GetAllValues()
         {
             string[] values = new string[_htmlSelectClass.length];
             try
@@ -276,7 +276,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //    return _htmlSelectClass.selectedIndex;
         //}
 
-        protected virtual string GetSelectedValue()
+        protected string GetSelectedValue()
         {
             if (this._allValues == null)
             {
@@ -375,11 +375,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._allValues = GetAllValues();
             }
 
-            value = value.ToUpper();
 
             for (int i = 0; i < this._allValues.Length; i++)
             {
-                if (_allValues[i].ToUpper() == value)
+                if (String.Compare(_allValues[i], value, true) == 0)
                 {
                     return i;
                 }

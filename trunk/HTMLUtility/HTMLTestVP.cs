@@ -40,12 +40,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 HTMLTestObject obj = (HTMLTestObject)testObj;
-                string actualResult = obj.GetPropertyByName(vpProperty).ToString().Trim().ToUpper();
-                string expectTmpResult = expectResult.Trim().ToUpper();
+
+                string actualResult = obj.GetPropertyByName(vpProperty).ToString();
+                if (!String.IsNullOrEmpty(actualResult))
+                {
+                    actualResult = actualResult.Trim();
+                }
+
+                string expectTmpResult = expectResult;
+                if (!String.IsNullOrEmpty(expectTmpResult))
+                {
+                    expectTmpResult = expectTmpResult.Trim();
+                }
 
                 if (type == VPCheckType.Equal)
                 {
-                    if (actualResult == expectTmpResult)
+                    if (String.Compare(actualResult, expectTmpResult, false) == 0)
                     {
                         result = true;
                     }
@@ -66,14 +76,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else if (type == VPCheckType.SmallOrEqual)
                 {
-                    if ((actualResult == expectTmpResult) || actualResult.CompareTo(expectTmpResult) < 0)
+                    if ((String.Compare(actualResult, expectTmpResult, false) == 0) || actualResult.CompareTo(expectTmpResult) < 0)
                     {
                         result = true;
                     }
                 }
                 else if (type == VPCheckType.LargerOrEqual)
                 {
-                    if ((actualResult == expectTmpResult) || actualResult.CompareTo(expectTmpResult) > 0)
+                    if ((String.Compare(actualResult, expectTmpResult, false) == 0) || actualResult.CompareTo(expectTmpResult) > 0)
                     {
                         result = true;
                     }

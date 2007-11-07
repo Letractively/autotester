@@ -219,7 +219,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "Internet Explorer_TridentCmboBx";
         }
 
-        public virtual String[] GetAllValues()
+        public String[] GetAllValues()
         {
             string[] values = new string[_htmlSelectClass.length];
             try
@@ -243,7 +243,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        protected virtual string GetSelectedValue()
+        protected string GetSelectedValue()
         {
             if (this._allValues == null)
             {
@@ -261,11 +261,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected virtual int GetIndexByString(string value)
         {
-            string tmp = value.ToUpper();
 
             for (int i = 0; i < this._allValues.Length; i++)
             {
-                if (_allValues[i].ToUpper() == tmp)
+                if (String.Compare(value, _allValues[i], true) == 0)
                 {
                     return i;
                 }

@@ -32,7 +32,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     }
 
     #region html object base class
-    public class HTMLTestObject : TestObject
+    public class HTMLTestObject : TestObject, IDisposable
     {
         #region fields
 

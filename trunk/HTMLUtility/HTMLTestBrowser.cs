@@ -62,9 +62,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return this._HTMLDom.all;
             }
-            catch
+            catch (Exception e)
             {
-                throw new ObjectNotFoundException("Can not get all objects.");
+                throw new ObjectNotFoundException("Can not get all objects: " + e.Message);
             }
 
         }
@@ -82,9 +82,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return this._HTMLDom.getElementById(id);
             }
-            catch
+            catch (Exception e)
             {
-                throw new ObjectNotFoundException("Can not found test object by id:" + id);
+                throw new ObjectNotFoundException("Can not found test object by id:" + id + ": " + e.Message);
             }
 
         }
@@ -102,9 +102,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return this._HTMLDom.getElementsByName(name);
             }
-            catch
+            catch (Exception e)
             {
-                throw new ObjectNotFoundException("Can not found test object by name:" + name);
+                throw new ObjectNotFoundException("Can not found test object by name:" + name + ":" + e.Message);
             }
         }
         public IHTMLElementCollection GetObjectsByTagName(string name)
@@ -120,11 +120,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 return this._HTMLDom.getElementsByTagName(name);
+
             }
-            catch
+            catch (Exception e)
             {
-                throw new ObjectNotFoundException("Can not found test object by tag name:" + name);
+                throw new ObjectNotFoundException("Can not found test object by tag name:" + name + ":" + e.Message);
             }
+        }
+
+        public IHTMLElement GetObjectFromPoint(int x, int y)
+        {
+            if (x >= 0 && y >= 0)
+            {
+                try
+                {
+                    return _HTMLDom.elementFromPoint(x, y);
+                }
+                catch (Exception e)
+                {
+                    throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + e.Message);
+                }
+            }
+            else
+            {
+                throw new ObjectNotFoundException("Can not found object at point which less than (0,0)");
+            }
+
         }
         #endregion
 
@@ -135,6 +156,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
             //Console.WriteLine("HTMLTestBrowser");
+
+            //when document loaded, tell the htmlobjectpool to reload all objects.
 
             HTMLTestObjectPool.DocumentRefreshed();
 
