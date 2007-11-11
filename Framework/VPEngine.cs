@@ -36,13 +36,15 @@ namespace Shrinerain.AutoTester.Framework
 
         #region public methods
 
-        public bool PerformVPCheck(TestObject obj, string action, string vpProperty, object expectResult)
+        public bool PerformVPCheck(TestObject obj, string action, string vpProperty, object expectResult, out object actualResult)
         {
             bool result = false;
 
+            actualResult = null;
+
             try
             {
-                result = _testVP.PerformStringTest(obj, vpProperty, expectResult.ToString(), VPCheckType.Equal);
+                result = _testVP.PerformStringTest(obj, vpProperty, expectResult.ToString(), VPCheckType.Equal, out actualResult);
             }
             catch
             {

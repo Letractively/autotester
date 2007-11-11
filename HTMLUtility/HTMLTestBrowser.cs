@@ -26,9 +26,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region Methods
 
+
+        //for reflecting issue, I keep the constructor as "public"
         public HTMLTestBrowser()
         {
-
+            this._browserName = "Internet Explorer";
         }
 
 

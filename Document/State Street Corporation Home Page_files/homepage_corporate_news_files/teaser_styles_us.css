@@ -1,0 +1,45 @@
+BODY {
+	FONT-SIZE: 11px; MARGIN: 0px; COLOR: #6698cd; FONT-FAMILY: verdana, chicago, sans-serif
+}
+.bodytext {
+	FONT-SIZE: 10px; COLOR: #333333; FONT-FAMILY: verdana, chicago, sans-serif
+}
+A.navlink:link {
+	FONT-WEIGHT: bold; FONT-SIZE: 10px; COLOR: #003333; FONT-FAMILY: verdana, chicago, sans-serif
+}
+A.navlink:visited {
+	FONT-WEIGHT: bold; FONT-SIZE: 10px; COLOR: #003333; FONT-FAMILY: verdana, chicago, sans-serif
+}
+A.navlink:hover {
+	FONT-WEIGHT: bold; FONT-SIZE: 10px; COLOR: #4fd3d8; FONT-FAMILY: verdana, chicago, sans-serif
+}
+A.headerthree:link {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: verdana, chicago, sans-serif
+}
+A.headerthree:visited {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: verdana, chicago, sans-serif
+}
+A.headerthree:hover {
+	FONT-WEIGHT: bold; FONT-SIZE: 12px; COLOR: #ff9900; FONT-FAMILY: verdana, chicago, sans-serif
+}
+.news {
+	FONT-SIZE: 11px; COLOR: #6698cd; FONT-FAMILY: verdana, chicago, sans-serif; TEXT-DECORATION: none
+}
+A.news:link {
+	FONT-SIZE: 11px; COLOR: #6698cd; FONT-FAMILY: verdana, chicago, sans-serif; TEXT-DECORATION: underline
+}
+A.news:visited {
+	FONT-SIZE: 11px; COLOR: #6698cd; FONT-FAMILY: verdana, chicago, sans-serif; TEXT-DECORATION: underline
+}
+A.news:hover {
+	FONT-SIZE: 11px; COLOR: #024c8f; FONT-FAMILY: verdana, chicago, sans-serif; TEXT-DECORATION: underline
+}
+A.bodylink:link {
+	FONT-SIZE: 11px; COLOR: #cc3300; FONT-FAMILY: verdana, chicago, sans-serif
+}
+A.bodylink:visited {
+	FONT-SIZE: 11px; COLOR: #cc3300; FONT-FAMILY: verdana, chicago, sans-serif
+}
+A.bodylink:hover {
+	FONT-SIZE: 11px; COLOR: #ff9900; FONT-FAMILY: verdana, chicago, sans-serif
+}

@@ -41,6 +41,7 @@ namespace Shrinerain.AutoTester.Framework
 
         //flag for start or not. If false, will not perform any action.
         private bool _started = false;
+        private bool _end = false;
         private bool _isHighligh = false;
 
         //currently used test steps list. 
@@ -124,9 +125,16 @@ namespace Shrinerain.AutoTester.Framework
                 try
                 {
                     PerformEachStep();
+
+                    if (_end)
+                    {
+                        break;
+                    }
                 }
                 catch (TestException e)
                 {
+                    OnNewMessage(e.ToString());
+
                     //can not go to next step.
                     if (!_exEngine.HandleException(e))
                     {
@@ -156,13 +164,15 @@ namespace Shrinerain.AutoTester.Framework
                 }
             }
 
+            End();
+
         }
 
         public void End()
         {
 
             string endMsg = "\n------------------------------------------------------------------\n"
-            + "End.\n";
+            + "Test End.\n";
 
             OnNewMessage(endMsg);
 
@@ -188,7 +198,7 @@ namespace Shrinerain.AutoTester.Framework
             + "UAT Automation Framework v0.7 C# Edition\n"
             + "        Shrinerain@hotmail.com          \n"
             + "----------------------------------------\n\n"
-            + "Start to testing...\n"
+            + "Start to test...\n"
             + "------------------------------------------------------------------\n"
             + "Command\tItem\tProperty\tAction\tData\tExpectResult\tActualResult\n";
 
@@ -241,45 +251,47 @@ namespace Shrinerain.AutoTester.Framework
             {
                 PerformBegin();
             }
-
-            if (this._started)
+            else
             {
-                if (command == "COMMENTS" || command == "COMMENT")
+                if (this._started)
                 {
-                    PerformComments();
-                }
-                else if (command == "SKIP")
-                {
-                    PerformSkip();
-                }
+                    if (command == "COMMENTS" || command == "COMMENT")
+                    {
+                        PerformComments();
+                    }
+                    else if (command == "SKIP")
+                    {
+                        PerformSkip();
+                    }
 
-                else if (command == "GO")
-                {
-                    PerformGo(currentStep);
-                }
-                else if (command == "VP")
-                {
-                    PerformVP(currentStep);
-                }
-                else if (command == "JUMP")
-                {
-                    PerformJump(currentStep);
-                }
-                else if (command == "END")
-                {
-                    PerformEnd();
-                }
-                else if (command == "EXIT" || command == "RETURN")
-                {
-                    PerformExit();
-                }
-                else if (command == "CALL")
-                {
-                    PerformCall(currentStep);
-                }
-                else
-                {
-                    throw new UnSupportedKeywordException("Command:" + command + " is not supported.");
+                    else if (command == "GO")
+                    {
+                        PerformGo(currentStep);
+                    }
+                    else if (command == "VP")
+                    {
+                        PerformVP(currentStep);
+                    }
+                    else if (command == "JUMP")
+                    {
+                        PerformJump(currentStep);
+                    }
+                    else if (command == "END")
+                    {
+                        PerformEnd();
+                    }
+                    else if (command == "EXIT" || command == "RETURN")
+                    {
+                        PerformExit();
+                    }
+                    else if (command == "CALL")
+                    {
+                        PerformCall(currentStep);
+                    }
+                    else
+                    {
+                        throw new UnSupportedKeywordException("Command:" + command + " is not supported.");
+                    }
                 }
             }
 
@@ -387,7 +399,11 @@ namespace Shrinerain.AutoTester.Framework
             }
             else
             {
+
+
                 TestObject obj = _objEngine.GetTestObject(step);
+
+                _browser.Active();
 
                 if (this._isHighligh)
                 {
@@ -397,7 +413,7 @@ namespace Shrinerain.AutoTester.Framework
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
 
                 //sleep for 1 second, make it looks like human actions
-               // Thread.Sleep(1000 * 1);
+                // Thread.Sleep(1000 * 1);
             }
 
 
@@ -408,21 +424,23 @@ namespace Shrinerain.AutoTester.Framework
             try
             {
                 TestObject obj = _objEngine.GetTestObject(step);
+
                 obj.HightLight();
 
-                if (_vpEngine.PerformVPCheck(obj, step._testAction, step._testVPProperty, step._testExpectResult))
+                object actualReslut;
+                if (_vpEngine.PerformVPCheck(obj, step._testAction, step._testVPProperty, step._testExpectResult, out actualReslut))
                 {
-                    OnNewMessage("*** Pass: " + step.ToString());
+                    OnNewMessage("*** PASS: " + step.ToString() + "\t" + actualReslut.ToString());
                 }
                 else
                 {
-                    OnNewMessage("*** Failed: " + step.ToString());
+                    OnNewMessage("*** FAIL: " + step.ToString() + "\t" + actualReslut.ToString());
                 }
 
             }
-            catch
+            catch (Exception e)
             {
-                throw new VerifyPointException("Can not perform VP:" + step.ToString());
+                throw new VerifyPointException("Can not perform VP with step [" + step.ToString() + "]: " + e.Message);
             }
         }
 
@@ -449,7 +467,8 @@ namespace Shrinerain.AutoTester.Framework
 
         private void PerformEnd()
         {
-            throw new TestEngineException("End.");
+            this._end = true;
+            //throw new TestEngineException("End.");
         }
 
         private void PerformExit()

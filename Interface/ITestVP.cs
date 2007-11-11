@@ -8,25 +8,25 @@ namespace Shrinerain.AutoTester.Interface
 {
     public interface ITestVP
     {
-        bool PerformStringTest(Object testObj, String vpProperty, String expectResult, VPCheckType type);
+        bool PerformStringTest(Object testObj, String vpProperty, String expectResult, VPCheckType type, out object actualString);
 
-        bool PerformRegexTest(Object testObj, String vpProperty, String expectReg, VPCheckType type);
+        bool PerformRegexTest(Object testObj, String vpProperty, String expectReg, VPCheckType type, out object actualResult);
 
-        bool PerformImageTest(Object testObj, String expectImgPath, VPCheckType type);
+        bool PerformImageTest(Object testObj, String expectImgPath, VPCheckType type, out object actualImg);
 
-        bool PerformDataTableTest(Object testObj, Object expectedDataTable, VPCheckType type);
+        bool PerformDataTableTest(Object testObj, Object expectedDataTable, VPCheckType type, out object actualTable);
 
-        bool PerformListBoxTest(Object testObj, Object expectedListBox, VPCheckType type);
+        bool PerformListBoxTest(Object testObj, Object expectedListBox, VPCheckType type, out object actualListBox);
 
-        bool PerformComboBoxTest(Object testObj, Object expectedComboBox, VPCheckType type);
+        bool PerformComboBoxTest(Object testObj, Object expectedComboBox, VPCheckType type, out object actualComboBox);
 
-        bool PerformTreeTest(Object testObj, Object expectedTree, VPCheckType type);
+        bool PerformTreeTest(Object testObj, Object expectedTree, VPCheckType type, out object actualTree);
 
-        bool PerformPropertyTest(Object testObj, String vpProperty, Object expectResult, VPCheckType type);
+        bool PerformPropertyTest(Object testObj, String vpProperty, Object expectResult, VPCheckType type, out object actualProperty);
 
-        bool PerformFileTest(Object testObj, String expectedFile, VPCheckType type);
+        bool PerformFileTest(Object testObj, String expectedFile, VPCheckType type, out object actualFile);
 
-        bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type);
+        bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type, out object actualNetwork);
     }
 
     public enum VPCheckType

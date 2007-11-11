@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <Project>
+    <ProjectName>Google Test</ProjectName>
+	<ProjectDomain>HTML</ProjectDomain>
+    <DriveFile>E:\program\cs\AutoTester\Document\google.xls</DriveFile>
+    <Log>D:\Program\XDETester Script\AutomationFramework\Log\</Log>
+	<LogTemplate>D:\111.log</LogTemplate>
+    <ScreenPrint>D:\Program\XDETester Script\AutomationFramework\ScreenPrint\</ScreenPrint>
+	<HighLight>No</HighLight>
+  </Project>

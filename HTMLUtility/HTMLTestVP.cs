@@ -33,18 +33,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ITestVP Members
 
-        public bool PerformStringTest(object testObj, string vpProperty, string expectResult, VPCheckType type)
+        public bool PerformStringTest(object testObj, string vpProperty, string expectResult, VPCheckType type, out object actualResult)
         {
             bool result = false;
+
+            actualResult = null;
 
             try
             {
                 HTMLTestObject obj = (HTMLTestObject)testObj;
 
-                string actualResult = obj.GetPropertyByName(vpProperty).ToString();
-                if (!String.IsNullOrEmpty(actualResult))
+                actualResult = obj.GetPropertyByName(vpProperty).ToString();
+
+                if (!String.IsNullOrEmpty(actualResult.ToString()))
                 {
-                    actualResult = actualResult.Trim();
+                    actualResult = actualResult.ToString().Trim();
                 }
 
                 string expectTmpResult = expectResult;
@@ -55,35 +58,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (type == VPCheckType.Equal)
                 {
-                    if (String.Compare(actualResult, expectTmpResult, false) == 0)
+                    if (String.Compare(actualResult.ToString(), expectTmpResult, false) == 0)
                     {
                         result = true;
                     }
                 }
                 else if (type == VPCheckType.Small)
                 {
-                    if (actualResult.CompareTo(expectTmpResult) < 0)
+                    if (actualResult.ToString().CompareTo(expectTmpResult) < 0)
                     {
                         result = true;
                     }
                 }
                 else if (type == VPCheckType.Larger)
                 {
-                    if (actualResult.CompareTo(expectTmpResult) > 0)
+                    if (actualResult.ToString().CompareTo(expectTmpResult) > 0)
                     {
                         result = true;
                     }
                 }
                 else if (type == VPCheckType.SmallOrEqual)
                 {
-                    if ((String.Compare(actualResult, expectTmpResult, false) == 0) || actualResult.CompareTo(expectTmpResult) < 0)
+                    if ((String.Compare(actualResult.ToString(), expectTmpResult, false) == 0) || actualResult.ToString().CompareTo(expectTmpResult) < 0)
                     {
                         result = true;
                     }
                 }
                 else if (type == VPCheckType.LargerOrEqual)
                 {
-                    if ((String.Compare(actualResult, expectTmpResult, false) == 0) || actualResult.CompareTo(expectTmpResult) > 0)
+                    if ((String.Compare(actualResult.ToString(), expectTmpResult, false) == 0) || actualResult.ToString().CompareTo(expectTmpResult) > 0)
                     {
                         result = true;
                     }
@@ -98,48 +101,58 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        public bool PerformRegexTest(object testObj, string vpProperty, string expectReg, VPCheckType type)
+        public bool PerformRegexTest(object testObj, string vpProperty, string expectReg, VPCheckType type, out object actualResult)
         {
+            actualResult = null;
+
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public bool PerformImageTest(object testObj, string expectImgPath, VPCheckType type)
+        public bool PerformImageTest(object testObj, string expectImgPath, VPCheckType type, out object actualImg)
         {
+            actualImg = null;
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public bool PerformDataTableTest(object testObj, object expectedDataTable, VPCheckType type)
+        public bool PerformDataTableTest(object testObj, object expectedDataTable, VPCheckType type, out object actualTable)
         {
+            actualTable = null;
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public bool PerformListBoxTest(object testObj, object expectedListBox, VPCheckType type)
+        public bool PerformListBoxTest(object testObj, object expectedListBox, VPCheckType type, out object actualListBox)
         {
+            actualListBox = null;
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public bool PerformComboBoxTest(object testObj, object expectedComboBox, VPCheckType type)
+        public bool PerformComboBoxTest(object testObj, object expectedComboBox, VPCheckType type, out object actualComboBox)
         {
+            actualComboBox = null;
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public bool PerformTreeTest(object testObj, object expectedTree, VPCheckType type)
+        public bool PerformTreeTest(object testObj, object expectedTree, VPCheckType type, out object actualTree)
         {
+            actualTree = null;
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public bool PerformPropertyTest(object testObj, string vpProperty, object expectResult, VPCheckType type)
+        public bool PerformPropertyTest(object testObj, string vpProperty, object expectResult, VPCheckType type, out object actualProperty)
         {
+            actualProperty = null;
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public bool PerformFileTest(object testObj, string expectedFile, VPCheckType type)
+        public bool PerformFileTest(object testObj, string expectedFile, VPCheckType type, out object actualFile)
         {
+            actualFile = null;
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type)
+        public bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type, out object actualNetwork)
         {
+            actualNetwork = null;
             throw new Exception("The method or operation is not implemented.");
         }
 
