@@ -25,7 +25,7 @@ namespace Shrinerain.AutoTester
 
         static void FrameworkTest()
         {
-            string projectConfigFile = @"E:\program\cs\AutoTester\Document\StateStreet.xml";//  @"E:\program\cs\AutoTester\Document\google.xml"; //  
+            string projectConfigFile = @"E:\program\cs\AutoTester\Document\google.xml";//  @"E:\program\cs\AutoTester\Document\google.xml"; //  
             string frameworkConfigFile = @"E:\Program\CS\AutoTester\Framework\Framework.config";
 
             TestJob myTestJob = new TestJob();

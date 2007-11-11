@@ -44,6 +44,9 @@ namespace Shrinerain.AutoTester.Function
         protected const int _interval = 3;   //every time sleep for 3 secs if IE is not found.
 
 
+        protected string _version;
+        protected string _browserName;
+
         // the IE window's rect
         protected static int _ieLeft;
         protected static int _ieTop;
@@ -202,9 +205,12 @@ namespace Shrinerain.AutoTester.Function
 
         #region Methods
 
-        protected TestBrowser()
+        //I keep the constructor as "public" because of reflecting
+        public TestBrowser()
         {
-
+            //currently, just support internet explorer
+            this._browserName = "Internet Explorer";
+            this._version = "6.0";
         }
 
         //singleton
@@ -518,9 +524,21 @@ namespace Shrinerain.AutoTester.Function
             {
                 Win32API.PostMessage(_mainHandle, Convert.ToInt32(Win32API.WindowMessages.WM_SYSCOMMAND), Convert.ToInt32(Win32API.WindowMenuMessage.SC_MAXIMIZE), 0);
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotActiveTestBrowserException("Can not MAX Internet Explorer.");
+                throw new CanNotActiveTestBrowserException("Can not MAX Internet Explorer: " + e.Message);
+            }
+        }
+
+        public virtual void Active()
+        {
+            try
+            {
+                Win32API.SetForegroundWindow(_mainHandle);
+            }
+            catch (Exception e)
+            {
+                throw new CanNotActiveTestBrowserException("Can not Active browser: " + e.Message);
             }
         }
 
@@ -609,6 +627,15 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        public virtual String GetBrowserName()
+        {
+            return this._browserName;
+        }
+
+        public virtual String GetBrowserVersion()
+        {
+            return this._version;
+        }
 
         #endregion
 
@@ -880,7 +907,22 @@ namespace Shrinerain.AutoTester.Function
                 mainHandle = GetIEMainHandle();
             }
 
-            return Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "Shell DocObject View", null);
+            //update for Internet Explorer 7
+            //Internet Explorer 7 is a tab browser, we need to find "TabWindowClass" before we get the "Sheel DocObject View"
+
+            IntPtr tabWindow = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "TabWindowClass", null);
+
+            if (tabWindow == IntPtr.Zero) //No tab, means IE 6.0 or lower
+            {
+                return Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "Shell DocObject View", null);
+            }
+            else
+            {
+                //tab handle found, means IE 7
+                this._version = "7.0";
+                return Win32API.FindWindowEx(tabWindow, IntPtr.Zero, "Shell DocObject View", null);
+            }
+
         }
 
         protected virtual IntPtr GetWarnBarHandle(IntPtr shellHandle)

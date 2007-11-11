@@ -471,14 +471,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             }
 
-            if (element.getAttribute("enable", 0).ToString().ToUpper() == "FALSE")
+            if (element.getAttribute("enable", 0).GetType().ToString() != "System.DBNull")
             {
-                return false;
+                if (element.getAttribute("enable", 0).ToString().ToUpper() == "FALSE")
+                {
+                    return false;
+                }
             }
 
-            if (element.getAttribute("visibility", 0).ToString().ToUpper() == "HIDDEN")
+            if (element.getAttribute("visibility", 0).GetType().ToString() != "System.DBNull")
             {
-                return false;
+                if (element.getAttribute("visibility", 0).ToString().ToUpper() == "HIDDEN")
+                {
+                    return false;
+                }
             }
 
             return true;

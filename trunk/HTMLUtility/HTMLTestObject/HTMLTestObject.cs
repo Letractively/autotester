@@ -117,14 +117,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                string isVisiable = (string)element.getAttribute("visibility", 0);
-                if (isVisiable.ToUpper() == "HIDDEN")
+                if (element.getAttribute("visibility", 0).GetType().ToString() == "System.DBNull")
                 {
-                    this._visible = false;
+                    this._visible = true;
                 }
                 else
                 {
-                    this._visible = true;
+                    string isVisiable = element.getAttribute("visibility", 0).ToString();
+
+                    if (isVisiable.ToUpper() == "HIDDEN")
+                    {
+                        this._visible = false;
+                    }
+                    else
+                    {
+                        this._visible = true;
+                    }
                 }
             }
             catch
@@ -133,15 +141,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                string isEnable = (string)element.getAttribute("enabled", 0);
-                if (isEnable.ToUpper() == "FALSE")
-                {
-                    this._enable = false;
-                }
-                else
+                if (element.getAttribute("enabled", 0).GetType().ToString() == "System.DBNull")
                 {
                     this._enable = true;
                 }
+                else
+                {
+                    string isEnable = element.getAttribute("enabled", 0).ToString();
+                    if (isEnable.ToUpper() == "FALSE")
+                    {
+                        this._enable = false;
+                    }
+                    else
+                    {
+                        this._enable = true;
+                    }
+                }
+
             }
             catch
             {
@@ -194,7 +210,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 propertyName = propertyName.Replace(".", "");
-                return this._sourceElement.getAttribute(propertyName, 0);
+
+                if (this._sourceElement.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+                {
+                    throw new PropertyNotFoundException("Property " + propertyName + " not found.");
+                }
+                else
+                {
+                    return this._sourceElement.getAttribute(propertyName, 0);
+                }
+
             }
             catch
             {
@@ -231,12 +256,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (tag == "IMG")
             {
-                string clickMethods;
 
                 try
                 {
-                    clickMethods = element.getAttribute("onclick", 0).ToString().ToUpper();
-                    if (String.IsNullOrEmpty(clickMethods))
+                    if (element.getAttribute("onclick", 0).GetType().ToString() == "System.DBNull")
                     {
                         return HTMLTestObjectType.Image;
                     }
@@ -244,6 +267,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         return HTMLTestObjectType.Button;
                     }
+
                 }
                 catch (PropertyNotFoundException)
                 {
@@ -286,15 +310,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (tag == "SELECT")
             {
-                int selectSize = int.Parse(element.getAttribute("size", 0).ToString().ToUpper());
-                if (selectSize < 2)
+                if (element.getAttribute("size", 0).GetType().ToString() == "System.DBNull")
                 {
                     return HTMLTestObjectType.ComboBox;
                 }
                 else
                 {
-                    return HTMLTestObjectType.ListBox;
+                    int selectSize = int.Parse(element.getAttribute("size", 0).ToString());
+
+                    if (selectSize < 2)
+                    {
+                        return HTMLTestObjectType.ComboBox;
+                    }
+                    else
+                    {
+                        return HTMLTestObjectType.ListBox;
+                    }
                 }
+
             }
 
             return HTMLTestObjectType.Unknow;
