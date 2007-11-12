@@ -278,6 +278,8 @@ namespace Shrinerain.AutoTester.Function
                     throw new CanNotStartTestBrowserException("Can not start test browser.");
                 }
 
+                MaxSize();
+
             }
             catch
             {

@@ -3,8 +3,8 @@
     <ProjectName>Google Test</ProjectName>
 	<ProjectDomain>HTML</ProjectDomain>
     <DriveFile>E:\program\cs\AutoTester\Document\google.xls</DriveFile>
-    <Log>D:\Program\XDETester Script\AutomationFramework\Log\</Log>
-	<LogTemplate>D:\111.log</LogTemplate>
-    <ScreenPrint>D:\Program\XDETester Script\AutomationFramework\ScreenPrint\</ScreenPrint>
+    <Log>G:\</Log>
+	<LogTemplate>E:\program\cs\AutoTester\Document\log.template</LogTemplate>
+    <ScreenPrint>G:\</ScreenPrint>
 	<HighLight>No</HighLight>
   </Project>

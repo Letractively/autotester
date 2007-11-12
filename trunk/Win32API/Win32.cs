@@ -930,7 +930,6 @@ namespace Shrinerain.AutoTester.Win32
         [DllImport("User32.dll")]
         public extern static void mouse_event(int dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
 
-
         [DllImport("user32.dll", EntryPoint = "SetCursorPos")]
         public static extern bool SetCursorPos(int x, int y);
 
@@ -1064,8 +1063,8 @@ namespace Shrinerain.AutoTester.Win32
         [DllImport("user32.dll")]
         public static extern int ReleaseCapture();
 
-        [DllImport("user32.dll")]
-        public static extern IntPtr SelectObject(IntPtr hDc, IntPtr hObject);
+        //[DllImport("user32.dll")]
+        //public static extern IntPtr SelectObject(IntPtr hDc, IntPtr hObject);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetStockObject(int nObject);
@@ -1130,6 +1129,8 @@ namespace Shrinerain.AutoTester.Win32
 
         }
 
+        public const int SRCCOPY = 0x00CC0020;
+
         [DllImport("gdi32.dll")]
         public static extern bool BitBlt(IntPtr hdcDst, int xDst, int yDst, int cx, int cy, IntPtr hdcSrc, int xSrc, int ySrc, uint ulRop);
 
@@ -1141,6 +1142,18 @@ namespace Shrinerain.AutoTester.Win32
 
         [DllImport("gdi32.dll")]
         public static extern IntPtr DeleteDC(IntPtr hdc);
+
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr CreateCompatibleBitmap(IntPtr hDC, int nWidth, int nHeight);
+
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr CreateCompatibleDC(IntPtr hDC);
+
+        [DllImport("gdi32.dll")]
+        public static extern bool DeleteObject(IntPtr hObject);
+
+        [DllImport("gdi32.dll")]
+        public static extern IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
 
         #endregion
 

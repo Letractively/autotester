@@ -172,7 +172,9 @@ namespace Shrinerain.AutoTester.Framework
         {
 
             string endMsg = "\n------------------------------------------------------------------\n"
-            + "Test End.\n";
+            + "Test End";
+
+            this._logEngine.Close();
 
             OnNewMessage(endMsg);
 
@@ -238,6 +240,10 @@ namespace Shrinerain.AutoTester.Framework
         private void PerformEachStep()
         {
             TestStep currentStep = GetNextStep();
+
+            this._logEngine.Clear();
+            this._logEngine.TestStepInfo = currentStep.ToString();
+
             if (String.IsNullOrEmpty(currentStep._testCommand))
             {
                 PerformEnd();
@@ -312,10 +318,13 @@ namespace Shrinerain.AutoTester.Framework
         private void PerformBegin()
         {
             _started = true;
+
+            this._logEngine.WriteLog("Test Begin.");
         }
 
         private void PerformGo(TestStep step)
         {
+
             string item = step._testControl;
 
             if (item.ToUpper() == "BROWSER")
@@ -416,6 +425,8 @@ namespace Shrinerain.AutoTester.Framework
                 // Thread.Sleep(1000 * 1);
             }
 
+            this._logEngine.WriteLog();
+
 
         }
 
@@ -423,19 +434,27 @@ namespace Shrinerain.AutoTester.Framework
         {
             try
             {
+
                 TestObject obj = _objEngine.GetTestObject(step);
 
                 obj.HightLight();
+                this._logEngine.SaveScreenPrint();
 
                 object actualReslut;
                 if (_vpEngine.PerformVPCheck(obj, step._testAction, step._testVPProperty, step._testExpectResult, out actualReslut))
                 {
                     OnNewMessage("*** PASS: " + step.ToString() + "\t" + actualReslut.ToString());
+
+                    this._logEngine.TestResultInfo = "*** PASS: " + step.ToString() + "\t" + actualReslut.ToString();
                 }
                 else
                 {
                     OnNewMessage("*** FAIL: " + step.ToString() + "\t" + actualReslut.ToString());
+
+                    this._logEngine.TestResultInfo = "*** FAIL: " + step.ToString() + "\t" + actualReslut.ToString();
                 }
+
+                this._logEngine.WriteLog();
 
             }
             catch (Exception e)
@@ -446,6 +465,7 @@ namespace Shrinerain.AutoTester.Framework
 
         private void PerformCall(TestStep step)
         {
+
             string subName = step._testControl;
             List<TestStep> subSteps;
             subSteps = _subEngine.BuildTestStepBySubName(subName);
@@ -463,11 +483,15 @@ namespace Shrinerain.AutoTester.Framework
             _currentTestSteps = subSteps;
             _index = 0;
 
+            this._logEngine.WriteLog();
+
         }
 
         private void PerformEnd()
         {
             this._end = true;
+
+            this._logEngine.WriteLog("Test End.");
             //throw new TestEngineException("End.");
         }
 
@@ -485,10 +509,13 @@ namespace Shrinerain.AutoTester.Framework
             {
                 PerformEnd();
             }
+
+            this._logEngine.WriteLog("Exit sub.");
         }
 
         private void PerformJump(TestStep step)
         {
+
             int newIndex;
 
             if (int.TryParse(step._testData, out newIndex))
@@ -498,16 +525,21 @@ namespace Shrinerain.AutoTester.Framework
                     _index = newIndex - 2;
                 }
             }
+
+
+            this._logEngine.WriteLog("Jump to " + _index);
         }
 
         private void PerformSkip()
         {
             // _index++;
+            //this._logEngine.WriteLog("Skip");
         }
 
         private void PerformComments()
         {
             // _index++;
+            //this._logEngine.WriteLog("Comments");
         }
 
 

@@ -73,33 +73,52 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+
+            //TestLog myLog = new TestLog();
+            //myLog.TestlogTemplate = @"E:\program\cs\AutoTester\Document\log.template";
+            //myLog.LogFile = @"G:\testlog.html";
+
+            //myLog.ProjectName = "Google Test";
+            //myLog.TestStep = "this is a test step";
+            //myLog.TestResultInfo = "PASS!";
+
+            //myLog.WriteLog();
+            //myLog.Close();
+
+            //return;
+
             HTMLTestBrowser myHost = HTMLTestBrowser.GetInstance();
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"http://127.0.0.1/AutoTester/";// @"www.google.cn"; // // 
+            string url = @"www.google.cn"; //  @"http://127.0.0.1/AutoTester/";// 
             myHost.Load(url);
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
+
+            HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByName("q");
+            obj1.Input("statestreet");
+
+            HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Search", 0);
+            obj2.Click();
+
+            myHost.WaitForNextPage();
+
+
+
 
             //HTMLTestLink linkObj =(HTMLTestLink)pool.GetObjectByID("link1");
 
             // linkObj.Click();
 
-            //   HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByName("q");
-            // obj1.Input("statestreet");
+            //HTMLTestButton btn = (HTMLTestButton)pool.GetObjectByID("btn1");
+            //btn.Click();
+            //Thread.Sleep(1000);
 
-            //HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google ËÑË÷", 0);
-            //obj2.Click();
+            //myHost.WaitForPopWindow();
 
-            HTMLTestButton btn = (HTMLTestButton)pool.GetObjectByID("btn1");
-            btn.Click();
-            Thread.Sleep(1000);
-
-            myHost.WaitForPopWindow();
-
-            btn = (HTMLTestButton)pool.GetObjectByID("btn2");
-            btn.Click();
+            //btn = (HTMLTestButton)pool.GetObjectByID("btn2");
+            //btn.Click();
 
 
             //  HTMLTestListBox listBox = (HTMLTestListBox)pool.GetObjectByID("ListBox1");
