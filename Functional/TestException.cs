@@ -550,7 +550,67 @@ namespace Shrinerain.AutoTester.Function
     };
     #endregion
 
-    #region other exceptions
+    #region log Exception
+
+    public class TestLogException : TestException
+    {
+        public TestLogException()
+            : this("Log expcetion.")
+        {
+
+        }
+        public TestLogException(string message)
+            : base(message)
+        {
+
+        }
+    }
+
+    public class CanNotSaveScreenPrintException : TestLogException
+    {
+        public CanNotSaveScreenPrintException()
+            : this("Can not save screen print.")
+        {
+
+        }
+        public CanNotSaveScreenPrintException(string message)
+            : base(message)
+        {
+
+        }
+    };
+
+    public class CanNotWriteLogException : TestLogException
+    {
+        public CanNotWriteLogException()
+            : this("Can not write log.")
+        {
+        }
+        public CanNotWriteLogException(string message)
+            : base(message)
+        {
+
+        }
+    }
+
+    public class CanNotOpenTemplateException : TestLogException
+    {
+        public CanNotOpenTemplateException()
+            : this("Can not open log template file.")
+        {
+
+        }
+
+        public CanNotOpenTemplateException(string message)
+            : base(message)
+        {
+
+        }
+    };
+
+    #endregion
+
+    #region Framework exceptions
     public class TestEngineException : TestException
     {
         public TestEngineException()
@@ -579,32 +639,7 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotSaveScreenPrintException : TestException
-    {
-        public CanNotSaveScreenPrintException()
-            : this("Can not save screen print.")
-        {
 
-        }
-        public CanNotSaveScreenPrintException(string message)
-            : base(message)
-        {
-
-        }
-    };
-
-    public class CanNotWriteLogException : TestException
-    {
-        public CanNotWriteLogException()
-            : this("Can not write log.")
-        {
-        }
-        public CanNotWriteLogException(string message)
-            : base(message)
-        {
-
-        }
-    }
 
     #endregion
 

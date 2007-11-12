@@ -223,7 +223,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 Win32API.ReleaseDC(handle, hDC);
 
-                Thread.Sleep(200 * 1); // the red rect last for 0.2 seconds.
+                Thread.Sleep(500 * 1); // the red rect last for 0.2 seconds.
 
                 Win32API.InvalidateRect(handle, IntPtr.Zero, 1 /* TRUE */);
                 Win32API.UpdateWindow(handle);
