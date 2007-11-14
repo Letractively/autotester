@@ -1,0 +1,9 @@
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\Shrinerain.AutoTester.GUI.Properties.Resources.resources
+obj\Debug\GUI.csproj.GenerateResource.Cache
+bin\Debug\AutoTester.exe
+bin\Debug\AutoTester.pdb
+obj\Debug\Shrinerain.AutoTester.GUI.Monitor.resources
+obj\Debug\Shrinerain.AutoTester.GUI.MainFrm.resources
+obj\Debug\AutoTester.exe
+obj\Debug\AutoTester.pdb
