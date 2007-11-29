@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: TestException.cs
+*
+* Description: TestException defines the exception used in AutoTester.
+*              The root exception is TestException class.
+*              Then we have TestObjectException, TestBrowserException etc.
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Text;

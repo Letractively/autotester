@@ -1,0 +1,27 @@
+<%HEAD%>
+<HTML>
+ <HEAD>
+  <TITLE><%ProjectName%> - Log</TITLE>
+ </HEAD>
+ <BODY>
+ <center>
+ <font style="font-size:30;color:#0066FF"><%ProjectName%></font>
+ <%/HEAD%>
+ <%BODY%>
+ <TABLE border=1 width="600">
+ <TR>
+	<TD height="10">Test Step: <B><%TestStep%></B></TD>
+ </TR>
+ <tr>
+ 	<TD height="20">Test Result: <font color="#FF0000"><%TestResultInfo%></font></td>
+ </TR>
+  <tr>
+ 	<TD height="20">User Information: <%UserData%></td>
+ </TR>
+ </TABLE>
+ <%/BODY%>
+ <%TAIL%>
+ </center>
+ </BODY>
+</HTML>
+<%/TAIL%>

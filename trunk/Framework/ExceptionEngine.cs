@@ -35,20 +35,16 @@ namespace Shrinerain.AutoTester.Framework
                 _exception = e;
             }
 
-            if (e is TestEngineException)
-            {
-                return false;
-            }
-            else if (e is ObjectNotFoundException)
-            {
-                return false;
-            }
-            else if (e is ItemNotFoundException)
+            if (e is ItemNotFoundException)
             {
                 return true;
             }
+            else
+            {
 
-            return true;
+            }
+
+            return false;
         }
 
         #endregion

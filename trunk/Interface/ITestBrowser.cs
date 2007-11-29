@@ -1,3 +1,20 @@
+
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: ITestBrowser.cs
+*
+* Description: This interface define the action provide by browser.
+*              Automation tester can control browser by these methods.
+*              Also, object pool must get an instance of test browser.
+*
+* History: 2007/09/04  wan,yu  Init version
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,8 +32,9 @@ namespace Shrinerain.AutoTester.Interface
         void Load(String url);
         void Wait(int seconds);  //wait for seconds, the default is 120s.
         void WaitForNextPage(); //wait for next page, in the same internet explorer window.
-        void WaitForNewWindow(); // wait for another internet explorer window, in IE 7, it is maybe a new tab.
-        void WaitForPopWindow(); // wait for pop up page. in the same internet explorer window.
+        void WaitForNewWindow(); // wait for a new internet explorer instance.
+        void WaitForNewTab();    // in tab browser, like IE 7. wait for a new tab.
+        void WaitForPopWindow(); // wait for pop up page or a dialog. in the same internet explorer window.
 
         void Move(int x, int y);
         void Resize(int width, int height);

@@ -1,3 +1,22 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: TestLog.cs
+*
+* Description: TestLog provide log to end users.
+*              TestLog recieve a template file. The template is divided 
+*              to 3 parts. Head, Body, Tail. 
+*              At runtime, Testlog will replace the keywords with actual
+*              value, generate the log.
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,7 +43,6 @@ namespace Shrinerain.AutoTester.Function
         protected string _logFile;
 
         //buffer to save the template 
-        //protected StringBuilder _templateBuf;
         protected StringBuilder _templateHeadBuf;
         protected StringBuilder _templateBodyBuf;
         protected StringBuilder _templateTailBuf;
@@ -92,7 +110,7 @@ namespace Shrinerain.AutoTester.Function
         protected string _imgName;
         protected string _code;
         protected string _exception;
-        protected string _userData; //infomation added by user. like Loginfo in Function Tester
+        protected string _userData; //information added by user. like Loginfo in Function Tester
 
         #endregion
 
@@ -473,7 +491,7 @@ namespace Shrinerain.AutoTester.Function
         #region write log
         // I divide the test log to three parts, head, body and tail.
         // the three part are surround by <%HEAD%> , <%BODY%> and <%TAIL%>
-        // Head and tail are the information for whole project, they just write once in a log.
+        // Head and tail are the information for whole project, they just be writen once in a log.
         // body means the repeated information about the testing, for example: test step may change rapidly, 
         // we may have lots of steps to log. they are repeated, we need to write the log with the same format but different
         // data.

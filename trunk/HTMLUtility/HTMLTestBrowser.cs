@@ -1,3 +1,19 @@
+
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: HTMLTestBrowser.cs
+*
+* Description: This class defines the the actions to support HTML test.
+*              we use HTML DOM to get the object from Internet Explorer.
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -5,6 +21,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Diagnostics;
 using System.Runtime;
+
 using SHDocVw;
 using mshtml;
 using Shrinerain.AutoTester.Win32;
@@ -25,7 +42,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region Methods
-
 
         //for reflecting issue, I keep the constructor as "public"
         public HTMLTestBrowser()
@@ -157,7 +173,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
-            //Console.WriteLine("HTMLTestBrowser");
 
             //when document loaded, tell the htmlobjectpool to reload all objects.
 

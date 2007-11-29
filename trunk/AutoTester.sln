@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Function", "Functional\Function.csproj", "{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoTester", "AutoTester\AutoTester.csproj", "{8ACBB6CF-E749-4E1D-93CD-56D4C5705B78}"

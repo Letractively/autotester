@@ -13,7 +13,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region fields
 
         private HTMLTestBrowser _htmlTestBrowser;
+
+        // _needRefresh is used for cache, if this is set to true, we need to get the object
+        // from test browser, if it is false, we can just return the ohject from cache.
         private static bool _needRefresh = false;
+
+        //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter. 
+        private static string _keySplitter = "__shrinerain__";
+        private static Dictionary<String, TestObject> _testObjectCache = new Dictionary<string, TestObject>();
 
         private IHTMLElement _tempElement;
         private IHTMLElementCollection _allElements;
@@ -315,7 +322,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.Button:
                     return new string[] { "input", "img" };
                 case HTMLTestObjectType.CheckBox:
-                    return new string[] { "input" };
+                    return new string[] { "input", "label" };
                 case HTMLTestObjectType.ComboBox:
                     return new string[] { "select" };
                 case HTMLTestObjectType.FileDialog:
@@ -329,7 +336,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.MsgBox:
                     return new string[] { };
                 case HTMLTestObjectType.RadioButton:
-                    return new string[] { "input" };
+                    return new string[] { "input", "label" };
                 case HTMLTestObjectType.Table:
                     return new string[] { "table" };
                 case HTMLTestObjectType.TextBox:
@@ -359,6 +366,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return CheckSelectObject(element, value);
             }
 
+            if (type == HTMLTestObjectType.RadioButton)
+            {
+                return CheckRadioObject(element, value);
+            }
+
+            if (type == HTMLTestObjectType.CheckBox)
+            {
+                return CheckCheckBoxObject(element, value);
+            }
+
             string propertyValue = element.getAttribute(property, 0).ToString();
             if (String.IsNullOrEmpty(propertyValue))
             {
@@ -374,7 +391,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private static bool CheckSelectObject(IHTMLElement element, string value)
         {
-            bool result = false;
 
             try
             {
@@ -399,7 +415,81 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             }
 
-            return result;
+            return false;
+        }
+
+        private static bool CheckRadioObject(IHTMLElement element, string value)
+        {
+            try
+            {
+                if (element.tagName == "INPUT")
+                {
+                    if (element.getAttribute("value", 0).GetType().ToString() != "System.DBNull")
+                    {
+                        string actualValue = element.getAttribute("value", 0).ToString().Trim();
+                        if (String.Compare(actualValue, value, true) == 0)
+                        {
+                            return true;
+                        }
+
+                    }
+                }
+                else if (element.tagName == "LABEL")
+                {
+                    if (element.getAttribute("innerText", 0).GetType().ToString() != "System.DBNull")
+                    {
+                        string actualValue = element.getAttribute("innerText", 0).ToString().Trim();
+                        if (String.Compare(actualValue, value, true) == 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+            }
+            catch
+            {
+
+            }
+
+            return false;
+        }
+
+        private static bool CheckCheckBoxObject(IHTMLElement element, string value)
+        {
+            try
+            {
+                if (element.tagName == "INPUT")
+                {
+                    if (element.getAttribute("value", 0).GetType().ToString() != "System.DBNull")
+                    {
+                        string actualValue = element.getAttribute("value", 0).ToString().Trim();
+                        if (String.Compare(actualValue, value, true) == 0)
+                        {
+                            return true;
+                        }
+
+                    }
+                }
+                else if (element.tagName == "LABEL")
+                {
+                    if (element.getAttribute("innerText", 0).GetType().ToString() != "System.DBNull")
+                    {
+                        string actualValue = element.getAttribute("innerText", 0).ToString().Trim();
+                        if (String.Compare(actualValue, value, true) == 0)
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+            }
+            catch
+            {
+
+            }
+
+            return false;
         }
 
         private static string GetVisibleTextPropertyByTag(HTMLTestObjectType type, string tag)

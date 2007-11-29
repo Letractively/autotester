@@ -1,8 +1,25 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: TestObject.cs
+*
+* Description: TestObject class is the base class in AutoTester.
+*              TestObject defines some standard properties and methods
+*              for testing.
+*              The actual test object must inherit TestObject.
+*
+* History:  2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
 using System;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Text;
-using Shrinerain.AutoTester.Win32;
+
 
 namespace Shrinerain.AutoTester.Function
 {

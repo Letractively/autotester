@@ -1,3 +1,17 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component:
+*
+* Description:
+*
+* History:
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,9 +30,9 @@ namespace Shrinerain.AutoTester
     {
         static void Main(string[] args)
         {
-            // FrameworkEXE(args);
-            //FunctionTest();
-            FrameworkTest();
+            //FrameworkEXE(args);
+            FunctionTest();
+            //FrameworkTest();
             Console.ReadLine();
         }
 
@@ -39,7 +53,7 @@ namespace Shrinerain.AutoTester
         {
             if (args.Length != 2)
             {
-                Console.WriteLine("Usage:Framework.exe /p:projectConfig /f:frameworkconfig");
+                Console.WriteLine("Usage:Framework.exe /p:projectConfig /f:frameworkConfig");
                 return;
             }
 
@@ -58,7 +72,7 @@ namespace Shrinerain.AutoTester
                 }
                 else
                 {
-                    Console.WriteLine("Error: Unsupported Argument.");
+                    Console.WriteLine("Error: Unsupported Argument: " + p);
                     return;
                 }
             }
@@ -91,7 +105,7 @@ namespace Shrinerain.AutoTester
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"www.google.cn"; //  @"http://127.0.0.1/AutoTester/";// 
+            string url = @"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
             myHost.Load(url);
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);

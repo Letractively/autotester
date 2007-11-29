@@ -8,7 +8,7 @@ namespace Shrinerain.AutoTester.Win32
     {
         #region ctor
 
-        //Not allowed to create instance
+        //can Not to create instance
         private KeyboardOp()
         {
 
@@ -27,8 +27,8 @@ namespace Shrinerain.AutoTester.Win32
 
             for (int i = 0; i < str.Length; i++)
             {
-                //sleep for 0.05 second, make it looks like human actions
-                System.Threading.Thread.Sleep(50 * 1);
+                //sleep for 0.03 second, make it looks like human actions
+                System.Threading.Thread.Sleep(30 * 1);
 
                 if (str[i] == '{')
                 {
