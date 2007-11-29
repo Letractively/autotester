@@ -14,12 +14,13 @@
   }
   function scroll()
   {
- // var item =document.all["rb1"][0];
-  //var item2=item.firstChild;
-  //window.alert(item2);
+
+  var item =document.all["rbg1"][0];
+ // var item2=item.nextSibling;
+  window.alert(item.innerHTML);
 
     // window.alert("xxx");
-       var listbox=document.getElementById("cb1");
+     //  var listbox=document.getElementById("cb1");
 	 //  listbox.selectedIndex=1;
 	//   window.alert(listbox.size);
 	  // window.alert(listbox.clientHeight);
@@ -30,12 +31,12 @@
 	  // window.alert(listbox.scrollWidth);
 	   //window.alert(listbox.offsetWidth);
 	  // var value1=listbox.options(2);
-	   var value1=listbox.item(2);
-	   window.alert(value1.value);
-	   window.alert(value1.offsetTop);
-	   window.alert(value1.clientTop);
-	   window.alert(value1.scrollTop);
-	   window.alert(value1.clientWidth);
+	 //  var value1=listbox.item(2);
+	 //  window.alert(value1.value);
+	 //  window.alert(value1.offsetTop);
+	 //  window.alert(value1.clientTop);
+	 //  window.alert(value1.scrollTop);
+	 //  window.alert(value1.clientWidth);
 	   //var value2=listbox.options(3);
 	   //window.alert(value2.value);
 	   //window.alert(value2.offsetTop);
@@ -51,7 +52,7 @@
  </HEAD>
 
  <BODY>
-  <INPUT TYPE="button" id="btn1" value="submit2"/>
+  <INPUT TYPE="button" id="btn1" value="submit" onclick="scroll()"/>
 
   <INPUT TYPE="text" NAME="" value="xxx">
   <SELECT id="cb1" name="cbb1" size=1 height=5>
@@ -91,7 +92,7 @@
 	<option value="1010">10</option>
   </SELECT>
 
-  <INPUT TYPE="radio" NAME="rb1" value="111">111
- <INPUT TYPE="radio" NAME="rb1" value="222">222
+  <INPUT TYPE="radio" id="rb1" NAME="rbg1" value="111">111
+ <INPUT TYPE="radio" id="rb2"  NAME="rbg1" value="222">222
  </BODY>
 </HTML>

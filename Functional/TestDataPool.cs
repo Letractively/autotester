@@ -1,3 +1,20 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: TestDataPool.cs
+*
+* Description: TestDataPool support database operation for testing.
+*              It support some popular database.
+*              TestDataPool provide some methods to get/store data from 
+*              different database. 
+*
+* History:   2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +33,6 @@ namespace Shrinerain.AutoTester.Function
         DB2,
         Sybase,
         MySql,
-        PostSql,
         Memory,
         Network,
         Other,
@@ -34,6 +50,7 @@ namespace Shrinerain.AutoTester.Function
 
         protected string _splitter;
 
+        protected string _fileName;
         protected string _serverAddr;
         protected string _databaseName;
         protected string _tableName;
@@ -210,7 +227,7 @@ namespace Shrinerain.AutoTester.Function
                 case TestDataPoolType.XML:
                     return "";
                 case TestDataPoolType.Excel:
-                    return "";
+                    return "Provider=Microsoft.Jet.OLEDB.4.0;" + "Data Source=" + this._fileName + ";" + "Extended Properties=Excel 8.0;";
                 case TestDataPoolType.Access:
                     return "";
                 case TestDataPoolType.Oracle:
@@ -220,8 +237,6 @@ namespace Shrinerain.AutoTester.Function
                 case TestDataPoolType.DB2:
                     return "";
                 case TestDataPoolType.MySql:
-                    return "";
-                case TestDataPoolType.PostSql:
                     return "";
                 case TestDataPoolType.SqlServer:
                     return "";

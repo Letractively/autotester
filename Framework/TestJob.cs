@@ -1,7 +1,26 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: TestJob.cs
+*
+* Description: This is the entry point of Automation Framework.
+*              TestJob will do some init work, create an instance of
+*              CoreEngine to do real testing.
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+
+using Shrinerain.AutoTester.Function;
 
 namespace Shrinerain.AutoTester.Framework
 {
@@ -16,6 +35,10 @@ namespace Shrinerain.AutoTester.Framework
 
         private string _projectConfigFile;
         private string _frameworkConfigFile;
+
+        private AutoConfig _autoConfig;
+        private Parser _parser;
+        private CoreEngine _coreEngine;
 
         #endregion
 
@@ -52,6 +75,18 @@ namespace Shrinerain.AutoTester.Framework
 
         public TestJob()
         {
+
+        }
+
+        public TestJob(string projectConfigFile)
+        {
+            this._projectConfigFile = projectConfigFile;
+        }
+
+        public TestJob(string frameworkConfigFile, string projectConfigFile)
+        {
+            this._frameworkConfigFile = frameworkConfigFile;
+            this._projectConfigFile = projectConfigFile;
         }
 
         #endregion
@@ -60,30 +95,44 @@ namespace Shrinerain.AutoTester.Framework
 
         public void StartTesting()
         {
-            AutoConfig autoConfig = AutoConfig.GetInstance();
-            autoConfig.ProjectConfigFile = this._projectConfigFile;
-            if (!String.IsNullOrEmpty(this._frameworkConfigFile))
-            {
-                autoConfig.FrameworkConfigFile = this._frameworkConfigFile;
-            }
-            autoConfig.ParseConfigFile();
-            autoConfig.Close();
 
-            Parser parser = Parser.GetInstance();
-            parser.AutoConfig = autoConfig;
-            parser.ParseDriveFile();
-            parser.Close();
+            InitProject();
 
-            CoreEngine coreEngine = new CoreEngine();
-            coreEngine.OnNewMessage += new CoreEngine._frameworkInfoDelegate(DeliverNewMsg);
-            coreEngine.AutoConfig = autoConfig;
-            coreEngine.KeywordParser = parser;
-            coreEngine.Start();
+            _coreEngine = new CoreEngine();
+            //deliver message while testing.
+            _coreEngine.OnNewMessage += new CoreEngine._frameworkInfoDelegate(DeliverNewMsg);
+            _coreEngine.AutoConfig = _autoConfig;
+            _coreEngine.KeywordParser = _parser;
+
+            _coreEngine.Start();
         }
 
         #endregion
 
         #region private methods
+
+        private void InitProject()
+        {
+
+            //    if (!CheckConfigFile())
+            //    {
+            //        throw new ConfigFileNotFoundException("Can not find project config file.");
+            //    }
+
+            _autoConfig = AutoConfig.GetInstance();
+            _autoConfig.ProjectConfigFile = this._projectConfigFile;
+            if (!String.IsNullOrEmpty(this._frameworkConfigFile))
+            {
+                _autoConfig.FrameworkConfigFile = this._frameworkConfigFile;
+            }
+            _autoConfig.ParseConfigFile();
+            _autoConfig.Close();
+
+            _parser = Parser.GetInstance();
+            _parser.AutoConfig = _autoConfig;
+            _parser.ParseDriveFile();
+            _parser.Close();
+        }
 
         private bool CheckConfigFile()
         {

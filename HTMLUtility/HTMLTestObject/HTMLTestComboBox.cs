@@ -157,7 +157,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 Click();
 
-                //sleep for 0.5 second, make sure the use can see this action.
+                //sleep for 0.5 second, make sure user can see this action.
                 System.Threading.Thread.Sleep(500 * 1);
 
                 _actionFinished.WaitOne();

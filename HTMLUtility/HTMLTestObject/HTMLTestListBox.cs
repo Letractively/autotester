@@ -20,11 +20,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //all values of the listbox
         protected string[] _allValues;
 
-        //size of listbox. if has more items than the size, we can see scroll bar.
+        //size of listbox. if it has more items than the size, we can see scroll bar.
         protected int _itemCountPerPage;
 
         //height of each item.
-        private int _itemHeight;
+        protected int _itemHeight;
 
         //handle for listbox, listbox is a windows control
         protected IntPtr _handle;
@@ -155,12 +155,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region public methods
         public virtual void Select(string value)
         {
+            int index;
+
             if (String.IsNullOrEmpty(value))
             {
-                throw new CanNotPerformActionException("Select value can not be empty.");
+                index = 0;
             }
-
-            int index = GetIndexByString(value);
+            else
+            {
+                index = GetIndexByString(value);
+            }
 
             SelectByIndex(index);
 
@@ -172,6 +176,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._allValues = GetAllValues();
             }
+
             if (index < 0)
             {
                 index = 0;

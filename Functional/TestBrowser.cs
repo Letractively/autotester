@@ -1,3 +1,20 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: TestBrowser.cs
+*
+* Description: TestBrowser support Internet Explorer. It implent 
+*              ITestBrowser interface. You can use TestBrowser to 
+*              interactive with Internet Exploter, and get the information
+*              of Internet Explorer. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
 namespace Shrinerain.AutoTester.Function
 {
     using System;
@@ -5,6 +22,7 @@ namespace Shrinerain.AutoTester.Function
     using System.Text;
     using System.Threading;
     using System.Diagnostics;
+
     using SHDocVw;
     using mshtml;
     using Shrinerain.AutoTester.Win32;
@@ -448,6 +466,11 @@ namespace Shrinerain.AutoTester.Function
         }
 
         public virtual void WaitForNewWindow()
+        {
+
+        }
+
+        public virtual void WaitForNewTab()
         {
 
         }
