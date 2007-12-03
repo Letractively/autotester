@@ -114,11 +114,6 @@ namespace Shrinerain.AutoTester.Framework
         private void InitProject()
         {
 
-            //    if (!CheckConfigFile())
-            //    {
-            //        throw new ConfigFileNotFoundException("Can not find project config file.");
-            //    }
-
             _autoConfig = AutoConfig.GetInstance();
             _autoConfig.ProjectConfigFile = this._projectConfigFile;
             if (!String.IsNullOrEmpty(this._frameworkConfigFile))
@@ -134,10 +129,6 @@ namespace Shrinerain.AutoTester.Framework
             _parser.Close();
         }
 
-        private bool CheckConfigFile()
-        {
-            return File.Exists(_projectConfigFile);
-        }
 
         private void DeliverNewMsg(string message)
         {

@@ -14,25 +14,28 @@
 * History: 2007/09/04 wan,yu Init version
 *
 *********************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading;
+using System.Diagnostics;
+
+using SHDocVw;
+using mshtml;
+using Shrinerain.AutoTester.Win32;
+using Shrinerain.AutoTester.Interface;
 
 namespace Shrinerain.AutoTester.Function
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using System.Threading;
-    using System.Diagnostics;
-
-    using SHDocVw;
-    using mshtml;
-    using Shrinerain.AutoTester.Win32;
-    using Shrinerain.AutoTester.Interface;
 
     public class TestBrowser : IDisposable, ITestBrowser
     {
         #region Fileds
 
-
+        //this struct is used to save the browser status.
+        //Sometimes the web app will pop up a new window, it is a new browser, and we will switch to
+        //the new browser, after operation finished, we need to go back to the origin browser.
+        //so we need a stack to save the status, after pop window disappear, we need to pop the old status from the stack.
         protected struct TestBrowserStatus
         {
             public IntPtr _mainHandle;
@@ -42,6 +45,7 @@ namespace Shrinerain.AutoTester.Function
             public HTMLDocument _HTMLDom;
         };
 
+        //stack to save the browser status.
         protected static Stack<TestBrowserStatus> _statusStack = new Stack<TestBrowserStatus>(5);
 
         protected static TestBrowser _testBrowser;
@@ -50,28 +54,45 @@ namespace Shrinerain.AutoTester.Function
         protected static IntPtr _mainHandle;
 
         //handle of client area.
+        // client area means the area to display web pages, not include the menu, address bar, etc.
+        // we can use Spy++ to get these information.
         protected static IntPtr _ieServerHandle;
 
         //handle of shell doc.
         protected static IntPtr _shellDocHandle;
 
+        //InternetExplorer is under SHDocVw namespace, we use this to attach to an browser.
         protected InternetExplorer _ie = null;
+
+        //HTML dom, we use HTML dom to get the HTML object.
         protected HTMLDocument _HTMLDom = null;
 
-        protected int _maxWaitSeconds = 120; //wait for 120 secs
-        protected const int _interval = 3;   //every time sleep for 3 secs if IE is not found.
+        //wait for 120 secs, for example, to wait for the browser exist.
+        protected int _maxWaitSeconds = 120;
 
+        //every time sleep for 3 secs if browser is not found.
+        protected const int _interval = 3;
 
+        //the version of browser, eg 7.0
         protected string _version;
+
+        //the name of browser, eg Internet Explorer.
         protected string _browserName;
 
-        // the IE window's rect
+        /*we have 3 area here.
+         * 1. rectangle of borwser, including menu bar, address bar.
+         * 2. rectangle of client area, means the area to display web pages, not including meun bar, address bar.
+         * 3. rectangle of web page, a web page may larger than the client area, in this situation, we will see
+         *    scroll bar.
+         */
+
+        // the browser window's rect
         protected static int _ieLeft;
         protected static int _ieTop;
         protected static int _ieWidth;
         protected static int _ieHeight;
 
-        // the client area window's rect
+        // the client area's rect
         protected static int _clientTop;
         protected static int _clientLeft;
         protected static int _clientWidth;
@@ -87,9 +108,16 @@ namespace Shrinerain.AutoTester.Function
         #endregion
 
         #region Sync Event
+        //sync event is to mark the important event.
 
+        //start download happened we the browser start to load a web page.
         protected AutoResetEvent _startDownload = new AutoResetEvent(false);
+
+        //document load complete happened when the web page is loaded, then we can start to 
+        //find the HTML object.
         protected AutoResetEvent _documentLoadComplete = new AutoResetEvent(false);
+
+        //happened when internet explorer started.
         protected AutoResetEvent _ieStarted = new AutoResetEvent(false);
         // protected AutoResetEvent _ieExisted = new AutoResetEvent(false);
 
@@ -227,6 +255,7 @@ namespace Shrinerain.AutoTester.Function
         public TestBrowser()
         {
             //currently, just support internet explorer
+            // default version number is 6.0
             this._browserName = "Internet Explorer";
             this._version = "6.0";
         }
@@ -244,6 +273,7 @@ namespace Shrinerain.AutoTester.Function
 
         ~TestBrowser()
         {
+            // when GC, close AutoResetEvent.
             Dispose();
         }
 
@@ -266,13 +296,9 @@ namespace Shrinerain.AutoTester.Function
         #region public methods
 
         #region operate IE
-        /*  bool Start(string url)
-         * --------------------------------
-         *  Start IE with the specific url and attach IE.
-         *  Return true if IE started successfully, else return false;
-         * -----------------------------------------------------------
-         * 2007-09-12 Wan,Yu Init
-         *  
+
+        /*  start Internet Explorer, and register the event.
+         *  if failed, throw CanNotStartTestBrowserException
          */
         public virtual void Start()
         {
@@ -280,22 +306,24 @@ namespace Shrinerain.AutoTester.Function
             {
                 Process p = Process.Start("iexplore.exe");
 
+                //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ThreadStart(WaitForIEExist));
                 ieExistT.Start();
+
+                //wait until the internet explorer started.
                 this._ieStarted.WaitOne();
-                //  this._ieExisted.WaitOne();
 
                 if (_ie != null)
                 {
+                    //if we attached Internet Explorer successfully, register event
                     RegIEEvent();
-
-                    _ieStarted.Set();
                 }
                 else
                 {
                     throw new CanNotStartTestBrowserException("Can not start test browser.");
                 }
 
+                //max size of browser
                 MaxSize();
 
             }
@@ -306,6 +334,10 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* void Close()
+         * Close Browser.
+         * 
+         */
         public virtual void Close()
         {
             if (this._ie == null)
@@ -315,21 +347,28 @@ namespace Shrinerain.AutoTester.Function
             this._ie.Quit();
         }
 
+        /* void Load(string url)
+         * Load the expected url. eg: www.sina.com.cn 
+         * before we load url, we need to use Start() method to start browser first.
+         */
         public virtual void Load(string url)
         {
-
-            if (this._ie == null)
-            {
-                _ieStarted.WaitOne(this._maxWaitSeconds * 1000, true);
-            }
             if (String.IsNullOrEmpty(url))
             {
                 throw new CanNotLoadUrlException("Url can not be null.");
             }
 
+            // if ie is not started, wait for 120s.
+            if (this._ie == null)
+            {
+                _ieStarted.WaitOne(this._maxWaitSeconds * 1000, true);
+            }
+
+
             object tmp = new object();
             try
             {
+                // navigate to the expected url.
                 this._ie.Navigate(url, ref tmp, ref tmp, ref tmp, ref tmp);
                 Thread.Sleep(1 * 1000);
             }
@@ -338,6 +377,7 @@ namespace Shrinerain.AutoTester.Function
                 throw new CanNotLoadUrlException();
             }
 
+            //wait until the HTML web page is loaded successfully.
             this._documentLoadComplete.WaitOne(_maxWaitSeconds * 1000, true);
 
         }
@@ -347,6 +387,10 @@ namespace Shrinerain.AutoTester.Function
             Load(url.ToString());
         }
 
+        /* void Move(int top,int left)
+         * move the browser to expected position. 
+         * left,top means the position of left corner point
+         */
         public virtual void Move(int top, int left)
         {
 
@@ -365,6 +409,9 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* void Resize(int width, int height) 
+         * resize the browser, set it's width and height
+         */
         public virtual void Resize(int width, int height)
         {
             if (width < 1)
@@ -386,6 +433,10 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* void Back()
+         * let the browser back to the previous url, just like you click the Back button on menu bar.
+         * 
+         * */
         public virtual void Back()
         {
             if (this._ie == null)
@@ -403,6 +454,9 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* void Forward()
+         * let the browser navigate to the next page, just like you click the Forward button on menu bar. 
+         */
         public virtual void Forward()
         {
             if (this._ie == null)
@@ -419,6 +473,9 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* void Home()
+         * let the browser navigate to it's home page.
+         */
         public virtual void Home()
         {
             if (this._ie == null)
@@ -436,6 +493,9 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* void Refresh()
+         * Refresh the current page. 
+         */
         public virtual void Refresh()
         {
             if (this._ie == null)
@@ -452,6 +512,10 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* void Wait(int seconds)
+         * make the browser wait for seconds.
+         * if the parameter is smaller than 0, we will wait for int.MaxValue(2,147,483,647) seconds. 
+         */
         public virtual void Wait(int seconds)
         {
             if (seconds < 0)
@@ -465,21 +529,38 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* void WaitForNewWindow()
+         * wait until a new Internet Explorer exist. 
+         */
         public virtual void WaitForNewWindow()
         {
 
         }
 
+        /* void WaitForNewTab()
+         *  in tabbed browser, like Internet Explorer 7, wait until a new tab exist.
+         * 
+         */
         public virtual void WaitForNewTab()
         {
 
         }
 
+        /* void WaitForNextPage()
+         * wait until the browser load a new page.
+         * eg: in google.com, you input something, then you click search button, you need to wait the browser to refresh,
+         * then you can see the result page.
+         */
         public virtual void WaitForNextPage()
         {
             WaitDocumentLoadComplete();
         }
 
+        /* void WaitForPopWindow()
+         * wait until the browser pop up a new HTML window.
+         * It is a new Internet Explorer_Server control.
+         * 
+         */
         public virtual void WaitForPopWindow()
         {
 
@@ -517,21 +598,17 @@ namespace Shrinerain.AutoTester.Function
                         popStatus._mainHandle = _mainHandle;
                         popStatus._HTMLDom = _HTMLDom;
 
+                        //save the current browser status.
                         _statusStack.Push(popStatus);
 
                         _mainHandle = popWindowHandle;
                         _ieServerHandle = popWindowIEServerHandle;
                         _HTMLDom = GetHTMLDomFromHandle(popWindowIEServerHandle);
 
+                        // get the pop up window's size
                         GetSize();
 
                         break;
-
-                        //popStatus._HTMLDom = GetHTMLDomFromHandle(popWindowIEServerHandle);
-                        //popStatus._ieServerHandle = popWindowIEServerHandle;
-                        //popStatus._mainHandle = popWindowHandle;
-
-                        //_statusStack.Push(popStatus);
 
                     }
                 }
@@ -543,6 +620,9 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* void MaxSize()
+         * max the browser.
+         */
         public virtual void MaxSize()
         {
             try
@@ -555,6 +635,9 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* void Active()
+         * make the browser active, set it focus and to top most window, then we can interactive with it.
+         */
         public virtual void Active()
         {
             try
@@ -571,6 +654,10 @@ namespace Shrinerain.AutoTester.Function
 
         #region Get IE Information
 
+        /* string GetCurrentUrl()
+         * return the current url in the address bar of browser
+         * 
+         */
         public virtual string GetCurrentUrl()
         {
             if (this._ie == null)
@@ -587,6 +674,9 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* string GetStatusText()
+         * return the status text of browser.
+         */
         public virtual string GetStatusText()
         {
             if (this._ie == null)
@@ -603,6 +693,10 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* bool IsMenuVisible()
+         * return true if the menu bar is visible. 
+         * sometimes we will cancel the menu bar, eg: pop up window.
+         */
         public virtual bool IsMenuVisiable()
         {
             if (this._ie == null)
@@ -619,6 +713,10 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* bool IsResizeable()
+         * return true if the browser can be resized.
+         * 
+         */
         public virtual bool IsResizeable()
         {
             if (this._ie == null)
@@ -635,6 +733,10 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* bool IsFullScreen()
+         * return true if the  browser is full screen.
+         * 
+         */
         public virtual bool IsFullScreen()
         {
             if (this._ie == null)
@@ -652,11 +754,18 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* string GetBrowserName()
+         * return the name of the browser. eg: Internet Explorer.
+         * 
+         */
         public virtual String GetBrowserName()
         {
             return this._browserName;
         }
 
+        /* string GetBrowserVersion()
+         * return the version number of the browser.
+         */
         public virtual String GetBrowserVersion()
         {
             return this._version;
@@ -666,6 +775,10 @@ namespace Shrinerain.AutoTester.Function
 
         #region SYNC
 
+        /* void WaitDocumentLoadComplete(int seconds)
+         * wait until the HTML document load completely.
+         * 
+         */
         public virtual void WaitDocumentLoadComplete(int seconds)
         {
             if (seconds < 0)
@@ -686,18 +799,7 @@ namespace Shrinerain.AutoTester.Function
         public virtual void WaitDocumentLoadComplete()
         {
             WaitDocumentLoadComplete(this._maxWaitSeconds);
-
         }
-
-        //public virtual void WaitIEStart(int secondes)
-        //{
-        //    _ieStarted.WaitOne(secondes * 1000, true);
-        //}
-
-        //public virtual void WaitIEStart()
-        //{
-        //    WaitIEStart(this._maxWaitSeconds);
-        //}
 
         #endregion
 
@@ -706,14 +808,19 @@ namespace Shrinerain.AutoTester.Function
 
         #region protected virtual help methods
 
+        /* InternetExplorer AttacchIE(IntPtr ieHandle)
+         * return the instance of InternetExplorer.
+         * 
+         */
         protected virtual InternetExplorer AttachIE(IntPtr ieHandle)
         {
             SHDocVw.ShellWindows allBrowsers = null;
 
+            //try 3 times to attach IE.
             int j = 0;
-
             while (j < 3)
             {
+                //get all shell browser.
                 allBrowsers = new ShellWindows();
 
                 if (allBrowsers.Count == 0)
@@ -731,7 +838,12 @@ namespace Shrinerain.AutoTester.Function
                         {
                             continue;
                         }
-                        if (tempIE.HWND == (int)ieHandle)
+
+                        if (tempIE.HWND == 0)
+                        {
+                            continue;
+                        }
+                        else if (tempIE.HWND == (int)ieHandle) // if the browser handle equal to the browser handle we started, return it.
                         {
                             return tempIE;
                         }
@@ -750,17 +862,19 @@ namespace Shrinerain.AutoTester.Function
             return null;
         }
 
-        //wait for 120 seconds max to detect if IE browser is started.
-        protected virtual void WaitForIEExist(int senconds)
+        /* void WaitFOrIEExist(int seconds.)
+         * wait for 120 seconds max to detect if IE browser is started.
+         */
+        protected virtual void WaitForIEExist(int seconds)
         {
-            if (senconds < 0)
+            if (seconds < 0)
             {
-                senconds = 0;
+                seconds = 0;
             }
             int curSleepTime = 0;
             IntPtr ieHwd = IntPtr.Zero;
 
-            while (curSleepTime <= senconds)
+            while (curSleepTime <= seconds)
             {
                 Thread.Sleep(_interval * 1000);
                 curSleepTime += _interval;
@@ -794,7 +908,9 @@ namespace Shrinerain.AutoTester.Function
             WaitForIEExist(this._maxWaitSeconds);
         }
 
-        //client rect: the web page rect, not include menu, address bar ect.
+        /* void GetClientRect()
+         * client rect: the web page rect, not include menu, address bar ect.
+         */
         protected virtual void GetClientRect()
         {
             if (_mainHandle != IntPtr.Zero)
@@ -846,7 +962,9 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
-        //browser rect, the whole rect of IE, include menu, address bar etc.
+        /* void GetBrowserRect()
+         * browser rect: the whole rect of IE, include menu, address bar etc.
+         */
         protected virtual void GetBrowserRect()
         {
             if (this._ie == null)
@@ -867,7 +985,10 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
-        //the whole web page rect, include invisible part, for example, some web pages are too long to display, we need to scroll them.
+        /* void GetScrollRect()
+         * the whole web page rect, include invisible part, for example, some web pages are too long to display, we need to scroll them.
+         * 
+         */
         protected virtual void GetScrollRect()
         {
             try
@@ -890,6 +1011,9 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* void GetSize()
+         * Get all size information of browser.
+         */
         protected virtual void GetSize()
         {
             GetBrowserRect();
@@ -897,12 +1021,16 @@ namespace Shrinerain.AutoTester.Function
             GetScrollRect();
         }
 
+        /* void GetPrevTestBrowserStatus()
+         * Get previous browser status. eg: when pop up window disapper, we need to return to the main window.
+         */
         protected virtual void GetPrevTestBrowserStatus()
         {
             if (_statusStack.Count > 0)
             {
                 try
                 {
+                    //get the previous status from stack.
                     TestBrowserStatus tmp = _statusStack.Pop();
 
                     _mainHandle = tmp._mainHandle;
@@ -919,12 +1047,19 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
-        //Get IE handles
+        /* IntPtr GetIEMainHandle()
+         * return the handle of IEFrame, this is the parent handle of Internet Explorer. 
+         * we can use Spy++ to get the the handle.
+         */
         protected virtual IntPtr GetIEMainHandle()
         {
             return Win32API.FindWindow("IEFrame", null);
         }
 
+        /* IntPtr GetShellDocHandle(IntPtr mainHandle)
+         * return the handle of Shell DocObject View.
+         * we can use Spy++ to get the tree structrue of Internet Explorer handles. 
+         */
         protected virtual IntPtr GetShellDocHandle(IntPtr mainHandle)
         {
             if (mainHandle == IntPtr.Zero)
@@ -950,6 +1085,10 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* IntPtr GetWarnBarHandle(IntPtr shellHandle)
+         * return the warning bar handle. in Internet Explorer 6.0 with XP2 or Internet Explorer 7.0.
+         * when the web page contains ActiveX (eg: FlashPlayer), we can see a yellow bar on the browser.
+         */
         protected virtual IntPtr GetWarnBarHandle(IntPtr shellHandle)
         {
             if (shellHandle == IntPtr.Zero)
@@ -960,6 +1099,10 @@ namespace Shrinerain.AutoTester.Function
             return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, "#32770 (Dialog)", null);
         }
 
+        /* IntPtr GetIEServerHandle(IntPtr shellHandle)
+         * return the handle of Internet Explorer_Server.
+         * This control is used to display web page.
+         */
         protected virtual IntPtr GetIEServerHandle(IntPtr shellHandle)
         {
             if (shellHandle == IntPtr.Zero)
@@ -969,6 +1112,10 @@ namespace Shrinerain.AutoTester.Function
             return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, "Internet Explorer_Server", null);
         }
 
+        /* IntPtr GetDialogHandle(IntPtr mainHandle)
+         * return the handle of pop up page.
+         * the name is Internet Explorer_TridentDlgFrame.
+         */
         protected virtual IntPtr GetDialogHandle(IntPtr mainHandle)
         {
             if (mainHandle == IntPtr.Zero)
@@ -988,6 +1135,7 @@ namespace Shrinerain.AutoTester.Function
 
             return IntPtr.Zero;
         }
+
 
         protected virtual HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
         {
