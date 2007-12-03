@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="AutoTester">
+</Property><Property Name="Solution File" Value="E:\program\cs\AutoTester\AutoTester.sln">
+</Property><Property Name="User Options File" Value="E:\program\cs\AutoTester\AutoTester.suo">
+</Property><Property Name="Date" Value="2007年11月22日">
+</Property><Property Name="Time" Value="15:05">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="AutoTester.sln" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\AutoTester.sln">
+</Event><Event ErrorLevel="0" Project="" Source="AutoTester.suo" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\AutoTester.suo">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Function.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Function.csproj">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\ICheckable.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\ICheckable.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IStateChangeable.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IStateChangeable.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IClickable.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IClickable.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IContainer.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IContainer.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IDragable.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IDragable.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IInputable.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IInputable.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IInteractive.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IInteractive.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IMSAA.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IMSAA.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\ISelectable.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\ISelectable.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IShowInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IShowInfo.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IVisible.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IVisible.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Interface\IWindows.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Interface\IWindows.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\TestBrowser.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\TestBrowser.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\TestDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\TestDataPool.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\TestException.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\TestException.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\TestLog.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\TestLog.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\TestObject.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Functional\TestObject.cs">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Function.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Function" Source="Functional\Function.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="AutoTester" Source="AutoTester\AutoTester.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\AutoTester\AutoTester.csproj">
+</Event><Event ErrorLevel="0" Project="AutoTester" Source="AutoTester\Program.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\AutoTester\Program.cs">
+</Event><Event ErrorLevel="0" Project="AutoTester" Source="AutoTester\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\AutoTester\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="AutoTester" Source="AutoTester\AutoTester.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="AutoTester" Source="AutoTester\AutoTester.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Win32API" Source="Win32API\Win32API.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\Win32API\Win32API.csproj">
+</Event><Event ErrorLevel="0" Project="Win32API" Source="Win32API\Keyboard.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Win32API\Keyboard.cs">
+</Event><Event ErrorLevel="0" Project="Win32API" Source="Win32API\Mouse.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Win32API\Mouse.cs">
+</Event><Event ErrorLevel="0" Project="Win32API" Source="Win32API\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Win32API\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="Win32API" Source="Win32API\Win32.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Win32API\Win32.cs">
+</Event><Event ErrorLevel="0" Project="Win32API" Source="Win32API\Win32API.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Win32API" Source="Win32API\Win32API.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Interface" Source="Interface\Interface.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\Interface\Interface.csproj">
+</Event><Event ErrorLevel="0" Project="Interface" Source="Interface\ITestAction.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Interface\ITestAction.cs">
+</Event><Event ErrorLevel="0" Project="Interface" Source="Interface\ITestBrowser.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Interface\ITestBrowser.cs">
+</Event><Event ErrorLevel="0" Project="Interface" Source="Interface\ITestObjectPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Interface\ITestObjectPool.cs">
+</Event><Event ErrorLevel="0" Project="Interface" Source="Interface\ITestVP.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Interface\ITestVP.cs">
+</Event><Event ErrorLevel="0" Project="Interface" Source="Interface\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Interface\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="Interface" Source="Interface\Interface.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Interface" Source="Interface\Interface.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HtmlUtility.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HtmlUtility.csproj">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestAction.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestAction.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLGuiTestObject.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLGuiTestObject.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestButton.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestButton.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestCheckBox.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestCheckBox.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestComboBox.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestComboBox.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestFileDialog.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestFileDialog.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestImage.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestImage.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestLink.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestLink.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestListBox.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestListBox.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestMsgBox.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestMsgBox.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestObject.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestObject.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObjectPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObjectPool.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestRadioButton.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestRadioButton.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestTable.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestTable.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestObject\HTMLTestTextBox.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestObject\HTMLTestTextBox.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestVP.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestVP.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HTMLTestBrowser.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\HTMLTestBrowser.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\HTMLUtility\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HtmlUtility.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="HtmlUtility" Source="HTMLUtility\HtmlUtility.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\Framework.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\Framework\Framework.csproj">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\ActionEngine.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\ActionEngine.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\AutoConfig.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\AutoConfig.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\CoreEngine.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\CoreEngine.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\DataEngine.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\DataEngine.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\ExceptionEngine.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\ExceptionEngine.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\Parser.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\Parser.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\LogEngine.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\LogEngine.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\ObjectEngine.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\ObjectEngine.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\SubEngine.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\SubEngine.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\TestFactory.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\TestFactory.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\TestJob.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\TestJob.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\VPEngine.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Framework\VPEngine.cs">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\Framework.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Framework" Source="Framework\Framework.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\DataUtility.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\DataUtility.csproj">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\AccessDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\AccessDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\CSVDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\CSVDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\DB2DataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\DB2DataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\ExcelDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\ExcelDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\MSSqlserverDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\MSSqlserverDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\MySqlDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\MySqlDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\NetworkDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\NetworkDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\OracleDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\OracleDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\SyBaseDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\SyBaseDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\TXTDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\TXTDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\XMLDataPool.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\DataUtility\XMLDataPool.cs">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\DataUtility.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="DataUtility" Source="DataUtility\DataUtility.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="FlexUtility" Source="FlexUtility\FlexUtility.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\FlexUtility\FlexUtility.csproj">
+</Event><Event ErrorLevel="0" Project="FlexUtility" Source="FlexUtility\Class1.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\FlexUtility\Class1.cs">
+</Event><Event ErrorLevel="0" Project="FlexUtility" Source="FlexUtility\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\FlexUtility\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="FlexUtility" Source="FlexUtility\FlexUtility.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="FlexUtility" Source="FlexUtility\FlexUtility.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="SilverLightUtility" Source="SilverLightUtility\SilverLightUtility.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\SilverLightUtility\SilverLightUtility.csproj">
+</Event><Event ErrorLevel="0" Project="SilverLightUtility" Source="SilverLightUtility\Class1.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\SilverLightUtility\Class1.cs">
+</Event><Event ErrorLevel="0" Project="SilverLightUtility" Source="SilverLightUtility\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\SilverLightUtility\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="SilverLightUtility" Source="SilverLightUtility\SilverLightUtility.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="SilverLightUtility" Source="SilverLightUtility\SilverLightUtility.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\GUI.csproj" Description="Project file successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\GUI.csproj">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\GUI.csproj.user" Description="Project user file successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\GUI.csproj.user">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\About.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\About.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\About.Designer.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\About.Designer.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\MonitorFrm.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\MonitorFrm.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\MonitorFrm.Designer.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\MonitorFrm.Designer.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\MainFrm.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\MainFrm.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\MainFrm.Designer.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\MainFrm.Designer.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Program.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Program.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Properties\AssemblyInfo.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Properties\AssemblyInfo.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Properties\Resources.Designer.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Properties\Resources.Designer.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Properties\Settings.Designer.cs" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Properties\Settings.Designer.cs">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Properties\Settings.settings" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Properties\Settings.settings">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\app.config" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\app.config">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Resources\run3.png" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Resources\run3.png">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Resources\stop2.png" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Resources\stop2.png">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Resources\copy.png" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Resources\copy.png">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Resources\Highlight2.PNG" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Resources\Highlight2.PNG">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Resources\Pause.png" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Resources\Pause.png">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Resources\start2.png" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Resources\start2.png">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Resources\clear.png" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Resources\clear.png">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\AutoTester.ico" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\AutoTester.ico">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\AutoTester2.ico" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\AutoTester2.ico">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\About.resx" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\About.resx">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\MonitorFrm.resx" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\MonitorFrm.resx">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\MainFrm.resx" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\MainFrm.resx">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\Properties\Resources.resx" Description="File successfully backed up as E:\program\cs\AutoTester\Backup\Monitor\Properties\Resources.resx">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\GUI.csproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="GUI" Source="Monitor\GUI.csproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="AutoTester.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="AutoTester.sln" Description="Converted">
+</Event><Event ErrorLevel="0" Project="Function" Source="Functional\Function.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="AutoTester" Source="AutoTester\AutoTester.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Win32API" Source="Win32API\Win32API.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Interface" Source="Interface\Interface.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="HtmlUtility" Source="HTMLUtility\HtmlUtility.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="Framework" Source="Framework\Framework.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="DataUtility" Source="DataUtility\DataUtility.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="FlexUtility" Source="FlexUtility\FlexUtility.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="SilverLightUtility" Source="SilverLightUtility\SilverLightUtility.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event><Event ErrorLevel="0" Project="GUI" Source="Monitor\GUI.csproj" Description="Scan complete: Upgrade not required for project files.">
+</Event></UpgradeLog>
