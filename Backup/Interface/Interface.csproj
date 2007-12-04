@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ITestAction.cs" />
+    <Compile Include="ITestApp.cs" />
     <Compile Include="ITestBrowser.cs" />
     <Compile Include="ITestObjectPool.cs" />
     <Compile Include="ITestVP.cs" />

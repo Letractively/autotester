@@ -24,8 +24,12 @@ namespace Shrinerain.AutoTester.Function
     public class TestException : Exception
     {
         #region fields
+
+        //domain means the kind of test object. for example, HTML is a domain.
         protected string _domain;
         protected string _url;
+
+        //the source object which throw the expcetion.
         protected TestObject _obj;
         #endregion
 

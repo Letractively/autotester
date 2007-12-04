@@ -375,13 +375,15 @@ namespace Shrinerain.AutoTester.Function
 
         #region public methods
 
+        /* void Dispose()
+         * when GC, close the StreamWriter.
+         */
         public virtual void Dispose()
         {
             if (this._logWriter != null)
             {
                 WriteTail();
 
-                // this._logWriter.Flush();
                 this._logWriter.Close();
                 this._logWriter = null;
             }
@@ -393,13 +395,17 @@ namespace Shrinerain.AutoTester.Function
         {
             Dispose();
         }
-        //flush buffer string to file.
+
+        /* void WriteLog()
+         * Flush buffer string to file.
+         */
         public void WriteLog()
         {
             if (this._logWriter == null)
             {
                 try
                 {
+                    //load log template file to buffer.
                     LoadTemplate(this._testlogTemplate);
 
                     if (File.Exists(this._logFile))
@@ -409,6 +415,7 @@ namespace Shrinerain.AutoTester.Function
 
                     this._logWriter = File.CreateText(this._logFile);
 
+                    // write template head
                     WriteHead();
                 }
                 catch (Exception e)
@@ -417,10 +424,14 @@ namespace Shrinerain.AutoTester.Function
                 }
             }
 
+            //write template body
             WriteBody();
 
         }
 
+        /* void WriteInfo(string info)
+         * These 3 methods is for customers, like XDE Tester.
+         */
         public void WriteInfo(string info)
         {
 
@@ -437,6 +448,10 @@ namespace Shrinerain.AutoTester.Function
         }
 
         #region save screen print
+
+        /* void SaveScreenPrint(string filePath, string fileName)
+         * Save current screen print to a local jpg file.
+         */
         public void SaveScreenPrint(string filePath, string fileName)
         {
             if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileName))
@@ -489,12 +504,14 @@ namespace Shrinerain.AutoTester.Function
 
 
         #region write log
-        // I divide the test log to three parts, head, body and tail.
-        // the three part are surround by <%HEAD%> , <%BODY%> and <%TAIL%>
-        // Head and tail are the information for whole project, they just be writen once in a log.
-        // body means the repeated information about the testing, for example: test step may change rapidly, 
-        // we may have lots of steps to log. they are repeated, we need to write the log with the same format but different
-        // data.
+        /* void WriteHead()
+         * I divide the test log to three parts, head, body and tail.
+         * the three part are surround by <%HEAD%> , <%BODY%> and <%TAIL%>
+         * Head and tail are the information for whole project, they just be writen once in a log.
+         * body means the repeated information about the testing, for example: test step may change rapidly, 
+         * we may have lots of steps to log. they are repeated, we need to write the log with the same format but different
+         * data.
+         */
         protected void WriteHead()
         {
             MatchCollection headKeywords = _keywordReg.Matches(this._templateHeadBuf.ToString());
@@ -569,6 +586,10 @@ namespace Shrinerain.AutoTester.Function
 
         #region parse template
 
+        /* bool IsValidTemplate(string fileName)
+         * return true if the input file is a valid template.
+         * 
+         */
         protected bool IsValidTemplate(string fileName)
         {
             if (!File.Exists(fileName))
@@ -576,6 +597,7 @@ namespace Shrinerain.AutoTester.Function
                 return false;
             }
 
+            //check if the extension is ".template"
             if (!fileName.ToUpper().EndsWith(".TEMPLATE"))
             {
                 return false;
@@ -584,6 +606,10 @@ namespace Shrinerain.AutoTester.Function
             return true;
         }
 
+        /* void LoadTemplate(string fileName)
+         * Load the file content to buffer.
+         * we have 3 buffers, HEAD, BODY, and TAIL
+         */
         protected void LoadTemplate(string fileName)
         {
             if (IsValidTemplate(fileName))
@@ -607,6 +633,9 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* StringBuilder GetTemplatePart(string templateBuf, string flag)
+         * Load template to buffer
+         */
         protected StringBuilder GetTemplatePart(string templateBuf, string flag)
         {
             string startFlag = "<%" + flag.ToUpper() + "%>";
@@ -632,6 +661,9 @@ namespace Shrinerain.AutoTester.Function
 
         #endregion
 
+        /*  void SetTemplateValueByName(StringBuilder templateBuf, string propertyName)
+         *  Replace the keyword in template file with actual value.
+         */
         protected void SetTemplateValueByName(StringBuilder templateBuf, string propertyName)
         {
             string value = GetFieldValueByName(propertyName);
@@ -653,6 +685,9 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* string GetFieldValueByName(string propertyName)
+         * Get property value, use reflecting.
+         */
         protected string GetFieldValueByName(string propertyName)
         {
 
@@ -667,7 +702,9 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
-        //replace unused keyword to blank "&nbsp;" 
+        /* void ClearLeftKeywords(StringBuilder templateBuf)
+         * replace unused keyword to blank "&nbsp;" 
+         */
         protected void ClearLeftKeywords(StringBuilder templateBuf)
         {
             if (templateBuf == null)
@@ -685,11 +722,18 @@ namespace Shrinerain.AutoTester.Function
         }
 
         #region save screen print
+
+        /* Image CaptureScreen()
+         * return an image of screen.
+         */
         protected Image CaptureScreen()
         {
             return CaptureWindow(Win32API.GetDesktopWindow());
         }
 
+        /* Image CaptureWindow(IntPtr handle)
+         * return an image of expected handle.
+         */
         protected Image CaptureWindow(IntPtr handle)
         {
             try

@@ -36,7 +36,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
-
         #region Properties
 
         #endregion
