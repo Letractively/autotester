@@ -1,3 +1,21 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: KeyboardOp.cs
+*
+* Description: This class defines the actions of keyborad.
+*              you can input any keys. 
+*              for special keys like tab, ctrl, you need to use {}.
+*              like {tab} etc.
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Text;
 using System.Windows.Forms;
@@ -18,6 +36,11 @@ namespace Shrinerain.AutoTester.Win32
 
 
         #region public methods
+
+        /* void SendChars(string str)
+         * send normal characters to system. 
+         * except special keys like tab, ctrl etc.
+         */
         public static void SendChars(string str)
         {
             Win32API.INPUT[] structInput = new Win32API.INPUT[1];
@@ -71,8 +94,10 @@ namespace Shrinerain.AutoTester.Win32
 
         }
 
-
-        //send special keys, like {ctrl}...
+        /* void SendKey(string keys)
+         * send special keys to system. should use {}.
+         * for example, if you want to send tab to system. uses {tab}.
+         */
         public static void SendKey(string keys)
         {
             SendKeys.SendWait(keys);
@@ -82,10 +107,6 @@ namespace Shrinerain.AutoTester.Win32
 
         #region private methods
 
-        private void SendStr(string str)
-        {
-
-        }
         #endregion
     }
 }

@@ -8,7 +8,7 @@
 *
 * Description: TestBrowser support Internet Explorer. It implent 
 *              ITestBrowser interface. You can use TestBrowser to 
-*              interactive with Internet Exploter, and get the information
+*              interactive with Internet Explorer, and get the information
 *              of Internet Explorer. 
 *
 * History: 2007/09/04 wan,yu Init version
@@ -61,7 +61,7 @@ namespace Shrinerain.AutoTester.Function
         //handle of shell doc.
         protected static IntPtr _shellDocHandle;
 
-        //InternetExplorer is under SHDocVw namespace, we use this to attach to an browser.
+        //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
         protected InternetExplorer _ie = null;
 
         //HTML dom, we use HTML dom to get the HTML object.
@@ -1136,7 +1136,11 @@ namespace Shrinerain.AutoTester.Function
             return IntPtr.Zero;
         }
 
-
+        /*  HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
+         *  return HTMLDocument from a handle.
+         *  When we get a pop up window, we need to get it's HTML Dom to get HTML object.
+         *  So we need to convert it's handle to HTML Document.
+         */
         protected virtual HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
         {
 
@@ -1167,6 +1171,10 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /*  void RegStartDownloadEvent()
+         *  Register event when the browser is starting to download a web page.
+         * 
+         */
         protected virtual void RegStartDownloadEvent()
         {
             try
@@ -1179,6 +1187,10 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* void RegOnNewWindowEvent()
+         * register event when a new window pops up.
+         * Notice: need update!
+         */
         protected virtual void RegOnNewWindowEvent()
         {
             try
@@ -1193,6 +1205,10 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        /* void RegScrollEvent()
+         * register event when scroll bar scroll.
+         * Notice: current we don't need this event.
+         */
         protected virtual void RegScrollEvent()
         {
 
@@ -1202,7 +1218,9 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
-        //document/(html page) load complete
+        /* void RegDocumentLoadCompleteEvent()
+         * register event when the browser load a web page succesfully.
+         */
         protected virtual void RegDocumentLoadCompleteEvent()
         {
             try
@@ -1215,7 +1233,9 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
-        //resize the window
+        /*  void RegRectChangeEvent()
+         *  register event when the size of the browser changed.
+         */
         protected virtual void RegRectChangeEvent()
         {
             try
@@ -1231,7 +1251,9 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
-        //load url failed
+        /* void RegNavigateFailedEvent()
+         * register event when the browser failed to load a url.
+         */
         protected virtual void RegNavigateFailedEvent()
         {
             try
@@ -1244,13 +1266,19 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        /* void OnNavigateError
+         * the callback function to handle navigate error.
+         */
         protected virtual void OnNavigateError(object pDisp, ref object URL, ref object Frame, ref object StatusCode, ref bool Cancel)
         {
             throw new CanNotLoadUrlException();
         }
 
 
-        //fire when new web page pops up, eg. javascript: window.open
+        /* void OnNewWindow2(ref object ppDisp, ref bool Cancel)
+         * the callback function to handle new window.
+         * Notice: need update!!
+         */
         protected void OnNewWindow2(ref object ppDisp, ref bool Cancel)
         {
             System.Windows.Forms.MessageBox.Show("new window2!");
@@ -1263,25 +1291,30 @@ namespace Shrinerain.AutoTester.Function
             throw new Exception("The method or operation is not implemented.");
         }
 
-
+        /* void OnDownloadBegin()
+         * the callback function to handle the browser starting download a web page.
+         */
         protected virtual void OnDownloadBegin()
         {
             //Console.WriteLine("Download begin");
             this._startDownload.Set();
         }
 
-        //when document load complete, we can start to operate the html controls
+        /* void OnDocumentLoadComplete(object pDesp, ref object pUrl)
+         * the callback function to hanle the browser finishing download a web page.
+         * when downloading complete, we can start to calculate the position of the web page.
+         */
         protected virtual void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
             try
             {
-                //Console.WriteLine("TestBrowser");
 
                 this._HTMLDom = (HTMLDocument)_ie.Document;
 
                 GetSize();
 
-                // Thread.Sleep(1000 * 1);
+                _documentLoadComplete.Set();
+
 
             }
             catch (TestBrowserNotFoundException)
@@ -1292,15 +1325,13 @@ namespace Shrinerain.AutoTester.Function
             {
                 throw new CanNotAttachTestBrowserException("Can not parse html document.");
             }
-            finally
-            {
-                // Console.WriteLine("set");
-                _documentLoadComplete.Set();
-            }
 
         }
 
-        //when the position or rect of ie is changed, we need to re-calculate the position of html controls.
+        /* void OnRectChanged(int size)
+         * the callback function to handle the browser changed it's position or size.
+         * when the browser chaneged it's size, we need to re-calculate the position.
+         */
         protected virtual void OnRectChanged(int size)
         {
             try

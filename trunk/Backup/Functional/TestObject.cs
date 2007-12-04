@@ -29,13 +29,19 @@ namespace Shrinerain.AutoTester.Function
 
         protected string _name;
         protected string _id;
+
+        //domain means the object type, eg: HTML
         protected string _domain;
+
+        //class means it's class, often used for Windows control. eg: Dialog.
         protected string _class;
         protected object _parent;
 
         protected bool _isVisible;
         protected bool _isInteractive;
 
+        // this hashtable is used to store properties for a test object.
+        // key is the property name.
         protected Dictionary<string, object> _properties;
 
         #endregion
@@ -82,6 +88,10 @@ namespace Shrinerain.AutoTester.Function
         #region public methods
 
         #region public method
+
+        /*  object GetPropertyByName(string propertyName)
+         *  get the expected property value.
+         */
         public virtual object GetPropertyByName(string propertyName)
         {
             if (String.IsNullOrEmpty(propertyName))
@@ -95,6 +105,10 @@ namespace Shrinerain.AutoTester.Function
             }
             return res;
         }
+
+        /* SetPropertyByName(string propertyName, object value)
+         * set the expected property, return true if successful.
+         */
         public virtual bool SetPropertyByName(string propertyName, object value)
         {
             if (String.IsNullOrEmpty(propertyName))
@@ -128,6 +142,9 @@ namespace Shrinerain.AutoTester.Function
             return this._isInteractive;
         }
 
+        /* void HightLight()
+         * highlight the object, we can see a red rectangle around the object.
+         */
         public virtual void HightLight()
         {
 
@@ -144,7 +161,7 @@ namespace Shrinerain.AutoTester.Function
 
         public virtual TestObject GetParent()
         {
-            return null;
+            return (TestObject)this._parent;
         }
         #endregion
 
