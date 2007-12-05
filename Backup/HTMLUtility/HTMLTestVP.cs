@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: HTMLTestVP.cs
+*
+* Description: This class implements ITestVP
+*              It provide the check point actions for HTML testing.
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,6 +49,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ITestVP Members
 
+        /* bool PerformStringTest(object testObj, string vpProperty, string expectResult, VPCheckType type, out object actualResult)
+         * return true if the expected string is the same with the expected property.
+         * 
+         */
         public bool PerformStringTest(object testObj, string vpProperty, string expectResult, VPCheckType type, out object actualResult)
         {
             bool result = false;
@@ -43,6 +63,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 HTMLTestObject obj = (HTMLTestObject)testObj;
 
+                //get actual property value
                 actualResult = obj.GetPropertyByName(vpProperty).ToString();
 
                 if (!String.IsNullOrEmpty(actualResult.ToString()))

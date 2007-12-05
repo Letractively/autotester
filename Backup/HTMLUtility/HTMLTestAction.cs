@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: HTMLTestAction.cs
+*
+* Description: This class implement ITestAction, support the actions 
+*              on HTML page. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,13 +31,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region fields
 
-
+        //we convert an object to an interface, use this interface to perform actual action
         private IClickable _clickObj;
         private IInputable _inputObj;
         private ISelectable _selectObj;
 
-        //   private HTMLTestObject _htmlTestObject;
-        //    private HTMLGuiTestObject _htmlGUITestObject;
         #endregion
 
         #region ITestAction Members
@@ -260,7 +274,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Hover(object obj)
         {
-            throw new Exception("The method or operation is not implemented.");
+            _clickObj = (IClickable)obj;
+            _clickObj.Hover();
         }
 
         public void Drag(object obj, int endX, int endY)
