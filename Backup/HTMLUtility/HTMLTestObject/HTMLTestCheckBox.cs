@@ -4,11 +4,13 @@
 * AutoTester is a free software, you can use it in any commercial work. 
 * But you CAN NOT redistribute it and/or modify it.
 *--------------------------------------------------------------------
-* Component: 
+* Component: HTMLTestCheckBox.cs
 *
-* Description:
+* Description: This class defines the actions provide by CheckBox.
+*              The important actions include "Check","UnCheck".
+* 
 *
-* History:
+* History: 2007/09/04 wan,yu Init version
 *
 *********************************************************************/
 
@@ -27,8 +29,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region fields
 
-        protected mshtml.IHTMLInputElement _checkBoxElement;
-
+        //the HTML element of HTMLTestCheckBox.
+        protected IHTMLInputElement _checkBoxElement;
 
         #endregion
 

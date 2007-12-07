@@ -1,7 +1,23 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: HTMLTestListBox.cs
+*
+* Description: This class defines the actions provide by Listbox.
+*              the important actions include "Select" and "SelectByIndex"
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+
 using mshtml;
 
 using Shrinerain.AutoTester.Interface;
@@ -96,25 +112,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
+
+                //get the windows handle
                 IntPtr listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, "Internet Explorer_TridentLstBox", null);
                 while (listboxHandle != IntPtr.Zero)
                 {
+                    // get the rect of this control
                     Win32API.Rect tmpRect = new Win32API.Rect();
                     Win32API.GetWindowRect(listboxHandle, ref tmpRect);
                     int centerX = (tmpRect.right - tmpRect.left) / 2 + tmpRect.left;
                     int centerY = (tmpRect.bottom - tmpRect.top) / 2 + tmpRect.top;
 
+                    //if the control has the same position with our HTML test object, that means we find it.
                     if ((centerX > this.Rect.Left && centerX < this.Rect.Left + this.Rect.Width) && (centerY > this.Rect.Top && centerY < this.Rect.Top + this.Rect.Height))
                     {
                         this._handle = listboxHandle;
-
-                        //   Rectangle newRect = new Rectangle(tmpRect.left, tmpRect.top, tmpRect.Width, tmpRect.Height);
-                        //  this.Rect = newRect;
 
                         break;
                     }
                     else
                     {
+                        //else, go to next listbox
                         listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, listboxHandle, "Internet Explorer_TridentLstBox", null);
                     }
                 }
