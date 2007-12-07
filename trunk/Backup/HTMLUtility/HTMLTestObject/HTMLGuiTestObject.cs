@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: HTMLGuiTestObject.cs
+*
+* Description: This class defines the methods for HTML GUI testing.
+*              It will calculate the screen position for GUI object. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,14 +34,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region fields
 
+        //the rectangle on screen of the object.
         protected Rectangle _rect;
 
         //sync event to ensure action is finished before next step.
         protected static AutoResetEvent _actionFinished = new AutoResetEvent(true);
 
-
-        //dthread to high light a rect.
-        // private static Thread _highLightThread;
 
         #endregion
 
@@ -52,6 +66,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLGuiTestObject(IHTMLElement element)
             : base(element)
         {
+            //when init, get the position information.
             GetRectOnScreen();
         }
 
@@ -64,6 +79,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
+        /* void Dispose()
+         * When GC, close AutoResetEvent
+         */
         public override void Dispose()
         {
             try
@@ -84,6 +102,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        /* Point GetCenterPoint()
+         * Get the center point of the object.
+         * Some actions like click, we need to find the center point, and move mouse to the point.
+         */
         public virtual Point GetCenterPoint()
         {
             Point tmp = new Point();
@@ -95,15 +117,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
 
-        //get the object rect
+        /* Rectangle GetRectOnScreen()
+         * Get the rectangle on screen of the object.
+         * we use HTML dom to calculate the rect.
+         */
         public Rectangle GetRectOnScreen()
         {
-
+            // get it's position offset to it's parent object.
             int top = _sourceElement.offsetTop;
             int left = _sourceElement.offsetLeft;
             int width = _sourceElement.offsetWidth;
             int height = _sourceElement.offsetHeight;
 
+            //find parent object, calculate 
             IHTMLElement parent = _sourceElement.offsetParent;
             while (parent != null)
             {
@@ -112,6 +138,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 parent = parent.offsetParent;
             }
 
+            //get the browser information, get the real position on screen.
             top += HTMLTestBrowser.ClientTop;
             left += HTMLTestBrowser.ClientLeft;
             top -= HTMLTestBrowser.ScrollTop;
@@ -122,16 +149,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return Rect;
         }
 
+        /* Bitmap GetControlPrint()
+         * return the image of the object.
+         */
         public virtual Bitmap GetControlPrint()
         {
             return null;
         }
 
+        /* void Hover()
+         * Move the mouse to the object.
+         * This is a very important methods.
+         * All the GUI actions like click, input, we need to move the mouse to the object first.
+         */
         public virtual void Hover()
         {
             try
             {
+                //if the object is not visible, then move it.
                 ScrollIntoView(false);
+
+                //get the center point of the object, and move mouse to it.
                 Point tmp = this.GetCenterPoint();
                 MouseOp.MoveTo(tmp.X, tmp.Y);
             }
@@ -141,7 +179,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public override void HightLight()
+        /*  void HighLight()
+         *  Highlight the object, we will see a red rect around the object.
+         */
+        public override void HighLight()
         {
             try
             {
@@ -167,33 +208,47 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        // if the object is out of page view, scroll it to make it is visible.
+        /* void ScrollIntoView(bool toTop)
+         * if the object is out of page view, scroll it to make it is visible.
+         * Like some very long page, we can not see everything, we need to move the scrollbar to see
+         * the bottom object.
+         */
         protected virtual void ScrollIntoView(bool toTop)
         {
+            //first, get the current position.
             int right = this._rect.X + this._rect.Width;
             int buttom = this._rect.Y + this._rect.Height;
 
             int currentWidth = HTMLTestBrowser.ClientLeft + HTMLTestBrowser.ClientWidth;
             int currentHeight = HTMLTestBrowser.ClientTop + HTMLTestBrowser.ClientHeight;
 
+            //if the object is not visible, then move the scrollbar.
             if (right > currentWidth || buttom > currentHeight)
             {
                 this._sourceElement.scrollIntoView(toTop);
+
+                //re-calculate the position, because we had move it.
                 this.Rect = GetRectOnScreen();
             }
 
         }
 
+        /* void HighLightRectCallback(Object obj)
+         * callback function to highlight the object.
+         */
         protected virtual void HighLightRectCallback(Object obj)
         {
             HighLightRect(false);
         }
 
+        /* void HighLightRect(bool isWindowsControl)
+         * Highlight the object.
+         * is it is not a windows control, we need to minus the browser position.
+         */
         protected virtual void HighLightRect(bool isWindowsControl)
         {
             try
             {
-                //Console.WriteLine("HighLight!!!");
 
                 int left = this._rect.Left;
                 int top = this._rect.Top;
