@@ -23,6 +23,8 @@ namespace Shrinerain.AutoTester.Function.Interface
     public interface IStateChangeable
     {
         object GetCurrentState();
+
+        //check if it is ready for testing.
         bool IsReady();
     }
 }
