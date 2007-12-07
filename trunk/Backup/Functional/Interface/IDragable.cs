@@ -22,6 +22,7 @@ namespace Shrinerain.AutoTester.Function.Interface
 {
     public interface IDragable : IVisible, IInteractive
     {
+        //drag the object to a point
         void Drag(Point start, Point end);
     }
 }

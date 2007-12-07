@@ -22,8 +22,13 @@ namespace Shrinerain.AutoTester.Function.Interface
 {
     public interface ISelectable : IInteractive, IShowInfo
     {
+        //select the item by it's text
         void Select(string str);
+
+        //select the item by it's index, eg: the 1st one.
         void SelectByIndex(int index);
+
+        //get all values of a select object.
         String[] GetAllValues();
     }
 }

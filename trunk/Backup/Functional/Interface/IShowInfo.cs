@@ -22,8 +22,13 @@ namespace Shrinerain.AutoTester.Function.Interface
 {
     public interface IShowInfo : IVisible
     {
+        //get the text on the object
         string GetText();
+
+        //get the font style, like color=red, size=28
         string GetFontStyle();
+
+        //get the font family, like comic font.
         string GetFontFamily();
     }
 }

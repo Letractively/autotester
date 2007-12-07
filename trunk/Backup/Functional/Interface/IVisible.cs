@@ -23,10 +23,16 @@ namespace Shrinerain.AutoTester.Function.Interface
 {
     public interface IVisible
     {
+        //get the center point of the object
         Point GetCenterPoint();
+
+        //get the rectangle of the object on screen
         Rectangle GetRectOnScreen();
+
+        //get the image of the object
         Bitmap GetControlPrint();
 
-        void Hover(); //move mouse to the top of control
+        //move mouse to the top of control
+        void Hover();
     }
 }

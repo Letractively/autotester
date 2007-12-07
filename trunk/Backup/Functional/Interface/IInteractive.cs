@@ -23,8 +23,13 @@ namespace Shrinerain.AutoTester.Function.Interface
 {
     public interface IInteractive : IVisible
     {
+        //make the object get focus
         void Focus();
+
+        //get the default action, eg: "click" is the default action of a button
         object GetDefaultAction();
+
+        //for a button, the default action is "click"
         void PerformDefaultAction();
     }
 }

@@ -21,8 +21,13 @@ namespace Shrinerain.AutoTester.Function.Interface
 {
     public interface IInputable : IVisible, IInteractive, IShowInfo
     {
+        //input normal characters, like "asdf12345"
         void Input(string values);
+
+        //input special keys, like "tab, ctrl"
         void InputKeys(string keys);
-        void Clear(); //clear text.
+
+        //clear text.
+        void Clear();
     }
 }

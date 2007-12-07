@@ -22,7 +22,10 @@ namespace Shrinerain.AutoTester.Function.Interface
 {
     public interface IWindows
     {
+        //get the windows handle
         IntPtr GetHandle();
+
+        //get the windows class
         string GetClass();
     }
 }

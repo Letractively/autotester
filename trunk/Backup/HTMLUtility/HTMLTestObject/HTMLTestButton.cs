@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: HTMLTestButton.cs
+*
+* Description: This class defines the actions provide by button.
+*              The most important action is Click.
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,8 +31,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region fields
 
+        //the text on the button, like "Login"
         protected string _currentStr;
 
+        //the HTML element of the object. we build HTMLTestButton based on the HTML element.
         protected IHTMLInputElement _inputElement;
 
         #endregion
@@ -35,6 +53,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                // get the text , in HTML , it is .value property.
                 this._currentStr = element.getAttribute("value", 0).ToString();
             }
             catch
@@ -56,16 +75,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
+        /* void Click()
+         * Click on the button
+         */
         public virtual void Click()
         {
             try
             {
+                //wait last action finished.
                 _actionFinished.WaitOne();
 
+                //move the mouse to the center point of button.
+                // see the definition in HTMLGUiTestObject.cs
                 Hover();
 
+                //click
                 MouseOp.Click();
 
+                //action is finished, signal.
                 _actionFinished.Set();
 
             }
@@ -75,6 +102,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        /* void DoubleClick()
+         * Double click on the button
+         */
         public virtual void DoubleClick()
         {
             try
@@ -86,12 +116,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not perform double click action.");
+                throw new CanNotPerformActionException("Can not perform double click action: " + e.Message);
             }
         }
 
+        /* void RightClick()
+         * right click on the button
+         */
         public virtual void RightClick()
         {
             try
@@ -103,17 +136,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not perform right click action.");
+                throw new CanNotPerformActionException("Can not perform right click action: " + e.Message);
             }
         }
 
+        /* void MiddleClick()
+         * middle click on the button
+         */
         public virtual void MiddleClick()
         {
             throw new CanNotPerformActionException("Can not perform middle click.");
         }
 
+        #region IClickable methods
+        /* void Focus()
+         * make the button get focus, we click it
+         */
         public virtual void Focus()
         {
             Click();
@@ -129,6 +169,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             Click();
         }
 
+        #endregion
+
+
+        #region IShowInfo methods
 
         public virtual string GetText()
         {
@@ -144,6 +188,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             throw new PropertyNotFoundException();
         }
+        #endregion
 
         #endregion
 
