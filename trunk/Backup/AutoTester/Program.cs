@@ -30,9 +30,9 @@ namespace Shrinerain.AutoTester
     {
         static void Main(string[] args)
         {
-            //FrameworkEXE(args);
+            FrameworkEXE(args);
             //FunctionTest();
-            FrameworkTest();
+            //FrameworkTest();
             Console.ReadLine();
         }
 
