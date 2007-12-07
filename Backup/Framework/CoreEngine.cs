@@ -248,58 +248,61 @@ namespace Shrinerain.AutoTester.Framework
             {
                 PerformEnd();
             }
-
-            OnNewMessage(currentStep.ToString());
-
-            string command = currentStep._testCommand.ToUpper();
-
-            if (command == "BEGIN" || command == "START")
-            {
-                PerformBegin();
-            }
             else
             {
-                if (this._started)
-                {
-                    if (command == "COMMENTS" || command == "COMMENT")
-                    {
-                        PerformComments();
-                    }
-                    else if (command == "SKIP")
-                    {
-                        PerformSkip();
-                    }
+                OnNewMessage(currentStep.ToString());
 
-                    else if (command == "GO")
+                string command = currentStep._testCommand.ToUpper();
+
+                if (command == "BEGIN" || command == "START")
+                {
+                    PerformBegin();
+                }
+                else
+                {
+                    if (this._started)
                     {
-                        PerformGo(currentStep);
-                    }
-                    else if (command == "VP")
-                    {
-                        PerformVP(currentStep);
-                    }
-                    else if (command == "JUMP")
-                    {
-                        PerformJump(currentStep);
-                    }
-                    else if (command == "END")
-                    {
-                        PerformEnd();
-                    }
-                    else if (command == "EXIT" || command == "RETURN")
-                    {
-                        PerformExit();
-                    }
-                    else if (command == "CALL")
-                    {
-                        PerformCall(currentStep);
-                    }
-                    else
-                    {
-                        throw new UnSupportedKeywordException("Command:" + command + " is not supported.");
+                        if (command == "COMMENTS" || command == "COMMENT")
+                        {
+                            PerformComments();
+                        }
+                        else if (command == "SKIP")
+                        {
+                            PerformSkip();
+                        }
+
+                        else if (command == "GO")
+                        {
+                            PerformGo(currentStep);
+                        }
+                        else if (command == "VP")
+                        {
+                            PerformVP(currentStep);
+                        }
+                        else if (command == "JUMP")
+                        {
+                            PerformJump(currentStep);
+                        }
+                        else if (command == "END")
+                        {
+                            PerformEnd();
+                        }
+                        else if (command == "EXIT" || command == "RETURN")
+                        {
+                            PerformExit();
+                        }
+                        else if (command == "CALL")
+                        {
+                            PerformCall(currentStep);
+                        }
+                        else
+                        {
+                            throw new UnSupportedKeywordException("Command:" + command + " is not supported.");
+                        }
                     }
                 }
             }
+
 
         }
 
@@ -416,7 +419,7 @@ namespace Shrinerain.AutoTester.Framework
 
                 if (this._isHighligh)
                 {
-                    obj.HightLight();
+                    obj.HighLight();
                 }
 
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
@@ -437,7 +440,7 @@ namespace Shrinerain.AutoTester.Framework
 
                 TestObject obj = _objEngine.GetTestObject(step);
 
-                obj.HightLight();
+                obj.HighLight();
                 this._logEngine.SaveScreenPrint();
 
                 object actualReslut;

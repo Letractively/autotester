@@ -316,9 +316,9 @@ namespace Shrinerain.AutoTester.Framework
                 }
 
             }
-            catch
+            catch (Exception e)
             {
-                throw new BadFormatDrivenFileException("Can not parse driven file:" + drivenFile);
+                throw new BadFormatDrivenFileException("Can not parse driven file:" + drivenFile + " " + e.Message);
             }
             finally
             {

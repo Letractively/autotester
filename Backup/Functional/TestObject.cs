@@ -145,7 +145,7 @@ namespace Shrinerain.AutoTester.Function
         /* void HightLight()
          * highlight the object, we can see a red rectangle around the object.
          */
-        public virtual void HightLight()
+        public virtual void HighLight()
         {
 
         }

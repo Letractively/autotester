@@ -108,9 +108,9 @@ namespace Shrinerain.AutoTester.DataUtility
                 _myReader = _comm.ExecuteReader();
 
             }
-            catch
+            catch (Exception e)
             {
-                throw new IOException("Can not open " + this._fileName);
+                throw new IOException("Can not open " + this._fileName + " " + e.Message);
             }
 
         }
