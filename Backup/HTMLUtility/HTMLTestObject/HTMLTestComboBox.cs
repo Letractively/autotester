@@ -101,9 +101,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
+                this._class = "Internet Explorer_TridentCmboBx";
 
                 //find the windows handle of combo box, it's class name is "Internet Explorer_TridentCmboBx".
-                IntPtr comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, "Internet Explorer_TridentCmboBx", null);
+                IntPtr comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, this._class, null);
                 while (comboboxHandle != IntPtr.Zero)
                 {
                     //get the position of the control
@@ -121,7 +122,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     else
                     {
                         //not found, go to next control
-                        comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, comboboxHandle, "Internet Explorer_TridentCmboBx", null);
+                        comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, comboboxHandle, this._class, null);
                     }
                 }
 
@@ -238,9 +239,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "Select";
         }
 
-        public virtual void PerformDefaultAction()
+        public virtual void PerformDefaultAction(object para)
         {
-            SelectByIndex(0);
+            int index;
+            if (int.TryParse(para.ToString(), out index))
+            {
+                SelectByIndex(index);
+            }
+            else
+            {
+                Select(para.ToString());
+            }
         }
 
         #endregion
@@ -273,7 +282,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
         public virtual string GetClass()
         {
-            return "Internet Explorer_TridentCmboBx";
+            return this._class;
         }
 
         #endregion

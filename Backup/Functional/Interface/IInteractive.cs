@@ -30,6 +30,6 @@ namespace Shrinerain.AutoTester.Function.Interface
         object GetDefaultAction();
 
         //for a button, the default action is "click"
-        void PerformDefaultAction();
+        void PerformDefaultAction(object parameter);
     }
 }

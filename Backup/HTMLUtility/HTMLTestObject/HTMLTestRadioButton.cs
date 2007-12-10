@@ -103,7 +103,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "Check";
         }
 
-        public void PerformDefaultAction()
+        public void PerformDefaultAction(object para)
         {
             Check();
         }

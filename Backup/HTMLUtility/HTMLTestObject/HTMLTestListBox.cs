@@ -27,12 +27,14 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
+    //HTMLTestListBox is NOT a HTML control, it is a standard windows control.
     public class HTMLTestListBox : HTMLGuiTestObject, ISelectable, IWindows
     {
         #region fields
 
         //the item is selected.
         protected string _selectedValue;
+
         //all values of the listbox
         protected string[] _allValues;
 
@@ -106,15 +108,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._itemCountPerPage = int.Parse(element.getAttribute("size", 0).ToString());
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get size of list box.");
+                throw new CanNotBuildObjectException("Can not get size of list box: " + e.Message);
             }
             try
             {
+                this._class = "Internet Explorer_TridentLstBox";
 
                 //get the windows handle
-                IntPtr listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, "Internet Explorer_TridentLstBox", null);
+                IntPtr listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, this._class, null);
                 while (listboxHandle != IntPtr.Zero)
                 {
                     // get the rect of this control
@@ -133,7 +136,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     else
                     {
                         //else, go to next listbox
-                        listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, listboxHandle, "Internet Explorer_TridentLstBox", null);
+                        listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, listboxHandle, this._class, null);
                     }
                 }
 
@@ -153,6 +156,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
+                //get the height of each item.
                 this._itemHeight = Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_GETITEMHEIGHT), 0, 0);
             }
             catch
@@ -171,16 +175,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region public methods
+
+        /* void Select(string value)
+        *  Select an item by text.
+        *  This method will get the index by text, and call SelectByIndex method to perform action.
+        */
         public virtual void Select(string value)
         {
             int index;
 
+            //if input text is null, select the frist one.
             if (String.IsNullOrEmpty(value))
             {
                 index = 0;
             }
             else
             {
+                //get the actual index in the listbox items.
                 index = GetIndexByString(value);
             }
 
@@ -195,6 +206,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._allValues = GetAllValues();
             }
 
+            //check the index, if the index is smaller than 0 or larger than the capacity.
+            // set it to 0 or the last index.
             if (index < 0)
             {
                 index = 0;
@@ -210,10 +223,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 Hover();
 
+                //get the actual position on the screen.
                 Point itemPosition = GetItemPosition(index);
 
+                //click at this point.
                 MouseOp.Click(itemPosition.X, itemPosition.Y);
 
+                //refresh the selected value.
                 this._selectedValue = this._allValues[index];
 
                 _actionFinished.Set();
@@ -230,6 +246,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        /* String[] GetAllValues()
+         * Return the all items text of the listbox
+         */
         public String[] GetAllValues()
         {
             string[] values = new string[_htmlSelectClass.length];
@@ -250,14 +269,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        #region IWindows Interface
+
         public virtual IntPtr GetHandle()
         {
             return this._handle;
         }
+
         public virtual string GetClass()
         {
-            return "Internet Explorer_TridentLstBox";
+            return this._class;
         }
+
+        #endregion
+
+        #region IInteractive interface
 
         public virtual void Focus()
         {
@@ -270,10 +296,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "Select";
         }
 
-        public virtual void PerformDefaultAction()
+        public virtual void PerformDefaultAction(object para)
         {
-            SelectByIndex(0);
+            int index;
+            if (int.TryParse(para.ToString(), out index))
+            {
+                SelectByIndex(index);
+            }
+            else
+            {
+                Select(para.ToString());
+            }
+
         }
+
+        #endregion
 
         public virtual string GetText()
         {
@@ -294,12 +331,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        //protected virtual int GetSelectedIndex()
-        //{
-        //    return _htmlSelectClass.selectedIndex;
-        //}
+        /* int GetSelectedIndex()
+         * get the index of selected value.
+         */
+        protected virtual int GetSelectedIndex()
+        {
+            return _htmlSelectClass.selectedIndex;
+        }
 
-        protected string GetSelectedValue()
+        /* string GetSelectedValue()
+         * return the selected value.
+         */
+        protected virtual string GetSelectedValue()
         {
             if (this._allValues == null)
             {
@@ -317,17 +360,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        /* Point GetItemPosition(int index)
+         * Get the actual position on screen of the expected item index.
+         */
         protected virtual Point GetItemPosition(int index)
         {
-
+            //get the the first item index we can  see currently.
             int startIndex = GetTopIndex();
 
+            //if the index is smaller than 0 or larger than capacity
             if (startIndex < 0 || startIndex >= this._allValues.Length)
             {
-                throw new ItemNotFoundException("Can not get the position of item at index: " + ToString());
+                throw new ItemNotFoundException("Can not get the position of item at index: " + index.ToString());
             }
 
-            int positionFlag = -1; //0 for visible, 1 for smaller than TopIndex,2 for larger than LastIndex.
+            //0 for visible, 1 for smaller than TopIndex,2 for larger than LastIndex.
+            //if 0, we can see it directly without move the scroll bar.
+            //if 1, we need to move the scroll bar upward to see it.
+            //if 2, we need to move the scroll bar downward to see it.
+            int positionFlag = -1;
 
             if (index < startIndex)
             {
@@ -350,19 +401,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ItemNotFoundException("Can not get item: " + index.ToString());
             }
 
+            //find the position of the first visible item.
             int itemX = this.Rect.Width / 3 + this.Rect.Left;
             int itemY = this.Rect.Top + this.ItemHeight / 2;
 
             if (positionFlag == 0)
             {
+                //currently, we can see it, just click it.
                 itemY += (index - startIndex) * this.ItemHeight;
             }
             else if (positionFlag == 1)
             {
+                //we need to move the scroll bar upward.
                 Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_SETTOPINDEX), index, 0);
             }
             else if (positionFlag == 2)
             {
+                //we need to move the scroll bar downward, and recalculate the position.
                 int expectedStartIndex = index - this._itemCountPerPage + 1;
                 Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_SETTOPINDEX), expectedStartIndex, 0);
 
@@ -373,6 +428,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        /* int GetTopIndex()
+         * return the first item index we can see currently.
+         */
         protected virtual int GetTopIndex()
         {
             try
@@ -386,11 +444,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        //protected virtual int GetItemCountPerPage()
-        //{
-        //    return this._itemCountPerPage;
-        //}
-
+        /* int GetIndexByString(string value)
+         * get the index of expected text.
+         */
         protected virtual int GetIndexByString(string value)
         {
             if (this._allValues == null)
@@ -411,6 +467,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        /* void HighLightRectCallback(object obj)
+         * HTMLTestListBox is NOT a HTML object, it is a standard Windwos control.
+         * So we need to override this function.
+         */
         protected override void HighLightRectCallback(object obj)
         {
             base.HighLightRect(true);

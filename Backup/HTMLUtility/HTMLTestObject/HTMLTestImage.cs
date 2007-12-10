@@ -152,7 +152,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void PerformDefaultAction()
+        public void PerformDefaultAction(object para)
         {
             throw new Exception("The method or operation is not implemented.");
         }
