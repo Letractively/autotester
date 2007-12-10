@@ -9,7 +9,7 @@
 * Description: This class defines the actions provide by MessageBox.
 *              MessageBox can have different buttons. It is a standard
 *              Windows control. 
-*              The Important actions include "OK","YES","NO","Cancel".
+*              The Important actions include "Click".
 * 
 *
 * History: 2007/12/10 wan,yu Init version.
@@ -96,17 +96,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
 
                 //firstly we need to get the handle.
+                // the first handle is for the icon.
                 IntPtr messageHandle = Win32API.FindWindowEx(this._handle, IntPtr.Zero, "Static", null);
-                messageHandle = Win32API.FindWindowEx(this._handle, messageHandle, "Static", null);
 
-                StringBuilder text = new StringBuilder(50);
-                Win32API.GetWindowText(messageHandle, text, 50);
-
-                this._message = text.ToString();
-
-                if (String.IsNullOrEmpty(this._message))
+                if (messageHandle == IntPtr.Zero)
                 {
-                    throw new CanNotBuildObjectException("Can not Can not get the message text");
+                    throw new CanNotBuildObjectException("Can not get icon handle.");
+                }
+                else
+                {
+                    //the 2nd handle is the actual handle for the text.
+                    messageHandle = Win32API.FindWindowEx(this._handle, messageHandle, "Static", null);
+
+                    if (messageHandle == IntPtr.Zero)
+                    {
+                        throw new CanNotBuildObjectException("Can not get text handle.");
+                    }
+                    else
+                    {
+                        StringBuilder text = new StringBuilder(50);
+                        Win32API.GetWindowText(messageHandle, text, 50);
+
+                        this._message = text.ToString();
+
+                        if (String.IsNullOrEmpty(this._message))
+                        {
+                            throw new CanNotBuildObjectException("Can not Can not get the message text");
+                        }
+                    }
+
                 }
 
             }
@@ -120,26 +138,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             //get icon
-            try
-            {
-                //javascript window.alert can only generate info type.
-                this._icon = HTMLTestMsgBoxIcon.Info;
-            }
-            catch (System.Exception e)
-            {
-
-            }
+            //java script window.alert can only generate info type.
+            this._icon = HTMLTestMsgBoxIcon.Info;
 
             //get button groups
-            try
-            {
-                //javascript window.alert can only generate "OK" button.
-                _buttons = new string[] { "OK" };
-            }
-            catch (System.Exception e)
-            {
-
-            }
+            //java script window.alert can only generate "OK" button.
+            _buttons = new string[] { "OK" };
 
 
         }
@@ -154,7 +158,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public override Rectangle GetRectOnScreen()
         {
-            return base.GetRectOnScreen();
+            //firstly, we need to find the button handle.
+            IntPtr okHandle = Win32API.FindWindowEx(this._handle, IntPtr.Zero, "Button", null);
+
+            if (okHandle == IntPtr.Zero)
+            {
+                throw new CanNotBuildObjectException("Can not get the OK button.");
+            }
+            else
+            {
+                //get the actual position.
+                Win32API.Rect tmp = new Win32API.Rect();
+                Win32API.GetClientRect(okHandle, ref tmp);
+
+                Rectangle tmpRect = new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height);
+                return tmpRect;
+            }
         }
 
 
@@ -193,9 +212,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IClickable Members
 
+        /* void Click()
+         * Click the button of Message box.
+         */
         public void Click()
         {
+            try
+            {
+                _actionFinished.WaitOne();
 
+                Point point = GetCenterPoint();
+
+                MouseOp.Click(point.X, point.Y);
+
+                _actionFinished.Set();
+            }
+            catch (Exception e)
+            {
+                throw new CanNotPerformActionException("Can not click on message box: " + e.Message);
+            }
         }
 
         public void DoubleClick()
@@ -224,12 +259,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public object GetDefaultAction()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return "Click";
         }
 
         public void PerformDefaultAction(object parameter)
         {
-            throw new Exception("The method or operation is not implemented.");
+            Click();
         }
 
         #endregion
