@@ -164,7 +164,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "Click";
         }
 
-        public virtual void PerformDefaultAction()
+        public virtual void PerformDefaultAction(object para)
         {
             Click();
         }

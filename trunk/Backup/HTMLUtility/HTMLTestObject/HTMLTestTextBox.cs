@@ -121,9 +121,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "Input";
         }
 
-        public virtual void PerformDefaultAction()
+        public virtual void PerformDefaultAction(object para)
         {
-            Input("");
+            Input(para.ToString());
         }
 
         public virtual string GetText()

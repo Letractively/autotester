@@ -1,3 +1,18 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: HTMLTestLink.cs
+*
+* Description: This class defines the actions provide by Link.
+*              The important actions is "Click". 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,13 +29,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region fields
 
+        //the url of this link
         protected string _href;
+
+        //the text of the link if it is a text link.
         protected string _linkText;
+
+        //the image of the link if it is a image link.
         protected IHTMLImgElement _linkImgElement;
 
+        //for link, we can have child image.
         protected object[] _childeren;
 
-        //  protected HTMLLinkElement _linkElement;
+        // the HTML element of link.
         protected HTMLAnchorElement _acnchorElement;
 
         #endregion
@@ -54,7 +75,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _acnchorElement = (HTMLAnchorElement)element;
-                // _linkElement = (HTMLLinkElement)element;
             }
             catch (Exception e)
             {
@@ -63,38 +83,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                _linkText = _acnchorElement.innerText; //_linkElement.innerText;
+                //get the link text
+                _linkText = _acnchorElement.innerText;
             }
             catch
             {
                 _linkText = "";
             }
+
             try
             {
+                // if the text is null, it maybe a image link, try to get the image.
                 if (String.IsNullOrEmpty(_linkText))
                 {
                     _linkImgElement = (IHTMLImgElement)_acnchorElement.firstChild;
                 }
             }
-            catch
+            catch (Exception e)
             {
-
+                throw new CanNotBuildObjectException("Can not get the image of link: " + e.Message);
             }
+
             try
             {
-                // _childeren=_linkElement.ch
+                //get the url of the link.
+                _href = _acnchorElement.href;
             }
-            catch
+            catch (Exception e)
             {
-
-            }
-            try
-            {
-                _href = _acnchorElement.href; //_linkElement.href;
-            }
-            catch
-            {
-                throw new CanNotBuildObjectException("Can not get href of link.");
+                throw new CanNotBuildObjectException("Can not get href of link: " + e.Message);
             }
 
         }
@@ -103,6 +120,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
+        /* void Click()
+         * Click on link
+         */
         public virtual void Click()
         {
             try
@@ -146,30 +166,36 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "Click";
         }
 
-        public virtual void PerformDefaultAction()
+        public virtual void PerformDefaultAction(object para)
         {
             Click();
         }
 
         public virtual Object[] GetChildren()
         {
-            if (_childeren == null)
+            if (_childeren != null)
             {
-
+                return _childeren;
             }
 
-            return _childeren;
+            return null;
         }
 
         #endregion
 
         #region private methods
 
+        /* HTMLTestObject[] GetLinkChildren()
+         * Return the children object of link
+         */
         protected virtual HTMLTestObject[] GetLinkChildren()
         {
             return null;
         }
 
+        /* bool IsImage()
+         * Return true if the link is an image link.
+         */
         protected virtual bool IsImage()
         {
             if (String.IsNullOrEmpty(_linkText))

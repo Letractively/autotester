@@ -121,7 +121,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * Get the rectangle on screen of the object.
          * we use HTML dom to calculate the rect.
          */
-        public Rectangle GetRectOnScreen()
+        public virtual Rectangle GetRectOnScreen()
         {
             // get it's position offset to it's parent object.
             int top = _sourceElement.offsetTop;
