@@ -31,6 +31,7 @@ using Shrinerain.AutoTester.Win32;
 namespace Shrinerain.AutoTester.HTMLUtility
 {
     //the icon type of Message box, we may have Warn(a yellow triangle), Error(a red cross), Info(a white triangle.)
+    //Use Java Script, we can only generate Warn window, but use VB Script, we can generate other type.
     public enum HTMLTestMsgBoxIcon
     {
         Warn,
@@ -45,7 +46,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region fields
 
         //icon of the messagebox
-        protected HTMLTestMsgBoxIcon _icon;
+        protected HTMLTestMsgBoxIcon _icon = HTMLTestMsgBoxIcon.Warn;
 
         //information on the messagebox
         protected string _message;
@@ -53,7 +54,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected IntPtr _handle;
 
         //button groups, for different messagebox, we may have different buttons. eg: OK, Yes,No, Cancel.
-        protected string[] _buttons;
+        protected string[] _buttons = new string[] { "OK" };
 
         #endregion
 
@@ -66,8 +67,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
-        public HTMLTestMsgBox(IHTMLElement element)
-            : base(element)
+        public HTMLTestMsgBox()
+            : base()
         {
             //get windows handle of message box.
             try
@@ -137,14 +138,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CanNotBuildObjectException("Can not get the message text: " + e.Message);
             }
 
-            //get icon
-            //java script window.alert can only generate info type.
-            this._icon = HTMLTestMsgBoxIcon.Info;
+            try
+            {
+                //get icon
+                this._icon = GetIcon();
+            }
+            catch (Exception e)
+            {
+                throw new CanNotBuildObjectException("Can not get icon of MessageBox: " + e.Message);
+            }
 
-            //get button groups
-            //java script window.alert can only generate "OK" button.
-            _buttons = new string[] { "OK" };
-
+            try
+            {
+                //get button groups
+                _buttons = GetButtons();
+            }
+            catch (Exception e)
+            {
+                throw new CanNotBuildObjectException("Can not get Buttons of MessageBox: " + e.Message);
+            }
 
         }
 
@@ -155,25 +167,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* Rectangle GetRectOnScreen()
          * Get the actual position of button on the message box.
          * HTMLTestMsgBox is NOT a HTML control but a standard Windows control.
+         * So we need to overrider this method.
          */
         public override Rectangle GetRectOnScreen()
         {
-            //firstly, we need to find the button handle.
-            IntPtr okHandle = Win32API.FindWindowEx(this._handle, IntPtr.Zero, "Button", null);
-
-            if (okHandle == IntPtr.Zero)
-            {
-                throw new CanNotBuildObjectException("Can not get the OK button.");
-            }
-            else
-            {
-                //get the actual position.
-                Win32API.Rect tmp = new Win32API.Rect();
-                Win32API.GetClientRect(okHandle, ref tmp);
-
-                Rectangle tmpRect = new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height);
-                return tmpRect;
-            }
+            //Get the "OK" button position
+            //It is OK for JavaScript.
+            return GetButtonPosition("OK");
         }
 
 
@@ -213,7 +213,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region IClickable Members
 
         /* void Click()
-         * Click the button of Message box.
+         * Click the "OK" button.
+         * It is OK for JavaScript Window.Alert messagebox.
          */
         public void Click()
         {
@@ -221,9 +222,28 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.WaitOne();
 
-                Point point = GetCenterPoint();
+                Point okPos = GetCenterPoint();
 
-                MouseOp.Click(point.X, point.Y);
+                MouseOp.Click(okPos.X, okPos.Y);
+
+                _actionFinished.Set();
+            }
+            catch (Exception e)
+            {
+                throw new CanNotPerformActionException("Can not click on message box: " + e.Message);
+            }
+        }
+
+        /* void Click(string text)
+         * Click on the expected button.
+         */
+        public void Click(string text)
+        {
+            try
+            {
+                _actionFinished.WaitOne();
+
+                ClickButton(text);
 
                 _actionFinished.Set();
             }
@@ -254,7 +274,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Focus()
         {
-            throw new Exception("The method or operation is not implemented.");
+            Click();
         }
 
         public object GetDefaultAction()
@@ -282,11 +302,103 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        protected String[] GetButtons()
+        /* String[] GetButtons()
+         * Return the button groups on the MessageBox.
+         * eg: OK, Yes, No, Cancel.
+         */
+        protected virtual String[] GetButtons()
         {
-            return this._buttons;
+            //java script window.alert can only generate "OK" button.
+            //we can use VBScript to generate other type.
+            return new string[] { "OK" };
         }
 
+        /*  HTMLTestMsgBoxIcon GetIcon()
+         *  Return the Icon type on the MessageBox.
+         * 
+         */
+        protected virtual HTMLTestMsgBoxIcon GetIcon()
+        {
+            //java script window.alert can only generate info type.
+            //we can use VBScript to generate other type.
+            return HTMLTestMsgBoxIcon.Warn;
+        }
+
+        /*  void ClickButton(string text)
+         *  Click on expect button.
+         */
+        protected virtual void ClickButton(string text)
+        {
+            try
+            {
+                this._rect = GetButtonPosition(text);
+
+                Point btnPos = GetCenterPoint();
+
+                MouseOp.Click(btnPos.X, btnPos.Y);
+
+            }
+            catch (CanNotBuildObjectException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CanNotPerformActionException("Can not click button: " + text + " with " + e.Message);
+            }
+        }
+
+        /*  Rectangle GetButtonPosition(string text)
+         *  Get the actual position on the screen of the expected button.
+         */
+        protected virtual Rectangle GetButtonPosition(string text)
+        {
+            IntPtr lastButtonHandle = IntPtr.Zero;
+
+            while (true)
+            {
+                //firstly, we need to find the button handle.
+                IntPtr okHandle = Win32API.FindWindowEx(this._handle, lastButtonHandle, "Button", null);
+
+                //0 handle, means we can not find it.
+                if (okHandle == IntPtr.Zero)
+                {
+                    throw new CanNotBuildObjectException("Can not get the OK button.");
+                }
+                else
+                {
+                    lastButtonHandle = okHandle;
+
+                    StringBuilder textSB = new StringBuilder(10);
+
+                    //get the text on the button.
+                    Win32API.GetWindowText(okHandle, textSB, 10);
+
+                    if (textSB.Length > 0)
+                    {
+                        if (String.Compare(textSB.ToString(), text, true) == 0)
+                        {
+                            //get the actual position.
+                            Win32API.Rect tmp = new Win32API.Rect();
+                            Win32API.GetClientRect(okHandle, ref tmp);
+
+                            Rectangle tmpRect = new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height);
+                            return tmpRect;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+
+                    }
+                    else
+                    {
+                        throw new CanNotBuildObjectException("Can not get button: " + text);
+                    }
+                }
+            }
+
+        }
 
         #endregion
 

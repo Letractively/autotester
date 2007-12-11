@@ -50,7 +50,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._checkBoxElement = (IHTMLInputElement)element;
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 throw new CanNotBuildObjectException("Can not get IHTMLInputElement: " + e.Message);
             }
