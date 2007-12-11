@@ -73,9 +73,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void IsChecked()
+        public bool IsChecked()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return false;
         }
 
         #endregion

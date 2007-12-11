@@ -1,3 +1,18 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: HTMLTestRadioButton.cs
+*
+* Description: This class defines the actions provide by Radio Button.
+*              The important actions include "Check" , and "IsChecked".
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,6 +32,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected IHTMLInputElement _radioElement;
 
+        //for radio button, we may have some text around it.
         protected string _aroundText;
 
         #endregion
@@ -42,9 +58,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ICheckable Members
 
+        /* void Check()
+         * Check the radio button.
+         * 
+         */
         public void Check()
         {
-            throw new Exception("The method or operation is not implemented.");
+            try
+            {
+                _actionFinished.WaitOne();
+
+                Hover();
+
+                MouseOp.Click();
+
+                _actionFinished.Set();
+
+            }
+            catch (Exception e)
+            {
+                throw new CanNotPerformActionException("Can not check radio button: " + e.Message);
+            }
         }
 
         public void UnCheck()
@@ -52,9 +86,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void IsChecked()
+        public bool IsChecked()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return false;
         }
 
         #endregion

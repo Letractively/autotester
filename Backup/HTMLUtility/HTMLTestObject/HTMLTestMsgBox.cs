@@ -31,7 +31,7 @@ using Shrinerain.AutoTester.Win32;
 namespace Shrinerain.AutoTester.HTMLUtility
 {
     //the icon type of Message box, we may have Warn(a yellow triangle), Error(a red cross), Info(a white triangle.)
-    //Use Java Script, we can only generate Warn window, but use VB Script, we can generate other type.
+    //Use Java Script, we can only generate Warn window, but use VB Script, we can generate other types.
     public enum HTMLTestMsgBoxIcon
     {
         Warn,
