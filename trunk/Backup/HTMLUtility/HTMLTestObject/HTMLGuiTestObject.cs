@@ -63,6 +63,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
+        public HTMLGuiTestObject()
+            : base()
+        {
+            GetRectOnScreen();
+        }
+
         public HTMLGuiTestObject(IHTMLElement element)
             : base(element)
         {
