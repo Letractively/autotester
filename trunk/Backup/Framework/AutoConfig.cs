@@ -120,7 +120,6 @@ namespace Shrinerain.AutoTester.Framework
 
         private AutoConfig()
         {
-            GetFrameworkConfigFile(null, out _frameworkConfigFile);
         }
 
         ~AutoConfig()
@@ -145,7 +144,15 @@ namespace Shrinerain.AutoTester.Framework
 
         public void ParseConfigFile()
         {
-            if (this._frameworkConfigFile == null || this._projectConfigFile == null)
+            if (String.IsNullOrEmpty(this._frameworkConfigFile))
+            {
+                if (!GetFrameworkConfigFile(null, out _frameworkConfigFile))
+                {
+                    throw new ConfigFileNotFoundException("Can not find framework config file.");
+                }
+            }
+
+            if (String.IsNullOrEmpty(this._frameworkConfigFile) || String.IsNullOrEmpty(this._projectConfigFile))
             {
                 throw new ConfigFileNotFoundException("Config file can not be null.");
             }

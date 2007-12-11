@@ -24,6 +24,6 @@ namespace Shrinerain.AutoTester.Function.Interface
     {
         void Check();
         void UnCheck();
-        void IsChecked();
+        bool IsChecked();
     }
 }

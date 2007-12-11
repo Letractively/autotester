@@ -120,6 +120,7 @@ namespace Shrinerain.AutoTester.Framework
             {
                 _autoConfig.FrameworkConfigFile = this._frameworkConfigFile;
             }
+
             _autoConfig.ParseConfigFile();
             _autoConfig.Close();
 
