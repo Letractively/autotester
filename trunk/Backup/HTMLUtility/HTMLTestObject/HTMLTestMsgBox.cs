@@ -363,7 +363,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //0 handle, means we can not find it.
                 if (okHandle == IntPtr.Zero)
                 {
-                    throw new CanNotBuildObjectException("Can not get the OK button.");
+                    throw new CanNotBuildObjectException("Can not get the button: " + text);
                 }
                 else
                 {
