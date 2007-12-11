@@ -28,7 +28,7 @@ using Shrinerain.AutoTester.Function;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-
+    // HTMLTestObjectType defines the object type we used in HTML Testing.
     public enum HTMLTestObjectType
     {
         Button,
@@ -88,7 +88,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected HTMLTestObject()
             : base()
         {
-
+            this._domain = "HTML";
         }
 
         protected HTMLTestObject(IHTMLElement element)
@@ -130,54 +130,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._name = "";
             }
+
             try
             {
-                if (element.getAttribute("visibility", 0).GetType().ToString() == "System.DBNull")
-                {
-                    this._visible = true;
-                }
-                else
-                {
-                    string isVisiable = element.getAttribute("visibility", 0).ToString();
-
-                    if (isVisiable.ToUpper() == "HIDDEN")
-                    {
-                        this._visible = false;
-                    }
-                    else
-                    {
-                        this._visible = true;
-                    }
-                }
+                this._visible = IsVisible(element);
             }
             catch
             {
                 this._visible = true;
             }
+
             try
             {
-                if (element.getAttribute("enabled", 0).GetType().ToString() == "System.DBNull")
-                {
-                    this._enable = true;
-                }
-                else
-                {
-                    string isEnable = element.getAttribute("enabled", 0).ToString();
-                    if (isEnable.ToUpper() == "FALSE")
-                    {
-                        this._enable = false;
-                    }
-                    else
-                    {
-                        this._enable = true;
-                    }
-                }
+                this._enable = IsEnable(element);
 
             }
             catch
             {
                 this._enable = true;
             }
+
             try
             {
                 this._properties = null;// BuildProperties(element);
@@ -215,48 +187,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
-
-        #region action
-
-        #endregion
-
-        public override object GetPropertyByName(string propertyName)
-        {
-            try
-            {
-                propertyName = propertyName.Replace(".", "");
-
-                if (this._sourceElement.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
-                {
-                    throw new PropertyNotFoundException("Property " + propertyName + " not found.");
-                }
-                else
-                {
-                    return this._sourceElement.getAttribute(propertyName, 0);
-                }
-
-            }
-            catch
-            {
-                throw new PropertyNotFoundException("Property " + propertyName + " not found.");
-            }
-        }
-        public override bool SetPropertyByName(string propertyName, object value)
-        {
-            try
-            {
-                propertyName = propertyName.Replace(".", "");
-                this._sourceElement.setAttribute(propertyName, value, 0);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-        #endregion
-
-        #region private methods
         public static HTMLTestObjectType GetObjectType(IHTMLElement element)
         {
             string tag = element.tagName;
@@ -348,6 +278,90 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return HTMLTestObjectType.Unknow;
 
         }
+
+        #region action
+
+        #endregion
+
+        public override object GetPropertyByName(string propertyName)
+        {
+            try
+            {
+                propertyName = propertyName.Replace(".", "");
+
+                if (this._sourceElement.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+                {
+                    throw new PropertyNotFoundException("Property " + propertyName + " not found.");
+                }
+                else
+                {
+                    return this._sourceElement.getAttribute(propertyName, 0);
+                }
+
+            }
+            catch
+            {
+                throw new PropertyNotFoundException("Property " + propertyName + " not found.");
+            }
+        }
+        public override bool SetPropertyByName(string propertyName, object value)
+        {
+            try
+            {
+                propertyName = propertyName.Replace(".", "");
+                this._sourceElement.setAttribute(propertyName, value, 0);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        #endregion
+
+        #region private methods
+
+        protected virtual bool IsVisible(IHTMLElement element)
+        {
+            if (element.getAttribute("visibility", 0).GetType().ToString() == "System.DBNull")
+            {
+                return true;
+            }
+            else
+            {
+                string isVisiable = element.getAttribute("visibility", 0).ToString();
+
+                if (isVisiable.ToUpper() == "HIDDEN")
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
+        protected virtual bool IsEnable(IHTMLElement element)
+        {
+            if (element.getAttribute("enabled", 0).GetType().ToString() == "System.DBNull")
+            {
+                return true;
+            }
+            else
+            {
+                string isEnable = element.getAttribute("enabled", 0).ToString();
+                if (isEnable.ToUpper() == "FALSE")
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+
 
         #endregion
 

@@ -141,5 +141,29 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
 
+
+        #region IClickable Members
+
+        public void Click()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public void DoubleClick()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public void RightClick()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public void MiddleClick()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
     }
 }
