@@ -1,3 +1,24 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: CoreEngine.cs
+*
+* Description: CoreEngine contorl the framework running status, coordinate
+*              other engines to work together.
+*              It get config from AutoConfig, get test steps from parser,
+*              call ObjectEngine to get test object, then pass test object
+*              and actions/data to ActionEngine or VPEngine to perform actions
+*              or check point, also, call LogEngine to write log, Exception
+*              Engine to handle exceptions. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +29,7 @@ using Shrinerain.AutoTester.Interface;
 
 namespace Shrinerain.AutoTester.Framework
 {
-
+    //save the sub status, before call other sub, we need to save current test steps to stack.
     internal struct TestStepStatus
     {
         internal int _index;
@@ -21,13 +42,17 @@ namespace Shrinerain.AutoTester.Framework
 
 
         //event to deliver message to other program.
+        //eg: deliver the message to console, or to GUI.
         public delegate void _frameworkInfoDelegate(string message);
         public event _frameworkInfoDelegate OnNewMessage;
 
 
         private AutoConfig _autoConfig;
         private Parser _parser;
-        private TestBrowser _browser;
+
+        //special interface, browser and desktop application.
+        private ITestBrowser _browser;
+        private ITestApp _app;
 
 
         //other engine to perform each action.
@@ -41,7 +66,11 @@ namespace Shrinerain.AutoTester.Framework
 
         //flag for start or not. If false, will not perform any action.
         private bool _started = false;
+
+        //flag for end, if true, stop testing.
         private bool _end = false;
+
+        //flag for highlight a test object, if true, will highlight a test object.
         private bool _isHighligh = false;
 
         //currently used test steps list. 
@@ -112,10 +141,15 @@ namespace Shrinerain.AutoTester.Framework
 
         #region public methods
 
+        /* void Start()
+         * Start testing.
+         */
         public void Start()
         {
+            //print version information
             PrintHeaders();
 
+            //init jobs.
             InitEngines();
             _index = 0;
             _currentTestSteps = _parser.GetAllMainTestSteps();
@@ -124,6 +158,7 @@ namespace Shrinerain.AutoTester.Framework
             {
                 try
                 {
+                    //perform action of each step.
                     PerformEachStep();
 
                     if (_end)
@@ -135,6 +170,7 @@ namespace Shrinerain.AutoTester.Framework
                 {
                     OnNewMessage(e.ToString());
 
+                    //use ExceptionEngine to handle exceptions
                     //can not go to next step.
                     if (!_exEngine.HandleException(e))
                     {
@@ -153,8 +189,7 @@ namespace Shrinerain.AutoTester.Framework
                     }
                     else
                     {
-                        //go to next step
-                        //_index++;
+                        //we can handle it...
                     }
                 }
                 catch (Exception e)
