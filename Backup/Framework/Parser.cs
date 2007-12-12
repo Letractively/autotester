@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: Parser.cs
+*
+* Description: Parser will parse the EXCEL driver file. Get the test steps,
+*              Subs and Datapools. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +24,7 @@ using Shrinerain.AutoTester.DataUtility;
 
 namespace Shrinerain.AutoTester.Framework
 {
-
+    //test step, each test step is a single line in EXCEL.
     public struct TestStep
     {
 
@@ -24,7 +40,7 @@ namespace Shrinerain.AutoTester.Framework
         //string for indexer
         private string _strBuf;
 
-        //the number of fields
+        //the number of fields, this is used for "for" and "foreach".
         public int Size
         {
             get { return 7; }
@@ -43,7 +59,7 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
-
+        //used for "for" and "foreach"
         public string this[int index]
         {
             get
@@ -115,17 +131,20 @@ namespace Shrinerain.AutoTester.Framework
 
     };
 
+    //struct of test sub, we have a sub name, and test steps
     public struct TestSub
     {
         public string _subName;
         public List<TestStep> _subTestSteps;
     };
 
+    //struct of test data pool, we have a datapool name, and data.
     public struct TestDataPool
     {
         public string _datapoolName;
         public List<string[]> _data;
     };
+
 
     public sealed class Parser : IDisposable
     {
@@ -140,17 +159,9 @@ namespace Shrinerain.AutoTester.Framework
         private List<TestSub> _myTestSubList = new List<TestSub>(10);
         private List<TestDataPool> _myTestDataPoolList = new List<TestDataPool>(10);
 
-
         private string _driveFile;
 
-        //private string[] _testSteps;
-        //private string[] _testSubs;
-        //private string[] _testDataPool;
-
-        //private int _currentStep;
-        //private int _currentSubStep;
-        //private int _currentDataPoolStep;
-
+        //the max data item in datapool, that means in one line, we can not have more than 50 data.
         private const int _maxDataCount = 50;
 
 
@@ -224,6 +235,9 @@ namespace Shrinerain.AutoTester.Framework
             Dispose();
         }
 
+        /* void Dispose()
+         * when GC, close excel reader.
+         */
         public void Dispose()
         {
             if (_excelReader != null)
@@ -235,6 +249,10 @@ namespace Shrinerain.AutoTester.Framework
             GC.SuppressFinalize(this);
         }
 
+        /* void ParseDriveFile()
+         * Parse EXCEl driver file.
+         * call three methods to prase different tab in EXCEL.
+         */
         public void ParseDriveFile()
         {
             if (_autoConfig != null)
@@ -249,6 +267,9 @@ namespace Shrinerain.AutoTester.Framework
             GetDataPool(this._driveFile);  //get data pool
         }
 
+        /* return the list of each EXCEL tab.
+         * 
+         */
         public List<TestStep> GetAllMainTestSteps()
         {
             if (this._myTestStepList == null || this._myTestStepList.Count == 0)
@@ -283,6 +304,10 @@ namespace Shrinerain.AutoTester.Framework
 
 
         #region private help methods
+
+        /* void GetTestSteps(string drivenFile)
+         * Parse main test steps, the first tab in EXCEl, store test steps in a list.
+         */
         private void GetTestSteps(string drivenFile)
         {
             if (String.IsNullOrEmpty(drivenFile) || !File.Exists(this._driveFile))
@@ -296,8 +321,10 @@ namespace Shrinerain.AutoTester.Framework
                 _excelReader.Sheet = "TestSteps";
                 _excelReader.Open();
 
+                //read execl line by line
                 while (_excelReader.MoveNext())
                 {
+                    //each line is a test step
                     TestStep tmp = new TestStep();
                     tmp._testCommand = _excelReader.ReadByIndex(0);
                     tmp._testControl = _excelReader.ReadByIndex(1);
@@ -307,8 +334,10 @@ namespace Shrinerain.AutoTester.Framework
                     tmp._testVPProperty = _excelReader.ReadByIndex(5);
                     tmp._testExpectResult = _excelReader.ReadByIndex(6);
 
+                    //store each test step to a list.
                     this._myTestStepList.Add(tmp);
 
+                    //meet "END", stop.
                     if (tmp._testCommand.ToUpper() == "END")
                     {
                         break;
@@ -318,7 +347,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new BadFormatDrivenFileException("Can not parse driven file:" + drivenFile + " " + e.Message);
+                throw new BadFormatDrivenFileException("Can not get main test steps: " + e.Message);
             }
             finally
             {
@@ -326,6 +355,9 @@ namespace Shrinerain.AutoTester.Framework
             }
         }
 
+        /* void GetSubSteps(string drivenFile)
+         * Parse the 2nd "Sub" tab, store subs to a list.
+         */
         private void GetSubSteps(string drivenFile)
         {
             if (String.IsNullOrEmpty(drivenFile) || !File.Exists(this._driveFile))
@@ -341,6 +373,7 @@ namespace Shrinerain.AutoTester.Framework
 
                 TestSub tmpSub = new TestSub();
 
+                //line by line
                 while (_excelReader.MoveNext())
                 {
                     if (String.IsNullOrEmpty(_excelReader.ReadByIndex(0)))
@@ -348,6 +381,7 @@ namespace Shrinerain.AutoTester.Framework
                         continue;
                     }
 
+                    //if the first column is "SUB", means we find a new sub.
                     if (_excelReader.ReadByIndex(0).ToUpper() == "SUB")
                     {
                         tmpSub._subName = null;
@@ -365,12 +399,14 @@ namespace Shrinerain.AutoTester.Framework
                         continue;
                     }
 
+                    //if the first column is "EndSub" or "End Sub", means current sub is end.
                     if (_excelReader.ReadByIndex(0).ToUpper() == "ENDSUB" || _excelReader.ReadByIndex(0).ToUpper() == "END SUB")
                     {
                         _myTestSubList.Add(tmpSub);
                         continue;
                     }
 
+                    //test steps of this sub.
                     TestStep tmp = new TestStep();
                     tmp._testCommand = _excelReader.ReadByIndex(0);
                     tmp._testControl = _excelReader.ReadByIndex(1);
@@ -389,13 +425,9 @@ namespace Shrinerain.AutoTester.Framework
                 }
 
             }
-            catch (BadFormatDrivenFileException)
+            catch (Exception e)
             {
-                throw;
-            }
-            catch
-            {
-                throw new BadFormatDrivenFileException("Can not parse driven file:" + drivenFile);
+                throw new BadFormatDrivenFileException("Can not get test subs: " + e.Message);
             }
             finally
             {
@@ -404,6 +436,9 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        /* void GetDataPool(string drivenFile)
+         * Parse the 3rd tab, datapool, store datapool to a list.
+         */
         private void GetDataPool(string drivenFile)
         {
             if (String.IsNullOrEmpty(drivenFile) || !File.Exists(this._driveFile))
@@ -425,23 +460,28 @@ namespace Shrinerain.AutoTester.Framework
 
                     string dataPoolName = _excelReader.ReadByIndex(0);
 
+                    //if the first column is not empty, means we meet a new datapool
                     if (!String.IsNullOrEmpty(dataPoolName) && !started)
                     {
                         started = true;
                         tmpPool._datapoolName = dataPoolName;
-                        tmpPool._data = new List<string[]>(128);
+                        tmpPool._data = new List<string[]>(32);
 
                         continue;
                     }
 
+
+                    //if the frist column is "END", means current datapool is end.
                     if (!String.IsNullOrEmpty(dataPoolName) && started && dataPoolName.ToUpper().IndexOf("END") == 0)
                     {
                         _myTestDataPoolList.Add(tmpPool);
                         started = false;
                     }
 
+
                     if (started)
                     {
+                        //get the actual test data.
                         string[] currentDataLine = new string[MaxDataCount];
                         for (int i = 0; i < MaxDataCount && i < _excelReader.ColCount - 1; i++)
                         {
@@ -454,9 +494,9 @@ namespace Shrinerain.AutoTester.Framework
                 }
 
             }
-            catch
+            catch (Exception e)
             {
-                throw new BadFormatDrivenFileException("Can not parse driven file:" + drivenFile);
+                throw new BadFormatDrivenFileException("Can not get test data pool: " + e.Message);
             }
             finally
             {

@@ -1,3 +1,23 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: AutoConfig.cs
+*
+* Description: Framework will have two config file: Framework config file
+*              and project config file.
+*              Framework config file will defines the behavior of 
+*              Automation Framework.
+*              Project config file will provide the information of current
+*              project. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,10 +31,19 @@ using Shrinerain.AutoTester.Function;
 namespace Shrinerain.AutoTester.Framework
 {
 
+    //for different technology, we have different library.
+    //we load these library at runtime.
+    //eg: for HTML, we will load HTMLTestObjectPool.
+
     public struct PluginInfo
     {
+        //what type of technology, eg: HTML/Flex
         public string _domain;
 
+        //actual dll we need to load.
+
+        public string _testApp;
+        public string _testAppDLL;
         public string _testBrowser;
         public string _testBrowserDLL;
         public string _testObjectPool;
@@ -35,9 +64,11 @@ namespace Shrinerain.AutoTester.Framework
         private string _frameworkConfigFile = null;
         private string _projectConfigFile = null;
 
+        //config files are XML file, we use XMLTextReader to read them.
         private XmlTextReader _myFrameworkReader = null;
         private XmlTextReader _myProjectReader = null;
 
+        //project information, loaded from project config file.
         private string _projectName;
         private string _projectDomain;
         private string _projectDriveFile;
@@ -46,6 +77,7 @@ namespace Shrinerain.AutoTester.Framework
         private string _screenprintDir;
         private bool _isHighlight;
 
+        //List to store dll information
         private List<PluginInfo> _plugList = new List<PluginInfo>(5);
 
         #endregion
@@ -142,10 +174,16 @@ namespace Shrinerain.AutoTester.Framework
             return _autoConfig;
         }
 
+        /* void ParseConfigFile()
+         * Check the two config file, if user didn't pass a framework config, then search it in current folder.
+         * Then call two methods to parse two config file separately.
+         */
         public void ParseConfigFile()
         {
+            //if user didn't input a framework config file.
             if (String.IsNullOrEmpty(this._frameworkConfigFile))
             {
+                // if no framework config file found, throw
                 if (!GetFrameworkConfigFile(null, out _frameworkConfigFile))
                 {
                     throw new ConfigFileNotFoundException("Can not find framework config file.");
@@ -157,6 +195,7 @@ namespace Shrinerain.AutoTester.Framework
                 throw new ConfigFileNotFoundException("Config file can not be null.");
             }
 
+            //if two files are not exist, throw.
             if (!File.Exists(this._frameworkConfigFile) || !File.Exists(this._projectConfigFile))
             {
                 throw new ConfigFileNotFoundException("Can not find config file:" + this._frameworkConfigFile + " and/or " + this._projectConfigFile);
@@ -169,13 +208,14 @@ namespace Shrinerain.AutoTester.Framework
                 _myProjectReader = new XmlTextReader(this._projectConfigFile);
                 _myProjectReader.WhitespaceHandling = WhitespaceHandling.None;
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotOpenConfigFileException();
+                throw new CanNotOpenConfigFileException(e.Message);
             }
 
             try
             {
+                //parse two config files seprately.
                 ParseFrameworkConfigFile(this._frameworkConfigFile);
                 ParseProjectConfigFile(this._projectConfigFile);
             }
@@ -194,6 +234,9 @@ namespace Shrinerain.AutoTester.Framework
             Dispose();
         }
 
+        /* void Dispose()
+         * GC, close XML reader.
+         */
         public void Dispose()
         {
             if (_myFrameworkReader != null)
@@ -211,7 +254,9 @@ namespace Shrinerain.AutoTester.Framework
             GC.SuppressFinalize(this);
         }
 
-
+        /* PluginInfo GetTestPluginByDomain(string domain)
+         * return the dll information by domain(technology).
+         */
         public PluginInfo GetTestPluginByDomain(string domain)
         {
             foreach (PluginInfo p in this._plugList)
@@ -229,6 +274,10 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private methods
 
+        /* void ParseFrameworkConfigFile(string frameworkConfigFile)
+         * Parse framework config file.
+         * NEED UPDATE!!!
+         */
         private void ParseFrameworkConfigFile(string frameworkConfigFile)
         {
             if (String.IsNullOrEmpty(frameworkConfigFile) || !File.Exists(frameworkConfigFile))
@@ -258,12 +307,19 @@ namespace Shrinerain.AutoTester.Framework
                         _myFrameworkReader.Read();
 
                         tmp._domain = _myFrameworkReader.ReadElementString("TestDomain");
+
+                        tmp._testApp = _myFrameworkReader.GetAttribute("ClassName");
+                        tmp._testAppDLL = _myFrameworkReader.ReadElementString("TestApp");
+
                         tmp._testBrowser = _myFrameworkReader.GetAttribute("ClassName");
                         tmp._testBrowserDLL = _myFrameworkReader.ReadElementString("TestBrowser");
+
                         tmp._testObjectPool = _myFrameworkReader.GetAttribute("ClassName");
                         tmp._testObjectPoolDLL = _myFrameworkReader.ReadElementString("TestObjectPool");
+
                         tmp._testAction = _myFrameworkReader.GetAttribute("ClassName");
                         tmp._testActionDLL = _myFrameworkReader.ReadElementString("TestAction");
+
                         tmp._testVP = _myFrameworkReader.GetAttribute("ClassName");
                         tmp._testVPDLL = _myFrameworkReader.ReadElementString("TestVP");
 
@@ -289,6 +345,9 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        /* void ParseProjectConfigFile(string projectConfigFile)
+         * Parse project config file.
+         */
         private void ParseProjectConfigFile(string projectConfigFile)
         {
             if (String.IsNullOrEmpty(projectConfigFile) || !File.Exists(projectConfigFile))
@@ -326,6 +385,10 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        /* bool GetFrameworkConfigFile(string dir, out string configFile)
+         * Search the default framework config file.
+         * The default config file is named "Framework.config" and is placed in the subfolder.
+         */
         private bool GetFrameworkConfigFile(string dir, out string configFile)
         {
             configFile = null;

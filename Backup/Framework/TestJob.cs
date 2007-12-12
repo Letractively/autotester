@@ -33,6 +33,7 @@ namespace Shrinerain.AutoTester.Framework
         public delegate void _newMsgDelegate(string message);
         public event _newMsgDelegate OnNewMsg;
 
+        //we have two config file, one is for project, one is for framework.
         private string _projectConfigFile;
         private string _frameworkConfigFile;
 
@@ -93,17 +94,23 @@ namespace Shrinerain.AutoTester.Framework
 
         #region public methods
 
+        /* void StartTesting()
+         * Do some init job, and call CoreEngine to start testing.
+         */
         public void StartTesting()
         {
 
             InitProject();
 
             _coreEngine = new CoreEngine();
+
             //deliver message while testing.
+            //we can get the runtime message from CoreEngine
             _coreEngine.OnNewMessage += new CoreEngine._frameworkInfoDelegate(DeliverNewMsg);
             _coreEngine.AutoConfig = _autoConfig;
             _coreEngine.KeywordParser = _parser;
 
+            //start testing.
             _coreEngine.Start();
         }
 
@@ -111,11 +118,18 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private methods
 
+        /* void InitProject()
+         * Init AutoConfig and Parser to parse config file and driver file.
+         * 
+         */
         private void InitProject()
         {
 
             _autoConfig = AutoConfig.GetInstance();
             _autoConfig.ProjectConfigFile = this._projectConfigFile;
+
+            //if user input the framework config file, we will use it,
+            // or we will search the framework config file in current folder.
             if (!String.IsNullOrEmpty(this._frameworkConfigFile))
             {
                 _autoConfig.FrameworkConfigFile = this._frameworkConfigFile;
@@ -126,11 +140,15 @@ namespace Shrinerain.AutoTester.Framework
 
             _parser = Parser.GetInstance();
             _parser.AutoConfig = _autoConfig;
+
             _parser.ParseDriveFile();
             _parser.Close();
         }
 
 
+        /* void DeliverNewMsg(string message)
+         * deliver message to other compent.
+         */
         private void DeliverNewMsg(string message)
         {
             if (OnNewMsg != null)
