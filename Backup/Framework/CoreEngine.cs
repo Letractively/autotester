@@ -60,7 +60,6 @@ namespace Shrinerain.AutoTester.Framework
         private ActionEngine _actEngine;
         private VPEngine _vpEngine;
         private LogEngine _logEngine;
-        //private DataEngine _dataEngine;
         private SubEngine _subEngine;
         private ExceptionEngine _exEngine;
 
@@ -79,8 +78,6 @@ namespace Shrinerain.AutoTester.Framework
 
         //stack to store different test steps, then we can switch between main steps and subs.
         private Stack<TestStepStatus> _testStepStack = new Stack<TestStepStatus>(5);
-
-
 
         #endregion
 
@@ -136,6 +133,8 @@ namespace Shrinerain.AutoTester.Framework
 
             this._autoConfig = config;
             this._parser = parser;
+
+            this.OnNewMessage += new _frameworkInfoDelegate(WriteMsgToConsole);
         }
         #endregion
 
@@ -203,6 +202,9 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        /* void End()
+         * Stop testing.
+         */
         public void End()
         {
 
@@ -222,12 +224,18 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private methods
 
+        /* void WriteMsgToConsole(string message)
+         * Always write log to console, for debugging or test.
+         */
         private void WriteMsgToConsole(string message)
         {
             message = message.TrimEnd();
             Console.WriteLine(message);
         }
 
+        /* void PrintHeaders()
+         * Print some version information
+         */
         private void PrintHeaders()
         {
             string headers =
@@ -243,17 +251,13 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        /* void InitEngines()
+         * Init other engines.
+         */
         private void InitEngines()
         {
             try
             {
-                ////parser config file.
-                //this._autoConfig.ParseConfigFile();
-                //this._autoConfig.Close();
-
-                ////parser drive file.
-                //this._parser.ParseDriveFile();
-                //this._parser.Close();
 
                 this._objEngine = new ObjectEngine();
                 this._subEngine = new SubEngine();
@@ -261,24 +265,29 @@ namespace Shrinerain.AutoTester.Framework
                 this._vpEngine = new VPEngine();
                 this._logEngine = new LogEngine();
                 this._exEngine = new ExceptionEngine();
-                // this._dataEngine = new DataEngine();
 
                 this._isHighligh = this._autoConfig.IsHighlight;
 
             }
-            catch
+            catch (Exception e)
             {
-                throw new TestEngineException("Fatal Error: Can not load engines.");
+                throw new TestEngineException("Fatal Error: Can not load engines: " + e.Message);
             }
         }
 
+        /* void PerformEachStep()
+         * Execute each step, means each line in the EXCEL driver file.
+         */
         private void PerformEachStep()
         {
+            //get the test step.
             TestStep currentStep = GetNextStep();
 
+            //clear last step information.
             this._logEngine.Clear();
             this._logEngine.TestStepInfo = currentStep.ToString();
 
+            //if the first column is empty, stop testing.
             if (String.IsNullOrEmpty(currentStep._testCommand))
             {
                 PerformEnd();
@@ -289,58 +298,61 @@ namespace Shrinerain.AutoTester.Framework
 
                 string command = currentStep._testCommand.ToUpper();
 
-                if (command == "BEGIN" || command == "START")
+                //check the command, if "Begin" or "Start" , then start.
+                //if not started yet, we won't execute any actions.
+                if (!this._started)
                 {
-                    PerformBegin();
+                    if (command == "BEGIN" || command == "START")
+                    {
+                        PerformBegin();
+                    }
                 }
                 else
                 {
-                    if (this._started)
+                    //perform other actions
+                    if (command == "COMMENTS" || command == "COMMENT")
                     {
-                        if (command == "COMMENTS" || command == "COMMENT")
-                        {
-                            PerformComments();
-                        }
-                        else if (command == "SKIP")
-                        {
-                            PerformSkip();
-                        }
-
-                        else if (command == "GO")
-                        {
-                            PerformGo(currentStep);
-                        }
-                        else if (command == "VP")
-                        {
-                            PerformVP(currentStep);
-                        }
-                        else if (command == "JUMP")
-                        {
-                            PerformJump(currentStep);
-                        }
-                        else if (command == "END")
-                        {
-                            PerformEnd();
-                        }
-                        else if (command == "EXIT" || command == "RETURN")
-                        {
-                            PerformExit();
-                        }
-                        else if (command == "CALL")
-                        {
-                            PerformCall(currentStep);
-                        }
-                        else
-                        {
-                            throw new UnSupportedKeywordException("Command:" + command + " is not supported.");
-                        }
+                        PerformComments();
+                    }
+                    else if (command == "SKIP")
+                    {
+                        PerformSkip();
+                    }
+                    else if (command == "GO")
+                    {
+                        PerformGo(currentStep);
+                    }
+                    else if (command == "VP")
+                    {
+                        PerformVP(currentStep);
+                    }
+                    else if (command == "JUMP")
+                    {
+                        PerformJump(currentStep);
+                    }
+                    else if (command == "END")
+                    {
+                        PerformEnd();
+                    }
+                    else if (command == "EXIT" || command == "RETURN")
+                    {
+                        PerformExit();
+                    }
+                    else if (command == "CALL")
+                    {
+                        PerformCall(currentStep);
+                    }
+                    else
+                    {
+                        throw new UnSupportedKeywordException("Command: " + command + " is not supported.");
                     }
                 }
             }
-
-
         }
 
+        /* TestStep GetNextStep()
+         * Return the next test step
+         */
         private TestStep GetNextStep()
         {
             if (_index < _currentTestSteps.Count)
@@ -349,10 +361,16 @@ namespace Shrinerain.AutoTester.Framework
             }
             else
             {
+                //if the index if out of test steps range, return an empty one.
                 return new TestStep();
             }
         }
 
+        #region other actions
+
+        /* void PerformBegin()
+         * set the _started flag true, then we can start testing.
+         */
         private void PerformBegin()
         {
             _started = true;
@@ -360,6 +378,10 @@ namespace Shrinerain.AutoTester.Framework
             this._logEngine.WriteLog("Test Begin.");
         }
 
+        /* void PerformGo(TestStep step)
+         * Perform normal actions.
+         * If the first column in EXCEL driver file is "GO", we will call this method.
+         */
         private void PerformGo(TestStep step)
         {
 
@@ -367,11 +389,12 @@ namespace Shrinerain.AutoTester.Framework
 
             if (item.ToUpper() == "BROWSER")
             {
-                string action = step._testAction.ToUpper();
                 if (_browser == null)
                 {
                     _browser = (TestBrowser)_objEngine.GetTestBrowser();
                 }
+
+                string action = step._testAction.ToUpper();
                 if (action == "START")
                 {
                     _browser.Start();
@@ -409,6 +432,10 @@ namespace Shrinerain.AutoTester.Framework
                         {
                             _browser.WaitForNewWindow();
                         }
+                        else if (data == "NEWTAB")
+                        {
+                            _browser.WaitForNewTab();
+                        }
                         else
                         {
                             throw new CanNotPerformActionException("Error: Bad data for Wait action: " + data);
@@ -444,6 +471,10 @@ namespace Shrinerain.AutoTester.Framework
                 Thread.Sleep(1000 * 1);
 
             }
+            else if (item.ToUpper() == "APP")
+            {
+
+            }
             else
             {
 
@@ -460,7 +491,7 @@ namespace Shrinerain.AutoTester.Framework
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
 
                 //sleep for 1 second, make it looks like human actions
-                // Thread.Sleep(1000 * 1);
+                Thread.Sleep(1000 * 1);
             }
 
             this._logEngine.WriteLog();
@@ -468,6 +499,9 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        /* void PerformVP(TestStep step)
+         * perform check point
+         */
         private void PerformVP(TestStep step)
         {
             try
@@ -479,18 +513,19 @@ namespace Shrinerain.AutoTester.Framework
                 this._logEngine.SaveScreenPrint();
 
                 object actualReslut;
+                string message = null;
+
                 if (_vpEngine.PerformVPCheck(obj, step._testAction, step._testVPProperty, step._testExpectResult, out actualReslut))
                 {
-                    OnNewMessage("*** PASS: " + step.ToString() + "\t" + actualReslut.ToString());
-
-                    this._logEngine.TestResultInfo = "*** PASS: " + step.ToString() + "\t" + actualReslut.ToString();
+                    message = "*** PASS: " + step.ToString() + "\t" + actualReslut.ToString();
                 }
                 else
                 {
-                    OnNewMessage("*** FAIL: " + step.ToString() + "\t" + actualReslut.ToString());
-
-                    this._logEngine.TestResultInfo = "*** FAIL: " + step.ToString() + "\t" + actualReslut.ToString();
+                    message = "*** FAIL: " + step.ToString() + "\t" + actualReslut.ToString();
                 }
+
+                OnNewMessage(message);
+                this._logEngine.TestResultInfo = message;
 
                 this._logEngine.WriteLog();
 
@@ -501,6 +536,9 @@ namespace Shrinerain.AutoTester.Framework
             }
         }
 
+        /*  void PerformCall(TestStep step)
+         *  call subs.
+         */
         private void PerformCall(TestStep step)
         {
 
@@ -525,14 +563,18 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        /* void PerformEnd()
+         * Stop testing.
+         */
         private void PerformEnd()
         {
             this._end = true;
-
             this._logEngine.WriteLog("Test End.");
-            //throw new TestEngineException("End.");
         }
 
+        /* void PerformExit()
+         * Exit from a sub, if not in a sub, then stop testing.
+         */
         private void PerformExit()
         {
             TestStepStatus tmp;
@@ -551,6 +593,9 @@ namespace Shrinerain.AutoTester.Framework
             this._logEngine.WriteLog("Exit sub.");
         }
 
+        /* void PerformJump(TestStep step)
+         * Jump to other test step.
+         */
         private void PerformJump(TestStep step)
         {
 
@@ -568,19 +613,21 @@ namespace Shrinerain.AutoTester.Framework
             this._logEngine.WriteLog("Jump to " + _index);
         }
 
+        /* void PerformSkip()
+         * skip current step.
+         */
         private void PerformSkip()
         {
-            // _index++;
-            //this._logEngine.WriteLog("Skip");
         }
 
+        /* void PerformComments()
+         * skip current step, it is comments.
+         */
         private void PerformComments()
         {
-            // _index++;
-            //this._logEngine.WriteLog("Comments");
         }
 
-
+        #endregion
 
         #endregion
 

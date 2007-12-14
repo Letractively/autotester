@@ -55,8 +55,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public bool PerformStringTest(object testObj, string vpProperty, string expectResult, VPCheckType type, out object actualResult)
         {
-            bool result = false;
 
+            bool result = false;
             actualResult = null;
 
             try
@@ -115,7 +115,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                result = false;
             }
 
             return result;

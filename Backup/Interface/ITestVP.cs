@@ -46,18 +46,18 @@ namespace Shrinerain.AutoTester.Interface
 
     public enum VPCheckType
     {
-        Small,
-        SmallOrEqual,
-        Equal,
-        Larger,
-        LargerOrEqual,
-        Contain,      // some container object, like ListBox, one listbox may contains all the elements of another listbox
-        Exclude,      // two container have NO same element.
-        Cross,        // two container contain some same elements, but NOT ALL.
-        Existed,      
-        Text,         // check if the file/field is text.
-        Binary,       // check if the file/field is binary.
-        Connected,    // check network/software status.
-        Disconnected  
+        Small,         //<
+        SmallOrEqual,  //<=
+        Equal,         //==
+        Larger,        //>
+        LargerOrEqual, //>=
+        Contain,       // some container object, like ListBox, one listbox may contains all the elements of another listbox
+        Exclude,       // two container have NO same element.
+        Cross,         // two container contain some same elements, but NOT ALL.
+        Existed,       // check something whether it is exist.
+        Text,          // check if the file/field is text.
+        Binary,        // check if the file/field is binary.
+        Connected,     // check network/software status.
+        Disconnected    
     }
 }

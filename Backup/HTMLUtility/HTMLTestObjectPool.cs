@@ -18,6 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+using System.Threading;
+
 using mshtml;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Function;
@@ -49,6 +51,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //current object used.
         private TestObject _testObj;
 
+        //the max time we need to wait, eg: we may wait for 120s to find a test object.
+        private const int _maxWaitSeconds = 120;
+        //very time we sleep for 3 seconds, and find again.
+        private const int _interval = 3;
 
         #endregion
 
@@ -79,11 +85,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             _htmlTestBrowser = (HTMLTestBrowser)brower;
         }
+
         #endregion
 
+        /* void SetTestBrowser(ITestBrowser brower)
+         * Set the related browser, we will get object from this browser.
+         * 
+         */
         public void SetTestBrowser(ITestBrowser brower)
         {
             _htmlTestBrowser = (HTMLTestBrowser)brower;
+        }
+
+        public void SetTestApp(ITestApp app)
+        {
+            //for HTML tesing, no desktop application is needed.
         }
 
         /* Object GetObjectByID(string id)
@@ -92,19 +108,29 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByID(string id)
         {
-            try
+            //we will try 120 seconds to find an object.
+            int times = 0;
+            while (times < _maxWaitSeconds)
             {
-                //get IHTMLElement interface
-                _tempElement = _htmlTestBrowser.GetObjectByID(id);
+                try
+                {
+                    //get IHTMLElement interface
+                    _tempElement = _htmlTestBrowser.GetObjectByID(id);
 
-                //build actual test object.
-                _testObj = BuildObjectByType(_tempElement);
-                return _testObj;
+                    //build actual test object.
+                    _testObj = BuildObjectByType(_tempElement);
+                    return _testObj;
+                }
+                catch
+                {
+
+                }
+
+                times += _interval;
+                Thread.Sleep(_interval * 1000);
             }
-            catch
-            {
-                throw new ObjectNotFoundException("Can not get object by id:" + id);
-            }
+
+            throw new ObjectNotFoundException("Can not get object by id:" + id);
 
         }
 
@@ -114,22 +140,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByName(string name)
         {
-            try
+            //we will try 3 times to find an object.
+            int times = 0;
+            while (times < _maxWaitSeconds)
             {
-                object nameObj = (object)name;
-                object indexObj = (object)0;
+                try
+                {
+                    object nameObj = (object)name;
+                    object indexObj = (object)0;
 
-                //get the object collection with the same name.
-                // in HTML, .id is unique, but .name is not, so we may get a collection.
-                _tempElement = (IHTMLElement)_htmlTestBrowser.GetObjectsByName(name).item(nameObj, indexObj);
-                _testObj = BuildObjectByType(_tempElement);
-                return _testObj;
+                    //get the object collection with the same name.
+                    // in HTML, .id is unique, but .name is not, so we may get a collection.
+                    _tempElement = (IHTMLElement)_htmlTestBrowser.GetObjectsByName(name).item(nameObj, indexObj);
+                    _testObj = BuildObjectByType(_tempElement);
+                    return _testObj;
 
+                }
+                catch
+                {
+
+                }
+
+                times += _interval;
+                Thread.Sleep(_interval * 1000);
             }
-            catch
-            {
-                throw new ObjectNotFoundException("Can not get object by name:" + name);
-            }
+
+            throw new ObjectNotFoundException("Can not get object by name:" + name);
         }
 
         /* Object GetObjectByIndex(int index)
@@ -137,19 +173,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByIndex(int index)
         {
-            try
+            int times = 0;
+            while (times < _maxWaitSeconds)
             {
-                GetAllObjects();
+                try
+                {
+                    GetAllObjects();
 
-                _tempElement = (IHTMLElement)_allObjects[index];
+                    _tempElement = (IHTMLElement)_allObjects[index];
 
-                _testObj = BuildObjectByType(_tempElement);
-                return _testObj;
+                    _testObj = BuildObjectByType(_tempElement);
+
+                    return _testObj;
+                }
+                catch
+                {
+
+                }
+
+                times += _interval;
+                Thread.Sleep(_interval * 1000);
             }
-            catch
-            {
-                throw new ObjectNotFoundException("Can not get object by index:" + index);
-            }
+
+            throw new ObjectNotFoundException("Can not get object by index:" + index);
+
         }
 
 
@@ -160,52 +207,68 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public Object GetObjectByProperty(string property, string value)
         {
 
-            if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(value))
+            //we will try 120s to find an object.
+            int times = 0;
+            while (times < _maxWaitSeconds)
             {
-                throw new PropertyNotFoundException("Property and Value can not be empty.");
-            }
-
-            try
-            {
-                //get all HTML objects.
-                GetAllElements();
-
-                IHTMLElementCollection tmpCollection = _allElements;
-
-                //go through all element, check it's property value.
-                for (int i = 0; i < tmpCollection.length; i++)
+                if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(value))
                 {
-                    object nameObj = (object)i;
-                    object indexObj = (object)i;
+                    throw new PropertyNotFoundException("Property and Value can not be empty.");
+                }
 
-                    //get element by index.
-                    _tempElement = (IHTMLElement)tmpCollection.item(nameObj, indexObj);
+                try
+                {
+                    //get all HTML objects.
+                    GetAllElements();
 
-                    try
+                    IHTMLElementCollection tmpCollection = _allElements;
+
+                    object nameObj = null;
+                    object indexObj = null;
+
+                    //go through all element, check it's property value.
+                    for (int i = 0; i < tmpCollection.length; i++)
                     {
-                        //get property value
-                        string propertyValue = _tempElement.getAttribute(property, 0).ToString();
-                        if (String.IsNullOrEmpty(propertyValue))
+                        try
                         {
-                            continue;
-                        }
+                            nameObj = (object)i;
+                            indexObj = (object)i;
 
-                        //if equal, means we found it.
-                        if (String.Compare(propertyValue, value, true) == 0)
-                        {
-                            _testObj = BuildObjectByType(_tempElement);
-                            return _testObj;
+                            //get element by index.
+                            _tempElement = (IHTMLElement)tmpCollection.item(nameObj, indexObj);
+
+                            // we can not find the property value of current object, next.
+                            if (_tempElement.getAttribute(property, 0) == null || _tempElement.getAttribute(property, 0).GetType().ToString() == "System.DBNull")
+                            {
+                                continue;
+                            }
+
+                            //get property value
+                            string propertyValue = _tempElement.getAttribute(property, 0).ToString().Trim();
+
+                            if (!String.IsNullOrEmpty(propertyValue))
+                            {
+                                //if equal, means we found it.
+                                if (String.Compare(propertyValue, value, true) == 0)
+                                {
+                                    _testObj = BuildObjectByType(_tempElement);
+                                    return _testObj;
+                                }
+                            }
+
                         }
-                    }
-                    catch
-                    {
-                        continue;
+                        catch
+                        {
+                        }
                     }
                 }
-            }
-            catch
-            {
+                catch
+                {
 
+                }
+
+                times += _interval;
+                Thread.Sleep(_interval * 1000);
             }
 
             throw new ObjectNotFoundException("Can not find object by property[" + property + "] with value [" + value + "].");
@@ -226,92 +289,90 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByType(string type, string values, int index)
         {
-
-            HTMLTestObjectType typeValue;
-
-            //convert the TYPE text to valid internal type.
-            // eg: button to HTMLTestObjectType.Button
-            typeValue = GetTypeByString(type);
-
-            if (typeValue == HTMLTestObjectType.Unknow)
+            //we will try 3 times to find a object.
+            int times = 0;
+            while (times < _maxWaitSeconds)
             {
-                throw new ObjectNotFoundException("Unknow HTML object type.");
-            }
+                HTMLTestObjectType typeValue;
 
-            //convert the type to HTML tags.
-            //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
-            string[] tags = GetObjectTags(typeValue);
+                //convert the TYPE text to valid internal type.
+                // eg: button to HTMLTestObjectType.Button
+                typeValue = GetTypeByString(type);
 
-            IHTMLElementCollection _tmpElementCol;
-
-            object nameObj = null;
-            object indexObj = null;
-
-            //if the expected value is number like, we think it is stand for the index of the object, not text on it.
-            // eg: we can use type="textbox", values="1" to find the first textbox.
-            bool isByIndex = false;
-            int objIndex;
-            if (int.TryParse(values, out objIndex))
-            {
-                index = objIndex - 1;
-                isByIndex = true;
-            }
-
-            //if we can find more than one test object, we need to consider about the index.
-            int leftIndex = index;
-
-            //because we may convert one type to mutil tags, so check them one by one.
-            foreach (string tag in tags)
-            {
-                //find the object by tag.
-                _tmpElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
-                int len = _tmpElementCol.length;
-
-                //check object one by one
-                for (int i = 0; i < len; i++)
+                if (typeValue == HTMLTestObjectType.Unknow)
                 {
-                    nameObj = (object)i;
-                    indexObj = (object)i;
-
-                    _tempElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
-
-
-                    try
-                    {
-                        // check if it is a interactive object.
-                        if (!IsInteractive(_tempElement))
-                        {
-                            continue;
-                        }
-
-                        //if mutil object, check if it is the object at expectd index
-                        if (isByIndex)
-                        {
-                            leftIndex--;
-                        }
-                        else if (CheckObjectByType(_tempElement, typeValue, values)) //check object by type
-                        {
-                            leftIndex--;
-                        }
-
-                        if (leftIndex < 0)
-                        {
-                            _testObj = BuildObjectByType(_tempElement);
-                            return _testObj;
-                        }
-                        else
-                        {
-                            continue;
-                        }
-
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-
+                    throw new ObjectNotFoundException("Unknow HTML object type.");
                 }
 
+                //convert the type to HTML tags.
+                //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
+                string[] tags = GetObjectTags(typeValue);
+
+                IHTMLElementCollection _tmpElementCol;
+
+                object nameObj = null;
+                object indexObj = null;
+
+                //if the expected value is number like, we think it is stand for the index of the object, not text on it.
+                // eg: we can use type="textbox", values="1" to find the first textbox.
+                bool isByIndex = false;
+                int objIndex;
+                if (int.TryParse(values, out objIndex))
+                {
+                    index = objIndex - 1;
+                    isByIndex = true;
+                }
+
+                //if we can find more than one test object, we need to consider about the index.
+                int leftIndex = index;
+
+                //because we may convert one type to mutil tags, so check them one by one.
+                foreach (string tag in tags)
+                {
+                    //find the object by tag.
+                    _tmpElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
+
+                    //check object one by one
+                    for (int i = 0; i < _tmpElementCol.length; i++)
+                    {
+                        try
+                        {
+                            nameObj = (object)i;
+                            indexObj = (object)i;
+
+                            _tempElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
+
+                            // check if it is a interactive object.
+                            if (IsInteractive(_tempElement))
+                            {
+                                //if mutil object, check if it is the object at expectd index
+                                if (isByIndex)
+                                {
+                                    leftIndex--;
+                                }
+                                else if (CheckObjectByType(_tempElement, typeValue, values)) //check object by type
+                                {
+                                    leftIndex--;
+                                }
+
+                                //if index is 0 , that means we found the object.
+                                if (leftIndex < 0)
+                                {
+                                    _testObj = BuildObjectByType(_tempElement, typeValue);
+                                    return _testObj;
+                                }
+                            }
+
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+
+                //not found, sleep 3 seconds, then try again.
+                times += _interval;
+                Thread.Sleep(_interval * 1000);
             }
 
             throw new ObjectNotFoundException("Can not find object by type [" + type.ToString() + "] with value [" + values.ToString() + "]");
@@ -333,16 +394,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByPoint(int x, int y)
         {
-            try
+            int times = 0;
+            while (times < _maxWaitSeconds)
             {
-                _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
-                _testObj = BuildObjectByType(_tempElement);
-                return _testObj;
+                try
+                {
+                    _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
+                    _testObj = BuildObjectByType(_tempElement);
+                    return _testObj;
+                }
+                catch
+                {
+                }
+
+                times += _interval;
+                Thread.Sleep(_interval * 1000);
             }
-            catch (Exception e)
-            {
-                throw new CanNotBuildObjectException("Can not build object: " + e.Message);
-            }
+
+            throw new CanNotBuildObjectException("Can not build object at point(" + x.ToString() + "" + y.ToString() + ")");
         }
 
         /* Object GetObjectByRect(int top, int left, int width, int height)
@@ -477,18 +546,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private static bool CheckObjectByType(IHTMLElement element, HTMLTestObjectType type, string value)
         {
-            string tag = element.tagName.ToString();
 
-            //get default property of each tag
-            //eg: for a textbox, the property is .value
-            string property = GetVisibleTextPropertyByTag(type, tag);
-
-            if (String.IsNullOrEmpty(property))
-            {
-                return false;
-            }
-
-            //check different types
+            //check special types
             if (type == HTMLTestObjectType.ListBox || type == HTMLTestObjectType.ComboBox)
             {
                 return CheckSelectObject(element, value);
@@ -501,16 +560,34 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return CheckCheckBoxObject(element, value);
             }
+            else if (type == HTMLTestObjectType.Image)
+            {
+                return CheckImageObject(element, value);
+            }
 
-            //not special type, just need to check some property.
-            string propertyValue = element.getAttribute(property, 0).ToString();
-            if (String.IsNullOrEmpty(propertyValue))
+            string tag = element.tagName.ToString();
+
+            //get default property of each tag
+            //eg: for a textbox, the property is .value
+            string property = GetVisibleTextPropertyByTag(type, tag);
+
+            if (String.IsNullOrEmpty(property))
             {
                 return false;
             }
-            if (String.Compare(propertyValue, value, true) == 0)
+            else if (element.getAttribute(property, 0) == null || element.getAttribute(property, 0).GetType().ToString() == "System.DBNull")
             {
-                return true;
+                //not special type, just need to check some property.
+                return false;
+            }
+
+            string propertyValue = element.getAttribute(property, 0).ToString().Trim();
+            if (!String.IsNullOrEmpty(propertyValue))
+            {
+                if (String.Compare(propertyValue, value, true) == 0)
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -525,7 +602,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                string items = element.getAttribute("innerHTML", 0).ToString();
+                string propertyName = "innerHTML";
+                if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+                {
+                    return false;
+                }
+
+                string items = element.getAttribute(propertyName, 0).ToString().Trim();
 
                 //get the position of ">"
                 int pos1 = items.IndexOf(">");
@@ -549,6 +632,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return false;
         }
 
+        /* bool CheckImageObject(IHTMLElement element, string value)
+         * return true if the src of img is ends witdh the input value.
+         */
+        private static bool CheckImageObject(IHTMLElement element, string value)
+        {
+            try
+            {
+                //check the .src property.
+                string propertyName = "src";
+                if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+                {
+                    return false;
+                }
+
+                string imgSrc = element.getAttribute(propertyName, 0).ToString().Trim();
+
+                if (imgSrc.EndsWith(value, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+
+            return false;
+
+        }
+
         /* bool CheckRadioObject(IHTMLElement element, string value)
          * Check radio button.
          * we have 2 way to check a radio button.
@@ -559,30 +671,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                string propertyName = null;
                 if (element.tagName == "INPUT")
                 {
-                    if (element.getAttribute("value", 0).GetType().ToString() != "System.DBNull")
-                    {
-                        string actualValue = element.getAttribute("value", 0).ToString().Trim();
-                        if (String.Compare(actualValue, value, true) == 0)
-                        {
-                            return true;
-                        }
-
-                    }
+                    propertyName = ".value";
                 }
                 else if (element.tagName == "LABEL")
                 {
-                    if (element.getAttribute("innerText", 0).GetType().ToString() != "System.DBNull")
-                    {
-                        string actualValue = element.getAttribute("innerText", 0).ToString().Trim();
-                        if (String.Compare(actualValue, value, true) == 0)
-                        {
-                            return true;
-                        }
-                    }
+                    propertyName = "innerText";
                 }
 
+                if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
+                {
+                    string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
+                    if (String.Compare(actualValue, value, true) == 0)
+                    {
+                        return true;
+                    }
+                }
             }
             catch
             {
@@ -602,27 +708,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                string propertyName = null;
                 if (element.tagName == "INPUT")
                 {
-                    if (element.getAttribute("value", 0).GetType().ToString() != "System.DBNull")
-                    {
-                        string actualValue = element.getAttribute("value", 0).ToString().Trim();
-                        if (String.Compare(actualValue, value, true) == 0)
-                        {
-                            return true;
-                        }
-
-                    }
+                    propertyName = "value";
                 }
                 else if (element.tagName == "LABEL")
                 {
-                    if (element.getAttribute("innerText", 0).GetType().ToString() != "System.DBNull")
+                    propertyName = "innerText";
+                }
+
+                if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
+                {
+                    string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
+                    if (String.Compare(actualValue, value, true) == 0)
                     {
-                        string actualValue = element.getAttribute("innerText", 0).ToString().Trim();
-                        if (String.Compare(actualValue, value, true) == 0)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
                 }
 
@@ -655,9 +756,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         break;
                     case HTMLTestObjectType.TextBox:
                         property = "value";
-                        break;
-                    case HTMLTestObjectType.Image:
-                        property = "src";
                         break;
                     default:
                         property = "innerText";
@@ -705,26 +803,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (tag == "INPUT")
             {
                 //return false, if the it is a hidden object.
-                if (element.getAttribute("type", 0).ToString().ToUpper() == "HIDDEN")
+                if (element.getAttribute("type", 0).ToString().Trim().ToUpper() == "HIDDEN")
                 {
                     return false;
                 }
 
             }
 
-            if (element.getAttribute("enable", 0).GetType().ToString() != "System.DBNull")
+            if (element.getAttribute("enable", 0) != null && element.getAttribute("enable", 0).GetType().ToString() != "System.DBNull")
             {
                 //return false if it is not enabled.
-                if (element.getAttribute("enable", 0).ToString().ToUpper() == "FALSE")
+                if (element.getAttribute("enable", 0).ToString().Trim().ToUpper() == "FALSE")
                 {
                     return false;
                 }
             }
 
-            if (element.getAttribute("visibility", 0).GetType().ToString() != "System.DBNull")
+            if (element.getAttribute("visibility", 0) != null && element.getAttribute("visibility", 0).GetType().ToString() != "System.DBNull")
             {
                 //return false if it is not visbile.
-                if (element.getAttribute("visibility", 0).ToString().ToUpper() == "HIDDEN")
+                if (element.getAttribute("visibility", 0).ToString().Trim().ToUpper() == "HIDDEN")
                 {
                     return false;
                 }
@@ -809,6 +907,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             HTMLTestObjectType type = HTMLTestObject.GetObjectType(element);
 
+            return BuildObjectByType(element, type);
+        }
+
+        private HTMLTestObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
+        {
+
             HTMLGuiTestObject tmp;
 
             switch (type)
@@ -828,10 +932,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.ComboBox:
                     tmp = new HTMLTestComboBox(element);
                     break;
+                case HTMLTestObjectType.Image:
+                    tmp = new HTMLTestImage(element);
+                    break;
+                case HTMLTestObjectType.RadioButton:
+                    tmp = new HTMLTestRadioButton(element);
+                    break;
+                case HTMLTestObjectType.CheckBox:
+                    tmp = new HTMLTestCheckBox(element);
+                    break;
                 default:
                     tmp = null;
                     break;
             }
+
             return tmp;
         }
 

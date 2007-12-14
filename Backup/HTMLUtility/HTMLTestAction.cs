@@ -35,6 +35,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private IClickable _clickObj;
         private IInputable _inputObj;
         private ISelectable _selectObj;
+        private ICheckable _checkObj;
 
         #endregion
 
@@ -104,12 +105,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Check(object obj)
         {
-
+            _checkObj = (ICheckable)obj;
+            _checkObj.Check();
         }
 
         public void UnCheck(object obj)
         {
-            throw new Exception("The method or operation is not implemented.");
+            _checkObj = (ICheckable)obj;
+            _checkObj.UnCheck();
         }
 
         #endregion
@@ -123,7 +126,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void InputKeys(object obj, string keys)
         {
-            throw new Exception("The method or operation is not implemented.");
+            _inputObj = (IInputable)obj;
+            _inputObj.InputKeys(keys);
         }
 
         public void Clear(object obj)
@@ -131,6 +135,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             _inputObj = (IInputable)obj;
             _inputObj.Clear();
         }
+
         #endregion
 
         #region list action
@@ -156,9 +161,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 reg = new Regex(regExp);
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotPerformActionException("Invalid regular expression.");
+                throw new CanNotPerformActionException("Invalid regular expression: " + e.Message);
             }
 
             foreach (string value in values)
@@ -166,9 +171,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (reg.IsMatch(value))
                 {
                     _selectObj.Select(value);
-                    break;
+                    return;
                 }
             }
+
+            throw new CanNotPerformActionException("Can not find item by regular expression: " + regExp);
 
         }
 

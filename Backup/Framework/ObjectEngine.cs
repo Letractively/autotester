@@ -11,6 +11,7 @@
 *              the object to CoreEngine.
 *       
 * History: 2007/09/04 wan,yu Init version
+*          2007/11/20 wan,yu add ITestApp interface. 
 *
 *********************************************************************/
 
@@ -29,9 +30,12 @@ namespace Shrinerain.AutoTester.Framework
 
         #region fields
 
+        //interface we need.
         private ITestObjectPool _objPool;
         private ITestBrowser _testBrowser;
+        private ITestApp _testApp;
 
+        //get config 
         private AutoConfig _autoConfig = AutoConfig.GetInstance();
 
         #endregion
@@ -54,11 +58,19 @@ namespace Shrinerain.AutoTester.Framework
 
         #region public methods
 
-        public TestBrowser GetTestBrowser()
+        /* ITestBrowser GetTestBrowser()
+         * return the test browser we used currently.
+         */
+        public ITestBrowser GetTestBrowser()
         {
-            return (TestBrowser)_testBrowser;
+            return (ITestBrowser)_testBrowser;
         }
 
+        /* TestObject GetTestObject(TestStep step)
+         * return the test object we need.
+         * will get object from actual test object pool.
+         * eg: HTMLTestObjectPool.
+         */
         public TestObject GetTestObject(TestStep step)
         {
             TestObject tmp = null;
@@ -73,6 +85,7 @@ namespace Shrinerain.AutoTester.Framework
 
             if (!String.IsNullOrEmpty(property))
             {
+                //if the property is started with ".", we think it is internal property.
                 if (property.StartsWith("."))
                 {
                     if (property.ToUpper() == ".ID")
@@ -90,6 +103,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 else
                 {
+                    //if not started with "." , treat it as a type.
                     tmp = (TestObject)_objPool.GetObjectByType(property, item, 0);
                 }
 
@@ -101,16 +115,21 @@ namespace Shrinerain.AutoTester.Framework
 
             return tmp;
 
-
         }
 
         #endregion
 
         #region private methods
 
+        /* void LoadPlugin()
+         * Get the dll we need.
+         * use reflecting to load dll at runtime.
+         */
         private void LoadPlugin()
         {
+            _testApp = TestFactory.CreateTestApp();
             _testBrowser = TestFactory.CreateTestBrowser();
+
             _objPool = TestFactory.CreateTestObjectPool();
             _objPool.SetTestBrowser(_testBrowser);
         }

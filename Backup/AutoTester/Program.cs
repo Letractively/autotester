@@ -30,16 +30,16 @@ namespace Shrinerain.AutoTester
     {
         static void Main(string[] args)
         {
-            FrameworkEXE(args);
+            //FrameworkEXE(args);
             //FunctionTest();
-            //FrameworkTest();
+            FrameworkTest();
             Console.ReadLine();
         }
 
 
         static void FrameworkTest()
         {
-            string projectConfigFile = @"E:\program\cs\AutoTester\Document\google.xml";//  @"E:\program\cs\AutoTester\Document\google.xml"; //  
+            string projectConfigFile = @"E:\program\cs\AutoTester\Document\PE\PE.xml";//   @"E:\program\cs\AutoTester\Document\google.xml"; //  
             string frameworkConfigFile = @"E:\Program\CS\AutoTester\Framework\Framework.config";
 
             TestJob myTestJob = new TestJob();
@@ -105,18 +105,90 @@ namespace Shrinerain.AutoTester
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
+            string url = @"http://127.0.0.1/AutoTester/test.htm";// @"http://192.168.17.111:9081/wps/portal/!ut/p/.scr/Login"; //@"www.google.com"; // 
             myHost.Load(url);
+
+            myHost.Wait(5);
+
+            Console.WriteLine(TestBrowser.ScrollTop);
+
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
-            HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByName("q");
-            obj1.Input("statestreet");
+            HTMLTestTextBox userName = (HTMLTestTextBox)pool.GetObjectByType("Textbox", "1", 0);
+            userName.Input("wpsadmin");
 
-            HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Search", 0);
-            obj2.Click();
+            HTMLTestTextBox password = (HTMLTestTextBox)pool.GetObjectByType("Textbox", "2", 0);
+            password.Input("wpsadmin");
 
-            myHost.WaitForNextPage();
+            HTMLTestButton login = (HTMLTestButton)pool.GetObjectByType("button", "Log in", 0);
+            login.PerformDefaultAction(new object());
+
+            myHost.Wait(8);//.WaitForNextPage();
+
+            HTMLTestLink peSecurity = (HTMLTestLink)pool.GetObjectByType("link", "PESecurityPortal", 0);// .GetObjectByProperty(".class", "wpsUnSelectedPageLink");
+            peSecurity.Click();
+
+            myHost.Wait(2);
+
+            HTMLTestLink addNewUserLink = (HTMLTestLink)pool.GetObjectByType("link", "Add New User", 0);
+            addNewUserLink.Click();
+
+            myHost.Wait(2);
+
+            HTMLTestTextBox userID = (HTMLTestTextBox)pool.GetObjectByName("userId");
+            userID.Input("peautomationframework2");
+
+            HTMLTestTextBox firstName = (HTMLTestTextBox)pool.GetObjectByName("userFName");
+            firstName.Input("pe auto");
+
+            HTMLTestTextBox lastName = (HTMLTestTextBox)pool.GetObjectByName("userLName");
+            lastName.Input("smoke test");
+
+
+            HTMLTestComboBox dept = (HTMLTestComboBox)pool.GetObjectByID("depSelect"); //GetObjectByType("combobox", "Select Dept", 0);
+            dept.Select("PRIVTEDGE");
+
+            HTMLTestComboBox client = (HTMLTestComboBox)pool.GetObjectByID("clients");
+            client.Select("Auto2007CLT");
+
+            myHost.Wait(2);
+
+            HTMLTestImage addAll = (HTMLTestImage)pool.GetObjectByType("Image", "addAll.gif", 0);
+            addAll.Click();
+
+            HTMLTestImage next = (HTMLTestImage)pool.GetObjectByType("Image", "next.gif", 0);
+            next.Click();
+
+            myHost.Wait(2);
+
+            HTMLTestLink viewLink = (HTMLTestLink)pool.GetObjectByType("link", "view", 0);
+            viewLink.Click();
+
+            HTMLTestImage next2 = (HTMLTestImage)pool.GetObjectByType("Image", "next.gif", 0);
+            next2.Click();
+
+            myHost.Wait(2);
+
+            HTMLTestLink viewLink2 = (HTMLTestLink)pool.GetObjectByType("link", "view", 0);
+            viewLink2.Click();
+
+            HTMLTestImage next3 = (HTMLTestImage)pool.GetObjectByType("Image", "next.gif", 0);
+            next3.Click();
+
+            myHost.Wait(2);
+
+            HTMLTestImage submit = (HTMLTestImage)pool.GetObjectByType("Image", "submit.gif", 0);
+            submit.Click();
+
+
+            //   HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByName("q");
+            // obj1.Input("statestreet");
+
+            //HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Search", 0);
+            //obj2.Click();
+
+            //myHost.WaitForNextPage();
 
 
 

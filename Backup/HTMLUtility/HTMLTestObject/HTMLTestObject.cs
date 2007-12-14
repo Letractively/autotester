@@ -210,7 +210,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else
                     {
-                        return HTMLTestObjectType.Button;
+                        return HTMLTestObjectType.Image;
                     }
 
                 }
