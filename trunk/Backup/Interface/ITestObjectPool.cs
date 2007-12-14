@@ -11,6 +11,7 @@
 *              by these methods. 
 *
 * History:  2007/09/04 wan,yu Init version
+*           2007/11/20 wan,yu add void SetTestApp() 
 *
 *********************************************************************/
 
@@ -46,6 +47,8 @@ namespace Shrinerain.AutoTester.Interface
 
         Object[] GetAllObjects();
 
+        //set the browser or desktop application
         void SetTestBrowser(ITestBrowser testBrowser);
+        void SetTestApp(ITestApp testApp);
     }
 }

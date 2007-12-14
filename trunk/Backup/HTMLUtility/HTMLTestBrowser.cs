@@ -45,7 +45,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //for reflecting issue, I keep the constructor as "public"
         public HTMLTestBrowser()
         {
-            this._browserName = "Internet Explorer";
+            _browserName = "Internet Explorer";
         }
 
 
@@ -69,15 +69,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
 
         #region GetObject methods
+
+        /* IHTMLElementCollection GetAllObjects()
+         * return all element of HTML DOM.
+         */
         public IHTMLElementCollection GetAllObjects()
         {
-            if (this._HTMLDom == null)
+            if (_HTMLDom == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                return this._HTMLDom.all;
+                return _HTMLDom.all;
             }
             catch (Exception e)
             {
@@ -85,19 +89,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
         }
+
+        /* IHTMLElement GetObjectByID(string id)
+         * return element by .id property.
+         */
         public IHTMLElement GetObjectByID(string id)
         {
             if (String.IsNullOrEmpty(id))
             {
                 throw new PropertyNotFoundException("ID can not be null.");
             }
-            if (this._HTMLDom == null)
+            if (_HTMLDom == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                return this._HTMLDom.getElementById(id);
+                return _HTMLDom.getElementById(id);
             }
             catch (Exception e)
             {
@@ -105,39 +113,46 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
         }
+
+        /* IHTMLElementCollection GetObjectsByName(string name)
+         * return elements by .name property.
+         */
         public IHTMLElementCollection GetObjectsByName(string name)
         {
-            if (this._HTMLDom == null)
-            {
-                throw new TestBrowserNotFoundException();
-            }
             if (String.IsNullOrEmpty(name))
             {
                 throw new PropertyNotFoundException("Name can not be null.");
             }
+            if (_HTMLDom == null)
+            {
+                throw new TestBrowserNotFoundException();
+            }
             try
             {
-                return this._HTMLDom.getElementsByName(name);
+                return _HTMLDom.getElementsByName(name);
             }
             catch (Exception e)
             {
                 throw new ObjectNotFoundException("Can not found test object by name:" + name + ":" + e.Message);
             }
         }
+
+        /* IHTMLElementCollection GetObjectsByTagName(string name)
+         * return elements by tag, eg: <a> will return all link.
+         */
         public IHTMLElementCollection GetObjectsByTagName(string name)
         {
             if (String.IsNullOrEmpty(name))
             {
                 throw new PropertyNotFoundException("Tag name can not be null.");
             }
-            if (this._HTMLDom == null)
+            if (_HTMLDom == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                return this._HTMLDom.getElementsByTagName(name);
-
+                return _HTMLDom.getElementsByTagName(name);
             }
             catch (Exception e)
             {
@@ -145,31 +160,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        /* IHTMLElement GetObjectFromPoint(int x, int y)
+         * return element at expected point.
+         */
         public IHTMLElement GetObjectFromPoint(int x, int y)
         {
-            if (x >= 0 && y >= 0)
+            try
             {
-                try
-                {
-                    return _HTMLDom.elementFromPoint(x, y);
-                }
-                catch (Exception e)
-                {
-                    throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + e.Message);
-                }
+                return _HTMLDom.elementFromPoint(x, y);
             }
-            else
+            catch (Exception e)
             {
-                throw new ObjectNotFoundException("Can not found object at point which less than (0,0)");
+                throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + e.Message);
             }
-
         }
+
         #endregion
 
         #endregion
 
         #region private help methods
 
+        /* void OnDocumentLoadComplete(object pDesp, ref object pUrl)
+         * when document loaded, tell the htmlobjectpool to reload all objects.
+         */
         protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
 

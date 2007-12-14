@@ -95,8 +95,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 base.Dispose();
                 if (_actionFinished != null)
                 {
-                    _actionFinished.Close();
-                    _actionFinished = null;
+                    //_actionFinished.Close();
+                    //_actionFinished = null;
                 }
                 GC.SuppressFinalize(this);
             }
@@ -147,6 +147,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //get the browser information, get the real position on screen.
             top += HTMLTestBrowser.ClientTop;
             left += HTMLTestBrowser.ClientLeft;
+
             top -= HTMLTestBrowser.ScrollTop;
             left -= HTMLTestBrowser.ScrollLeft;
 
@@ -178,6 +179,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get the center point of the object, and move mouse to it.
                 Point tmp = this.GetCenterPoint();
                 MouseOp.MoveTo(tmp.X, tmp.Y);
+
+                Thread.Sleep(300 * 1);
             }
             catch
             {
@@ -233,9 +236,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._sourceElement.scrollIntoView(toTop);
 
+                Thread.Sleep(1000 * 1);
+
                 //re-calculate the position, because we had move it.
                 this.Rect = GetRectOnScreen();
             }
+
 
         }
 

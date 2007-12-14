@@ -31,9 +31,8 @@ namespace Shrinerain.AutoTester.Framework
     {
 
         #region fields
-
+        //assembly used to load dll.
         private static Assembly _assembly;
-        private static string _lastDLL;
 
         //interface 
         private static ITestBrowser _browser;
@@ -74,12 +73,41 @@ namespace Shrinerain.AutoTester.Framework
 
         static TestFactory()
         {
-            GetAllDLLPath();
+            GetAllDllPath();
         }
 
         #endregion
 
         #region public methods
+
+        /* ITestApp CreateTestApp()
+         * return expected app interface.
+         * This interface is used to control the desktop application.
+         */
+        public static ITestApp CreateTestApp()
+        {
+
+            if (String.IsNullOrEmpty(_testActionDLL))
+            {
+                throw new CanNotLoadDllException("Test app dll can not be null.");
+            }
+            try
+            {
+                //load the dll, convert to expcted interface.
+                _app = (ITestApp)LoadDll(_testAppDLL, _testAppClassName);
+            }
+            catch (Exception e)
+            {
+                throw new CanNotLoadDllException("Can not create instance of test app: " + e.Message);
+            }
+
+            if (_app == null)
+            {
+                throw new CanNotLoadDllException("Can not create instance of test app.");
+            }
+
+            return _app;
+        }
 
         /* static ITestBrowser CreateTestBrowser()
          * return expected ITestBrowser.
@@ -95,7 +123,7 @@ namespace Shrinerain.AutoTester.Framework
             try
             {
                 //load the dll, convert to expcted interface.
-                _browser = (ITestBrowser)LoadPlugin(_testBrowserDLL, _testBrowserClassName);
+                _browser = (ITestBrowser)LoadDll(_testBrowserDLL, _testBrowserClassName);
             }
             catch (Exception e)
             {
@@ -111,7 +139,6 @@ namespace Shrinerain.AutoTester.Framework
                 return _browser;
             }
 
-
         }
 
         /*  ITestObjectPool CreateTestObjectPool()
@@ -126,7 +153,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             try
             {
-                _objPool = (ITestObjectPool)LoadPlugin(_testObjPoolDLL, _testObjectPoolClassName);
+                _objPool = (ITestObjectPool)LoadDll(_testObjPoolDLL, _testObjectPoolClassName);
             }
             catch (Exception e)
             {
@@ -155,7 +182,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             try
             {
-                _actionPool = (ITestAction)LoadPlugin(_testActionDLL, _testActionClassName);
+                _actionPool = (ITestAction)LoadDll(_testActionDLL, _testActionClassName);
             }
             catch (Exception e)
             {
@@ -185,7 +212,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             try
             {
-                _testVP = (ITestVP)LoadPlugin(_testVPDLL, _testVPClassName);
+                _testVP = (ITestVP)LoadDll(_testVPDLL, _testVPClassName);
             }
             catch (Exception e)
             {
@@ -209,7 +236,7 @@ namespace Shrinerain.AutoTester.Framework
         /* void GetAllDLLPath()
          * Get the dll path from framework config file.
          */
-        private static void GetAllDLLPath()
+        private static void GetAllDllPath()
         {
             if (String.IsNullOrEmpty(_testObjPoolDLL))
             {
@@ -246,36 +273,43 @@ namespace Shrinerain.AutoTester.Framework
                     {
                         isApp = true;
                     }
+                    else
+                    {
+                        if (String.IsNullOrEmpty(_testBrowserDLL))
+                        {
+                            throw new CanNotLoadDllException(" Test app and Test browser can not be null.");
+                        }
+                    }
 
                     bool allFound = true;
 
                     //search each dll
                     if (isApp)
                     {
-                        if (!SearchDLL(currentPath, ref _testAppDLL))
+                        if (!SearchDll(currentPath, ref _testAppDLL))
                         {
                             allFound = false;
                         }
                     }
                     else
                     {
-                        if (!SearchDLL(currentPath, ref _testBrowserDLL))
+                        if (!SearchDll(currentPath, ref _testBrowserDLL))
                         {
                             allFound = false;
                         }
                     }
 
-                    if (!SearchDLL(currentPath, ref _testObjPoolDLL))
+                    if (!SearchDll(currentPath, ref _testObjPoolDLL))
                     {
                         allFound = false;
                     }
 
-                    if (!SearchDLL(currentPath, ref _testActionDLL))
+                    if (!SearchDll(currentPath, ref _testActionDLL))
                     {
                         allFound = false;
                     }
 
-                    if (!SearchDLL(currentPath, ref _testVPDLL))
+                    if (!SearchDll(currentPath, ref _testVPDLL))
                     {
                         allFound = false;
                     }
@@ -299,7 +333,7 @@ namespace Shrinerain.AutoTester.Framework
         /* SearchDLL(string dir, ref string dllFullPath)
          * Return true if dll exist.
          */
-        private static bool SearchDLL(string dir, ref string dllFullPath)
+        private static bool SearchDll(string dir, ref string dllFullPath)
         {
 
             if (File.Exists(dllFullPath))
@@ -316,11 +350,12 @@ namespace Shrinerain.AutoTester.Framework
             }
             else
             {
+                //search sub folder.
                 string[] dirs = Directory.GetDirectories(dir);
 
                 foreach (string d in dirs)
                 {
-                    if (SearchDLL(d, ref dllFullPath))
+                    if (SearchDll(d, ref dllFullPath))
                     {
                         return true;
                     }
@@ -330,32 +365,16 @@ namespace Shrinerain.AutoTester.Framework
             return false;
         }
 
-        /*  Object LoadPlugin(String dll, string className)
+        /*  Object LoadDll(String dll, string className)
          *  Load dll, use reflecting.
          */
-        private static Object LoadPlugin(String dll, string className)
+        private static Object LoadDll(String dll, string className)
         {
-            if (_lastDLL == null)
-            {
-                _lastDLL = "";
-            }
-
-            if (dll.ToUpper() != _lastDLL.ToUpper())
-            {
-                try
-                {
-                    _assembly = Assembly.LoadFrom(dll);
-                    _lastDLL = dll;
-                }
-                catch
-                {
-                    throw;
-                }
-
-            }
 
             //use reflecting to create instance for dll.
+            _assembly = Assembly.LoadFrom(dll);
             Type type = _assembly.GetType(className);
+
             return Activator.CreateInstance(type);
         }
 

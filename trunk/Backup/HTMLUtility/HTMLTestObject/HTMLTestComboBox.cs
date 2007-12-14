@@ -125,29 +125,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, comboboxHandle, this._class, null);
                     }
                 }
-
-                if (this._handle == IntPtr.Zero)
-                {
-                    throw new CanNotBuildObjectException("Can not get windows handle of combo box.");
-                }
-            }
-            catch (CanNotBuildObjectException)
-            {
-                throw;
             }
             catch
             {
-                throw new CanNotBuildObjectException("Can not get windows handle of combo box.");
+
             }
 
-            try
+            //get the height of each item.
+            this._itemHeight = Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.COMBOBOXMSG.CB_GETITEMHEIGHT), 0, 0);
+
+            if (this._itemHeight == 0)
             {
-                //get the height of each item.
-                this._itemHeight = Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.COMBOBOXMSG.CB_GETITEMHEIGHT), 0, 0);
-            }
-            catch
-            {
-                this._itemHeight = this.Rect.Height;
+                //the default item height
+                this._itemHeight = 13;
             }
 
         }
@@ -365,9 +355,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ItemNotFoundException("Can not find the position of item at index:" + index.ToString());
             }
 
+
             //find the center point of the first item.
             int itemX = this._rect.Left + this._rect.Width / 2;
-            int itemY = this._rect.Top + (this._rect.Height / 2) * 3;
+
+            int itemY = this._rect.Top;
 
             //var to indicate if scroll bar exist.
             bool isScrollBar = false;
@@ -375,14 +367,42 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //if the combo box contains more than 30 items, we can see scroll bar.
             if (this._allValues.Length > 30)
             {
-                isScrollBar = true;
+                //isScrollBar = true;
+            }
+
+            bool isDownward = true;
+
+            int listHeight = 0;
+
+            if (this._allValues.Length > 30)
+            {
+                listHeight = this._itemHeight * 30;
+            }
+            else
+            {
+                listHeight = this._itemHeight * this._allValues.Length;
+            }
+
+            if (this._rect.Top + listHeight > TestBrowser.ClientHeight)
+            {
+                isDownward = false;
             }
 
             //if scrollbar not exist.
             if (!isScrollBar)
             {
                 //we don't need to move the scroll bar.
-                itemY += this._itemHeight * index;
+                if (isDownward)
+                {
+                    itemY += this._rect.Height + this._itemHeight / 2;
+                    itemY += this._itemHeight * index;
+                }
+                else
+                {
+                    itemY -= listHeight;
+                    itemY += this._itemHeight / 2;
+                    itemY += this._itemHeight * (index - topIndex);
+                }
             }
             else
             {

@@ -62,10 +62,10 @@ namespace Shrinerain.AutoTester.Function
         protected static IntPtr _shellDocHandle;
 
         //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
-        protected InternetExplorer _ie = null;
+        protected static InternetExplorer _ie = null;
 
         //HTML dom, we use HTML dom to get the HTML object.
-        protected HTMLDocument _HTMLDom = null;
+        protected static HTMLDocument _HTMLDom = null;
 
         //wait for 120 secs, for example, to wait for the browser exist.
         protected int _maxWaitSeconds = 120;
@@ -74,10 +74,10 @@ namespace Shrinerain.AutoTester.Function
         protected const int _interval = 3;
 
         //the version of browser, eg 7.0
-        protected string _version;
+        protected static string _version;
 
         //the name of browser, eg Internet Explorer.
-        protected string _browserName;
+        protected static string _browserName;
 
         /*we have 3 area here.
          * 1. rectangle of borwser, including menu bar, address bar.
@@ -205,7 +205,7 @@ namespace Shrinerain.AutoTester.Function
         {
             get
             {
-                // GetScrollRect();
+                //GetScrollRect();
                 return _scrollLeft;
             }
         }
@@ -213,7 +213,7 @@ namespace Shrinerain.AutoTester.Function
         {
             get
             {
-                // GetScrollRect();
+                GetScrollRect();
                 return _scrollTop;
             }
         }
@@ -229,7 +229,7 @@ namespace Shrinerain.AutoTester.Function
         {
             get
             {
-                // GetScrollRect();
+                //GetScrollRect();
                 return _scrollHeight;
             }
 
@@ -256,8 +256,8 @@ namespace Shrinerain.AutoTester.Function
         {
             //currently, just support internet explorer
             // default version number is 6.0
-            this._browserName = "Internet Explorer";
-            this._version = "6.0";
+            _browserName = "Internet Explorer";
+            _version = "6.0";
         }
 
         //singleton
@@ -279,14 +279,14 @@ namespace Shrinerain.AutoTester.Function
 
         public virtual void Dispose()
         {
-            if (this._ieStarted != null)
+            if (_ieStarted != null)
             {
-                //  this._ieExisted.Close();
-                this._ieStarted.Close();
+                //  _ieExisted.Close();
+                _ieStarted.Close();
                 this._documentLoadComplete.Close();
 
-                //this._ieExisted = null;
-                this._ieStarted = null;
+                //_ieExisted = null;
+                _ieStarted = null;
                 this._documentLoadComplete = null;
             }
 
@@ -311,7 +311,7 @@ namespace Shrinerain.AutoTester.Function
                 ieExistT.Start();
 
                 //wait until the internet explorer started.
-                this._ieStarted.WaitOne();
+                _ieStarted.WaitOne();
 
                 if (_ie != null)
                 {
@@ -340,11 +340,11 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual void Close()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
-            this._ie.Quit();
+            _ie.Quit();
         }
 
         /* void Load(string url)
@@ -359,7 +359,7 @@ namespace Shrinerain.AutoTester.Function
             }
 
             // if ie is not started, wait for 120s.
-            if (this._ie == null)
+            if (_ie == null)
             {
                 _ieStarted.WaitOne(this._maxWaitSeconds * 1000, true);
             }
@@ -369,7 +369,7 @@ namespace Shrinerain.AutoTester.Function
             try
             {
                 // navigate to the expected url.
-                this._ie.Navigate(url, ref tmp, ref tmp, ref tmp, ref tmp);
+                _ie.Navigate(url, ref tmp, ref tmp, ref tmp, ref tmp);
                 Thread.Sleep(1 * 1000);
             }
             catch
@@ -394,14 +394,14 @@ namespace Shrinerain.AutoTester.Function
         public virtual void Move(int top, int left)
         {
 
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                this._ie.Top = top;
-                this._ie.Left = left;
+                _ie.Top = top;
+                _ie.Left = left;
             }
             catch
             {
@@ -424,8 +424,8 @@ namespace Shrinerain.AutoTester.Function
             }
             try
             {
-                this._ie.Width = width;
-                this._ie.Height = height;
+                _ie.Width = width;
+                _ie.Height = height;
             }
             catch
             {
@@ -439,13 +439,13 @@ namespace Shrinerain.AutoTester.Function
          * */
         public virtual void Back()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                this._ie.GoBack();
+                _ie.GoBack();
             }
             catch
             {
@@ -459,13 +459,13 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual void Forward()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                this._ie.GoForward();
+                _ie.GoForward();
             }
             catch
             {
@@ -478,13 +478,13 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual void Home()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                this._ie.GoHome();
+                _ie.GoHome();
             }
             catch
             {
@@ -498,13 +498,13 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual void Refresh()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                this._ie.Refresh();
+                _ie.Refresh();
             }
             catch
             {
@@ -660,13 +660,13 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual string GetCurrentUrl()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                return this._ie.LocationURL;
+                return _ie.LocationURL;
             }
             catch
             {
@@ -679,13 +679,13 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual string GetStatusText()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                return this._ie.StatusText;
+                return _ie.StatusText;
             }
             catch
             {
@@ -699,13 +699,13 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual bool IsMenuVisiable()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                return this._ie.MenuBar;
+                return _ie.MenuBar;
             }
             catch
             {
@@ -719,13 +719,13 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual bool IsResizeable()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                return this._ie.Resizable;
+                return _ie.Resizable;
             }
             catch
             {
@@ -739,13 +739,13 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual bool IsFullScreen()
         {
-            if (this._ie == null)
+            if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
             try
             {
-                return this._ie.FullScreen;
+                return _ie.FullScreen;
             }
             catch
             {
@@ -760,7 +760,7 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual String GetBrowserName()
         {
-            return this._browserName;
+            return _browserName;
         }
 
         /* string GetBrowserVersion()
@@ -768,7 +768,7 @@ namespace Shrinerain.AutoTester.Function
          */
         public virtual String GetBrowserVersion()
         {
-            return this._version;
+            return _version;
         }
 
         #endregion
@@ -816,9 +816,9 @@ namespace Shrinerain.AutoTester.Function
         {
             SHDocVw.ShellWindows allBrowsers = null;
 
-            //try 3 times to attach IE.
+            //try until timeout, the default is 120s.
             int j = 0;
-            while (j < 3)
+            while (j < this._maxWaitSeconds)
             {
                 //get all shell browser.
                 allBrowsers = new ShellWindows();
@@ -834,12 +834,9 @@ namespace Shrinerain.AutoTester.Function
                     try
                     {
                         tempIE = (InternetExplorer)allBrowsers.Item(i);
-                        if (tempIE == null)
-                        {
-                            continue;
-                        }
 
-                        if (tempIE.HWND == 0)
+                        //not found.
+                        if (tempIE == null || tempIE.HWND == 0)
                         {
                             continue;
                         }
@@ -854,7 +851,7 @@ namespace Shrinerain.AutoTester.Function
                     }
                 }
 
-                j++;
+                j += _interval;
 
                 Thread.Sleep(_interval * 1000);
             }
@@ -896,7 +893,7 @@ namespace Shrinerain.AutoTester.Function
                     else
                     {
                         Thread.Sleep(_interval * 1000);
-                        this._ieStarted.Set();
+                        _ieStarted.Set();
                         break;
                     }
                 }
@@ -908,10 +905,47 @@ namespace Shrinerain.AutoTester.Function
             WaitForIEExist(this._maxWaitSeconds);
         }
 
+
+        #region get size
+
+        /* void GetSize()
+         * Get all size information of browser.
+         */
+        protected virtual void GetSize()
+        {
+            GetBrowserRect();
+            GetClientRect();
+            GetScrollRect();
+        }
+
+        /* void GetBrowserRect()
+         * browser rect: the whole rect of IE, include menu, address bar etc.
+         */
+        protected static void GetBrowserRect()
+        {
+            if (_ie == null)
+            {
+                throw new TestBrowserNotFoundException();
+            }
+
+            try
+            {
+                _ieLeft = _ie.Left;
+                _ieTop = _ie.Top;
+                _ieWidth = _ie.Width;
+                _ieHeight = _ie.Height;
+            }
+            catch (Exception e)
+            {
+                throw new CanNotAttachTestBrowserException("Can not get the rect: " + e.Message);
+            }
+        }
+
+
         /* void GetClientRect()
          * client rect: the web page rect, not include menu, address bar ect.
          */
-        protected virtual void GetClientRect()
+        protected static void GetClientRect()
         {
             if (_mainHandle != IntPtr.Zero)
             {
@@ -920,7 +954,7 @@ namespace Shrinerain.AutoTester.Function
                     _shellDocHandle = GetShellDocHandle(_mainHandle);// Win32API.FindWindowEx(_mainHandle, IntPtr.Zero, "Shell DocObject View", null);
                     if (_shellDocHandle == IntPtr.Zero)
                     {
-                        throw new TestBrowserNotFoundException("Can not get IE Client location.");
+                        throw new TestBrowserNotFoundException("Can not get TestBrowser Client location.");
                     }
                 }
 
@@ -962,64 +996,26 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
-        /* void GetBrowserRect()
-         * browser rect: the whole rect of IE, include menu, address bar etc.
-         */
-        protected virtual void GetBrowserRect()
-        {
-            if (this._ie == null)
-            {
-                throw new TestBrowserNotFoundException();
-            }
-
-            try
-            {
-                _ieLeft = this._ie.Left;
-                _ieTop = this._ie.Top;
-                _ieWidth = this._ie.Width;
-                _ieHeight = this._ie.Height;
-            }
-            catch
-            {
-                throw new CanNotAttachTestBrowserException("Can not get the rect.");
-            }
-        }
-
         /* void GetScrollRect()
          * the whole web page rect, include invisible part, for example, some web pages are too long to display, we need to scroll them.
          * 
          */
-        protected virtual void GetScrollRect()
+        protected static void GetScrollRect()
         {
-            try
-            {
-                HTMLBody bodyElement = (HTMLBody)this._HTMLDom.body;
-                _scrollWidth = bodyElement.scrollWidth;
-                _scrollHeight = bodyElement.scrollHeight;
+            _HTMLDom = (HTMLDocument)_ie.Document;
 
-                // scrollLeft means the left that Can Not been seen, scrollTop the same.
-                _scrollLeft = bodyElement.scrollLeft;
-                _scrollTop = bodyElement.scrollTop;
-            }
-            catch
-            {
-                _scrollWidth = 0;
-                _scrollHeight = 0;
-                _scrollLeft = 0;
-                _scrollTop = 0;
-            }
+            HTMLBody bodyElement = (HTMLBody)_HTMLDom.body;
+            _scrollWidth = bodyElement.scrollWidth;
+            _scrollHeight = bodyElement.scrollHeight;
 
+            // scrollLeft means the left that Can Not been seen, scrollTop the same.
+            _scrollLeft = bodyElement.scrollLeft;
+            _scrollTop = bodyElement.scrollTop;
         }
 
-        /* void GetSize()
-         * Get all size information of browser.
-         */
-        protected virtual void GetSize()
-        {
-            GetBrowserRect();
-            GetClientRect();
-            GetScrollRect();
-        }
+
+
+        #endregion
 
         /* void GetPrevTestBrowserStatus()
          * Get previous browser status. eg: when pop up window disapper, we need to return to the main window.
@@ -1047,11 +1043,12 @@ namespace Shrinerain.AutoTester.Function
             }
         }
 
+        #region get handles of each windows control
         /* IntPtr GetIEMainHandle()
          * return the handle of IEFrame, this is the parent handle of Internet Explorer. 
          * we can use Spy++ to get the the handle.
          */
-        protected virtual IntPtr GetIEMainHandle()
+        protected static IntPtr GetIEMainHandle()
         {
             return Win32API.FindWindow("IEFrame", null);
         }
@@ -1060,7 +1057,7 @@ namespace Shrinerain.AutoTester.Function
          * return the handle of Shell DocObject View.
          * we can use Spy++ to get the tree structrue of Internet Explorer handles. 
          */
-        protected virtual IntPtr GetShellDocHandle(IntPtr mainHandle)
+        protected static IntPtr GetShellDocHandle(IntPtr mainHandle)
         {
             if (mainHandle == IntPtr.Zero)
             {
@@ -1079,7 +1076,7 @@ namespace Shrinerain.AutoTester.Function
             else
             {
                 //tab handle found, means IE 7
-                this._version = "7.0";
+                _version = "7.0";
                 return Win32API.FindWindowEx(tabWindow, IntPtr.Zero, "Shell DocObject View", null);
             }
 
@@ -1089,7 +1086,7 @@ namespace Shrinerain.AutoTester.Function
          * return the warning bar handle. in Internet Explorer 6.0 with XP2 or Internet Explorer 7.0.
          * when the web page contains ActiveX (eg: FlashPlayer), we can see a yellow bar on the browser.
          */
-        protected virtual IntPtr GetWarnBarHandle(IntPtr shellHandle)
+        protected static IntPtr GetWarnBarHandle(IntPtr shellHandle)
         {
             if (shellHandle == IntPtr.Zero)
             {
@@ -1103,7 +1100,7 @@ namespace Shrinerain.AutoTester.Function
          * return the handle of Internet Explorer_Server.
          * This control is used to display web page.
          */
-        protected virtual IntPtr GetIEServerHandle(IntPtr shellHandle)
+        protected static IntPtr GetIEServerHandle(IntPtr shellHandle)
         {
             if (shellHandle == IntPtr.Zero)
             {
@@ -1116,7 +1113,7 @@ namespace Shrinerain.AutoTester.Function
          * return the handle of pop up page.
          * the name is Internet Explorer_TridentDlgFrame.
          */
-        protected virtual IntPtr GetDialogHandle(IntPtr mainHandle)
+        protected static IntPtr GetDialogHandle(IntPtr mainHandle)
         {
             if (mainHandle == IntPtr.Zero)
             {
@@ -1141,7 +1138,7 @@ namespace Shrinerain.AutoTester.Function
          *  When we get a pop up window, we need to get it's HTML Dom to get HTML object.
          *  So we need to convert it's handle to HTML Document.
          */
-        protected virtual HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
+        protected static HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
         {
 
             int nMsg = Win32API.RegisterWindowMessage("WM_HTML_GETOBJECT");
@@ -1152,14 +1149,18 @@ namespace Shrinerain.AutoTester.Function
                 return null;
             }
             return (HTMLDocument)Win32API.ObjectFromLresult(lRes,
-                 typeof(mshtml.IHTMLDocument).GUID, IntPtr.Zero);
+                 typeof(IHTMLDocument).GUID, IntPtr.Zero);
         }
+
+        #endregion
 
         #endregion
 
         #region event
 
-        //register IE events
+        /*  void RegIEEvent()
+        *  register IE event.
+        */
         protected virtual void RegIEEvent()
         {
             RegStartDownloadEvent();
@@ -1181,9 +1182,9 @@ namespace Shrinerain.AutoTester.Function
             {
                 _ie.DownloadBegin += new DWebBrowserEvents2_DownloadBeginEventHandler(OnDownloadBegin);
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotAttachTestBrowserException("Can not register Downloadbegin event.");
+                throw new CanNotAttachTestBrowserException("Can not register Downloadbegin event: " + e.Message);
             }
         }
 
@@ -1195,12 +1196,12 @@ namespace Shrinerain.AutoTester.Function
         {
             try
             {
-                //  _ie.NewWindow3 += new DWebBrowserEvents2_NewWindow3EventHandler(OnNewWindow3);
+                _ie.NewWindow3 += new DWebBrowserEvents2_NewWindow3EventHandler(OnNewWindow3);
                 _ie.NewWindow2 += new DWebBrowserEvents2_NewWindow2EventHandler(OnNewWindow2);
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotAttachTestBrowserException("Can not register new window event.");
+                throw new CanNotAttachTestBrowserException("Can not register new window event: " + e.Message);
             }
 
         }
@@ -1211,10 +1212,6 @@ namespace Shrinerain.AutoTester.Function
          */
         protected virtual void RegScrollEvent()
         {
-
-            // HTMLBody body = (HTMLBody)_HTMLDom.body;
-            //_HTMLDom.parentWindow.
-            //body.s
 
         }
 
@@ -1227,9 +1224,9 @@ namespace Shrinerain.AutoTester.Function
             {
                 _ie.DocumentComplete += new DWebBrowserEvents2_DocumentCompleteEventHandler(OnDocumentLoadComplete);
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotAttachTestBrowserException("Can not register document complete event.");
+                throw new CanNotAttachTestBrowserException("Can not register document complete event: " + e.Message);
             }
         }
 
@@ -1245,9 +1242,9 @@ namespace Shrinerain.AutoTester.Function
                 _ie.WindowSetWidth += new DWebBrowserEvents2_WindowSetWidthEventHandler(OnRectChanged);
                 _ie.WindowSetHeight += new DWebBrowserEvents2_WindowSetHeightEventHandler(OnRectChanged);
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotAttachTestBrowserException("Can not register Rect change event.");
+                throw new CanNotAttachTestBrowserException("Can not register Rect change event: " + e.Message);
             }
         }
 
@@ -1260,35 +1257,37 @@ namespace Shrinerain.AutoTester.Function
             {
                 _ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotAttachTestBrowserException("Can not register load error event.");
+                throw new CanNotAttachTestBrowserException("Can not register load error event: " + e.Message);
             }
         }
 
+        #region callback functions for each event
         /* void OnNavigateError
          * the callback function to handle navigate error.
          */
         protected virtual void OnNavigateError(object pDisp, ref object URL, ref object Frame, ref object StatusCode, ref bool Cancel)
         {
-            throw new CanNotLoadUrlException();
+            throw new CanNotLoadUrlException("Can not navigate to URL: " + URL.ToString());
         }
 
 
         /* void OnNewWindow2(ref object ppDisp, ref bool Cancel)
-         * the callback function to handle new window.
+         * the callback function to handle new "tab", it is not like IE 7 tab.
          * Notice: need update!!
          */
         protected void OnNewWindow2(ref object ppDisp, ref bool Cancel)
         {
-            System.Windows.Forms.MessageBox.Show("new window2!");
-            // throw new Exception("New window.");
-            //throw new Exception("The method or operation is not implemented.");
+            GetSize();
         }
 
+        /* void void OnNewWindow3(ref object ppDisp, ref bool Cancel, uint dwFlags, string bstrUrlContext, string bstrUrl)
+         * Notice: need update!!
+         */
         protected void OnNewWindow3(ref object ppDisp, ref bool Cancel, uint dwFlags, string bstrUrlContext, string bstrUrl)
         {
-            throw new Exception("The method or operation is not implemented.");
+            GetSize();
         }
 
         /* void OnDownloadBegin()
@@ -1309,21 +1308,16 @@ namespace Shrinerain.AutoTester.Function
             try
             {
 
-                this._HTMLDom = (HTMLDocument)_ie.Document;
+                _HTMLDom = (HTMLDocument)_ie.Document;
 
                 GetSize();
 
                 _documentLoadComplete.Set();
 
-
             }
-            catch (TestBrowserNotFoundException)
+            catch (Exception e)
             {
-                throw;
-            }
-            catch
-            {
-                throw new CanNotAttachTestBrowserException("Can not parse html document.");
+                throw new CanNotAttachTestBrowserException("Can not parse html document: " + e.Message);
             }
 
         }
@@ -1338,15 +1332,13 @@ namespace Shrinerain.AutoTester.Function
             {
                 GetSize();
             }
-            catch (TestBrowserNotFoundException)
+            catch (Exception e)
             {
-                throw;
-            }
-            catch
-            {
-                throw new CanNotAttachTestBrowserException("Can not register rect change event.");
+                throw new CanNotAttachTestBrowserException("Can not register rect change event: " + e.Message);
             }
         }
+
+        #endregion
 
         #endregion
 
