@@ -31,13 +31,19 @@ namespace Shrinerain.AutoTester.Framework
         private static SubEngine _subEngine = new SubEngine();
 
         private static Parser _parser = Parser.GetInstance();
+
         private DataEngine _dataEngine = null;
 
+        //Load all test sub to this list.
         private List<TestSub> _allTestSubs;
 
-
+        //regular expression to extract datapool name. eg: data1.value1
         private Regex _dataPoolReg = new Regex(@"^{(\w+\.)?value\d+}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        //regular expression to extract number
         private Regex _numberReg = new Regex(@"\d+", RegexOptions.Compiled);
+
+        //regular expression to extract value index, eg: {data1.value1}
         private Regex _valueIndexReg = new Regex(@"\d+}$", RegexOptions.Compiled);
 
         #endregion
@@ -84,7 +90,6 @@ namespace Shrinerain.AutoTester.Framework
         #region public methods
 
         //singleton
-
         public static SubEngine GetInstance()
         {
             return _subEngine;
@@ -101,6 +106,9 @@ namespace Shrinerain.AutoTester.Framework
             return _subEngine;
         }
 
+        /* 
+         * 
+         */
         public List<TestStep> BuildTestStepBySubName(string subName)
         {
             List<TestStep> subOriginSteps = GetTestSubByName(subName);
@@ -320,10 +328,12 @@ namespace Shrinerain.AutoTester.Framework
             index = -1;
             if (_valueIndexReg.IsMatch(value))
             {
+                //indexStr=value1}
                 string indexStr = _valueIndexReg.Match(value).Value;
 
+                //get the actual index, value2} -> 2
                 //in drive file, the index start at 1. eg: value1, so we need to minus 1, make it start at 0
-                index = int.Parse(indexStr.Replace("}", "")) - 1;
+                index = int.Parse(indexStr.Remove(indexStr.Length - 1)) - 1;
 
                 return true;
             }

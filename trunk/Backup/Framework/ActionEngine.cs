@@ -27,8 +27,8 @@ namespace Shrinerain.AutoTester.Framework
 
         #region fields
 
+        //interface to perform real action.
         private ITestAction _testAction;
-
 
         #endregion
 
@@ -50,6 +50,11 @@ namespace Shrinerain.AutoTester.Framework
 
         #region public methods
 
+        /*  void PerformAction(TestObject obj, string action, string data)
+         *  perform actions on object.
+         *  receive test object, action and data from CoreEngine.
+         *  call ITestAction interface to perform real action.
+         */
         public void PerformAction(TestObject obj, string action, string data)
         {
             if (obj == null || String.IsNullOrEmpty(action))
@@ -73,6 +78,15 @@ namespace Shrinerain.AutoTester.Framework
                 }
 
                 _testAction.Input(obj, data);
+            }
+            else if (action == "INPUTKEYS")
+            {
+                if (isDataNull)
+                {
+                    throw new CanNotPerformActionException("Inputkeys can not input empty data.");
+                }
+
+                _testAction.InputKeys(obj, data);
             }
             else if (action == "SELECT")
             {
@@ -106,9 +120,13 @@ namespace Shrinerain.AutoTester.Framework
             {
                 _testAction.Clear(obj);
             }
+            else if (action == "HOVER")
+            {
+                _testAction.Hover(obj);
+            }
             else
             {
-                throw new CanNotPerformActionException("Unsupported action.");
+                throw new CanNotPerformActionException("Unsupported action: " + action);
             }
 
         }
@@ -117,6 +135,10 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private methods
 
+        /* void LoadPlugin()
+         * Load ITestAction interface to perform actions.
+         * 
+         */
         private void LoadPlugin()
         {
             _testAction = TestFactory.CreateTestAction();

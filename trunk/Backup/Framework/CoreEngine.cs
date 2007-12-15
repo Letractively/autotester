@@ -56,6 +56,7 @@ namespace Shrinerain.AutoTester.Framework
 
 
         //other engine to perform each action.
+        //data engine is managed by SubEngine.
         private ObjectEngine _objEngine;
         private ActionEngine _actEngine;
         private VPEngine _vpEngine;
@@ -240,7 +241,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             string headers =
             "\n----------------------------------------\n"
-            + "UAT Automation Framework v0.7 C# Edition\n"
+            + "UAT Automation Framework v0.8 C# Edition\n"
             + "        Shrinerain@hotmail.com          \n"
             + "----------------------------------------\n\n"
             + "Start to test...\n"
