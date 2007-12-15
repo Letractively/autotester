@@ -166,47 +166,52 @@ namespace Shrinerain.AutoTester.Function
 
         }
 
+        public TestDataPool(TestDataPoolType type)
+        {
+            this._databaseType = type;
+        }
+
         ~TestDataPool()
         {
             Dispose();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             throw new Exception();
         }
 
-        public void Open()
+        public virtual void Open()
         {
             throw new Exception();
         }
 
-        public void Close()
+        public virtual void Close()
         {
             throw new Exception();
         }
 
-        public bool MoveNext()
+        public virtual bool MoveNext()
         {
             throw new Exception();
         }
 
-        public string GetValueByIndex(int index)
+        public virtual string GetValueByIndex(int index)
         {
             throw new Exception();
         }
 
-        public string[] GetValueByRow(int rowNumber)
+        public virtual string[] GetValueByRow(int rowNumber)
         {
             throw new Exception();
         }
 
-        public string[] GetValueByCol(int colNumber)
+        public virtual string[] GetValueByCol(int colNumber)
         {
             throw new Exception();
         }
 
-        public string[][] GetAllValue()
+        public virtual string[][] GetAllValue()
         {
             throw new Exception();
         }
@@ -216,7 +221,7 @@ namespace Shrinerain.AutoTester.Function
 
         #region private methods
 
-        protected string BuildConnStr(TestDataPoolType type)
+        protected virtual string BuildConnStr(TestDataPoolType type)
         {
             switch (type)
             {
