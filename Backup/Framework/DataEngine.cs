@@ -1,6 +1,22 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: DataEngine.cs
+*
+* Description: manage datapool, return datapool to SubEngine.
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using Shrinerain.AutoTester.Function;
 
 namespace Shrinerain.AutoTester.Framework
@@ -14,7 +30,10 @@ namespace Shrinerain.AutoTester.Framework
 
         private static Parser _parser = Parser.GetInstance();
 
+        //load all datapool to this list.
         private List<TestDataPool> _allDataPool;
+
+        private TestDataPool _currentDataPool;
 
         #endregion
 
@@ -64,6 +83,9 @@ namespace Shrinerain.AutoTester.Framework
             return _dataEngine;
         }
 
+        /* TestDataPool GetDataPoolByName(string dataPoolName)
+         * return expected datapool by name.
+         */
         public TestDataPool GetDataPoolByName(string dataPoolName)
         {
             if (String.IsNullOrEmpty(dataPoolName))
@@ -83,13 +105,23 @@ namespace Shrinerain.AutoTester.Framework
 
             foreach (TestDataPool d in this._allDataPool)
             {
-                if (d._datapoolName.ToUpper() == dataPoolName.ToUpper())
+                //if same name, return 
+                if (String.Compare(d._datapoolName, dataPoolName, true) == 0)
                 {
-                    return d;
+                    this._currentDataPool = d;
+                    return this._currentDataPool;
                 }
             }
 
             throw new CanNotLoadDataPoolException("Can not load data pool by name:" + dataPoolName);
+        }
+
+        /* TestDataPool GetCurrentDataPool()
+         * return datapool used currently.
+         */
+        public TestDataPool GetCurrentDataPool()
+        {
+            return this._currentDataPool;
         }
 
         #endregion

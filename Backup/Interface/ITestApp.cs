@@ -18,11 +18,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 
 namespace Shrinerain.AutoTester.Interface
 {
     public interface ITestApp
     {
+        //operation on desktop applicatoin
         void Start(string appFullPath);
         void Start(string appFullPath, string[] parameters);
         //topMost means we set the Z-level of this application to top. 
@@ -33,11 +35,48 @@ namespace Shrinerain.AutoTester.Interface
         void Resize(int left, int top, int width, int height);
         void Max();
         void Min();
+
         // restore to the origin size.
         void Restore();
         void Active();
 
+        //get status of desktop application
+        bool IsActive();
+        bool IsTopMost();
+        bool IsVisible();
+        bool IsMax();
+        bool IsMin();
+        bool IsIcon();
+        bool IsBusy();
+        bool IsVisualStyle();
+        bool IsTaskbar();
+
+        //get size
+        int GetTop();
+        int GetLeft();
+        int GetHeight();
+        int GetWidth();
+
+        //get network information
+        int[] GetPortNumber();
+        bool IsConnected();
+
+        //get process information
         int GetProcessID();
+        Process GetProcess();
+        int GetThreadCount();
+
+        //get performance information
+        int GetCPUTime();
+        int GetMemory();
+        int GetIORead();
+        int GetIOWrite();
+
+        //other information
         string GetAppName();
+        string GetVersion();
+        string GetCompany();
+        string GetAuthor();
+
     }
 }
