@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: VPEngine.cs
+*
+* Description: VPEngine perform check point. It call ITestVP interface
+*              to perform actual check. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +28,7 @@ namespace Shrinerain.AutoTester.Framework
 
         #region fields
 
+        //interface to perform actual check.
         private ITestVP _testVP;
 
         private AutoConfig _autoConfig = AutoConfig.GetInstance();
@@ -36,6 +53,10 @@ namespace Shrinerain.AutoTester.Framework
 
         #region public methods
 
+        /* bool PerformVPCheck(TestObject obj, string action, string vpProperty, object expectResult, out object actualResult)
+         * return the vp result, return true if pass, false if failed. 
+         * NOTICE: Need update!!!
+         */
         public bool PerformVPCheck(TestObject obj, string action, string vpProperty, object expectResult, out object actualResult)
         {
             bool result = false;
@@ -44,6 +65,7 @@ namespace Shrinerain.AutoTester.Framework
 
             try
             {
+                //currently, just support string test.
                 result = _testVP.PerformStringTest(obj, vpProperty, expectResult.ToString(), VPCheckType.Equal, out actualResult);
             }
             catch
@@ -58,6 +80,9 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private methods
 
+        /*  void LoadPlugin()
+         *  load interface from TestFactory.
+         */
         private void LoadPlugin()
         {
             this._testVP = TestFactory.CreateTestVP();

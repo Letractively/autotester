@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.Threading;
+using System.IO;
 
 using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Interface;
@@ -95,22 +96,55 @@ namespace Shrinerain.AutoTester.Function
 
         public virtual void Start(string appFullPath)
         {
-            throw new NotImplementedException();
+            Start(appFullPath, null);
         }
 
         public virtual void Start(string appFullPath, string[] parameters)
         {
-            throw new NotImplementedException();
-        }
+            if (!File.Exists(appFullPath))
+            {
+                throw new CanNotStartAppException("Can not find application: " + appFullPath);
+            }
 
-        public virtual void Start(string appFullPath, string[] parameters, bool topMost)
-        {
-            throw new NotImplementedException();
+            string arg = "";
+            if (parameters != null)
+            {
+                foreach (string i in parameters)
+                {
+                    arg += (i + " ");
+                }
+            }
+
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = appFullPath;
+            startInfo.Arguments = arg;
+
+            //process to start application.
+            _appProcess = new Process();
+            _appProcess.StartInfo = startInfo;
+
+            //if not sucessful
+            if (!_appProcess.Start())
+            {
+                throw new CanNotStartAppException("Can not start test application: " + appFullPath + " with parameters: " + arg);
+            }
         }
 
         public virtual void Close()
         {
-            throw new NotImplementedException();
+            if (_appProcess != null)
+            {
+                try
+                {
+                    _appProcess.Close();
+                    _appProcess = null;
+                }
+                catch (Exception e)
+                {
+                    throw new CanNotStopAppException("Can not stop test application: " + e.Message);
+                }
+            }
         }
 
         public virtual void Move(int x, int y)
