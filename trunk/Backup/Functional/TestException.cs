@@ -27,7 +27,12 @@ namespace Shrinerain.AutoTester.Function
 
         //domain means the kind of test object. for example, HTML is a domain.
         protected string _domain;
+
+        //if web testing, we may have url
         protected string _url;
+
+        //if desktop application, we may have app name.
+        protected string _app;
 
         //the source object which throw the expcetion.
         protected TestObject _obj;
@@ -42,6 +47,7 @@ namespace Shrinerain.AutoTester.Function
                 this._domain = value;
             }
         }
+
         public string Url
         {
             get { return this._url; }
@@ -50,6 +56,13 @@ namespace Shrinerain.AutoTester.Function
                 this._url = value;
             }
         }
+
+        public string App
+        {
+            get { return _app; }
+            set { _app = value; }
+        }
+
         public TestObject SourceObject
         {
             get
@@ -61,6 +74,7 @@ namespace Shrinerain.AutoTester.Function
                 this._obj = value;
             }
         }
+
         #endregion
 
         #region public methods
@@ -97,7 +111,7 @@ namespace Shrinerain.AutoTester.Function
 
     #region sub exceptions
 
-    #region ie exceptions
+    #region browser exceptions
 
     public class TestBrowserException : TestException
     {
@@ -188,6 +202,160 @@ namespace Shrinerain.AutoTester.Function
 
         }
     }
+    #endregion
+
+    #region app exceptions
+
+    public class TestAppException : TestException
+    {
+        public TestAppException(string appName)
+            : this(appName, "Test application exception.")
+        {
+            this._app = appName;
+        }
+
+        public TestAppException(string appName, string message)
+            : base(message)
+        {
+            this._app = appName;
+        }
+
+    };
+
+    public class CanNotStartAppException : TestAppException
+    {
+        public CanNotStartAppException()
+            : this("Can not start test application.")
+        {
+        }
+        public CanNotStartAppException(string message)
+            : base(message)
+        {
+        }
+
+    }
+
+    public class CanNotStopAppException : TestAppException
+    {
+        public CanNotStopAppException()
+            : this("Can not stop test application.")
+        {
+        }
+
+        public CanNotStopAppException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class CanNotActiveAppException : TestAppException
+    {
+        public CanNotActiveAppException()
+            : this("Can not active test application.")
+        {
+        }
+
+        public CanNotActiveAppException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class CanNotAttachAppException : TestAppException
+    {
+        public CanNotAttachAppException()
+            : this("Can not attach test application.")
+        {
+
+        }
+
+        public CanNotAttachAppException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class CanNotMoveAppException : TestAppException
+    {
+        public CanNotMoveAppException()
+            : this("Can not move test application.")
+        {
+        }
+
+        public CanNotMoveAppException(string message)
+            : base(message)
+        {
+
+        }
+    }
+
+    public class CanNotResizeAppException : TestAppException
+    {
+        public CanNotResizeAppException()
+            : this("Can not resize test application.")
+        {
+        }
+
+        public CanNotResizeAppException(string message)
+            : base(message)
+        {
+
+        }
+    }
+
+    public class CanNotGetAppStatusException : TestAppException
+    {
+        public CanNotGetAppStatusException()
+            : this("Can not get status of test application.")
+        {
+        }
+
+        public CanNotGetAppStatusException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class CanNotGetAppProcessException : TestAppException
+    {
+        public CanNotGetAppProcessException()
+            : this("Can not get process of test application.")
+        {
+        }
+
+        public CanNotGetAppProcessException(string message)
+            : base(message)
+        {
+        }
+
+    }
+
+    public class CanNotGetAppNetworkException : TestAppException
+    {
+        public CanNotGetAppNetworkException()
+            : this("Can not get netowork information of test application.")
+        {
+        }
+
+        public CanNotGetAppNetworkException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class CanNotGetAppInfoException : TestAppException
+    {
+        public CanNotGetAppInfoException()
+            : this("Can not get information of test application.")
+        {
+        }
+
+        public CanNotGetAppInfoException(string message)
+            : base(message)
+        {
+        }
+    }
+
     #endregion
 
     #region config exceptions
@@ -436,6 +604,11 @@ namespace Shrinerain.AutoTester.Function
             : base(message)
         {
 
+        }
+        public TestObjectException(TestObject obj, string message)
+            : base(message)
+        {
+            this._obj = obj;
         }
     };
 

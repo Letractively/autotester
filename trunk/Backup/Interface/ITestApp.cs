@@ -27,8 +27,6 @@ namespace Shrinerain.AutoTester.Interface
         //operation on desktop applicatoin
         void Start(string appFullPath);
         void Start(string appFullPath, string[] parameters);
-        //topMost means we set the Z-level of this application to top. 
-        void Start(string appFullPath, string[] parameters, bool topMost);
         void Close();
 
         void Move(int x, int y);
