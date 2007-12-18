@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
   <Project>
-    <ProjectName>SS Test</ProjectName>
+    <ProjectName>Private Edge Test</ProjectName>
 	<ProjectDomain>HTML</ProjectDomain>
-    <DriveFile>E:\program\cs\AutoTester\Document\google.xls</DriveFile>
+    <DriveFile>E:\program\cs\AutoTester\Document\PE\PE.xls</DriveFile>
     <Log>G:\</Log>
 	<LogTemplate>E:\program\cs\AutoTester\Document\log.template</LogTemplate>
     <ScreenPrint>G:\</ScreenPrint>
