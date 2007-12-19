@@ -32,6 +32,8 @@ namespace Shrinerain.AutoTester.Framework
 
         //interface we need.
         private ITestObjectPool _objPool;
+
+
         private ITestBrowser _testBrowser;
         private ITestApp _testApp;
 
@@ -127,7 +129,7 @@ namespace Shrinerain.AutoTester.Framework
          */
         private void LoadPlugin()
         {
-            _testApp = TestFactory.CreateTestApp();
+            //_testApp = TestFactory.CreateTestApp();
             _testBrowser = TestFactory.CreateTestBrowser();
 
             _objPool = TestFactory.CreateTestObjectPool();

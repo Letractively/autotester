@@ -108,6 +108,28 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is TestStep)
+            {
+                return ((TestStep)obj)._strBuf == this._strBuf;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool operator ==(TestStep ts1, TestStep ts2)
+        {
+            return ts1.Equals(ts2);
+        }
+
+        public static bool operator !=(TestStep ts1, TestStep ts2)
+        {
+            return !ts1.Equals(ts2);
+        }
+
         private void UpdateBuffer()
         {
             StringBuilder tmp = new StringBuilder();
@@ -222,7 +244,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (autoConfig == null)
             {
-                throw new CanNotLoadAutoConfigException("AutoConfig can not be null.");
+                throw new CannotLoadConfigException("AutoConfig can not be null.");
             }
 
             _autoConfig = autoConfig;
@@ -274,7 +296,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (this._myTestStepList == null || this._myTestStepList.Count == 0)
             {
-                throw new CanNotLoadTestStepsException();
+                throw new CannotLoadTestStepsException();
             }
 
             return this._myTestStepList;
@@ -284,7 +306,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (this._myTestSubList == null || this._myTestSubList.Count == 0)
             {
-                throw new CanNotLoadSubException();
+                throw new CannotLoadSubException();
             }
 
             return this._myTestSubList;
@@ -294,7 +316,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (this._myTestDataPoolList == null || this._myTestDataPoolList.Count == 0)
             {
-                throw new CanNotLoadDataPoolException();
+                throw new CannotLoadDataPoolException();
             }
 
             return this._myTestDataPoolList;

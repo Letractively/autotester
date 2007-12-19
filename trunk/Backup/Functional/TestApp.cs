@@ -103,7 +103,7 @@ namespace Shrinerain.AutoTester.Function
         {
             if (!File.Exists(appFullPath))
             {
-                throw new CanNotStartAppException("Can not find application: " + appFullPath);
+                throw new CannotStartAppException("Can not find application: " + appFullPath);
             }
 
             string arg = "";
@@ -127,7 +127,7 @@ namespace Shrinerain.AutoTester.Function
             //if not sucessful
             if (!_appProcess.Start())
             {
-                throw new CanNotStartAppException("Can not start test application: " + appFullPath + " with parameters: " + arg);
+                throw new CannotStartAppException("Can not start test application: " + appFullPath + " with parameters: " + arg);
             }
         }
 
@@ -142,7 +142,7 @@ namespace Shrinerain.AutoTester.Function
                 }
                 catch (Exception e)
                 {
-                    throw new CanNotStopAppException("Can not stop test application: " + e.Message);
+                    throw new CannotStopAppException("Can not stop test application: " + e.Message);
                 }
             }
         }

@@ -33,11 +33,11 @@ namespace Shrinerain.AutoTester.DataUtility
         {
             if (!File.Exists(fileName))
             {
-                throw new FileNotFoundException("Excel: " + fileName + " not found.");
+                throw new DrivenFileNotFoundException("Excel: " + fileName + " not found.");
             }
             if (String.IsNullOrEmpty(sheet))
             {
-                throw new ArgumentNullException(sheet, "Sheet: " + sheet + " not found.");
+                throw new BadFormatDrivenFileException("Sheet: " + sheet + " not found.");
             }
             this._fileName = fileName;
             this._sheet = sheet;
@@ -95,7 +95,7 @@ namespace Shrinerain.AutoTester.DataUtility
         {
             if (String.IsNullOrEmpty(this._fileName) || !File.Exists(this._fileName) || String.IsNullOrEmpty(this._sheet))
             {
-                throw new FileNotFoundException("Excel file not found.");
+                throw new DrivenFileNotFoundException("Excel file not found: " + this._fileName);
             }
 
             try
@@ -110,28 +110,22 @@ namespace Shrinerain.AutoTester.DataUtility
             }
             catch (Exception e)
             {
-                throw new IOException("Can not open " + this._fileName + " " + e.Message);
+                throw new CannotOpenDrivenFileException("Can not open " + this._fileName + " " + e.Message);
             }
 
         }
 
         public void Close()
         {
-            try
+            if (this._comm != null)
             {
-
-                if (this._conn != null)
-                {
-                    this._comm.Dispose();
-                    this._comm = null;
-                    this._conn.Close();
-                    this._conn = null;
-                }
-
+                this._comm.Dispose();
+                this._comm = null;
             }
-            catch
+            if (this._conn != null)
             {
-                throw;
+                this._conn.Close();
+                this._conn = null;
             }
         }
 

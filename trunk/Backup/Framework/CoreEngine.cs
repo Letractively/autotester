@@ -75,7 +75,7 @@ namespace Shrinerain.AutoTester.Framework
 
         //currently used test steps list. 
         private int _index = 0;  //actually, the line number start from 2 in the excel file.
-        private List<TestStep> _currentTestSteps = null;
+        private List<TestStep> _currentTestSteps;
 
         //stack to store different test steps, then we can switch between main steps and subs.
         private Stack<TestStepStatus> _testStepStack = new Stack<TestStepStatus>(5);
@@ -439,7 +439,7 @@ namespace Shrinerain.AutoTester.Framework
                         }
                         else
                         {
-                            throw new CanNotPerformActionException("Error: Bad data for Wait action: " + data);
+                            throw new CannotPerformActionException("Error: Bad data for Wait action: " + data);
                         }
                     }
                 }
@@ -465,7 +465,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 else
                 {
-                    throw new CanNotPerformActionException("Unsupported action: " + step._testAction);
+                    throw new CannotPerformActionException("Unsupported action: " + step._testAction);
                 }
 
                 //sleep 1 seconds after browser action, make it looks like human actions
@@ -549,7 +549,7 @@ namespace Shrinerain.AutoTester.Framework
 
             if (subSteps == null || subSteps.Count < 1)
             {
-                throw new CanNotLoadSubException("Sub steps must contains more than one step.");
+                throw new CannotLoadSubException("Sub steps must contains more than one step.");
             }
 
             TestStepStatus tmp = new TestStepStatus();
@@ -617,14 +617,14 @@ namespace Shrinerain.AutoTester.Framework
         /* void PerformSkip()
          * skip current step.
          */
-        private void PerformSkip()
+        private static void PerformSkip()
         {
         }
 
         /* void PerformComments()
          * skip current step, it is comments.
          */
-        private void PerformComments()
+        private static void PerformComments()
         {
         }
 

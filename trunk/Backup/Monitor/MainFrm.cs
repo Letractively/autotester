@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
@@ -55,7 +56,7 @@ namespace Shrinerain.AutoTester.GUI
             _monitor.Show();
 
             //move the monitor window to 600,0
-            Win32API.SetWindowPos(_monitor.Handle, IntPtr.Zero, 600, 0, 260, 135, 0);
+            Win32API.SetWindowPos(_monitor.Handle, IntPtr.Zero, 600, 0, 260, 150, 0);
 
             //minsize the main window.
             Win32API.SendMessage(this.Handle, Convert.ToInt32(Win32API.WindowMessages.WM_SYSCOMMAND), Convert.ToInt32(Win32API.WindowMenuMessage.SC_MINIMIZE), 0);
@@ -149,7 +150,7 @@ namespace Shrinerain.AutoTester.GUI
         private void StartTestJob()
         {
             TestJob job = new TestJob();
-            job.FrameworkConfigFile = this._projectConfigFile;
+            job.ProjectConfigFile = this._projectConfigFile;
             job.OnNewMsg += new TestJob._newMsgDelegate(_monitor.AddLog);
             job.StartTesting();
         }
@@ -226,6 +227,49 @@ namespace Shrinerain.AutoTester.GUI
             MessageBox.Show(message, "AutoTester", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        private string GetProjectConfigStringFromWindow()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            sb.Append(" <Project>\n");
+            sb.Append("  <ProjectName>" + this.tbProjectName.Text + "</ProjectName>\n");
+            if (String.IsNullOrEmpty(this.cbProjectDomain.SelectedText))
+            {
+                sb.Append("  <ProjectDomain>HTML</ProjectDomain>\n");
+            }
+            else
+            {
+                sb.Append("  <ProjectDomain>" + this.cbProjectDomain.SelectedText + "</ProjectDomain>\n");
+            }
+            sb.Append("  <DriveFile>" + this.tbDriveFile.Text + "</DriveFile>\n");
+            sb.Append("  <Log>" + this.tbLogFolder.Text + "</Log>\n");
+            sb.Append("  <LogTemplate>" + this.tbLogTemplate.Text + "</LogTemplate>\n");
+            sb.Append("  <ScreenPrint>" + this.tbScreenPrint.Text + "</ScreenPrint>\n");
+            if (this.cbHighlight.Checked == true)
+            {
+                sb.Append("  <HighLight>Yes</HighLight>\n");
+            }
+            else
+            {
+                sb.Append("  <HighLight>No</HighLight>\n");
+            }
+            sb.Append(" </Project>\n");
+
+            return sb.ToString();
+
+        }
+
+        private void SaveConfigFile(string configStr)
+        {
+
+            TextWriter configWriter = File.CreateText(this._projectConfigFile);
+            configWriter.Write(configStr);
+            configWriter.Flush();
+            configWriter.Close();
+
+        }
+
         #endregion
 
 
@@ -256,6 +300,24 @@ namespace Shrinerain.AutoTester.GUI
             }
         }
 
+        private void btnSave_Click(object sender, EventArgs e)
+        {
+            this.saveFileDialog1.Filter = "Project Config File|*.xml";
+            if (this.saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    this._projectConfigFile = this.saveFileDialog1.FileName;
+                    string configStr = GetProjectConfigStringFromWindow();
+                    SaveConfigFile(configStr);
+                }
+                catch (Exception ex)
+                {
+                    AutoTesterErrorMsgBox("Can not save config file: " + ex.Message);
+                }
+            }
+        }
+
         private void OnSelectIndexChanged(object sender, EventArgs e)
         {
             int index = this.tabProject.SelectedIndex;
@@ -280,7 +342,43 @@ namespace Shrinerain.AutoTester.GUI
             about.Show();
         }
 
+        private void newToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            ClearProjectSettings();
+        }
+
+        private void saveToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!String.IsNullOrEmpty(this._projectConfigFile))
+                {
+                    String configStr = GetProjectConfigStringFromWindow();
+                    if (File.Exists(this._projectConfigFile))
+                    {
+                        File.Delete(this._projectConfigFile);
+                    }
+
+                    SaveConfigFile(configStr);
+                }
+            }
+            catch (Exception ex)
+            {
+                AutoTesterErrorMsgBox(ex.Message);
+            }
+
+        }
+
+        private void saveAsToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            btnSave_Click(sender, e);
+        }
+
         #endregion
+
+
+
+
 
 
 

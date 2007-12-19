@@ -56,7 +56,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not convert to IHTMLImgElement: " + e.Message);
+                throw new CannotBuildObjectException("Can not convert to IHTMLImgElement: " + e.Message);
             }
 
             try
@@ -66,7 +66,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get SRC of image: " + e.Message);
+                throw new CannotBuildObjectException("Can not get SRC of image: " + e.Message);
             }
         }
 
@@ -96,7 +96,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.Set();
 
-                throw new CanNotPerformActionException("Can not download image: " + e.Message);
+                throw new CannotPerformActionException("Can not download image: " + e.Message);
             }
         }
 
@@ -119,7 +119,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not click an image: " + e.Message);
+                throw new CannotPerformActionException("Can not click an image: " + e.Message);
             }
         }
 

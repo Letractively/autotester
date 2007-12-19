@@ -67,7 +67,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not build test button: " + e.Message);
+                throw new CannotBuildObjectException("Can not build test button: " + e.Message);
             }
         }
 
@@ -98,7 +98,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not perform click action: " + e.Message);
+                throw new CannotPerformActionException("Can not perform click action: " + e.Message);
             }
         }
 
@@ -118,7 +118,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not perform double click action: " + e.Message);
+                throw new CannotPerformActionException("Can not perform double click action: " + e.Message);
             }
         }
 
@@ -138,7 +138,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not perform right click action: " + e.Message);
+                throw new CannotPerformActionException("Can not perform right click action: " + e.Message);
             }
         }
 
@@ -147,7 +147,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void MiddleClick()
         {
-            throw new CanNotPerformActionException("Can not perform middle click.");
+            throw new CannotPerformActionException("Can not perform middle click.");
         }
 
         #region IClickable methods

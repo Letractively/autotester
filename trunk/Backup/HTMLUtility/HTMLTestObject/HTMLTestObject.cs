@@ -95,7 +95,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (element == null)
             {
-                throw new CanNotBuildObjectException("Element is null.");
+                throw new CannotBuildObjectException("Element is null.");
             }
             try
             {
@@ -103,7 +103,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotBuildObjectException("Can not build HTML object.");
+                throw new CannotBuildObjectException("Can not build HTML object.");
             }
             try
             {
@@ -112,7 +112,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotBuildObjectException("Can not find tag name.");
+                throw new CannotBuildObjectException("Can not find tag name.");
             }
             try
             {
@@ -164,7 +164,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotBuildObjectException();
+                throw new CannotBuildObjectException();
             }
         }
 

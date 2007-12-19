@@ -420,7 +420,7 @@ namespace Shrinerain.AutoTester.Function
                 }
                 catch (Exception e)
                 {
-                    throw new CanNotWriteLogException(e.Message);
+                    throw new CannotWriteLogException(e.Message);
                 }
             }
 
@@ -456,12 +456,12 @@ namespace Shrinerain.AutoTester.Function
         {
             if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileName))
             {
-                throw new CanNotSaveScreenPrintException("File path and file name can not be empty.");
+                throw new CannotSaveScreenPrintException("File path and file name can not be empty.");
             }
 
             if (!Directory.Exists(filePath))
             {
-                throw new CanNotSaveScreenPrintException("Folder not found: " + filePath);
+                throw new CannotSaveScreenPrintException("Folder not found: " + filePath);
             }
 
             string fullName = filePath + fileName;
@@ -478,13 +478,13 @@ namespace Shrinerain.AutoTester.Function
                 Image img = CaptureScreen();
                 img.Save(fileFullName, System.Drawing.Imaging.ImageFormat.Jpeg);
             }
-            catch (CanNotSaveScreenPrintException)
+            catch (CannotSaveScreenPrintException)
             {
                 throw;
             }
             catch (IOException e)
             {
-                throw new CanNotSaveScreenPrintException("Can not save screen print file: " + fileFullName + "," + e.Message);
+                throw new CannotSaveScreenPrintException("Can not save screen print file: " + fileFullName + "," + e.Message);
             }
         }
 
@@ -530,7 +530,7 @@ namespace Shrinerain.AutoTester.Function
             }
             catch (Exception e)
             {
-                throw new CanNotWriteLogException(e.Message);
+                throw new CannotWriteLogException(e.Message);
             }
 
         }
@@ -555,7 +555,7 @@ namespace Shrinerain.AutoTester.Function
             }
             catch (Exception e)
             {
-                throw new CanNotWriteLogException(e.Message);
+                throw new CannotWriteLogException(e.Message);
             }
         }
 
@@ -577,7 +577,7 @@ namespace Shrinerain.AutoTester.Function
             }
             catch (Exception e)
             {
-                throw new CanNotWriteLogException(e.Message);
+                throw new CannotWriteLogException(e.Message);
             }
         }
 
@@ -627,7 +627,7 @@ namespace Shrinerain.AutoTester.Function
                 }
                 else
                 {
-                    throw new CanNotOpenTemplateException("Can not read template: " + fileName);
+                    throw new CannotOpenTemplateException("Can not read template: " + fileName);
                 }
 
             }
@@ -671,7 +671,7 @@ namespace Shrinerain.AutoTester.Function
             if (String.IsNullOrEmpty(value))
             {
                 value = "&nbsp;";
-                // throw new CanNotWriteLogException("Can not find property: " + propertyName);
+                // throw new CannotWriteLogException("Can not find property: " + propertyName);
             }
 
             try
@@ -680,7 +680,7 @@ namespace Shrinerain.AutoTester.Function
             }
             catch (Exception e)
             {
-                throw new CanNotWriteLogException("Can not write property+ " + propertyName + " : " + e.Message);
+                throw new CannotWriteLogException("Can not write property+ " + propertyName + " : " + e.Message);
             }
 
         }
@@ -770,7 +770,7 @@ namespace Shrinerain.AutoTester.Function
             }
             catch (Exception e)
             {
-                throw new CanNotSaveScreenPrintException(e.Message);
+                throw new CannotSaveScreenPrintException(e.Message);
             }
 
         }

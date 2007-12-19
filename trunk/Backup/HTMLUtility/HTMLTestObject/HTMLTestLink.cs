@@ -78,7 +78,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not build test link object: " + e.Message);
+                throw new CannotBuildObjectException("Can not build test link object: " + e.Message);
             }
 
             try
@@ -101,7 +101,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get the image of link: " + e.Message);
+                throw new CannotBuildObjectException("Can not get the image of link: " + e.Message);
             }
 
             try
@@ -111,7 +111,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get href of link: " + e.Message);
+                throw new CannotBuildObjectException("Can not get href of link: " + e.Message);
             }
 
         }
@@ -137,7 +137,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotPerformActionException("Can not perform click action of link.");
+                throw new CannotPerformActionException("Can not perform click action of link.");
             }
         }
 

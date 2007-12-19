@@ -79,17 +79,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 IntPtr msgBoxHandle = Win32API.FindWindowEx(TestBrowser.MainHandle, IntPtr.Zero, null, "Windows Internet Explorer");
                 if (msgBoxHandle == IntPtr.Zero)
                 {
-                    throw new CanNotBuildObjectException("Can not get the windows handle of MessageBox.");
+                    throw new CannotBuildObjectException("Can not get the windows handle of MessageBox.");
                 }
 
             }
-            catch (CanNotBuildObjectException)
+            catch (CannotBuildObjectException)
             {
                 throw;
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not build HTMLTestMsgBox: " + e.Message);
+                throw new CannotBuildObjectException("Can not build HTMLTestMsgBox: " + e.Message);
             }
 
             //get text information displayed.
@@ -102,7 +102,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (messageHandle == IntPtr.Zero)
                 {
-                    throw new CanNotBuildObjectException("Can not get icon handle.");
+                    throw new CannotBuildObjectException("Can not get icon handle.");
                 }
                 else
                 {
@@ -111,7 +111,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     if (messageHandle == IntPtr.Zero)
                     {
-                        throw new CanNotBuildObjectException("Can not get text handle.");
+                        throw new CannotBuildObjectException("Can not get text handle.");
                     }
                     else
                     {
@@ -122,20 +122,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                         if (String.IsNullOrEmpty(this._message))
                         {
-                            throw new CanNotBuildObjectException("Can not Can not get the message text");
+                            throw new CannotBuildObjectException("Can not Can not get the message text");
                         }
                     }
 
                 }
 
             }
-            catch (CanNotBuildObjectException)
+            catch (CannotBuildObjectException)
             {
                 throw;
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get the message text: " + e.Message);
+                throw new CannotBuildObjectException("Can not get the message text: " + e.Message);
             }
 
             try
@@ -145,7 +145,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get icon of MessageBox: " + e.Message);
+                throw new CannotBuildObjectException("Can not get icon of MessageBox: " + e.Message);
             }
 
             try
@@ -155,7 +155,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get Buttons of MessageBox: " + e.Message);
+                throw new CannotBuildObjectException("Can not get Buttons of MessageBox: " + e.Message);
             }
 
         }
@@ -230,7 +230,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not click on message box: " + e.Message);
+                throw new CannotPerformActionException("Can not click on message box: " + e.Message);
             }
         }
 
@@ -249,7 +249,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not click on message box: " + e.Message);
+                throw new CannotPerformActionException("Can not click on message box: " + e.Message);
             }
         }
 
@@ -338,13 +338,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 MouseOp.Click(btnPos.X, btnPos.Y);
 
             }
-            catch (CanNotBuildObjectException)
+            catch (CannotBuildObjectException)
             {
                 throw;
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not click button: " + text + " with " + e.Message);
+                throw new CannotPerformActionException("Can not click button: " + text + " with " + e.Message);
             }
         }
 
@@ -363,7 +363,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //0 handle, means we can not find it.
                 if (okHandle == IntPtr.Zero)
                 {
-                    throw new CanNotBuildObjectException("Can not get the button: " + text);
+                    throw new CannotBuildObjectException("Can not get the button: " + text);
                 }
                 else
                 {
@@ -393,7 +393,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else
                     {
-                        throw new CanNotBuildObjectException("Can not get button: " + text);
+                        throw new CannotBuildObjectException("Can not get button: " + text);
                     }
                 }
             }

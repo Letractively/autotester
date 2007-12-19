@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,9 +9,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HtmlUtility")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Shrinerain")]
+[assembly: AssemblyCompany("shrinerain")]
 [assembly: AssemblyProduct("HtmlUtility")]
-[assembly: AssemblyCopyright("版权所有 (C) Shrinerain 2007")]
+[assembly: AssemblyCopyright("版权所有 (C) shrinerain 2007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

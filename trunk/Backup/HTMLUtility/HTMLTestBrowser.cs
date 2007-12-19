@@ -73,7 +73,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetAllObjects()
          * return all element of HTML DOM.
          */
-        public IHTMLElementCollection GetAllObjects()
+        public static IHTMLElementCollection GetAllObjects()
         {
             if (_HTMLDom == null)
             {
@@ -93,7 +93,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElement GetObjectByID(string id)
          * return element by .id property.
          */
-        public IHTMLElement GetObjectByID(string id)
+        public static IHTMLElement GetObjectByID(string id)
         {
             if (String.IsNullOrEmpty(id))
             {
@@ -117,7 +117,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetObjectsByName(string name)
          * return elements by .name property.
          */
-        public IHTMLElementCollection GetObjectsByName(string name)
+        public static IHTMLElementCollection GetObjectsByName(string name)
         {
             if (String.IsNullOrEmpty(name))
             {

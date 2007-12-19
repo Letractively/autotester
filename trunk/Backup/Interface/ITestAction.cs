@@ -20,62 +20,63 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Interface
 {
+    [CLSCompliant(true)]
     public interface ITestAction
     {
         //Click action
-        void Click(Object obj);
+        void Click(Object testObj);
         void ClickPoint(int x, int y);
-        void DoubleClick(Object obj);
+        void DoubleClick(Object testObj);
         void DoubleClickPoint(int x, int y);
-        void NClick(Object obj, int n);
+        void NClick(Object testObj, int n);
         void NClickPoint(int x, int y);
-        void RightClick(Object obj);
+        void RightClick(Object testObj);
         void RightClickPoint(int x, int y);
-        void MiddleClick(Object obj);
+        void MiddleClick(Object testObj);
         void MiddleClickPoint(int x, int y);
 
         //Check actions
-        void Check(Object obj);
-        void UnCheck(Object obj);
+        void Check(Object testObj);
+        void UnCheck(Object testObj);
 
         //Input actions
-        void Input(Object obj, String chars);
-        void InputKeys(Object obj, String keys);
-        void Clear(Object obj);
+        void Input(Object testObj, String chars);
+        void InputKeys(Object testObj, String keys);
+        void Clear(Object testObj);
 
         //Select actions
-        void Select(Object obj, String value);
-        void SelectIndex(Object obj, int index);
-        void SelectRegExp(Object obj, String regExp);
+        void Select(Object testObj, String text);
+        void SelectIndex(Object testObj, int index);
+        void SelectRegExp(Object testObj, String regExp);
 
         //Tree actions
-        void ClickPath(Object obj, String path);
-        void ClickIndex(Object obj, int deep, int index);
-        void ClickNode(Object obj, String node);
-        void DoubleClickPath(Object obj, String path);
-        void DoubleClickIndex(Object obj, int deep, int index);
-        void DoubleClickNode(Object obj, String node);
-        void RightClickPath(Object obj, String path);
-        void RightClickIndex(Object obj, int deep, int index);
-        void RightClickNode(Object obj, String node);
+        void ClickPath(Object testObj, String path);
+        void ClickIndex(Object testObj, int deep, int index);
+        void ClickNode(Object testObj, String node);
+        void DoubleClickPath(Object testObj, String path);
+        void DoubleClickIndex(Object testObj, int deep, int index);
+        void DoubleClickNode(Object testObj, String node);
+        void RightClickPath(Object testObj, String path);
+        void RightClickIndex(Object testObj, int deep, int index);
+        void RightClickNode(Object testObj, String node);
 
 
         //Table actions
-        void ClickCell(Object obj, int row, int col);
-        void ClickCellText(Object obj, String value);
-        void ClickCellRegex(Object obj, String regEx);
-        void DoubleClickCell(Object obj, int row, int col);
-        void DoubleClickCellText(Object obj, String value);
-        void DoubleClickCellRegex(Object obj, String regEx);
-        void RightClickCell(Object obj, int row, int col);
-        void RightClickCellText(Object obj, String value);
-        void RightClickCellRegex(Object obj, String regEx);
+        void ClickCell(Object testObj, int row, int col);
+        void ClickCellText(Object testObj, String value);
+        void ClickCellRegex(Object testObj, String regEx);
+        void DoubleClickCell(Object testObj, int row, int col);
+        void DoubleClickCellText(Object testObj, String value);
+        void DoubleClickCellRegex(Object testObj, String regEx);
+        void RightClickCell(Object testObj, int row, int col);
+        void RightClickCellText(Object testObj, String value);
+        void RightClickCellRegex(Object testObj, String regEx);
 
         //Other actions
-        void Hover(Object obj);
-        void Drag(Object obj, int endX, int endY);
-        void SelectText(Object obj, String text);
-        void MouseRoll(Object obj, int steps);
+        void Hover(Object testObj);
+        void Drag(Object testObj, int endX, int endY);
+        void SelectText(Object testObj, String text);
+        void MouseRoll(Object testObj, int steps);
 
     }
 }

@@ -52,7 +52,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get IHTMLInputElement: " + e.Message);
+                throw new CannotBuildObjectException("Can not get IHTMLInputElement: " + e.Message);
             }
 
         }

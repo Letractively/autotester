@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: LogEngine.cs
+*
+* Description: LogEngine will generate log at runtime for framework.
+*              LogEngine call TestLog class to write the actual log. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -92,6 +108,9 @@ namespace Shrinerain.AutoTester.Framework
             this._myLog.Close();
         }
 
+        /* void WriteLog()
+         * WriteLog will replace actual value with the parameters of TestLog.
+         */
         public void WriteLog()
         {
             WriteLog("");
@@ -112,11 +131,14 @@ namespace Shrinerain.AutoTester.Framework
 
         public void Clear()
         {
-            this._testStep=null;
-            this._testResult=null;
-            this._exception=null;
+            this._testStep = null;
+            this._testResult = null;
+            this._exception = null;
         }
 
+        /* void SaveScreenPrint()
+         * Save screen print for check point.
+         */
         public void SaveScreenPrint()
         {
             Init();
@@ -129,7 +151,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 catch (Exception e)
                 {
-                    throw new CanNotSaveScreenPrintException("Can not get folder of screen print: " + e.Message);
+                    throw new CannotSaveScreenPrintException("Can not get folder of screen print: " + e.Message);
                 }
             }
 
@@ -145,6 +167,9 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private methods
 
+        /* void Init()
+         * Init TestLog parameters.
+         */
         private void Init()
         {
             if (this._myLog == null)
@@ -169,6 +194,10 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
+        /* string GenerateLogFileName()
+         * return the log file name.
+         * the log name is "project name" +"_"+"timestamp".
+         */
         private string GenerateLogFileName()
         {
             try
@@ -185,7 +214,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new CanNotWriteLogException("Can not generate log file name: " + e.Message);
+                throw new CannotWriteLogException("Can not generate log file name: " + e.Message);
             }
         }
 
@@ -205,10 +234,13 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new CanNotSaveScreenPrintException("Can not generate screen print file name: " + e.Message);
+                throw new CannotSaveScreenPrintException("Can not generate screen print file name: " + e.Message);
             }
         }
 
+        /* string GenerateTimeStamp()
+         * return time string for log file name and screen print file name.
+         */
         private static string GenerateTimeStamp()
         {
             return DateTime.Now.ToShortDateString().Replace("/", "") + DateTime.Now.ToShortTimeString().Replace(":", "");

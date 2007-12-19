@@ -115,7 +115,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     //get IHTMLElement interface
-                    _tempElement = _htmlTestBrowser.GetObjectByID(id);
+                    _tempElement = HTMLTestBrowser.GetObjectByID(id);
 
                     //build actual test object.
                     _testObj = BuildObjectByType(_tempElement);
@@ -151,7 +151,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     //get the object collection with the same name.
                     // in HTML, .id is unique, but .name is not, so we may get a collection.
-                    _tempElement = (IHTMLElement)_htmlTestBrowser.GetObjectsByName(name).item(nameObj, indexObj);
+                    _tempElement = (IHTMLElement)HTMLTestBrowser.GetObjectsByName(name).item(nameObj, indexObj);
                     _testObj = BuildObjectByType(_tempElement);
                     return _testObj;
 
@@ -411,7 +411,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Thread.Sleep(_interval * 1000);
             }
 
-            throw new CanNotBuildObjectException("Can not build object at point(" + x.ToString() + "" + y.ToString() + ")");
+            throw new CannotBuildObjectException("Can not build object at point(" + x.ToString() + "" + y.ToString() + ")");
         }
 
         /* Object GetObjectByRect(int top, int left, int width, int height)
@@ -530,7 +530,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _needRefresh = false;
                 try
                 {
-                    this._allElements = _htmlTestBrowser.GetAllObjects();
+                    this._allElements = HTMLTestBrowser.GetAllObjects();
                 }
                 catch
                 {

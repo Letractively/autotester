@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Framework")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Shrinerain")]
+[assembly: AssemblyCompany("shrinerain")]
 [assembly: AssemblyProduct("Framework")]
-[assembly: AssemblyCopyright("Copyright © Shrinerain 2007")]
+[assembly: AssemblyCopyright("Copyright © shrinerain 2007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
