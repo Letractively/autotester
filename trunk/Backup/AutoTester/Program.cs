@@ -31,8 +31,8 @@ namespace Shrinerain.AutoTester
         static void Main(string[] args)
         {
             //FrameworkEXE(args);
-            //FunctionTest();
-            FrameworkTest();
+            FunctionTest();
+            //FrameworkTest();
             Console.ReadLine();
         }
 
@@ -117,6 +117,7 @@ namespace Shrinerain.AutoTester
 
             HTMLTestTextBox userName = (HTMLTestTextBox)pool.GetObjectByType("Textbox", "1", 0);
             userName.Input("wpsadmin");
+            
 
             HTMLTestTextBox password = (HTMLTestTextBox)pool.GetObjectByType("Textbox", "2", 0);
             password.Input("wpsadmin");
