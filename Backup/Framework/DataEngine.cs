@@ -75,7 +75,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (parser == null)
             {
-                throw new CanNotLoadDataPoolException("Parser can not be null.");
+                throw new CannotLoadDataPoolException("Parser can not be null.");
             }
 
             _parser = parser;
@@ -90,12 +90,12 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (String.IsNullOrEmpty(dataPoolName))
             {
-                throw new CanNotLoadDataPoolException("Datapool name can not be empty.");
+                throw new CannotLoadDataPoolException("Datapool name can not be empty.");
             }
 
             if (_parser == null)
             {
-                throw new CanNotLoadDataPoolException("Parser can not be null.");
+                throw new CannotLoadDataPoolException("Parser can not be null.");
             }
 
             if (this._allDataPool == null)
@@ -113,7 +113,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
             }
 
-            throw new CanNotLoadDataPoolException("Can not load data pool by name:" + dataPoolName);
+            throw new CannotLoadDataPoolException("Can not load data pool by name:" + dataPoolName);
         }
 
         /* TestDataPool GetCurrentDataPool()

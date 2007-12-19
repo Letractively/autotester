@@ -52,6 +52,37 @@ namespace Shrinerain.AutoTester.Framework
         public string _testActionDLL;
         public string _testVP;
         public string _testVPDLL;
+
+        public override bool Equals(object obj)
+        {
+            if (obj is PluginInfo)
+            {
+                PluginInfo tmp = (PluginInfo)obj;
+
+                if (tmp._domain == this._domain &&
+                    tmp._testAction == this._testAction &&
+                    tmp._testActionDLL == this._testActionDLL &&
+                    tmp._testApp == this._testApp &&
+                    tmp._testAppDLL == this._testAppDLL &&
+                    tmp._testBrowser == this._testBrowser &&
+                    tmp._testBrowserDLL == this._testBrowserDLL &&
+                    tmp._testObjectPool == this._testObjectPool &&
+                    tmp._testObjectPoolDLL == this._testObjectPoolDLL &&
+                    tmp._testVP == this._testVP &&
+                    tmp._testVPDLL == this._testVPDLL)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 
     public sealed class AutoConfig : IDisposable
@@ -210,7 +241,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new CanNotOpenConfigFileException(e.Message);
+                throw new CannotOpenConfigFileException(e.Message);
             }
 
             try
@@ -267,7 +298,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
             }
 
-            throw new CanNotLoadDllException("Plugin not found.");
+            throw new CannotLoadDllException("Plugin not found.");
         }
 
         #endregion
@@ -395,7 +426,7 @@ namespace Shrinerain.AutoTester.Framework
 
             if (String.IsNullOrEmpty(dir))
             {
-                dir = Application.StartupPath; //Assembly.GetExecutingAssembly().Location; //// Environment.CurrentDirectory;// 
+                dir = Application.StartupPath;
                 if (dir.IndexOf("AutoTester") > 0)
                 {
                     dir = dir.Substring(0, dir.IndexOf("AutoTester") + 11);

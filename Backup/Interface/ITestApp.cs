@@ -22,6 +22,7 @@ using System.Diagnostics;
 
 namespace Shrinerain.AutoTester.Interface
 {
+    [CLSCompliant(true)]
     public interface ITestApp
     {
         //operation on desktop applicatoin

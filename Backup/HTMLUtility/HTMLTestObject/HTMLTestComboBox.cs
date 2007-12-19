@@ -80,7 +80,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotBuildObjectException("HTML source element can not be null.");
+                throw new CannotBuildObjectException("HTML source element can not be null.");
             }
             try
             {
@@ -88,7 +88,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotBuildObjectException("Can not get the list values.");
+                throw new CannotBuildObjectException("Can not get the list values.");
             }
             try
             {
@@ -178,7 +178,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //if the index is less than 0 or larger than the item count, invalid.
             if (index < 0 || index > _allValues.Length)
             {
-                throw new CanNotPerformActionException("Invalid item index: " + index.ToString());
+                throw new CannotPerformActionException("Invalid item index: " + index.ToString());
             }
 
             try
@@ -211,7 +211,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not perform select action on Combobox: " + e.ToString());
+                throw new CannotPerformActionException("Can not perform select action on Combobox: " + e.ToString());
             }
 
         }

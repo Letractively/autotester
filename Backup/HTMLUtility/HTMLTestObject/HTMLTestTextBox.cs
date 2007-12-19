@@ -27,7 +27,7 @@ using Shrinerain.AutoTester.Function.Interface;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestTextBox : HTMLGuiTestObject, IInputable, IVisible
+    public class HTMLTestTextBox : HTMLGuiTestObject, IInputable
     {
 
         #region fields
@@ -101,7 +101,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotPerformActionException("Can not perform Input action");
+                throw new CannotPerformActionException("Can not perform Input action");
             }
         }
 
@@ -119,7 +119,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 catch (Exception e)
                 {
-                    throw new CanNotPerformActionException("Can not input keys: " + keys + " to textbox :" + e.Message);
+                    throw new CannotPerformActionException("Can not input keys: " + keys + " to textbox :" + e.Message);
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotPerformActionException("Can not perform clear action.");
+                throw new CannotPerformActionException("Can not perform clear action.");
             }
         }
 
@@ -153,7 +153,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotPerformActionException("Can not perform focus action.");
+                throw new CannotPerformActionException("Can not perform focus action.");
             }
         }
 

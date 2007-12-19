@@ -21,6 +21,7 @@ using System.IO;
 
 namespace Shrinerain.AutoTester.Interface
 {
+    [CLSCompliant(true)]
     public interface ITestVP
     {
         bool PerformStringTest(Object testObj, String vpProperty, String expectResult, VPCheckType type, out object actualString);
@@ -44,6 +45,7 @@ namespace Shrinerain.AutoTester.Interface
         bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type, out object actualNetwork);
     }
 
+    [CLSCompliant(true)]
     public enum VPCheckType
     {
         Small,         //<

@@ -184,7 +184,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotPerformActionException("Can not perform Hover action.");
+                throw new CannotPerformActionException("Can not perform Hover action.");
             }
         }
 
@@ -200,7 +200,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 ThreadPool.QueueUserWorkItem(HighLightRectCallback, null);
 
             }
-            catch (CanNotHighlightObjectException)
+            catch (CannotHighlightObjectException)
             {
                 throw;
             }
@@ -298,9 +298,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CanNotHighlightObjectException();
+                throw new CannotHighlightObjectException("Can not high light object: "+e.Message);
             }
         }
 

@@ -19,7 +19,7 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Function.Interface
 {
-    public interface IInputable : IVisible, IInteractive, IShowInfo
+    public interface IInputable : IInteractive, IShowInfo
     {
         //input normal characters, like "asdf12345"
         void Input(string values);

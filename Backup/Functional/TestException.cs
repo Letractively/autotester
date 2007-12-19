@@ -93,6 +93,11 @@ namespace Shrinerain.AutoTester.Function
         {
             this._domain = domain;
         }
+        public TestException(string message, Exception e)
+            : base(message, e)
+        {
+
+        }
         public TestException(string domain, string url, string message)
             : base(message)
         {
@@ -141,62 +146,62 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotStartTestBrowserException : TestBrowserException
+    public class CannotStartTestBrowserException : TestBrowserException
     {
-        public CanNotStartTestBrowserException()
+        public CannotStartTestBrowserException()
             : this("Can not start Internet Explorer.")
         {
         }
-        public CanNotStartTestBrowserException(string message)
+        public CannotStartTestBrowserException(string message)
             : base(message)
         {
 
         }
     };
-    public class CanNotAttachTestBrowserException : TestBrowserException
+    public class CannotAttachTestBrowserException : TestBrowserException
     {
-        public CanNotAttachTestBrowserException()
+        public CannotAttachTestBrowserException()
             : this("Can not hook Internet Explorer.")
         {
         }
-        public CanNotAttachTestBrowserException(string message)
+        public CannotAttachTestBrowserException(string message)
             : base(message)
         {
 
         }
     };
-    public class CanNotActiveTestBrowserException : TestBrowserException
+    public class CannotActiveTestBrowserException : TestBrowserException
     {
-        public CanNotActiveTestBrowserException()
+        public CannotActiveTestBrowserException()
             : this("Can not active Internet Explorer.")
         {
 
         }
-        public CanNotActiveTestBrowserException(string message)
+        public CannotActiveTestBrowserException(string message)
             : base(message)
         {
 
         }
     };
-    public class CanNotLoadUrlException : TestBrowserException
+    public class CannotLoadUrlException : TestBrowserException
     {
-        public CanNotLoadUrlException()
+        public CannotLoadUrlException()
             : this("Can not load the url, please check the url")
         {
         }
-        public CanNotLoadUrlException(string message)
+        public CannotLoadUrlException(string message)
             : base(message)
         {
 
         }
     }
-    public class CanNotNavigateException : TestBrowserException
+    public class CannotNavigateException : TestBrowserException
     {
-        public CanNotNavigateException()
+        public CannotNavigateException()
             : this("Can not navigate.")
         {
         }
-        public CanNotNavigateException(string message)
+        public CannotNavigateException(string message)
             : base(message)
         {
 
@@ -222,135 +227,135 @@ namespace Shrinerain.AutoTester.Function
 
     };
 
-    public class CanNotStartAppException : TestAppException
+    public class CannotStartAppException : TestAppException
     {
-        public CanNotStartAppException()
+        public CannotStartAppException()
             : this("Can not start test application.")
         {
         }
-        public CanNotStartAppException(string message)
+        public CannotStartAppException(string message)
             : base(message)
         {
         }
 
     }
 
-    public class CanNotStopAppException : TestAppException
+    public class CannotStopAppException : TestAppException
     {
-        public CanNotStopAppException()
+        public CannotStopAppException()
             : this("Can not stop test application.")
         {
         }
 
-        public CanNotStopAppException(string message)
+        public CannotStopAppException(string message)
             : base(message)
         {
         }
     }
 
-    public class CanNotActiveAppException : TestAppException
+    public class CannotActiveAppException : TestAppException
     {
-        public CanNotActiveAppException()
+        public CannotActiveAppException()
             : this("Can not active test application.")
         {
         }
 
-        public CanNotActiveAppException(string message)
+        public CannotActiveAppException(string message)
             : base(message)
         {
         }
     }
 
-    public class CanNotAttachAppException : TestAppException
+    public class CannotAttachAppException : TestAppException
     {
-        public CanNotAttachAppException()
+        public CannotAttachAppException()
             : this("Can not attach test application.")
         {
 
         }
 
-        public CanNotAttachAppException(string message)
+        public CannotAttachAppException(string message)
             : base(message)
         {
         }
     }
 
-    public class CanNotMoveAppException : TestAppException
+    public class CannotMoveAppException : TestAppException
     {
-        public CanNotMoveAppException()
+        public CannotMoveAppException()
             : this("Can not move test application.")
         {
         }
 
-        public CanNotMoveAppException(string message)
+        public CannotMoveAppException(string message)
             : base(message)
         {
 
         }
     }
 
-    public class CanNotResizeAppException : TestAppException
+    public class CannotResizeAppException : TestAppException
     {
-        public CanNotResizeAppException()
+        public CannotResizeAppException()
             : this("Can not resize test application.")
         {
         }
 
-        public CanNotResizeAppException(string message)
+        public CannotResizeAppException(string message)
             : base(message)
         {
 
         }
     }
 
-    public class CanNotGetAppStatusException : TestAppException
+    public class CannotGetAppStatusException : TestAppException
     {
-        public CanNotGetAppStatusException()
+        public CannotGetAppStatusException()
             : this("Can not get status of test application.")
         {
         }
 
-        public CanNotGetAppStatusException(string message)
+        public CannotGetAppStatusException(string message)
             : base(message)
         {
         }
     }
 
-    public class CanNotGetAppProcessException : TestAppException
+    public class CannotGetAppProcessException : TestAppException
     {
-        public CanNotGetAppProcessException()
+        public CannotGetAppProcessException()
             : this("Can not get process of test application.")
         {
         }
 
-        public CanNotGetAppProcessException(string message)
+        public CannotGetAppProcessException(string message)
             : base(message)
         {
         }
 
     }
 
-    public class CanNotGetAppNetworkException : TestAppException
+    public class CannotGetAppNetworkException : TestAppException
     {
-        public CanNotGetAppNetworkException()
+        public CannotGetAppNetworkException()
             : this("Can not get netowork information of test application.")
         {
         }
 
-        public CanNotGetAppNetworkException(string message)
+        public CannotGetAppNetworkException(string message)
             : base(message)
         {
         }
     }
 
-    public class CanNotGetAppInfoException : TestAppException
+    public class CannotGetAppInfoException : TestAppException
     {
-        public CanNotGetAppInfoException()
+        public CannotGetAppInfoException()
             : this("Can not get information of test application.")
         {
         }
 
-        public CanNotGetAppInfoException(string message)
+        public CannotGetAppInfoException(string message)
             : base(message)
         {
         }
@@ -374,20 +379,33 @@ namespace Shrinerain.AutoTester.Function
         }
     }
 
-    public class CanNotLoadAutoConfigException : TestConfigException
+    public class CannotLoadConfigException : TestConfigException
     {
-        public CanNotLoadAutoConfigException()
-            : this("AutoConfig error.")
+        public CannotLoadConfigException()
+            : this("Can not load config file.")
         {
 
         }
 
-        public CanNotLoadAutoConfigException(string message)
+        public CannotLoadConfigException(string message)
             : base(message)
         {
 
         }
     };
+
+    public class CannotSaveConfigFileException : TestConfigException
+    {
+        public CannotSaveConfigFileException()
+            : this("Can not save project config file.")
+        {
+        }
+
+        public CannotSaveConfigFileException(string message)
+            : base(message)
+        {
+        }
+    }
 
     public class ConfigFileNotFoundException : TestConfigException
     {
@@ -402,14 +420,14 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotOpenConfigFileException : TestConfigException
+    public class CannotOpenConfigFileException : TestConfigException
     {
-        public CanNotOpenConfigFileException()
+        public CannotOpenConfigFileException()
             : this("Can not open config file.")
         {
 
         }
-        public CanNotOpenConfigFileException(string message)
+        public CannotOpenConfigFileException(string message)
             : base(message)
         {
 
@@ -442,14 +460,14 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotOpenDrivenFileException : TestConfigException
+    public class CannotOpenDrivenFileException : TestConfigException
     {
-        public CanNotOpenDrivenFileException()
+        public CannotOpenDrivenFileException()
             : this("Can not open driven file.")
         {
 
         }
-        public CanNotOpenDrivenFileException(string message)
+        public CannotOpenDrivenFileException(string message)
             : base(message)
         {
 
@@ -469,40 +487,40 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class CanNotLoadTestStepsException : TestConfigException
+    public class CannotLoadTestStepsException : TestConfigException
     {
-        public CanNotLoadTestStepsException()
+        public CannotLoadTestStepsException()
             : this("Can not load test steps.")
         {
 
         }
-        public CanNotLoadTestStepsException(string message)
+        public CannotLoadTestStepsException(string message)
             : base(message)
         {
 
         }
     };
-    public class CanNotLoadDataPoolException : TestConfigException
+    public class CannotLoadDataPoolException : TestConfigException
     {
-        public CanNotLoadDataPoolException()
+        public CannotLoadDataPoolException()
             : this("Can not load data pool.")
         {
 
         }
-        public CanNotLoadDataPoolException(string message)
+        public CannotLoadDataPoolException(string message)
             : base(message)
         {
 
         }
     }
-    public class CanNotLoadSubException : TestConfigException
+    public class CannotLoadSubException : TestConfigException
     {
-        public CanNotLoadSubException()
+        public CannotLoadSubException()
             : this("Can not load sub.")
         {
 
         }
-        public CanNotLoadSubException(string message)
+        public CannotLoadSubException(string message)
             : base(message)
         {
 
@@ -536,14 +554,14 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotLoadDllException : TestConfigException
+    public class CannotLoadDllException : TestConfigException
     {
-        public CanNotLoadDllException()
+        public CannotLoadDllException()
             : this("Can not load dll.")
         {
 
         }
-        public CanNotLoadDllException(string message)
+        public CannotLoadDllException(string message)
             : base(message)
         {
 
@@ -625,24 +643,24 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotBuildObjectException : TestObjectException
+    public class CannotBuildObjectException : TestObjectException
     {
-        public CanNotBuildObjectException()
+        public CannotBuildObjectException()
             : this("Can not build test object.")
         {
         }
-        public CanNotBuildObjectException(string message)
+        public CannotBuildObjectException(string message)
             : base(message)
         {
         }
     }
-    public class CanNotGetObjectPositionException : TestObjectException
+    public class CannotGetObjectPositionException : TestObjectException
     {
-        public CanNotGetObjectPositionException()
+        public CannotGetObjectPositionException()
             : this("Can not get the position of the object.")
         {
         }
-        public CanNotGetObjectPositionException(string message)
+        public CannotGetObjectPositionException(string message)
             : base(message)
         {
 
@@ -674,26 +692,26 @@ namespace Shrinerain.AutoTester.Function
 
         }
     };
-    public class CanNotSetPropertyException : TestObjectException
+    public class CannotSetPropertyException : TestObjectException
     {
-        public CanNotSetPropertyException()
+        public CannotSetPropertyException()
             : this("Can not set the property.")
         {
         }
-        public CanNotSetPropertyException(string message)
+        public CannotSetPropertyException(string message)
             : base(message)
         {
 
         }
     }
-    public class CanNotPerformActionException : TestObjectException
+    public class CannotPerformActionException : TestObjectException
     {
-        public CanNotPerformActionException()
+        public CannotPerformActionException()
             : this("Can not perform the action.")
         {
 
         }
-        public CanNotPerformActionException(string message)
+        public CannotPerformActionException(string message)
             : base(message)
         {
 
@@ -728,14 +746,14 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class CanNotHighlightObjectException : TestObjectException
+    public class CannotHighlightObjectException : TestObjectException
     {
-        public CanNotHighlightObjectException()
+        public CannotHighlightObjectException()
             : this("Can not highlight the object.")
         {
 
         }
-        public CanNotHighlightObjectException(string message)
+        public CannotHighlightObjectException(string message)
             : base(message)
         {
 
@@ -759,42 +777,42 @@ namespace Shrinerain.AutoTester.Function
         }
     }
 
-    public class CanNotSaveScreenPrintException : TestLogException
+    public class CannotSaveScreenPrintException : TestLogException
     {
-        public CanNotSaveScreenPrintException()
+        public CannotSaveScreenPrintException()
             : this("Can not save screen print.")
         {
 
         }
-        public CanNotSaveScreenPrintException(string message)
+        public CannotSaveScreenPrintException(string message)
             : base(message)
         {
 
         }
     };
 
-    public class CanNotWriteLogException : TestLogException
+    public class CannotWriteLogException : TestLogException
     {
-        public CanNotWriteLogException()
+        public CannotWriteLogException()
             : this("Can not write log.")
         {
         }
-        public CanNotWriteLogException(string message)
+        public CannotWriteLogException(string message)
             : base(message)
         {
 
         }
     }
 
-    public class CanNotOpenTemplateException : TestLogException
+    public class CannotOpenTemplateException : TestLogException
     {
-        public CanNotOpenTemplateException()
+        public CannotOpenTemplateException()
             : this("Can not open log template file.")
         {
 
         }
 
-        public CanNotOpenTemplateException(string message)
+        public CannotOpenTemplateException(string message)
             : base(message)
         {
 
@@ -819,7 +837,7 @@ namespace Shrinerain.AutoTester.Function
         }
     };
 
-    public class UnSupportedKeywordException : TestException
+    public class UnSupportedKeywordException : TestEngineException
     {
         public UnSupportedKeywordException()
             : this("The keyword is not supported.")

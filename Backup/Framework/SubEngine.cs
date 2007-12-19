@@ -32,7 +32,7 @@ namespace Shrinerain.AutoTester.Framework
 
         private static Parser _parser = Parser.GetInstance();
 
-        private DataEngine _dataEngine = null;
+        private DataEngine _dataEngine;
 
         //Load all test sub to this list.
         private List<TestSub> _allTestSubs;
@@ -41,7 +41,7 @@ namespace Shrinerain.AutoTester.Framework
         private Regex _dataPoolReg = new Regex(@"^{(\w+\.)?value\d+}$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         //regular expression to extract number
-        private Regex _numberReg = new Regex(@"\d+", RegexOptions.Compiled);
+        //private Regex _numberReg = new Regex(@"\d+", RegexOptions.Compiled);
 
         //regular expression to extract value index, eg: {data1.value1}
         private Regex _valueIndexReg = new Regex(@"\d+}$", RegexOptions.Compiled);
@@ -99,20 +99,22 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (parser == null)
             {
-                throw new CanNotLoadSubException("Parser can not be null.");
+                throw new CannotLoadSubException("Parser can not be null.");
             }
             _parser = parser;
 
             return _subEngine;
         }
 
-        /* 
-         * 
+        /* List<TestStep> BuildTestStepBySubName(string subName)
+         * Return test step list by sub name.
          */
         public List<TestStep> BuildTestStepBySubName(string subName)
         {
+            //get origin test steps.
             List<TestStep> subOriginSteps = GetTestSubByName(subName);
 
+            //get datapool used by sub
             string dataPoolName = GetDataPoolName(subOriginSteps);
 
             if (String.IsNullOrEmpty(dataPoolName))
@@ -121,6 +123,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             else
             {
+                //if datapool is used in the sub, insert data.
                 return InsertDataValueToSub(subOriginSteps, dataPoolName);
             }
 
@@ -130,42 +133,56 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private methods
 
+        /* List<TestStep> GetTestSubByName(string subName)
+         * return test step list by sub name.
+         */
         private List<TestStep> GetTestSubByName(string subName)
         {
             if (_allTestSubs == null)
             {
                 if (_parser == null)
                 {
-                    throw new CanNotLoadSubException("Parser can not be null.");
+                    throw new CannotLoadSubException("Parser can not be null.");
                 }
+
+                //get all subs.
                 _allTestSubs = _parser.GetAllTestSubs();
             }
 
             if (String.IsNullOrEmpty(subName))
             {
-                throw new CanNotLoadSubException("Sub name can not be empty.");
+                throw new CannotLoadSubException("Sub name can not be empty.");
             }
 
+
+            //check the name, if found, return .
             foreach (TestSub sub in _allTestSubs)
             {
-                if (sub._subName.ToUpper() == subName.ToUpper())
+                //find by name.
+                if (String.Compare(sub._subName, subName, true) == 0)
                 {
                     return sub._subTestSteps;
                 }
             }
 
-            throw new CanNotLoadSubException("Sub:" + subName + " not found.");
+            throw new CannotLoadSubException("Sub:" + subName + " not found.");
         }
 
+        /* string GetDataPoolName(List<TestStep> stepList)
+         * return the datapool name used in the sub.
+         * eg: {data1.value1} will return data1
+         * 
+         */
         private string GetDataPoolName(List<TestStep> stepList)
         {
             if (stepList == null)
             {
-                throw new CanNotLoadSubException("Sub step list can not be null.");
+                throw new CannotLoadSubException("Sub step list can not be null.");
             }
 
             string dataPoolName;
 
+            //check each field.
             foreach (TestStep step in stepList)
             {
                 for (int i = 0; i < step.Size; i++)
@@ -180,6 +197,9 @@ namespace Shrinerain.AutoTester.Framework
             return null;
         }
 
+        /* bool GetDataPoolNameByReg(string value, out string dataPoolName)
+         * check if the string include datapool name, if so, return the datapool name.
+         */
         private bool GetDataPoolNameByReg(string value, out string dataPoolName)
         {
             dataPoolName = null;
@@ -189,6 +209,7 @@ namespace Shrinerain.AutoTester.Framework
                 return false;
             }
 
+            //use reg expression to check.
             if (_dataPoolReg.IsMatch(value))
             {
                 string str1 = _dataPoolReg.Match(value).Value;
@@ -199,69 +220,13 @@ namespace Shrinerain.AutoTester.Framework
                     int dotPos = str1.IndexOf('.');
                     if (dotPos > 1)
                     {
+                        //get the datapool name.
                         dataPoolName = str1.Substring(1, dotPos - 1);
                         return true;
                     }
                 }
                 catch
                 {
-                    return false;
-                }
-
-            }
-            return false;
-        }
-
-        private bool GetDataPoolDataIndex(string value, out int index)
-        {
-            index = -1;
-
-            if (String.IsNullOrEmpty(value))
-            {
-                return false;
-            }
-
-            if (_dataPoolReg.IsMatch(value))
-            {
-                string str1 = _dataPoolReg.Match(value).Value;
-                try
-                {
-                    str1 = str1.Replace(" ", "");
-                    str1 = str1.Replace("\t", "");
-                    int dotPos = str1.IndexOf('.');
-                    if (dotPos > 1)
-                    {
-                        string valueX = str1.Substring(dotPos, str1.Length - dotPos);
-
-                        if (_numberReg.IsMatch(valueX))
-                        {
-                            if (int.TryParse(_numberReg.Match(valueX).Value, out index))
-                            {
-                                if (index > 0 && index < _parser.MaxDataCount)
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-
-                    }
-                    else
-                    {
-                        if (_numberReg.IsMatch(str1))
-                        {
-                            if (int.TryParse(_numberReg.Match(str1).Value, out index))
-                            {
-                                if (index > 0 && index < _parser.MaxDataCount)
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-                    return false;
                 }
 
             }
@@ -269,11 +234,84 @@ namespace Shrinerain.AutoTester.Framework
             return false;
         }
 
+        ///* bool GetDataPoolDataIndex(string value, out int index)
+        // * return the value index.
+        // * eg: data1.value1 will return 1, data1.value2 will return 2.
+        // * we use this index to load actual data.
+        // */
+        //private bool GetDataPoolDataIndex(string value, out int index)
+        //{
+        //    index = -1;
+
+        //    if (String.IsNullOrEmpty(value))
+        //    {
+        //        return false;
+        //    }
+
+        //    //match datapool
+        //    if (_dataPoolReg.IsMatch(value))
+        //    {
+        //        string str1 = _dataPoolReg.Match(value).Value;
+        //        try
+        //        {
+        //            str1 = str1.Replace(" ", "");
+        //            str1 = str1.Replace("\t", "");
+
+        //            //dot means the string contains datapool name.
+        //            //we must specific the datapool name at the first time, eg: {data1.value1}
+        //            //after the 1st, we just need the value, eg:{value2}
+        //            int dotPos = str1.IndexOf('.');
+        //            if (dotPos > 1)
+        //            {
+        //                //find value string, eg: value1
+        //                string valueX = str1.Substring(dotPos, str1.Length - dotPos);
+
+        //                //check if number is found.
+        //                if (_numberReg.IsMatch(valueX))
+        //                {
+        //                    //if found, get the number.
+        //                    if (int.TryParse(_numberReg.Match(valueX).Value, out index))
+        //                    {
+        //                        if (index > 0 && index < _parser.MaxDataCount)
+        //                        {
+        //                            return true;
+        //                        }
+        //                    }
+        //                }
+
+        //            }
+        //            else
+        //            {
+        //                if (_numberReg.IsMatch(str1))
+        //                {
+        //                    if (int.TryParse(_numberReg.Match(str1).Value, out index))
+        //                    {
+        //                        if (index > 0 && index < _parser.MaxDataCount)
+        //                        {
+        //                            return true;
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        catch
+        //        {
+        //        }
+
+        //    }
+
+        //    return false;
+        //}
+
+        /* List<TestStep> InsertDataValueToSub(List<TestStep> originSteps, string dataPoolName)
+         * return the actual test steps.
+         * will replace the datapool string with actual data.
+         */
         private List<TestStep> InsertDataValueToSub(List<TestStep> originSteps, string dataPoolName)
         {
             if (originSteps == null || String.IsNullOrEmpty(dataPoolName))
             {
-                throw new CanNotLoadSubException("Sub steps and/or Data pool name can not be null.");
+                throw new CannotLoadSubException("Sub steps and/or Data pool name can not be null.");
             }
 
             TestDataPool dataPool;
@@ -289,7 +327,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch
             {
-                throw new CanNotLoadSubException("Can not load data pool by name:" + dataPoolName);
+                throw new CannotLoadSubException("Can not load data pool by name:" + dataPoolName);
             }
 
             List<TestStep> stepsWithData = new List<TestStep>(originSteps.Count * 2);
@@ -307,13 +345,17 @@ namespace Shrinerain.AutoTester.Framework
             return stepsWithData;
         }
 
-
+        /* TestStep InsertDataToSingleTestStep(TestStep testStep, string[] data)
+         * insert data to a single test step.
+         */
         private TestStep InsertDataToSingleTestStep(TestStep testStep, string[] data)
         {
             int index = 0; //index of data value, eg: value1, value2
 
+            //check each field
             for (int i = 0; i < testStep.Size; i++)
             {
+                //if datapool found
                 if (GetDataIndex(testStep[i], out index))
                 {
                     testStep[i] = data[index];
@@ -323,6 +365,9 @@ namespace Shrinerain.AutoTester.Framework
             return testStep;
         }
 
+        /*  bool GetDataIndex(string value, out int index)
+         *  get the data value index of a string.
+         */
         private bool GetDataIndex(string value, out int index)
         {
             index = -1;

@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: ExceptionEngine.cs
+*
+* Description: ExceptionEngine will handle the exception of happend in 
+*              framework, help CoreEngine how to deal with these exceptions. 
+*
+* History: 2007/09/04 wan,yu Init version
+*
+*********************************************************************/
+
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +27,7 @@ namespace Shrinerain.AutoTester.Framework
 
         #region fields
 
+        //the exception happened 
         private TestException _exception;
 
         #endregion
@@ -28,6 +45,9 @@ namespace Shrinerain.AutoTester.Framework
 
         #region public methods
 
+        /* bool HandleException(TestException e)
+         * return true if we can just ignore the exception. 
+         */
         public bool HandleException(TestException e)
         {
             if (e != null)

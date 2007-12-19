@@ -30,15 +30,23 @@ namespace Shrinerain.AutoTester.GUI
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrm));
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.printPreviewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.undoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,15 +86,22 @@ namespace Shrinerain.AutoTester.GUI
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
+            this.printToolStripMenuItemRun = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.undoToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.redoToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
+            this.cutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.pasteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.selectAllToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -98,21 +113,7 @@ namespace Shrinerain.AutoTester.GUI
             this.searchToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.printPreviewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pasteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.openToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.printToolStripMenuItemRun = new System.Windows.Forms.ToolStripMenuItem();
-            this.cutToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.pasteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabProject.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -137,31 +138,75 @@ namespace Shrinerain.AutoTester.GUI
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.fileToolStripMenuItem.Text = "&File";
             // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem.Image")));
+            this.newToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.newToolStripMenuItem.Text = "&New Project";
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem.Image")));
+            this.openToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.openToolStripMenuItem.Text = "&Open Project";
+            // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
-            this.toolStripSeparator.Size = new System.Drawing.Size(180, 6);
+            this.toolStripSeparator.Size = new System.Drawing.Size(174, 6);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem.Image")));
+            this.saveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.saveToolStripMenuItem.Text = "&Save";
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(180, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(174, 6);
+            // 
+            // printToolStripMenuItem
+            // 
+            this.printToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("printToolStripMenuItem.Image")));
+            this.printToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.printToolStripMenuItem.Name = "printToolStripMenuItem";
+            this.printToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.printToolStripMenuItem.Text = "&Print";
+            // 
+            // printPreviewToolStripMenuItem
+            // 
+            this.printPreviewToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("printPreviewToolStripMenuItem.Image")));
+            this.printPreviewToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem";
+            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.printPreviewToolStripMenuItem.Text = "Print Pre&view";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(180, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(174, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             // 
             // editToolStripMenuItem
@@ -183,30 +228,57 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.undoToolStripMenuItem.Text = "&Run!";
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Y)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.redoToolStripMenuItem.Text = "&Redo";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(138, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(136, 6);
+            // 
+            // cutToolStripMenuItem
+            // 
+            this.cutToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripMenuItem.Image")));
+            this.cutToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+            this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.cutToolStripMenuItem.Text = "Cu&t";
+            // 
+            // copyToolStripMenuItem
+            // 
+            this.copyToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripMenuItem.Image")));
+            this.copyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.copyToolStripMenuItem.Text = "&Copy";
+            // 
+            // pasteToolStripMenuItem
+            // 
+            this.pasteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripMenuItem.Image")));
+            this.pasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.pasteToolStripMenuItem.Text = "&Paste";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(138, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(136, 6);
             // 
             // selectAllToolStripMenuItem
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.selectAllToolStripMenuItem.Text = "Select &All";
             // 
             // toolsToolStripMenuItem
@@ -221,13 +293,13 @@ namespace Shrinerain.AutoTester.GUI
             // customizeToolStripMenuItem
             // 
             this.customizeToolStripMenuItem.Name = "customizeToolStripMenuItem";
-            this.customizeToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.customizeToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.customizeToolStripMenuItem.Text = "&Customize";
             // 
             // optionsToolStripMenuItem
             // 
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.optionsToolStripMenuItem.Text = "&Options";
             // 
             // helpToolStripMenuItem
@@ -279,7 +351,7 @@ namespace Shrinerain.AutoTester.GUI
             this.tabProject.Location = new System.Drawing.Point(0, 24);
             this.tabProject.Name = "tabProject";
             this.tabProject.SelectedIndex = 0;
-            this.tabProject.Size = new System.Drawing.Size(392, 249);
+            this.tabProject.Size = new System.Drawing.Size(392, 272);
             this.tabProject.TabIndex = 1;
             this.tabProject.SelectedIndexChanged += new System.EventHandler(this.OnSelectIndexChanged);
             // 
@@ -305,10 +377,10 @@ namespace Shrinerain.AutoTester.GUI
             this.tabPage1.Controls.Add(this.label2);
             this.tabPage1.Controls.Add(this.tbProjectName);
             this.tabPage1.Controls.Add(this.label1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 21);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(384, 224);
+            this.tabPage1.Size = new System.Drawing.Size(384, 246);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Project";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -316,19 +388,20 @@ namespace Shrinerain.AutoTester.GUI
             // btnSave
             // 
             this.btnSave.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.btnSave.Location = new System.Drawing.Point(194, 193);
+            this.btnSave.Location = new System.Drawing.Point(194, 209);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 20);
+            this.btnSave.Size = new System.Drawing.Size(75, 22);
             this.btnSave.TabIndex = 19;
             this.btnSave.Text = "Save";
             this.btnSave.UseVisualStyleBackColor = true;
+            this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
             // btnClear
             // 
             this.btnClear.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.btnClear.Location = new System.Drawing.Point(113, 193);
+            this.btnClear.Location = new System.Drawing.Point(113, 209);
             this.btnClear.Name = "btnClear";
-            this.btnClear.Size = new System.Drawing.Size(75, 20);
+            this.btnClear.Size = new System.Drawing.Size(75, 22);
             this.btnClear.TabIndex = 18;
             this.btnClear.Text = "Clear";
             this.btnClear.UseVisualStyleBackColor = true;
@@ -337,7 +410,7 @@ namespace Shrinerain.AutoTester.GUI
             // cbHighlight
             // 
             this.cbHighlight.AutoSize = true;
-            this.cbHighlight.Location = new System.Drawing.Point(88, 166);
+            this.cbHighlight.Location = new System.Drawing.Point(88, 180);
             this.cbHighlight.Name = "cbHighlight";
             this.cbHighlight.Size = new System.Drawing.Size(15, 14);
             this.cbHighlight.TabIndex = 17;
@@ -346,18 +419,18 @@ namespace Shrinerain.AutoTester.GUI
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(8, 166);
+            this.label7.Location = new System.Drawing.Point(8, 180);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(65, 12);
+            this.label7.Size = new System.Drawing.Size(51, 13);
             this.label7.TabIndex = 16;
             this.label7.Text = "Highlight:";
             // 
             // button3
             // 
             this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button3.Location = new System.Drawing.Point(326, 141);
+            this.button3.Location = new System.Drawing.Point(326, 153);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(50, 18);
+            this.button3.Size = new System.Drawing.Size(50, 20);
             this.button3.TabIndex = 15;
             this.button3.Text = "Browse";
             this.button3.UseVisualStyleBackColor = true;
@@ -366,26 +439,26 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbScreenPrint.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbScreenPrint.Location = new System.Drawing.Point(88, 140);
+            this.tbScreenPrint.Location = new System.Drawing.Point(88, 152);
             this.tbScreenPrint.Name = "tbScreenPrint";
-            this.tbScreenPrint.Size = new System.Drawing.Size(232, 21);
+            this.tbScreenPrint.Size = new System.Drawing.Size(232, 20);
             this.tbScreenPrint.TabIndex = 14;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(8, 143);
+            this.label6.Location = new System.Drawing.Point(8, 155);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(83, 12);
+            this.label6.Size = new System.Drawing.Size(68, 13);
             this.label6.TabIndex = 13;
             this.label6.Text = "Screen Print:";
             // 
             // button2
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(326, 115);
+            this.button2.Location = new System.Drawing.Point(326, 125);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(50, 18);
+            this.button2.Size = new System.Drawing.Size(50, 20);
             this.button2.TabIndex = 12;
             this.button2.Text = "Browse";
             this.button2.UseVisualStyleBackColor = true;
@@ -394,26 +467,26 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbLogTemplate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbLogTemplate.Location = new System.Drawing.Point(88, 114);
+            this.tbLogTemplate.Location = new System.Drawing.Point(88, 124);
             this.tbLogTemplate.Name = "tbLogTemplate";
-            this.tbLogTemplate.Size = new System.Drawing.Size(232, 21);
+            this.tbLogTemplate.Size = new System.Drawing.Size(232, 20);
             this.tbLogTemplate.TabIndex = 11;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(8, 117);
+            this.label5.Location = new System.Drawing.Point(8, 127);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(83, 12);
+            this.label5.Size = new System.Drawing.Size(75, 13);
             this.label5.TabIndex = 10;
             this.label5.Text = "Log Template:";
             // 
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(326, 89);
+            this.button1.Location = new System.Drawing.Point(326, 96);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(50, 18);
+            this.button1.Size = new System.Drawing.Size(50, 20);
             this.button1.TabIndex = 9;
             this.button1.Text = "Browse";
             this.button1.UseVisualStyleBackColor = true;
@@ -422,26 +495,26 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbLogFolder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbLogFolder.Location = new System.Drawing.Point(88, 88);
+            this.tbLogFolder.Location = new System.Drawing.Point(88, 95);
             this.tbLogFolder.Name = "tbLogFolder";
-            this.tbLogFolder.Size = new System.Drawing.Size(232, 21);
+            this.tbLogFolder.Size = new System.Drawing.Size(232, 20);
             this.tbLogFolder.TabIndex = 8;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 91);
+            this.label4.Location = new System.Drawing.Point(8, 99);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(71, 12);
+            this.label4.Size = new System.Drawing.Size(60, 13);
             this.label4.TabIndex = 7;
             this.label4.Text = "Log Folder:";
             // 
             // btnOpenDriveFile
             // 
             this.btnOpenDriveFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenDriveFile.Location = new System.Drawing.Point(326, 63);
+            this.btnOpenDriveFile.Location = new System.Drawing.Point(326, 68);
             this.btnOpenDriveFile.Name = "btnOpenDriveFile";
-            this.btnOpenDriveFile.Size = new System.Drawing.Size(50, 18);
+            this.btnOpenDriveFile.Size = new System.Drawing.Size(50, 20);
             this.btnOpenDriveFile.TabIndex = 6;
             this.btnOpenDriveFile.Text = "Browse";
             this.btnOpenDriveFile.UseVisualStyleBackColor = true;
@@ -450,9 +523,9 @@ namespace Shrinerain.AutoTester.GUI
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(8, 65);
+            this.label3.Location = new System.Drawing.Point(8, 70);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(71, 12);
+            this.label3.Size = new System.Drawing.Size(54, 13);
             this.label3.TabIndex = 5;
             this.label3.Text = "Drive File:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -461,9 +534,9 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbDriveFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbDriveFile.Location = new System.Drawing.Point(88, 62);
+            this.tbDriveFile.Location = new System.Drawing.Point(88, 67);
             this.tbDriveFile.Name = "tbDriveFile";
-            this.tbDriveFile.Size = new System.Drawing.Size(232, 21);
+            this.tbDriveFile.Size = new System.Drawing.Size(232, 20);
             this.tbDriveFile.TabIndex = 4;
             // 
             // cbProjectDomain
@@ -473,18 +546,18 @@ namespace Shrinerain.AutoTester.GUI
             "HTML",
             "Flex",
             "Silverlight"});
-            this.cbProjectDomain.Location = new System.Drawing.Point(88, 37);
+            this.cbProjectDomain.Location = new System.Drawing.Point(88, 40);
             this.cbProjectDomain.Name = "cbProjectDomain";
-            this.cbProjectDomain.Size = new System.Drawing.Size(121, 20);
+            this.cbProjectDomain.Size = new System.Drawing.Size(121, 21);
             this.cbProjectDomain.TabIndex = 3;
             this.cbProjectDomain.Text = "HTML";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 40);
+            this.label2.Location = new System.Drawing.Point(8, 43);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(83, 12);
+            this.label2.Size = new System.Drawing.Size(70, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "Project Type:";
             // 
@@ -492,27 +565,27 @@ namespace Shrinerain.AutoTester.GUI
             // 
             this.tbProjectName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbProjectName.Location = new System.Drawing.Point(88, 11);
+            this.tbProjectName.Location = new System.Drawing.Point(88, 12);
             this.tbProjectName.Name = "tbProjectName";
-            this.tbProjectName.Size = new System.Drawing.Size(288, 21);
+            this.tbProjectName.Size = new System.Drawing.Size(288, 20);
             this.tbProjectName.TabIndex = 1;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 14);
+            this.label1.Location = new System.Drawing.Point(8, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 12);
+            this.label1.Size = new System.Drawing.Size(74, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Project Name:";
             // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.dataGridView1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 21);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(384, 224);
+            this.tabPage2.Size = new System.Drawing.Size(384, 244);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Drive File";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -524,7 +597,7 @@ namespace Shrinerain.AutoTester.GUI
             this.dataGridView1.Location = new System.Drawing.Point(3, 3);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(378, 218);
+            this.dataGridView1.Size = new System.Drawing.Size(378, 238);
             this.dataGridView1.TabIndex = 0;
             // 
             // menuStrip1
@@ -553,34 +626,73 @@ namespace Shrinerain.AutoTester.GUI
             this.toolStripSeparator8,
             this.exitToolStripMenuItem1});
             this.fileToolStripMenuItem1.Name = "fileToolStripMenuItem1";
-            this.fileToolStripMenuItem1.Size = new System.Drawing.Size(59, 20);
+            this.fileToolStripMenuItem1.Size = new System.Drawing.Size(53, 20);
             this.fileToolStripMenuItem1.Text = "&Project";
+            // 
+            // newToolStripMenuItem1
+            // 
+            this.newToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem1.Image")));
+            this.newToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.newToolStripMenuItem1.Name = "newToolStripMenuItem1";
+            this.newToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.newToolStripMenuItem1.Text = "&New Project";
+            this.newToolStripMenuItem1.Click += new System.EventHandler(this.newToolStripMenuItem1_Click);
+            // 
+            // openToolStripMenuItem1
+            // 
+            this.openToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem1.Image")));
+            this.openToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.openToolStripMenuItem1.Name = "openToolStripMenuItem1";
+            this.openToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
+            this.openToolStripMenuItem1.Text = "&Open Project";
+            this.openToolStripMenuItem1.Click += new System.EventHandler(this.openToolStripMenuItem1_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(139, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(134, 6);
+            // 
+            // saveToolStripMenuItem1
+            // 
+            this.saveToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem1.Image")));
+            this.saveToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveToolStripMenuItem1.Name = "saveToolStripMenuItem1";
+            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem1.Text = "&Save";
+            this.saveToolStripMenuItem1.Click += new System.EventHandler(this.saveToolStripMenuItem1_Click);
             // 
             // saveAsToolStripMenuItem1
             // 
             this.saveAsToolStripMenuItem1.Name = "saveAsToolStripMenuItem1";
-            this.saveAsToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
+            this.saveAsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.saveAsToolStripMenuItem1.Text = "Save &As";
+            this.saveAsToolStripMenuItem1.Click += new System.EventHandler(this.saveAsToolStripMenuItem1_Click);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(139, 6);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(134, 6);
+            // 
+            // printToolStripMenuItemRun
+            // 
+            this.printToolStripMenuItemRun.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.printToolStripMenuItemRun.ForeColor = System.Drawing.Color.Blue;
+            this.printToolStripMenuItemRun.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.run3;
+            this.printToolStripMenuItemRun.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.printToolStripMenuItemRun.Name = "printToolStripMenuItemRun";
+            this.printToolStripMenuItemRun.Size = new System.Drawing.Size(137, 22);
+            this.printToolStripMenuItemRun.Text = "&Run!";
+            this.printToolStripMenuItemRun.Click += new System.EventHandler(this.printToolStripMenuItem1_Click);
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(139, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(134, 6);
             // 
             // exitToolStripMenuItem1
             // 
             this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
-            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
+            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
             this.exitToolStripMenuItem1.Text = "E&xit";
             // 
             // editToolStripMenuItem1
@@ -595,35 +707,59 @@ namespace Shrinerain.AutoTester.GUI
             this.toolStripSeparator10,
             this.selectAllToolStripMenuItem1});
             this.editToolStripMenuItem1.Name = "editToolStripMenuItem1";
-            this.editToolStripMenuItem1.Size = new System.Drawing.Size(41, 20);
+            this.editToolStripMenuItem1.Size = new System.Drawing.Size(37, 20);
             this.editToolStripMenuItem1.Text = "&Edit";
             // 
             // undoToolStripMenuItem1
             // 
             this.undoToolStripMenuItem1.Name = "undoToolStripMenuItem1";
-            this.undoToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
+            this.undoToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
             this.undoToolStripMenuItem1.Text = "&Undo";
             // 
             // redoToolStripMenuItem1
             // 
             this.redoToolStripMenuItem1.Name = "redoToolStripMenuItem1";
-            this.redoToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
+            this.redoToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
             this.redoToolStripMenuItem1.Text = "&Redo";
             // 
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(127, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(114, 6);
+            // 
+            // cutToolStripMenuItem1
+            // 
+            this.cutToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripMenuItem1.Image")));
+            this.cutToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cutToolStripMenuItem1.Name = "cutToolStripMenuItem1";
+            this.cutToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.cutToolStripMenuItem1.Text = "Cu&t";
+            // 
+            // copyToolStripMenuItem1
+            // 
+            this.copyToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripMenuItem1.Image")));
+            this.copyToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.copyToolStripMenuItem1.Name = "copyToolStripMenuItem1";
+            this.copyToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.copyToolStripMenuItem1.Text = "&Copy";
+            // 
+            // pasteToolStripMenuItem1
+            // 
+            this.pasteToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripMenuItem1.Image")));
+            this.pasteToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.pasteToolStripMenuItem1.Name = "pasteToolStripMenuItem1";
+            this.pasteToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
+            this.pasteToolStripMenuItem1.Text = "&Paste";
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(127, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(114, 6);
             // 
             // selectAllToolStripMenuItem1
             // 
             this.selectAllToolStripMenuItem1.Name = "selectAllToolStripMenuItem1";
-            this.selectAllToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
+            this.selectAllToolStripMenuItem1.Size = new System.Drawing.Size(117, 22);
             this.selectAllToolStripMenuItem1.Text = "Select &All";
             // 
             // toolsToolStripMenuItem1
@@ -632,19 +768,19 @@ namespace Shrinerain.AutoTester.GUI
             this.customizeToolStripMenuItem1,
             this.optionsToolStripMenuItem1});
             this.toolsToolStripMenuItem1.Name = "toolsToolStripMenuItem1";
-            this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem1.Size = new System.Drawing.Size(44, 20);
             this.toolsToolStripMenuItem1.Text = "&Tools";
             // 
             // customizeToolStripMenuItem1
             // 
             this.customizeToolStripMenuItem1.Name = "customizeToolStripMenuItem1";
-            this.customizeToolStripMenuItem1.Size = new System.Drawing.Size(124, 22);
+            this.customizeToolStripMenuItem1.Size = new System.Drawing.Size(123, 22);
             this.customizeToolStripMenuItem1.Text = "&Customize";
             // 
             // optionsToolStripMenuItem1
             // 
             this.optionsToolStripMenuItem1.Name = "optionsToolStripMenuItem1";
-            this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(124, 22);
+            this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(123, 22);
             this.optionsToolStripMenuItem1.Text = "&Options";
             // 
             // helpToolStripMenuItem1
@@ -656,175 +792,44 @@ namespace Shrinerain.AutoTester.GUI
             this.toolStripSeparator11,
             this.aboutToolStripMenuItem1});
             this.helpToolStripMenuItem1.Name = "helpToolStripMenuItem1";
-            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(41, 20);
+            this.helpToolStripMenuItem1.Size = new System.Drawing.Size(40, 20);
             this.helpToolStripMenuItem1.Text = "&Help";
             // 
             // contentsToolStripMenuItem1
             // 
             this.contentsToolStripMenuItem1.Name = "contentsToolStripMenuItem1";
-            this.contentsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.contentsToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
             this.contentsToolStripMenuItem1.Text = "&Contents";
             // 
             // indexToolStripMenuItem1
             // 
             this.indexToolStripMenuItem1.Name = "indexToolStripMenuItem1";
-            this.indexToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.indexToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
             this.indexToolStripMenuItem1.Text = "&Index";
             // 
             // searchToolStripMenuItem1
             // 
             this.searchToolStripMenuItem1.Name = "searchToolStripMenuItem1";
-            this.searchToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.searchToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
             this.searchToolStripMenuItem1.Text = "&Search";
             // 
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(115, 6);
             // 
             // aboutToolStripMenuItem1
             // 
             this.aboutToolStripMenuItem1.Name = "aboutToolStripMenuItem1";
-            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem1.Size = new System.Drawing.Size(118, 22);
             this.aboutToolStripMenuItem1.Text = "&About...";
             this.aboutToolStripMenuItem1.Click += new System.EventHandler(this.aboutToolStripMenuItem1_Click);
             // 
-            // newToolStripMenuItem
-            // 
-            this.newToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem.Image")));
-            this.newToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.newToolStripMenuItem.Text = "&New Project";
-            // 
-            // openToolStripMenuItem
-            // 
-            this.openToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem.Image")));
-            this.openToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.openToolStripMenuItem.Text = "&Open Project";
-            // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem.Image")));
-            this.saveToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.saveToolStripMenuItem.Text = "&Save";
-            // 
-            // printToolStripMenuItem
-            // 
-            this.printToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("printToolStripMenuItem.Image")));
-            this.printToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.printToolStripMenuItem.Text = "&Print";
-            // 
-            // printPreviewToolStripMenuItem
-            // 
-            this.printPreviewToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("printPreviewToolStripMenuItem.Image")));
-            this.printPreviewToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.printPreviewToolStripMenuItem.Name = "printPreviewToolStripMenuItem";
-            this.printPreviewToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.printPreviewToolStripMenuItem.Text = "Print Pre&view";
-            // 
-            // cutToolStripMenuItem
-            // 
-            this.cutToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripMenuItem.Image")));
-            this.cutToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
-            this.cutToolStripMenuItem.Text = "Cu&t";
-            // 
-            // copyToolStripMenuItem
-            // 
-            this.copyToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripMenuItem.Image")));
-            this.copyToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
-            this.copyToolStripMenuItem.Text = "&Copy";
-            // 
-            // pasteToolStripMenuItem
-            // 
-            this.pasteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripMenuItem.Image")));
-            this.pasteToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(141, 22);
-            this.pasteToolStripMenuItem.Text = "&Paste";
-            // 
-            // newToolStripMenuItem1
-            // 
-            this.newToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem1.Image")));
-            this.newToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.newToolStripMenuItem1.Name = "newToolStripMenuItem1";
-            this.newToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
-            this.newToolStripMenuItem1.Text = "&New Project";
-            // 
-            // openToolStripMenuItem1
-            // 
-            this.openToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem1.Image")));
-            this.openToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.openToolStripMenuItem1.Name = "openToolStripMenuItem1";
-            this.openToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
-            this.openToolStripMenuItem1.Text = "&Open Project";
-            this.openToolStripMenuItem1.Click += new System.EventHandler(this.openToolStripMenuItem1_Click);
-            // 
-            // saveToolStripMenuItem1
-            // 
-            this.saveToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem1.Image")));
-            this.saveToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveToolStripMenuItem1.Name = "saveToolStripMenuItem1";
-            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(142, 22);
-            this.saveToolStripMenuItem1.Text = "&Save";
-            // 
-            // printToolStripMenuItemRun
-            // 
-            this.printToolStripMenuItemRun.Font = new System.Drawing.Font("SimSun", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.printToolStripMenuItemRun.ForeColor = System.Drawing.Color.Blue;
-            this.printToolStripMenuItemRun.Image = global::Shrinerain.AutoTester.GUI.Properties.Resources.run3;
-            this.printToolStripMenuItemRun.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.printToolStripMenuItemRun.Name = "printToolStripMenuItemRun";
-            this.printToolStripMenuItemRun.Size = new System.Drawing.Size(142, 22);
-            this.printToolStripMenuItemRun.Text = "&Run!";
-            this.printToolStripMenuItemRun.Click += new System.EventHandler(this.printToolStripMenuItem1_Click);
-            // 
-            // cutToolStripMenuItem1
-            // 
-            this.cutToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripMenuItem1.Image")));
-            this.cutToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cutToolStripMenuItem1.Name = "cutToolStripMenuItem1";
-            this.cutToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
-            this.cutToolStripMenuItem1.Text = "Cu&t";
-            // 
-            // copyToolStripMenuItem1
-            // 
-            this.copyToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripMenuItem1.Image")));
-            this.copyToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.copyToolStripMenuItem1.Name = "copyToolStripMenuItem1";
-            this.copyToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
-            this.copyToolStripMenuItem1.Text = "&Copy";
-            // 
-            // pasteToolStripMenuItem1
-            // 
-            this.pasteToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripMenuItem1.Image")));
-            this.pasteToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.pasteToolStripMenuItem1.Name = "pasteToolStripMenuItem1";
-            this.pasteToolStripMenuItem1.Size = new System.Drawing.Size(130, 22);
-            this.pasteToolStripMenuItem1.Text = "&Paste";
-            // 
             // MainFrm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(392, 273);
+            this.ClientSize = new System.Drawing.Size(392, 296);
             this.Controls.Add(this.tabProject);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -929,5 +934,6 @@ namespace Shrinerain.AutoTester.GUI
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem1;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }

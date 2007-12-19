@@ -86,7 +86,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotBuildObjectException("HTML source element can not be null.");
+                throw new CannotBuildObjectException("HTML source element can not be null.");
             }
             try
             {
@@ -94,7 +94,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                throw new CanNotBuildObjectException("Can not get the list values.");
+                throw new CannotBuildObjectException("Can not get the list values.");
             }
             try
             {
@@ -110,7 +110,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotBuildObjectException("Can not get size of list box: " + e.Message);
+                throw new CannotBuildObjectException("Can not get size of list box: " + e.Message);
             }
             try
             {
@@ -142,16 +142,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (this._handle == IntPtr.Zero)
                 {
-                    throw new CanNotBuildObjectException("Can not get windows handle of list box.");
+                    throw new CannotBuildObjectException("Can not get windows handle of list box.");
                 }
             }
-            catch (CanNotBuildObjectException)
+            catch (CannotBuildObjectException)
             {
                 throw;
             }
             catch
             {
-                throw new CanNotBuildObjectException("Can not get windows handle of list box.");
+                throw new CannotBuildObjectException("Can not get windows handle of list box.");
             }
 
             try
@@ -241,7 +241,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException(e.ToString());
+                throw new CannotPerformActionException(e.ToString());
             }
 
         }

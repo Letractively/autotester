@@ -31,7 +31,7 @@ namespace Shrinerain.AutoTester.Framework
         //interface to perform actual check.
         private ITestVP _testVP;
 
-        private AutoConfig _autoConfig = AutoConfig.GetInstance();
+       // private AutoConfig _autoConfig = AutoConfig.GetInstance();
 
         #endregion
 
@@ -55,7 +55,7 @@ namespace Shrinerain.AutoTester.Framework
 
         /* bool PerformVPCheck(TestObject obj, string action, string vpProperty, object expectResult, out object actualResult)
          * return the vp result, return true if pass, false if failed. 
-         * NOTICE: Need update!!!
+         * NOTICE: Need update!!! we need consider action, and then choose the right check type.
          */
         public bool PerformVPCheck(TestObject obj, string action, string vpProperty, object expectResult, out object actualResult)
         {

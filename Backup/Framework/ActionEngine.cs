@@ -59,7 +59,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (obj == null || String.IsNullOrEmpty(action))
             {
-                throw new CanNotPerformActionException("TestObject and Action can not be null.");
+                throw new CannotPerformActionException("TestObject and Action can not be null.");
             }
 
             bool isDataNull = String.IsNullOrEmpty(data);
@@ -74,7 +74,7 @@ namespace Shrinerain.AutoTester.Framework
             {
                 if (isDataNull)
                 {
-                    throw new CanNotPerformActionException("Input data can not be empty.");
+                    throw new CannotPerformActionException("Input data can not be empty.");
                 }
 
                 _testAction.Input(obj, data);
@@ -83,7 +83,7 @@ namespace Shrinerain.AutoTester.Framework
             {
                 if (isDataNull)
                 {
-                    throw new CanNotPerformActionException("Inputkeys can not input empty data.");
+                    throw new CannotPerformActionException("Inputkeys can not input empty data.");
                 }
 
                 _testAction.InputKeys(obj, data);
@@ -126,7 +126,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             else
             {
-                throw new CanNotPerformActionException("Unsupported action: " + action);
+                throw new CannotPerformActionException("Unsupported action: " + action);
             }
 
         }

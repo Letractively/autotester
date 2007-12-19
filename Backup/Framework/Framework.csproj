@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{3554AFF5-0D9A-43A8-B048-D38C8C9F0C1D}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -23,8 +23,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRules>-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA1300;-Microsoft.Security#CA2116;-Microsoft.Security#CA2117;-Microsoft.Security#CA2105;-Microsoft.Security#CA2115;-Microsoft.Security#CA2104;-Microsoft.Security#CA2122;-Microsoft.Security#CA2114;-Microsoft.Security#CA2123;-Microsoft.Security#CA2111;-Microsoft.Security#CA2108;-Microsoft.Security#CA2107;-Microsoft.Security#CA2103;-Microsoft.Security#CA2100;-Microsoft.Security#CA2118;-Microsoft.Security#CA2109;-Microsoft.Security#CA2119;-Microsoft.Security#CA2106;-Microsoft.Security#CA2112;-Microsoft.Security#CA2110;-Microsoft.Security#CA2120;-Microsoft.Security#CA2101;-Microsoft.Security#CA2121;-Microsoft.Security#CA2126;-Microsoft.Security#CA2124</CodeAnalysisRules>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRules>-Microsoft.Globalization#CA1303;-Microsoft.Security#CA2100;-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1308;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA2101;-Microsoft.Globalization#CA1300;-Microsoft.Globalization#CA1307;-Microsoft.Globalization#CA1309;-Microsoft.Security#CA2116;-Microsoft.Security#CA2117;-Microsoft.Security#CA2105;-Microsoft.Security#CA2115;-Microsoft.Security#CA2104;-Microsoft.Security#CA2122;-Microsoft.Security#CA2114;-Microsoft.Security#CA2123;-Microsoft.Security#CA2111;-Microsoft.Security#CA2108;-Microsoft.Security#CA2107;-Microsoft.Security#CA2103;-Microsoft.Security#CA2118;-Microsoft.Security#CA2109;-Microsoft.Security#CA2119;-Microsoft.Security#CA2106;-Microsoft.Security#CA2112;-Microsoft.Security#CA2120;-Microsoft.Security#CA2121;-Microsoft.Security#CA2126;-Microsoft.Security#CA2124</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -79,6 +79,9 @@
       <Project>{C27330C3-8F5D-46C6-9601-CDD96134E717}</Project>
       <Name>Win32API</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FrameworkCD.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

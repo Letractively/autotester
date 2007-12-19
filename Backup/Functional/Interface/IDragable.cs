@@ -20,7 +20,7 @@ using System.Drawing;
 
 namespace Shrinerain.AutoTester.Function.Interface
 {
-    public interface IDragable : IVisible, IInteractive
+    public interface IDragable : IInteractive
     {
         //drag the object to a point
         void Drag(Point start, Point end);

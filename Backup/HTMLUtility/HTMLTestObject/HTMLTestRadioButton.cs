@@ -77,7 +77,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not check radio button: " + e.Message);
+                throw new CannotPerformActionException("Can not check radio button: " + e.Message);
             }
         }
 
@@ -128,7 +128,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Can not focus on radiobox: " + e.Message);
+                throw new CannotPerformActionException("Can not focus on radiobox: " + e.Message);
             }
         }
 

@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AutoTester")]
+[assembly: AssemblyTitle("AutoTesterGUI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AutoTester")]
-[assembly: AssemblyCopyright("Copyright ©  2007")]
+[assembly: AssemblyCompany("shrinerain")]
+[assembly: AssemblyProduct("AutoTesterGUI")]
+[assembly: AssemblyCopyright("Copyright © shrinerain 2007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

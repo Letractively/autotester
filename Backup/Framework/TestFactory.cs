@@ -89,7 +89,7 @@ namespace Shrinerain.AutoTester.Framework
 
             if (String.IsNullOrEmpty(_testActionDLL))
             {
-                throw new CanNotLoadDllException("Test app dll can not be null.");
+                throw new CannotLoadDllException("Test app dll can not be null.");
             }
             try
             {
@@ -98,12 +98,12 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new CanNotLoadDllException("Can not create instance of test app: " + e.Message);
+                throw new CannotLoadDllException("Can not create instance of test app: " + e.Message);
             }
 
             if (_app == null)
             {
-                throw new CanNotLoadDllException("Can not create instance of test app.");
+                throw new CannotLoadDllException("Can not create instance of test app.");
             }
 
             return _app;
@@ -117,7 +117,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (String.IsNullOrEmpty(_testBrowserDLL))
             {
-                throw new CanNotLoadDllException("Test browser dll can not be null.");
+                throw new CannotLoadDllException("Test browser dll can not be null.");
             }
 
             try
@@ -127,12 +127,12 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new CanNotLoadDllException("Can not create instance of Test Browser: " + e.Message);
+                throw new CannotLoadDllException("Can not create instance of Test Browser: " + e.Message);
             }
 
             if (_browser == null)
             {
-                throw new CanNotLoadDllException("Can not create instance of test browser.");
+                throw new CannotLoadDllException("Can not create instance of test browser.");
             }
             else
             {
@@ -149,7 +149,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (String.IsNullOrEmpty(_testObjPoolDLL))
             {
-                throw new CanNotLoadDllException("Test object dll can not be null.");
+                throw new CannotLoadDllException("Test object dll can not be null.");
             }
             try
             {
@@ -157,11 +157,11 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new CanNotLoadDllException("Can not create instance of test object pool: " + e.Message);
+                throw new CannotLoadDllException("Can not create instance of test object pool: " + e.Message);
             }
             if (_objPool == null)
             {
-                throw new CanNotLoadDllException("Can not create instance of test object pool.");
+                throw new CannotLoadDllException("Can not create instance of test object pool.");
             }
             else
             {
@@ -178,7 +178,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (String.IsNullOrEmpty(_testActionDLL))
             {
-                throw new CanNotLoadDllException("Test action dll can not be null.");
+                throw new CannotLoadDllException("Test action dll can not be null.");
             }
             try
             {
@@ -186,12 +186,12 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new CanNotLoadDllException("Can not create instance of test action: " + e.Message);
+                throw new CannotLoadDllException("Can not create instance of test action: " + e.Message);
             }
 
             if (_actionPool == null)
             {
-                throw new CanNotLoadDllException("Can not create instance of test action.");
+                throw new CannotLoadDllException("Can not create instance of test action.");
             }
             else
             {
@@ -208,7 +208,7 @@ namespace Shrinerain.AutoTester.Framework
         {
             if (String.IsNullOrEmpty(_testVPDLL))
             {
-                throw new CanNotLoadDllException("Test VP dll can not be null.");
+                throw new CannotLoadDllException("Test VP dll can not be null.");
             }
             try
             {
@@ -216,11 +216,11 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new CanNotLoadDllException("Can not create instance of test VP: " + e.Message);
+                throw new CannotLoadDllException("Can not create instance of test VP: " + e.Message);
             }
             if (_testVP == null)
             {
-                throw new CanNotLoadDllException("Can not create instance of test VP.");
+                throw new CannotLoadDllException("Can not create instance of test VP.");
             }
             else
             {
@@ -277,7 +277,7 @@ namespace Shrinerain.AutoTester.Framework
                     {
                         if (String.IsNullOrEmpty(_testBrowserDLL))
                         {
-                            throw new CanNotLoadDllException(" Test app and Test browser can not be null.");
+                            throw new CannotLoadDllException(" Test app and Test browser can not be null.");
                         }
                     }
 
@@ -316,16 +316,16 @@ namespace Shrinerain.AutoTester.Framework
 
                     if (!allFound)
                     {
-                        throw new CanNotLoadDllException("Can not load the plugin dll.");
+                        throw new CannotLoadDllException("Can not load the plugin dll.");
                     }
                 }
-                catch (CanNotLoadDllException)
+                catch (CannotLoadDllException)
                 {
                     throw;
                 }
                 catch (Exception e)
                 {
-                    throw new CanNotLoadDllException("Can not get the dll path: " + e.Message);
+                    throw new CannotLoadDllException("Can not get the dll path: " + e.Message);
                 }
             }
         }

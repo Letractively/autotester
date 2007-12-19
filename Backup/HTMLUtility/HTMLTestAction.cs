@@ -163,7 +163,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CanNotPerformActionException("Invalid regular expression: " + e.Message);
+                throw new CannotPerformActionException("Invalid regular expression: " + e.Message);
             }
 
             foreach (string value in values)
@@ -175,7 +175,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
-            throw new CanNotPerformActionException("Can not find item by regular expression: " + regExp);
+            throw new CannotPerformActionException("Can not find item by regular expression: " + regExp);
 
         }
 
@@ -184,47 +184,47 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region tree action
         public void ClickPath(object obj, string path)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void ClickIndex(object obj, int deep, int index)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void ClickNode(object obj, string node)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void DoubleClickPath(object obj, string path)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void DoubleClickIndex(object obj, int deep, int index)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void DoubleClickNode(object obj, string node)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void RightClickPath(object obj, string path)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void RightClickIndex(object obj, int deep, int index)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void RightClickNode(object obj, string node)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         #endregion
@@ -232,47 +232,47 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region table action
         public void ClickCell(object obj, int row, int col)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void ClickCellText(object obj, string value)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void ClickCellRegex(object obj, string regEx)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void DoubleClickCell(object obj, int row, int col)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void DoubleClickCellText(object obj, string value)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void DoubleClickCellRegex(object obj, string regEx)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void RightClickCell(object obj, int row, int col)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void RightClickCellText(object obj, string value)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         public void RightClickCellRegex(object obj, string regEx)
         {
-            throw new CanNotPerformActionException("The method or operation is not implemented.");
+            throw new CannotPerformActionException("The method or operation is not implemented.");
         }
 
         #endregion

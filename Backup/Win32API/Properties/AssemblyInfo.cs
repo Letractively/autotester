@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Win32API")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("tc")]
+[assembly: AssemblyCompany("shrinerain")]
 [assembly: AssemblyProduct("Win32API")]
-[assembly: AssemblyCopyright("版权所有 (C) tc 2007")]
+[assembly: AssemblyCopyright("版权所有 (C) shrinerain 2007")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

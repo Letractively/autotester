@@ -21,6 +21,7 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Interface
 {
+    [CLSCompliant(true)]
     public interface ITestBrowser
     {
         //Browser actions

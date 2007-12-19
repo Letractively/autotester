@@ -21,6 +21,7 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Interface
 {
+    [CLSCompliant(true)]
     public interface ITestObjectPool
     {
         Object GetObjectByIndex(int index);
