@@ -27,7 +27,7 @@ using Shrinerain.AutoTester.Function;
 
 namespace Shrinerain.AutoTester.Framework
 {
-    public sealed class LogEngine
+    public sealed class LogEngine : IDisposable
     {
 
         #region fields
@@ -98,6 +98,15 @@ namespace Shrinerain.AutoTester.Framework
         {
             Close();
         }
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            Close();
+        }
+
+        #endregion
 
         #endregion
 
@@ -249,6 +258,8 @@ namespace Shrinerain.AutoTester.Framework
         #endregion
 
         #endregion
+
+
 
     }
 }

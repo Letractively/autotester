@@ -51,8 +51,8 @@ namespace Shrinerain.AutoTester.Framework
         private Parser _parser;
 
         //special interface, browser and desktop application.
-        private ITestBrowser _browser;
-        private ITestApp _app;
+        private ITestBrowser _testBrowser;
+        private ITestApp _testApp;
 
 
         //other engine to perform each action.
@@ -71,7 +71,7 @@ namespace Shrinerain.AutoTester.Framework
         private bool _end = false;
 
         //flag for highlight a test object, if true, will highlight a test object.
-        private bool _isHighligh = false;
+        private bool _isHighlight = false;
 
         //currently used test steps list. 
         private int _index = 0;  //actually, the line number start from 2 in the excel file.
@@ -108,10 +108,10 @@ namespace Shrinerain.AutoTester.Framework
             }
         }
 
-        public bool IsHighligh
+        public bool IsHighlight
         {
-            get { return _isHighligh; }
-            set { _isHighligh = value; }
+            get { return _isHighlight; }
+            set { _isHighlight = value; }
         }
 
         #endregion
@@ -216,9 +216,6 @@ namespace Shrinerain.AutoTester.Framework
 
             OnNewMessage(endMsg);
 
-            //after testing finished. collect all resources.
-            GC.Collect();
-
         }
 
         #endregion
@@ -267,7 +264,7 @@ namespace Shrinerain.AutoTester.Framework
                 this._logEngine = new LogEngine();
                 this._exEngine = new ExceptionEngine();
 
-                this._isHighligh = this._autoConfig.IsHighlight;
+                this._isHighlight = this._autoConfig.IsHighlight;
 
             }
             catch (Exception e)
@@ -390,25 +387,25 @@ namespace Shrinerain.AutoTester.Framework
 
             if (item.ToUpper() == "BROWSER")
             {
-                if (_browser == null)
+                if (_testBrowser == null)
                 {
-                    _browser = (TestBrowser)_objEngine.GetTestBrowser();
+                    _testBrowser = (TestBrowser)_objEngine.GetTestBrowser();
                 }
 
                 string action = step._testAction.ToUpper();
                 if (action == "START")
                 {
-                    _browser.Start();
+                    _testBrowser.Start();
                     string url = step._testData;
                     if (!String.IsNullOrEmpty(url) && (url.ToUpper().StartsWith("HTTP://")) || url.ToUpper().StartsWith("HTTPS://"))
                     {
 
-                        _browser.Load(url);
+                        _testBrowser.Load(url);
                     }
                 }
                 else if (action == "LOAD")
                 {
-                    _browser.Load(step._testData);
+                    _testBrowser.Load(step._testData);
                 }
                 else if (action == "WAIT")
                 {
@@ -417,25 +414,25 @@ namespace Shrinerain.AutoTester.Framework
                     int seconds;
                     if (int.TryParse(data, out seconds))
                     {
-                        _browser.Wait(seconds);
+                        _testBrowser.Wait(seconds);
                     }
                     else
                     {
                         if (data == "NEXTPAGE")
                         {
-                            _browser.WaitForNextPage();
+                            _testBrowser.WaitForNextPage();
                         }
                         else if (data == "POPWINDOW")
                         {
-                            _browser.WaitForPopWindow();
+                            _testBrowser.WaitForPopWindow();
                         }
                         else if (data == "NEWWINDOW")
                         {
-                            _browser.WaitForNewWindow();
+                            _testBrowser.WaitForNewWindow();
                         }
                         else if (data == "NEWTAB")
                         {
-                            _browser.WaitForNewTab();
+                            _testBrowser.WaitForNewTab();
                         }
                         else
                         {
@@ -445,23 +442,23 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 else if (action == "MAXSIZE")
                 {
-                    _browser.MaxSize();
+                    _testBrowser.MaxSize();
                 }
                 else if (action == "CLOSE")
                 {
-                    _browser.Close();
+                    _testBrowser.Close();
                 }
                 else if (action == "REFRESH")
                 {
-                    _browser.Refresh();
+                    _testBrowser.Refresh();
                 }
                 else if (action == "FORWARD")
                 {
-                    _browser.Forward();
+                    _testBrowser.Forward();
                 }
                 else if (action == "BACK")
                 {
-                    _browser.Back();
+                    _testBrowser.Back();
                 }
                 else
                 {
@@ -482,9 +479,9 @@ namespace Shrinerain.AutoTester.Framework
 
                 TestObject obj = _objEngine.GetTestObject(step);
 
-                _browser.Active();
+                _testBrowser.Active();
 
-                if (this._isHighligh)
+                if (this._isHighlight)
                 {
                     obj.HighLight();
                 }
