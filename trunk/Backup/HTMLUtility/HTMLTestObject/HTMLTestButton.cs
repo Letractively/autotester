@@ -10,6 +10,7 @@
 *              The most important action is Click.
 *
 * History: 2007/09/04 wan,yu Init version
+*          2007/12/21 wan,yu add IHTMLButtonElement for <button> tag. 
 *
 *********************************************************************/
 
@@ -36,6 +37,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the HTML element of the object. we build HTMLTestButton based on the HTML element.
         protected IHTMLInputElement _inputElement;
+        protected IHTMLButtonElement _buttonElement;
 
         #endregion
 
@@ -63,7 +65,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                this._inputElement = (IHTMLInputElement)element;
+                if (String.Compare(element.tagName, "INPUT", true) == 0)
+                {
+                    this._inputElement = (IHTMLInputElement)element;
+                }
+                else if (String.Compare(element.tagName, "BUTTON", true) == 0)
+                {
+                    this._buttonElement = (IHTMLButtonElement)element;
+                }
             }
             catch (Exception e)
             {

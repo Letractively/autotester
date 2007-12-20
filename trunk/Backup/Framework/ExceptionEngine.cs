@@ -28,7 +28,7 @@ namespace Shrinerain.AutoTester.Framework
         #region fields
 
         //the exception happened 
-        private TestException _exception;
+        private TestException _currentException;
 
         #endregion
 
@@ -50,10 +50,7 @@ namespace Shrinerain.AutoTester.Framework
          */
         public bool HandleException(TestException e)
         {
-            if (e != null)
-            {
-                _exception = e;
-            }
+            _currentException = e;
 
             if (e is ItemNotFoundException)
             {

@@ -130,6 +130,11 @@ namespace Shrinerain.AutoTester.Framework
             return !ts1.Equals(ts2);
         }
 
+        public override int GetHashCode()
+        {
+            return this._strBuf.GetHashCode();
+        }
+
         private void UpdateBuffer()
         {
             StringBuilder tmp = new StringBuilder();
@@ -203,7 +208,7 @@ namespace Shrinerain.AutoTester.Framework
             }
         }
 
-        public int MaxDataCount
+        public static int MaxDataCount
         {
             get { return _maxDataCount; }
         }

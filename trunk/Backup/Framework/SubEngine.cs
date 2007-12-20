@@ -50,7 +50,7 @@ namespace Shrinerain.AutoTester.Framework
 
         #region properties
 
-        public Parser Parser
+        public static Parser Parser
         {
             get { return _parser; }
             set

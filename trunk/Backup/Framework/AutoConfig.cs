@@ -83,6 +83,37 @@ namespace Shrinerain.AutoTester.Framework
                 return false;
             }
         }
+
+        public static bool operator ==(PluginInfo p1, PluginInfo p2)
+        {
+            return p1.Equals(p2);
+        }
+
+        public static bool operator !=(PluginInfo p1, PluginInfo p2)
+        {
+            return !p1.Equals(p2);
+        }
+
+        public override int GetHashCode()
+        {
+            string buf = ToString();
+            return buf.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            string str = _testApp + "\t"
+                       + _testAppDLL + "\t"
+                       + _testBrowser + "\t"
+                       + _testBrowserDLL + "\t"
+                       + _testObjectPool + "\t"
+                       + _testObjectPoolDLL + "\t"
+                       + _testAction + "\t"
+                       + _testActionDLL + "\t"
+                       + _testVP + "\t"
+                       + _testVPDLL;
+            return str;
+        }
     }
 
     public sealed class AutoConfig : IDisposable
@@ -92,12 +123,12 @@ namespace Shrinerain.AutoTester.Framework
         private static AutoConfig _autoConfig;
 
         private const string _defaultFrameworkConfigFile = "Framework.config";
-        private string _frameworkConfigFile = null;
-        private string _projectConfigFile = null;
+        private string _frameworkConfigFile;
+        private string _projectConfigFile;
 
         //config files are XML file, we use XMLTextReader to read them.
-        private XmlTextReader _myFrameworkReader = null;
-        private XmlTextReader _myProjectReader = null;
+        private XmlTextReader _myFrameworkReader;
+        private XmlTextReader _myProjectReader;
 
         //project information, loaded from project config file.
         private string _projectName;
