@@ -37,9 +37,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         // from test browser, if it is false, we can just return the ohject from cache.
         private static bool _needRefresh = false;
 
-        //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter. 
+        //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter.
+        private static bool _useCache = true;
         private static string _keySplitter = "__shrinerain__";
-        private static Dictionary<String, TestObject> _testObjectCache = new Dictionary<string, TestObject>();
+        private static Dictionary<String, HTMLGuiTestObject> _testObjectCache = new Dictionary<string, HTMLGuiTestObject>();
 
         //IHTMLElement is the interface for mshtml html object. We build actual test object on IHTMLElement.
         private IHTMLElement _tempElement;
@@ -50,7 +51,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private object[] _allObjects;
 
         //current object used.
-        private TestObject _testObj;
+        private HTMLGuiTestObject _testObj;
 
         //the max time we need to wait, eg: we may wait for 120s to find a test object.
         private const int _maxWaitSeconds = 120;
@@ -69,6 +70,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _htmlTestBrowser = value;
             }
+        }
+
+        //flag to determin if we should use cache to store test object.
+        public static bool UseCache
+        {
+            get { return HTMLTestObjectPool._useCache; }
+            set { HTMLTestObjectPool._useCache = value; }
         }
 
         #endregion
@@ -111,6 +119,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByID(string id)
         {
+            //first, we will try get object from cache --- a hash table.
+            string key = id;
+            _testObj = GetObjectFromCache(key);
+
+            if (_testObj != null)
+            {
+                return _testObj;
+            }
+
             //we will try 120 seconds to find an object.
             int times = 0;
             while (times < _maxWaitSeconds)
@@ -127,6 +144,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
 
                     _testObj = BuildObjectByType(_tempElement);
+
+                    InsertObjectToCache(key, _testObj);
+
                     return _testObj;
 
 
@@ -154,6 +174,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByName(string name)
         {
+            string key = name;
+
+            _testObj = GetObjectFromCache(key);
+
+            if (_testObj != null)
+            {
+                return _testObj;
+            }
+
             //we will try 120s to find a object
             int times = 0;
             while (times < _maxWaitSeconds)
@@ -173,6 +202,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
 
                     _testObj = BuildObjectByType(_tempElement);
+
+                    InsertObjectToCache(key, _testObj);
+
                     return _testObj;
 
 
@@ -198,6 +230,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByIndex(int index)
         {
+            string key = index.ToString();
+            _testObj = GetObjectFromCache(key);
+
+            if (_testObj != null)
+            {
+                return _testObj;
+            }
+
             int times = 0;
             while (times < _maxWaitSeconds)
             {
@@ -213,6 +253,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
 
                     _testObj = BuildObjectByType(_tempElement);
+
+                    InsertObjectToCache(key, _testObj);
+
                     return _testObj;
 
 
@@ -245,6 +288,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(value))
             {
                 throw new PropertyNotFoundException("Property and Value can not be empty.");
+            }
+
+            string key = property + value;
+            _testObj = GetObjectFromCache(key);
+
+            if (_testObj != null)
+            {
+                return _testObj;
             }
 
             //if user input the property start with "." like ".id", we think it is a mistake, remove "."
@@ -292,6 +343,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             if (String.Compare(propertyValue, value, true) == 0)
                             {
                                 _testObj = BuildObjectByType(_tempElement);
+
+                                InsertObjectToCache(key, _testObj);
+
                                 return _testObj;
                             }
                         }
@@ -337,6 +391,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (typeValue == HTMLTestObjectType.Unknow)
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
+            }
+
+            string key = type + values + index;
+
+            _testObj = GetObjectFromCache(key);
+
+            if (_testObj != null)
+            {
+                return _testObj;
             }
 
             //convert the type to HTML tags.
@@ -401,6 +464,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             if (leftIndex < 0)
                             {
                                 _testObj = BuildObjectByType(_tempElement, typeValue);
+
+                                InsertObjectToCache(key, _testObj);
+
                                 return _testObj;
                             }
 
@@ -440,6 +506,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByPoint(int x, int y)
         {
+            string key = x.ToString() + " " + y.ToString();
+            _testObj = GetObjectFromCache(key);
+
+            if (_testObj != null)
+            {
+                return _testObj;
+            }
+
             int times = 0;
             while (times < _maxWaitSeconds)
             {
@@ -453,6 +527,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
 
                     _testObj = BuildObjectByType(_tempElement);
+
+                    InsertObjectToCache(key, _testObj);
+
                     return _testObj;
                 }
                 catch (CannotBuildObjectException)
@@ -956,14 +1033,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * build the actual test object by an IHTMLElement for different type.
          * It will call the actual constructor of each test object.
          */
-        private static HTMLTestObject BuildObjectByType(IHTMLElement element)
+        private static HTMLGuiTestObject BuildObjectByType(IHTMLElement element)
         {
             HTMLTestObjectType type = HTMLTestObject.GetObjectType(element);
 
             return BuildObjectByType(element, type);
         }
 
-        private static HTMLTestObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
+        private static HTMLGuiTestObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
         {
 
             HTMLGuiTestObject tmp;
@@ -994,6 +1071,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.CheckBox:
                     tmp = new HTMLTestCheckBox(element);
                     break;
+                case HTMLTestObjectType.MsgBox:
+                    tmp = new HTMLTestMsgBox();
+                    break;
+                case HTMLTestObjectType.FileDialog:
+                    tmp = new HTMLTestFileDialog();
+                    break;
                 default:
                     tmp = null;
                     break;
@@ -1001,6 +1084,89 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             return tmp;
         }
+
+        #region object cache
+
+        /* string GetKey(string info)
+         * generate key for hash table cache.
+         */
+        private string GetKey(string info)
+        {
+            try
+            {
+                StringBuilder key = new StringBuilder();
+                key.Append(this._htmlTestBrowser.GetCurrentUrl());
+                key.Append(_keySplitter);
+                key.Append(info);
+
+                return key.ToString();
+            }
+            catch
+            {
+                return null;
+            }
+
+        }
+
+
+        /*  void InsertObjectToCache(string info, HTMLGuiTestObject testObj)
+         *  insert a HTMLGuiTestObject to the cache.
+         */
+        private void InsertObjectToCache(string info, HTMLGuiTestObject testObj)
+        {
+            if (_useCache)
+            {
+                string key = GetKey(info);
+
+                if (!String.IsNullOrEmpty(key))
+                {
+                    if (_testObjectCache.ContainsKey(key))
+                    {
+                        _testObjectCache.Remove(key);
+                    }
+
+                    _testObjectCache.Add(key, testObj);
+                }
+            }
+
+        }
+
+        /* HTMLGuiTestObject GetObjectFromCache(string info)
+         * Get HTMLGuiTestObject from the cache.
+         */
+        private HTMLGuiTestObject GetObjectFromCache(string info)
+        {
+
+            if (_useCache)
+            {
+                string key = GetKey(info);
+
+                if (!String.IsNullOrEmpty(key))
+                {
+                    HTMLGuiTestObject tmpObj;
+
+                    if (_testObjectCache.TryGetValue(key, out tmpObj))
+                    {
+                        return tmpObj;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        #endregion
 
         #endregion
 
