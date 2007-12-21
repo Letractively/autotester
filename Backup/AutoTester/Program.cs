@@ -31,16 +31,16 @@ namespace Shrinerain.AutoTester
         static void Main(string[] args)
         {
             //FrameworkEXE(args);
-            FunctionTest();
-            //FrameworkTest();
+            //FunctionTest();
+            FrameworkTest();
             Console.ReadLine();
         }
 
 
         static void FrameworkTest()
         {
-            string projectConfigFile = @"E:\program\cs\AutoTester\Document\PE\PE.xml";//   @"E:\program\cs\AutoTester\Document\google.xml"; //  
-            string frameworkConfigFile = @"E:\Program\CS\AutoTester\Framework\Framework.config";
+            string projectConfigFile = @"E:\program\cs\AutoTester\Document\google.xml";//   @"E:\program\cs\AutoTester\Document\google.xml"; //  
+            string frameworkConfigFile = @"E:\Program\CS\AutoTester\SourceCode\Framework\Framework.config";
 
             TestJob myTestJob = new TestJob();
             myTestJob.ProjectConfigFile = projectConfigFile;

@@ -46,7 +46,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
-        HTMLTestFileDialog()
+        public HTMLTestFileDialog()
             : base()
         {
 
