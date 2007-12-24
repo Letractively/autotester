@@ -21,6 +21,7 @@ using mshtml;
 
 using Shrinerain.AutoTester.Function;
 using Shrinerain.AutoTester.Function.Interface;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
@@ -65,17 +66,53 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Check()
         {
-            throw new Exception("The method or operation is not implemented.");
+            try
+            {
+                if (!IsChecked())
+                {
+                    Click();
+                }
+            }
+            catch (CannotPerformActionException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not perform Check action on checkbox: " + e.Message);
+            }
+
         }
 
         public void UnCheck()
         {
-            throw new Exception("The method or operation is not implemented.");
+            try
+            {
+                if (IsChecked())
+                {
+                    Click();
+                }
+            }
+            catch (CannotPerformActionException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not perform UnCheck action on checkbox: " + e.Message);
+            }
         }
 
         public bool IsChecked()
         {
-            return false;
+            try
+            {
+                return _checkBoxElement.@checked;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not get status of checkbox: " + e.Message);
+            }
         }
 
         #endregion
@@ -84,7 +121,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Click()
         {
-            throw new Exception("The method or operation is not implemented.");
+            try
+            {
+                _actionFinished.WaitOne();
+
+                Hover();
+                MouseOp.Click();
+
+                _actionFinished.Set();
+            }
+            catch (CannotPerformActionException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not click on the checkbox: " + e.Message);
+            }
         }
 
         public void DoubleClick()

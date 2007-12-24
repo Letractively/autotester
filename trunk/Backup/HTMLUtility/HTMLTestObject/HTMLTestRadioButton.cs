@@ -49,7 +49,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestRadioButton(IHTMLElement element)
             : base(element)
         {
-
+            try
+            {
+                this._radioElement = (IHTMLInputElement)element;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not build Test Radio Button: " + e.Message);
+            }
         }
 
         #endregion
@@ -58,37 +65,55 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ICheckable Members
 
-        /* void Check()
-         * Check the radio button.
-         * 
-         */
         public void Check()
         {
             try
             {
-                _actionFinished.WaitOne();
-
-                Hover();
-
-                MouseOp.Click();
-
-                _actionFinished.Set();
-
+                if (!IsChecked())
+                {
+                    Click();
+                }
+            }
+            catch (CannotPerformActionException)
+            {
+                throw;
             }
             catch (Exception e)
             {
-                throw new CannotPerformActionException("Can not check radio button: " + e.Message);
+                throw new CannotPerformActionException("Can not perform Check action on radio button: " + e.Message);
             }
+
         }
 
         public void UnCheck()
         {
-            throw new Exception("The method or operation is not implemented.");
+            try
+            {
+                if (IsChecked())
+                {
+                    Click();
+                }
+            }
+            catch (CannotPerformActionException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not perform UnCheck action on radio button: " + e.Message);
+            }
         }
 
         public bool IsChecked()
         {
-            return false;
+            try
+            {
+                return _radioElement.@checked;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not get status of radio button: " + e.Message);
+            }
         }
 
         #endregion
@@ -97,7 +122,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Click()
         {
-            Focus();
+            try
+            {
+                _actionFinished.WaitOne();
+
+                Hover();
+                MouseOp.Click();
+
+                _actionFinished.Set();
+            }
+            catch (CannotPerformActionException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not click on the radio button: " + e.Message);
+            }
         }
 
         public void DoubleClick()

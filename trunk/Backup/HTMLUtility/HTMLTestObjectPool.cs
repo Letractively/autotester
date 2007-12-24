@@ -39,8 +39,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter.
         private static bool _useCache = true;
-        private static string _keySplitter = "__shrinerain__";
-        private static Dictionary<String, HTMLGuiTestObject> _testObjectCache = new Dictionary<string, HTMLGuiTestObject>();
+        private const string _keySplitter = "__shrinerain__";
+
+        //the default similar pencent to  find an object, if 100, that means we should make sure 100% match. 
+        private static int _similarPercent = 100;
 
         //IHTMLElement is the interface for mshtml html object. We build actual test object on IHTMLElement.
         private IHTMLElement _tempElement;
@@ -51,7 +53,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private object[] _allObjects;
 
         //current object used.
-        private HTMLGuiTestObject _testObj;
+        private TestObject _testObj;
 
         //the max time we need to wait, eg: we may wait for 120s to find a test object.
         private int _maxWaitSeconds = 120;
@@ -85,6 +87,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _maxWaitSeconds; }
             set { _maxWaitSeconds = value; }
         }
+
+        public int SimilarPercent
+        {
+            get { return HTMLTestObjectPool._similarPercent; }
+            set
+            {
+                HTMLTestObjectPool._similarPercent = value;
+                Searcher.DefaultPercent = value;
+            }
+        }
+
         #endregion
 
         #region public methods
@@ -126,10 +139,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public Object GetObjectByID(string id)
         {
             //first, we will try get object from cache --- a hash table.
-            string key = id;
-            _testObj = GetObjectFromCache(key);
+            string key = GetKey(id);
 
-            if (_testObj != null)
+            if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -151,7 +163,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     _testObj = BuildObjectByType(_tempElement);
 
-                    InsertObjectToCache(key, _testObj);
+                    ObjectCache.InsertObjectToCache(key, _testObj);
 
                     return _testObj;
 
@@ -180,11 +192,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByName(string name)
         {
-            string key = name;
-
-            _testObj = GetObjectFromCache(key);
-
-            if (_testObj != null)
+            string key = GetKey(name);
+            if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -209,7 +218,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     _testObj = BuildObjectByType(_tempElement);
 
-                    InsertObjectToCache(key, _testObj);
+                    ObjectCache.InsertObjectToCache(key, _testObj);
 
                     return _testObj;
 
@@ -236,10 +245,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByIndex(int index)
         {
-            string key = index.ToString();
-            _testObj = GetObjectFromCache(key);
+            string key = GetKey(index.ToString());
 
-            if (_testObj != null)
+            if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -260,7 +268,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     _testObj = BuildObjectByType(_tempElement);
 
-                    InsertObjectToCache(key, _testObj);
+                    ObjectCache.InsertObjectToCache(key, _testObj);
 
                     return _testObj;
 
@@ -296,10 +304,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new PropertyNotFoundException("Property and Value can not be empty.");
             }
 
-            string key = property + value;
-            _testObj = GetObjectFromCache(key);
-
-            if (_testObj != null)
+            string key = GetKey(property + value);
+            if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -346,11 +352,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         if (!String.IsNullOrEmpty(propertyValue))
                         {
                             //if equal, means we found it.
-                            if (String.Compare(propertyValue, value, true) == 0)
+                            if (Searcher.IsStringEqual(propertyValue, value, _similarPercent))
                             {
                                 _testObj = BuildObjectByType(_tempElement);
 
-                                InsertObjectToCache(key, _testObj);
+                                ObjectCache.InsertObjectToCache(key, _testObj);
 
                                 return _testObj;
                             }
@@ -389,10 +395,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("Properties and values must have the same count of items.");
             }
 
-            string key = properties.ToString() + values.ToString() + similarity.ToString() + useAll.ToString();
-            _testObj = GetObjectFromCache(key);
+            string key = GetKey(properties.ToString() + values.ToString() + similarity.ToString() + useAll.ToString());
 
-            if (_testObj != null)
+            if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -467,24 +472,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             if (!String.IsNullOrEmpty(propertyValue))
                             {
 
-                                int expectSim = 100;
+                                int expectexPercent = 100;
                                 if (similarity.Length > j)
                                 {
-                                    expectSim = similarity[j];
-                                    if (expectSim > 100)
-                                    {
-                                        expectSim = 100;
-                                    }
-                                    else if (expectSim < 1)
-                                    {
-                                        expectSim = 1;
-                                    }
+                                    expectexPercent = similarity[j];
                                 }
 
                                 //check the similarity.
-                                int sim = GetSimilarity(propertyValue, value);
-
-                                if (sim >= expectSim)
+                                if (Searcher.IsStringEqual(propertyValue, value, expectexPercent))
                                 {
                                     if (useAll && j < properties.Length - 1)
                                     {
@@ -493,7 +488,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                                     _testObj = BuildObjectByType(_tempElement);
 
-                                    InsertObjectToCache(key, _testObj);
+                                    ObjectCache.InsertObjectToCache(key, _testObj);
 
                                     return _testObj;
 
@@ -554,11 +549,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("Unknow HTML object type.");
             }
 
-            string key = type + values + index;
+            string key = GetKey(type + values + index);
 
-            _testObj = GetObjectFromCache(key);
-
-            if (_testObj != null)
+            if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -626,7 +619,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             {
                                 _testObj = BuildObjectByType(_tempElement, typeValue);
 
-                                InsertObjectToCache(key, _testObj);
+                                ObjectCache.InsertObjectToCache(key, _testObj);
 
                                 return _testObj;
                             }
@@ -667,10 +660,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByPoint(int x, int y)
         {
-            string key = x.ToString() + " " + y.ToString();
-            _testObj = GetObjectFromCache(key);
-
-            if (_testObj != null)
+            string key = GetKey(x.ToString() + " " + y.ToString());
+            if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -689,7 +680,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     _testObj = BuildObjectByType(_tempElement);
 
-                    InsertObjectToCache(key, _testObj);
+                    ObjectCache.InsertObjectToCache(key, _testObj);
 
                     return _testObj;
                 }
@@ -882,7 +873,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             string propertyValue = element.getAttribute(property, 0).ToString().Trim();
             if (!String.IsNullOrEmpty(propertyValue))
             {
-                if (String.Compare(propertyValue, value, true) == 0)
+                if (Searcher.IsStringEqual(propertyValue, value, _similarPercent))
                 {
                     return true;
                 }
@@ -917,7 +908,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 // then we can get the first item of select object.
                 string firstItem = items.Substring(pos1 + 1, pos2 - pos1 - 1);
 
-                if (String.Compare(firstItem, value, true) == 0)
+                if (Searcher.IsStringEqual(firstItem, value, _similarPercent))
                 {
                     return true;
                 }
@@ -946,10 +937,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 string imgSrc = element.getAttribute(propertyName, 0).ToString().Trim();
 
-                if (imgSrc.EndsWith(value, StringComparison.CurrentCultureIgnoreCase))
+                imgSrc = System.IO.Path.GetFileName(imgSrc);
+
+                if (Searcher.IsStringEqual(imgSrc, value, _similarPercent))
                 {
                     return true;
                 }
+
             }
             catch
             {
@@ -982,7 +976,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
                 {
                     string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
-                    if (String.Compare(actualValue, value, true) == 0)
+                    if (Searcher.IsStringEqual(actualValue, value, _similarPercent))
                     {
                         return true;
                     }
@@ -1019,7 +1013,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
                 {
                     string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
-                    if (String.Compare(actualValue, value, true) == 0)
+                    if (Searcher.IsStringEqual(actualValue, value, _similarPercent))
                     {
                         return true;
                     }
@@ -1265,176 +1259,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch
             {
                 return null;
-            }
-
-        }
-
-
-        /*  void InsertObjectToCache(string info, HTMLGuiTestObject testObj)
-         *  insert a HTMLGuiTestObject to the cache.
-         */
-        private void InsertObjectToCache(string info, HTMLGuiTestObject testObj)
-        {
-            if (_useCache)
-            {
-                string key = GetKey(info);
-
-                if (!String.IsNullOrEmpty(key))
-                {
-                    if (_testObjectCache.ContainsKey(key))
-                    {
-                        _testObjectCache.Remove(key);
-                    }
-
-                    _testObjectCache.Add(key, testObj);
-                }
-            }
-
-        }
-
-        /* HTMLGuiTestObject GetObjectFromCache(string info)
-         * Get HTMLGuiTestObject from the cache.
-         */
-        private HTMLGuiTestObject GetObjectFromCache(string info)
-        {
-
-            if (_useCache)
-            {
-                string key = GetKey(info);
-
-                if (!String.IsNullOrEmpty(key))
-                {
-                    HTMLGuiTestObject tmpObj;
-
-                    if (_testObjectCache.TryGetValue(key, out tmpObj))
-                    {
-                        return tmpObj;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        /* int GetSimilarity(string str1, string str2)
-        * return the similarity bewteen 2 string, use dynamic programming.
-        * the similarity = the count of same chracters *2 /(length of str1 + length of str2)
-        * eg: test1, test2, they have 4 same chracters, so the similarity = 4*2/(5+5)=0.8=80%
-        */
-        private static int GetSimilarity(string str1, string str2)
-        {
-            if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
-            {
-                return 0;
-            }
-            else
-            {
-                int len1 = str1.Length;
-                int len2 = str2.Length;
-
-                //dynamic programming array.
-                int[,] dpArray = new int[len1 + 1, len2 + 1];
-
-                //init array
-                for (int i = 0; i < len1; i++)
-                {
-                    for (int j = 0; j < len2; j++)
-                    {
-                        if (str1[i] == str2[j])
-                        {
-                            if (i == 0 || j == 0)
-                            {
-                                dpArray[i + 1, j + 1] = 1;
-                            }
-                            else
-                            {
-                                dpArray[i + 1, j + 1] = dpArray[i, j] + 1;
-                            }
-                        }
-                        else
-                        {
-                            dpArray[i + 1, j + 1] = 0;
-                        }
-                    }
-                }
-
-                int sameCharCount = 0;
-                int totalSameCharCount = 0;
-                int totalLen = len1 + len2;
-
-                int str1Index = len1;
-                int str2Index = len2;
-
-                //the max number's position in the array of sepcific line and row.
-                int maxStr1Index = str1Index;
-                int maxStr2Index = str2Index;
-
-                while (str1Index > 0 && str2Index > 0)
-                {
-                    sameCharCount = 0;
-
-                    for (int i = str1Index; i > 0; i--)
-                    {
-                        if (dpArray[i, str2Index] > sameCharCount)
-                        {
-                            sameCharCount = dpArray[i, str2Index];
-
-                            maxStr1Index = i;
-                            maxStr2Index = str2Index;
-                        }
-
-                        if (sameCharCount >= i)
-                        {
-                            break;
-                        }
-                    }
-
-                    for (int j = str2Index; j > 0; j--)
-                    {
-                        if (dpArray[str1Index, j] > sameCharCount)
-                        {
-                            sameCharCount = dpArray[str1Index, j];
-
-                            maxStr1Index = str1Index;
-                            maxStr2Index = j;
-                        }
-
-                        if (sameCharCount >= j)
-                        {
-                            break;
-                        }
-                    }
-
-                    totalSameCharCount += sameCharCount;
-
-                    str1Index = maxStr1Index;
-                    str2Index = maxStr2Index;
-
-                    if (sameCharCount > 0)
-                    {
-                        str1Index -= sameCharCount;
-                        str2Index -= sameCharCount;
-                    }
-                    else
-                    {
-                        str1Index--;
-                        str2Index--;
-                    }
-
-                }
-
-                float percent = (float)(totalSameCharCount * 2) / (float)totalLen;
-                return Convert.ToInt32(percent * 100);
             }
 
         }
