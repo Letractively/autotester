@@ -31,8 +31,8 @@ namespace Shrinerain.AutoTester
         static void Main(string[] args)
         {
             //FrameworkEXE(args);
-            //FunctionTest();
-            FrameworkTest();
+            FunctionTest();
+            //FrameworkTest();
             Console.ReadLine();
         }
 
@@ -105,19 +105,21 @@ namespace Shrinerain.AutoTester
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"http://127.0.0.1/AutoTester/test.htm";// @"http://192.168.17.111:9081/wps/portal/!ut/p/.scr/Login"; //@"www.google.com"; // 
+            string url = @"www.google.com"; // @"http://127.0.0.1/AutoTester/test.htm";// @"http://192.168.17.111:9081/wps/portal/!ut/p/.scr/Login"; //
             myHost.Load(url);
 
-            myHost.Wait(5);
-
-            Console.WriteLine(TestBrowser.ScrollTop);
-
+           // myHost.Wait(5);
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
+
+            HTMLTestButton btn1 = (HTMLTestButton)pool.GetObjectBySimilarProperties(new string[] { ".name" }, new string[] { "btnM" }, new int[] { 50 }, false); //pool.GetObjectByProperty(".name", "btnG");
+            btn1.Click();
+
+
             HTMLTestTextBox userName = (HTMLTestTextBox)pool.GetObjectByType("Textbox", "1", 0);
             userName.Input("wpsadmin");
-            
+
 
             HTMLTestTextBox password = (HTMLTestTextBox)pool.GetObjectByType("Textbox", "2", 0);
             password.Input("wpsadmin");
