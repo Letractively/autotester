@@ -50,7 +50,7 @@ namespace Shrinerain.AutoTester.Win32
 
             for (int i = 0; i < str.Length; i++)
             {
-               
+
 
                 if (str[i] == '{')
                 {

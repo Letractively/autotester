@@ -107,13 +107,15 @@ namespace Shrinerain.AutoTester
 
             string url = @"www.google.com"; // @"http://127.0.0.1/AutoTester/test.htm";// @"http://192.168.17.111:9081/wps/portal/!ut/p/.scr/Login"; //
             myHost.Load(url);
+            myHost.Wait(3);
 
-           // myHost.Wait(5);
+            // myHost.WaitForNextPage();
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
+            pool.SimilarPercent = 60;
 
 
-            HTMLTestButton btn1 = (HTMLTestButton)pool.GetObjectBySimilarProperties(new string[] { ".name" }, new string[] { "btnM" }, new int[] { 50 }, false); //pool.GetObjectByProperty(".name", "btnG");
+            HTMLTestButton btn1 = (HTMLTestButton)pool.GetObjectByProperty(".name", "btnM");//pool.GetObjectBySimilarProperties(new string[] { ".name" }, new string[] { "btnM" }, new int[] { 50 }, false); /
             btn1.Click();
 
 
