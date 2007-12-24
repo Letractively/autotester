@@ -54,7 +54,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private HTMLGuiTestObject _testObj;
 
         //the max time we need to wait, eg: we may wait for 120s to find a test object.
-        private const int _maxWaitSeconds = 120;
+        private int _maxWaitSeconds = 120;
+
         //very time we sleep for 3 seconds, and find again.
         private const int _interval = 3;
 
@@ -73,12 +74,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         //flag to determin if we should use cache to store test object.
-        public static bool UseCache
+        public bool UseCache
         {
             get { return HTMLTestObjectPool._useCache; }
             set { HTMLTestObjectPool._useCache = value; }
         }
 
+        public int MaxWaitSeconds
+        {
+            get { return _maxWaitSeconds; }
+            set { _maxWaitSeconds = value; }
+        }
         #endregion
 
         #region public methods
@@ -367,6 +373,161 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new ObjectNotFoundException("Can not find object by property[" + property + "] with value [" + value + "].");
         }
 
+        /* Object GetObjectBySimilarProperties(string[] properties, string[] values, int[] similarity, bool useAll)
+         * return the test object by propeties if the value match the similarity of actual value.
+         * similarity should be between 1 and 100, means 1% to 100%.
+         * NOTICE: this method is much slower than GetObjectByProperty.
+         */
+        public Object GetObjectBySimilarProperties(string[] properties, string[] values, int[] similarity, bool useAll)
+        {
+            if (properties == null || values == null)
+            {
+                throw new ObjectNotFoundException("Properties and values can not be null.");
+            }
+            else if (properties.Length != values.Length)
+            {
+                throw new ObjectNotFoundException("Properties and values must have the same count of items.");
+            }
+
+            string key = properties.ToString() + values.ToString() + similarity.ToString() + useAll.ToString();
+            _testObj = GetObjectFromCache(key);
+
+            if (_testObj != null)
+            {
+                return _testObj;
+            }
+
+            int times = 0;
+            while (times < _maxWaitSeconds)
+            {
+
+                //get all HTML objects.
+                GetAllElements();
+
+                IHTMLElementCollection tmpCollection = _allElements;
+
+                object nameObj = null;
+                object indexObj = null;
+
+                //go through all element, check it's property value.
+                for (int i = 0; i < tmpCollection.length; i++)
+                {
+                    try
+                    {
+                        nameObj = (object)i;
+                        indexObj = (object)i;
+
+                        //get element by index.
+                        _tempElement = (IHTMLElement)tmpCollection.item(nameObj, indexObj);
+
+                        if (!IsInteractive(_tempElement))
+                        {
+                            continue;
+                        }
+
+                        for (int j = 0; j < properties.Length; j++)
+                        {
+                            string property = properties[j];
+                            string value = values[j];
+
+                            //if user input the property start with "." like ".id", we think it is a mistake, remove "."
+                            while (property.StartsWith("."))
+                            {
+                                property = property.Remove(0, 1);
+                            }
+
+                            if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
+                            {
+                                if (useAll)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+
+                            //if not interactive object or the property is not found. 
+                            if (_tempElement.getAttribute(property, 0) == null || _tempElement.getAttribute(property, 0).GetType().ToString() == "System.DBNull")
+                            {
+                                if (useAll)
+                                {
+                                    break;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+
+                            //get property value
+                            string propertyValue = _tempElement.getAttribute(property, 0).ToString().Trim();
+
+                            if (!String.IsNullOrEmpty(propertyValue))
+                            {
+
+                                int expectSim = 100;
+                                if (similarity.Length > j)
+                                {
+                                    expectSim = similarity[j];
+                                    if (expectSim > 100)
+                                    {
+                                        expectSim = 100;
+                                    }
+                                    else if (expectSim < 1)
+                                    {
+                                        expectSim = 1;
+                                    }
+                                }
+
+                                //check the similarity.
+                                int sim = GetSimilarity(propertyValue, value);
+
+                                if (sim >= expectSim)
+                                {
+                                    if (useAll && j < properties.Length - 1)
+                                    {
+                                        continue;
+                                    }
+
+                                    _testObj = BuildObjectByType(_tempElement);
+
+                                    InsertObjectToCache(key, _testObj);
+
+                                    return _testObj;
+
+                                }
+                                else
+                                {
+                                    if (useAll)
+                                    {
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (CannotBuildObjectException)
+                    {
+                        throw;
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                times += _interval;
+                Thread.Sleep(_interval);
+            }
+
+            throw new ObjectNotFoundException("Can not find object by SimilarProperties: " + key);
+        }
+
         /* Object GetObjectByRegex(string property, string regex)
          * return the test object by property, the value match the regular expression
          */
@@ -552,7 +713,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * like QTP virtual object.
          * NOTICE: need update!!!
          */
-        public Object GetObjectByRect(int top, int left, int width, int height)
+        public Object GetObjectByRect(int top, int left, int width, int height, string type)
         {
             return null;
         }
@@ -1162,6 +1323,118 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else
             {
                 return null;
+            }
+        }
+
+        /* int GetSimilarity(string str1, string str2)
+        * return the similarity bewteen 2 string, use dynamic programming.
+        * the similarity = the count of same chracters *2 /(length of str1 + length of str2)
+        * eg: test1, test2, they have 4 same chracters, so the similarity = 4*2/(5+5)=0.8=80%
+        */
+        private static int GetSimilarity(string str1, string str2)
+        {
+            if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
+            {
+                return 0;
+            }
+            else
+            {
+                int len1 = str1.Length;
+                int len2 = str2.Length;
+
+                //dynamic programming array.
+                int[,] dpArray = new int[len1 + 1, len2 + 1];
+
+                //init array
+                for (int i = 0; i < len1; i++)
+                {
+                    for (int j = 0; j < len2; j++)
+                    {
+                        if (str1[i] == str2[j])
+                        {
+                            if (i == 0 || j == 0)
+                            {
+                                dpArray[i + 1, j + 1] = 1;
+                            }
+                            else
+                            {
+                                dpArray[i + 1, j + 1] = dpArray[i, j] + 1;
+                            }
+                        }
+                        else
+                        {
+                            dpArray[i + 1, j + 1] = 0;
+                        }
+                    }
+                }
+
+                int sameCharCount = 0;
+                int totalSameCharCount = 0;
+                int totalLen = len1 + len2;
+
+                int str1Index = len1;
+                int str2Index = len2;
+
+                //the max number's position in the array of sepcific line and row.
+                int maxStr1Index = str1Index;
+                int maxStr2Index = str2Index;
+
+                while (str1Index > 0 && str2Index > 0)
+                {
+                    sameCharCount = 0;
+
+                    for (int i = str1Index; i > 0; i--)
+                    {
+                        if (dpArray[i, str2Index] > sameCharCount)
+                        {
+                            sameCharCount = dpArray[i, str2Index];
+
+                            maxStr1Index = i;
+                            maxStr2Index = str2Index;
+                        }
+
+                        if (sameCharCount >= i)
+                        {
+                            break;
+                        }
+                    }
+
+                    for (int j = str2Index; j > 0; j--)
+                    {
+                        if (dpArray[str1Index, j] > sameCharCount)
+                        {
+                            sameCharCount = dpArray[str1Index, j];
+
+                            maxStr1Index = str1Index;
+                            maxStr2Index = j;
+                        }
+
+                        if (sameCharCount >= j)
+                        {
+                            break;
+                        }
+                    }
+
+                    totalSameCharCount += sameCharCount;
+
+                    str1Index = maxStr1Index;
+                    str2Index = maxStr2Index;
+
+                    if (sameCharCount > 0)
+                    {
+                        str1Index -= sameCharCount;
+                        str2Index -= sameCharCount;
+                    }
+                    else
+                    {
+                        str1Index--;
+                        str2Index--;
+                    }
+
+                }
+
+                float percent = (float)(totalSameCharCount * 2) / (float)totalLen;
+                return Convert.ToInt32(percent * 100);
             }
 
         }
