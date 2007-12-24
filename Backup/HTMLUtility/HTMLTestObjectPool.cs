@@ -10,7 +10,9 @@
 *              we can get HTML object from HTMLTestObjectPool
 *
 * History: 2007/09/04 wan,yu Init version.
-*          2007/12/21 wan,yu update for "button" object. 
+*                2007/12/21 wan,yu update for "button" object. 
+*                2007/12/24 wan,yu divide cache to Function compent
+*                2007/12/24 wan,yu add fuzzy search, we don't need to match the value 100%.
 *
 *********************************************************************/
 
