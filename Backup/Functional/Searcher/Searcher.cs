@@ -37,7 +37,7 @@ namespace Shrinerain.AutoTester.Function
             get { return Searcher._defaultPercent; }
             set
             {
-                if (value >= 0 && value <= 100)
+                if (value > 0 && value <= 100)
                 {
                     Searcher._defaultPercent = value;
                 }
@@ -72,21 +72,21 @@ namespace Shrinerain.AutoTester.Function
                 return false;
             }
 
-            if (percent > 100)
-            {
-                percent = 100;
-            }
-            else if (percent < 1)
-            {
-                percent = 1;
-            }
-
             if (String.Compare(str1, str2, true) == 0)
             {
                 return true;
             }
             else
             {
+                if (percent > 100)
+                {
+                    percent = 100;
+                }
+                else if (percent < 1)
+                {
+                    percent = 1;
+                }
+
                 if (percent == 100)
                 {
                     return String.Compare(str1, str2, true) == 0;
@@ -117,6 +117,28 @@ namespace Shrinerain.AutoTester.Function
             }
             else
             {
+                str1 = str1.Trim();
+                str2 = str2.Trim();
+
+                //if the two strings is a sentence(contains blank) not a single word, then split the sentence to words, check each word.
+                if (str1.IndexOf(" ") > 0 && str2.IndexOf(" ") > 0)
+                {
+                    string[] str1Arr = str1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    string[] str2Arr = str2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (str1Arr.Length > 1 && str1Arr.Length == str2Arr.Length)
+                    {
+                        int totalSimPercent = 0;
+
+                        for (int i = 0; i < str1Arr.Length; i++)
+                        {
+                            totalSimPercent += GetSimilarPercent(str1Arr[i], str2Arr[i]);
+                        }
+
+                        return Convert.ToInt32((float)totalSimPercent / (float)str1Arr.Length);
+                    }
+
+                }
+
                 int len1 = str1.Length;
                 int len2 = str2.Length;
 
