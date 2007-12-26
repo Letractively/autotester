@@ -53,15 +53,15 @@
     <Compile Include="Interface\IShowInfo.cs" />
     <Compile Include="Interface\IVisible.cs" />
     <Compile Include="Interface\IWindows.cs" />
+    <Compile Include="Helper\ObjectCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Searcher\ObjectCache.cs" />
-    <Compile Include="Searcher\Searcher.cs" />
     <Compile Include="CoreClass\TestApp.cs" />
     <Compile Include="CoreClass\TestBrowser.cs" />
     <Compile Include="CoreClass\TestDataPool.cs" />
     <Compile Include="CoreClass\TestException.cs" />
     <Compile Include="CoreClass\TestLog.cs" />
     <Compile Include="CoreClass\TestObject.cs" />
+    <Compile Include="Helper\Searcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="MSHTML">

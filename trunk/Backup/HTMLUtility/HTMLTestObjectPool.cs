@@ -816,9 +816,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private void GetAllElements()
         {
-            if (_needRefresh)
+            if (_needRefresh || _allElements == null)
             {
                 _needRefresh = false;
+
                 try
                 {
                     this._allElements = HTMLTestBrowser.GetAllObjects();

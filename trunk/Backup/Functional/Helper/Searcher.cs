@@ -128,13 +128,15 @@ namespace Shrinerain.AutoTester.Function
                     if (str1Arr.Length > 1 && str1Arr.Length == str2Arr.Length)
                     {
                         int totalSimPercent = 0;
+                        float weighted = 0;
 
                         for (int i = 0; i < str1Arr.Length; i++)
                         {
-                            totalSimPercent += GetSimilarPercent(str1Arr[i], str2Arr[i]);
+                            weighted = (float)(str1Arr[i].Length + str2Arr[i].Length) / (float)(str1.Length + str2.Length);
+                            totalSimPercent += Convert.ToInt32(GetSimilarPercent(str1Arr[i], str2Arr[i]) * weighted);
                         }
 
-                        return Convert.ToInt32((float)totalSimPercent / (float)str1Arr.Length);
+                        return totalSimPercent;
                     }
 
                 }

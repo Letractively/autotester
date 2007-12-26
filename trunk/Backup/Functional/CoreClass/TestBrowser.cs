@@ -12,6 +12,7 @@
 *              of Internet Explorer. 
 *
 * History: 2007/09/04 wan,yu Init version
+*          2007/12/26 wan,yu add void Find(object) method 
 *
 *********************************************************************/
 using System;
@@ -297,7 +298,8 @@ namespace Shrinerain.AutoTester.Function
 
         #region operate IE
 
-        /*  start Internet Explorer, and register the event.
+        /*  void Start()
+         *  start Internet Explorer, and register the event.
          *  if failed, throw CannotStartTestBrowserException
          */
         public virtual void Start()
@@ -315,6 +317,9 @@ namespace Shrinerain.AutoTester.Function
 
                 if (_ie != null)
                 {
+                    //max size of browser
+                    MaxSize();
+
                     //if we attached Internet Explorer successfully, register event
                     RegIEEvent();
                 }
@@ -323,15 +328,78 @@ namespace Shrinerain.AutoTester.Function
                     throw new CannotStartTestBrowserException("Can not start test browser.");
                 }
 
-                //max size of browser
-                MaxSize();
-
             }
-            catch
+            catch (CannotAttachTestBrowserException)
             {
-                throw new CannotStartTestBrowserException("Can not start Internet explorer");
+                throw;
+            }
+            catch (CannotStartTestBrowserException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotStartTestBrowserException("Can not start Internet explorer: " + e.Message);
             }
 
+        }
+
+        /*  void Find(object browserTitle)
+         *  find an instance of browser by its title.
+         *  eg: Google.com.
+         */
+        public virtual void Find(object browserTitle)
+        {
+            string title;
+            if (browserTitle == null || String.IsNullOrEmpty(browserTitle.ToString()))
+            {
+                throw new CannotAttachTestBrowserException("Browser title can not be empty.");
+            }
+            else
+            {
+                title = browserTitle.ToString();
+
+                //add standard title to the string.
+                if (!title.EndsWith(" - Windows Internet Explorer"))
+                {
+                    title += " - Windows Internet Explorer";
+                }
+            }
+
+            try
+            {
+                //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
+                Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForIEExist));
+                ieExistT.Start(title);
+
+                //wait until the internet explorer started.
+                _ieStarted.WaitOne();
+
+                if (_ie != null)
+                {
+                    //max size of browser
+                    MaxSize();
+
+                    //if we attached Internet Explorer successfully, register event
+                    RegIEEvent();
+
+                    // get size information.
+                    GetSize();
+                }
+                else
+                {
+                    throw new CannotAttachTestBrowserException("Can not find test browser.");
+                }
+
+            }
+            catch (CannotAttachTestBrowserException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotAttachTestBrowserException("Can not find test browser: " + e.Message);
+            }
         }
 
         /* void Close()
@@ -372,9 +440,9 @@ namespace Shrinerain.AutoTester.Function
                 _ie.Navigate(url, ref tmp, ref tmp, ref tmp, ref tmp);
                 Thread.Sleep(1 * 1000);
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotLoadUrlException();
+                throw new CannotLoadUrlException("Can not load url: " + url + " : " + e.Message);
             }
 
             //wait until the HTML web page is loaded successfully.
@@ -403,9 +471,9 @@ namespace Shrinerain.AutoTester.Function
                 _ie.Top = top;
                 _ie.Left = left;
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotActiveTestBrowserException("Can not move IE.");
+                throw new CannotActiveTestBrowserException("Can not move browser: " + e.Message);
             }
         }
 
@@ -427,9 +495,9 @@ namespace Shrinerain.AutoTester.Function
                 _ie.Width = width;
                 _ie.Height = height;
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotActiveTestBrowserException("Can not resize IE.");
+                throw new CannotActiveTestBrowserException("Can not resize browser: " + e.Message);
             }
         }
 
@@ -447,9 +515,9 @@ namespace Shrinerain.AutoTester.Function
             {
                 _ie.GoBack();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotNavigateException("Can not go back.");
+                throw new CannotNavigateException("Can not go back: " + e.Message);
             }
 
         }
@@ -467,9 +535,9 @@ namespace Shrinerain.AutoTester.Function
             {
                 _ie.GoForward();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotNavigateException("Can not go forward.");
+                throw new CannotNavigateException("Can not go forward: " + e.Message);
             }
         }
 
@@ -486,9 +554,9 @@ namespace Shrinerain.AutoTester.Function
             {
                 _ie.GoHome();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotNavigateException("Can not go home.");
+                throw new CannotNavigateException("Can not go home: " + e.Message);
             }
 
         }
@@ -506,9 +574,9 @@ namespace Shrinerain.AutoTester.Function
             {
                 _ie.Refresh();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotNavigateException("Can not go home.");
+                throw new CannotNavigateException("Can not refresh: " + e.Message);
             }
         }
 
@@ -853,20 +921,40 @@ namespace Shrinerain.AutoTester.Function
 
         /* void WaitFOrIEExist(int seconds.)
          * wait for 120 seconds max to detect if IE browser is started.
+         * if title is not empty, we need to check the title of browser.
          */
-        protected virtual void WaitForIEExist(int seconds)
+        protected virtual void WaitForIEExist(string title, int seconds)
         {
             if (seconds < 0)
             {
                 seconds = 0;
             }
+
             int times = 0;
             IntPtr ieHwd = IntPtr.Zero;
 
             while (times <= seconds)
             {
+                if (String.IsNullOrEmpty(title))
+                {
+                    ieHwd = GetIEMainHandle();
+                }
+                else
+                {
+                    Process[] pArr = Process.GetProcessesByName("iexplore");
 
-                ieHwd = GetIEMainHandle();
+                    foreach (Process p in pArr)
+                    {
+                        if (!String.IsNullOrEmpty(p.MainWindowTitle))
+                        {
+                            if (Searcher.IsStringEqual(p.MainWindowTitle, title, 80))
+                            {
+                                ieHwd = p.MainWindowHandle;
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 if (ieHwd != IntPtr.Zero)
                 {
@@ -889,7 +977,12 @@ namespace Shrinerain.AutoTester.Function
 
         protected virtual void WaitForIEExist()
         {
-            WaitForIEExist(this._maxWaitSeconds);
+            WaitForIEExist(null, _maxWaitSeconds);
+        }
+
+        protected virtual void WaitForIEExist(object title)
+        {
+            WaitForIEExist(title.ToString(), _maxWaitSeconds);
         }
 
 
