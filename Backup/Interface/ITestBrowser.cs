@@ -11,7 +11,8 @@
 *              Automation tester can control browser by these methods.
 *              Also, object pool must get an instance of test browser.
 *
-* History: 2007/09/04  wan,yu  Init version
+* History: 2007/09/04 wan,yu  Init version.
+*          2007/12/26 wan,yu add void Find(object) method.
 *
 *********************************************************************/
 
@@ -26,6 +27,9 @@ namespace Shrinerain.AutoTester.Interface
     {
         //Browser actions
         void Start();
+
+        //find an browser, sometimes we already start a browser, we can just use it, don't need to start a new one.
+        void Find(object mark);
         void Close();
         void Back();
         void Forward();
