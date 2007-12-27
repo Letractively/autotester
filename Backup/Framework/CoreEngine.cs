@@ -324,6 +324,10 @@ namespace Shrinerain.AutoTester.Framework
                     {
                         PerformVP(currentStep);
                     }
+                    else if (command == "IF")
+                    {
+                        PerformIf(currentStep);
+                    }
                     else if (command == "JUMP")
                     {
                         PerformJump(currentStep);
@@ -406,6 +410,10 @@ namespace Shrinerain.AutoTester.Framework
                 else if (action == "LOAD")
                 {
                     _testBrowser.Load(step._testData);
+                }
+                else if (action == "FIND")
+                {
+                    _testBrowser.Find(step._testData);
                 }
                 else if (action == "WAIT")
                 {
@@ -589,6 +597,14 @@ namespace Shrinerain.AutoTester.Framework
             }
 
             this._logEngine.WriteLog("Exit sub.");
+        }
+
+        /* void PerformIf(TestStep step)
+         * check status, decide what to do next step.
+         */
+        private void PerformIf(TestStep step)
+        {
+
         }
 
         /* void PerformJump(TestStep step)

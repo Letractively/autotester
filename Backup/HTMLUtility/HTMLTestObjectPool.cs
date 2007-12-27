@@ -63,6 +63,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //very time we sleep for 3 seconds, and find again.
         private const int _interval = 3;
 
+        //buf to store the key for cache. 
+        private static StringBuilder _keySB = new StringBuilder(128);
+
         #endregion
 
         #region Properties
@@ -140,6 +143,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByID(string id)
         {
+            if (String.IsNullOrEmpty(id))
+            {
+                throw new ObjectNotFoundException("Can not find object by id: id can not be empty.");
+            }
+
+            id = id.Trim();
+
             //first, we will try get object from cache --- a hash table.
             string key = GetKey(id);
 
@@ -194,6 +204,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByName(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ObjectNotFoundException("Can not find object by name: name can not be empty.");
+            }
+
+            name = name.Trim();
+
             string key = GetKey(name);
             if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
@@ -247,6 +264,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByIndex(int index)
         {
+            if (index < 0)
+            {
+                index = 0;
+            }
+
             string key = GetKey(index.ToString());
 
             if (ObjectCache.GetObjectFromCache(key, out _testObj))
@@ -305,6 +327,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new PropertyNotFoundException("Property and Value can not be empty.");
             }
+
+            value = value.Trim();
 
             string key = GetKey(property + value);
             if (ObjectCache.GetObjectFromCache(key, out _testObj))
@@ -434,8 +458,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                         for (int j = 0; j < properties.Length; j++)
                         {
-                            string property = properties[j];
-                            string value = values[j];
+                            string property = properties[j].Trim();
+                            string value = values[j].Trim();
 
                             //if user input the property start with "." like ".id", we think it is a mistake, remove "."
                             while (property.StartsWith("."))
@@ -519,7 +543,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 times += _interval;
-                Thread.Sleep(_interval);
+                Thread.Sleep(_interval * 1000);
             }
 
             throw new ObjectNotFoundException("Can not find object by SimilarProperties: " + key);
@@ -540,6 +564,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByType(string type, string values, int index)
         {
+            if (String.IsNullOrEmpty(type) || String.IsNullOrEmpty(values))
+            {
+                throw new ObjectNotFoundException("Can not get object by type: type and values can not be empty.");
+            }
+
+            type = type.Trim();
+            values = values.Trim();
+
+            if (index < 0)
+            {
+                index = 0;
+            }
+
             HTMLTestObjectType typeValue;
 
             //convert the TYPE text to valid internal type.
@@ -652,7 +689,45 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByAI(string value)
         {
-            return null;
+            if (String.IsNullOrEmpty(value))
+            {
+                throw new ObjectNotFoundException("Can not find object by AI: value can not be empty.");
+            }
+
+            value = value.Trim();
+
+            //we will try some normal properties to find the object.
+            string[] possibleProperties = new string[] { "value", "innerText", "innerHTML", "title" };
+
+            TestObject tmpObj;
+
+            int lastMaxSnds = _maxWaitSeconds;
+
+            foreach (string s in possibleProperties)
+            {
+                try
+                {
+                    _maxWaitSeconds = 3;
+
+                    tmpObj = (TestObject)GetObjectByProperty(s, value);
+                }
+                catch (ObjectNotFoundException)
+                {
+                    continue;
+                }
+                finally
+                {
+                    _maxWaitSeconds = lastMaxSnds;
+                }
+
+                if (tmpObj != null)
+                {
+                    _testObj = tmpObj;
+                    return _testObj;
+                }
+            }
+
+            throw new ObjectNotFoundException("Can not find object by AI.");
         }
 
 
@@ -1038,6 +1113,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private static string GetVisibleTextPropertyByTag(HTMLTestObjectType type, string tag)
         {
+            //default is ".innerText".
             string property = "innerText";
 
             string tagValue = tag.ToUpper();
@@ -1252,16 +1328,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                StringBuilder key = new StringBuilder();
-                key.Append(this._htmlTestBrowser.GetCurrentUrl());
-                key.Append(_keySplitter);
-                key.Append(info);
+                //clear last key.
+                _keySB.Remove(0, _keySB.Length);
 
-                return key.ToString();
+                _keySB.Append(this._htmlTestBrowser.GetCurrentUrl());
+                _keySB.Append(_keySplitter);
+                _keySB.Append(info);
+
+                return _keySB.ToString();
             }
             catch
             {
-                return null;
+                return info;
             }
 
         }
