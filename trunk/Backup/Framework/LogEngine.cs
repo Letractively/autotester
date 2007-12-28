@@ -23,7 +23,7 @@ using System.Threading;
 using System.IO;
 
 using Shrinerain.AutoTester.Win32;
-using Shrinerain.AutoTester.Function;
+using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.Framework
 {

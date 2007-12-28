@@ -77,9 +77,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Functional\Function.csproj">
+    <ProjectReference Include="..\Functional\Core.csproj">
       <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
-      <Name>Function</Name>
+      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Interface\Interface.csproj">
       <Project>{9B21D3ED-5BAC-4C66-BAB7-34CE7A076FFE}</Project>

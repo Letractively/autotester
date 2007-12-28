@@ -63,9 +63,9 @@
       <Project>{7AA7D5AC-69F1-41FA-A1EC-91E4CB0F9E98}</Project>
       <Name>DataUtility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Functional\Function.csproj">
+    <ProjectReference Include="..\Functional\Core.csproj">
       <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
-      <Name>Function</Name>
+      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\HTMLUtility\HtmlUtility.csproj">
       <Project>{E5761F00-01D5-4090-9277-3BE12686B808}</Project>

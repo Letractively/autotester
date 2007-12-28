@@ -24,8 +24,8 @@ using System.Diagnostics;
 using mshtml;
 using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Interface;
-using Shrinerain.AutoTester.Function;
-using Shrinerain.AutoTester.Function.Interface;
+using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {

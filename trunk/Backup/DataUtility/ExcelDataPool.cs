@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Data.OleDb;
 using Shrinerain.AutoTester.Interface;
-using Shrinerain.AutoTester.Function;
+using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.DataUtility
 {
