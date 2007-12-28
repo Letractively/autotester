@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <Project>
+  <ProjectName>Google test</ProjectName>
+  <ProjectDomain>HTML</ProjectDomain>
+  <DriveFile>D:\Autotester\google.xls</DriveFile>
+  <Log>D:\Autotester\Log\</Log>
+  <LogTemplate>D:\Autotester\Log\DefaultTmp.log</LogTemplate>
+  <ScreenPrint>D:\Autotester\Log\Screenprint\</ScreenPrint>
+  <HighLight>No</HighLight>
+ </Project>
