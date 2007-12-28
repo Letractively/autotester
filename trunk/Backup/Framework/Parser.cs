@@ -332,19 +332,19 @@ namespace Shrinerain.AutoTester.Framework
 
         #region private help methods
 
-        /* void GetTestSteps(string drivenFile)
+        /* void GetTestSteps(string DriverFile)
          * Parse main test steps, the first tab in EXCEl, store test steps in a list.
          */
-        private void GetTestSteps(string drivenFile)
+        private void GetTestSteps(string DriverFile)
         {
-            if (String.IsNullOrEmpty(drivenFile) || !File.Exists(this._driveFile))
+            if (String.IsNullOrEmpty(DriverFile) || !File.Exists(this._driveFile))
             {
-                throw new DriveNotFoundException("Can not find driven file:" + drivenFile);
+                throw new DriveNotFoundException("Can not find driven file:" + DriverFile);
             }
 
             try
             {
-                _excelReader.FileName = drivenFile;
+                _excelReader.FileName = DriverFile;
                 _excelReader.Sheet = "TestSteps";
                 _excelReader.Open();
 
@@ -374,7 +374,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new BadFormatDrivenFileException("Can not get main test steps: " + e.Message);
+                throw new BadFormatDriverFileException("Can not get main test steps: " + e.Message);
             }
             finally
             {
@@ -382,19 +382,19 @@ namespace Shrinerain.AutoTester.Framework
             }
         }
 
-        /* void GetSubSteps(string drivenFile)
+        /* void GetSubSteps(string DriverFile)
          * Parse the 2nd "Sub" tab, store subs to a list.
          */
-        private void GetSubSteps(string drivenFile)
+        private void GetSubSteps(string DriverFile)
         {
-            if (String.IsNullOrEmpty(drivenFile) || !File.Exists(this._driveFile))
+            if (String.IsNullOrEmpty(DriverFile) || !File.Exists(this._driveFile))
             {
-                throw new DriveNotFoundException("Can not find driven file:" + drivenFile);
+                throw new DriveNotFoundException("Can not find driven file:" + DriverFile);
             }
 
             try
             {
-                _excelReader.FileName = drivenFile;
+                _excelReader.FileName = DriverFile;
                 _excelReader.Sheet = "Sub";
                 _excelReader.Open();
 
@@ -416,7 +416,7 @@ namespace Shrinerain.AutoTester.Framework
 
                         if (String.IsNullOrEmpty(_excelReader.ReadByIndex(1)))
                         {
-                            throw new BadFormatDrivenFileException("Sub must contain sub name.");
+                            throw new BadFormatDriverFileException("Sub must contain sub name.");
                         }
                         else
                         {
@@ -454,7 +454,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new BadFormatDrivenFileException("Can not get test subs: " + e.Message);
+                throw new BadFormatDriverFileException("Can not get test subs: " + e.Message);
             }
             finally
             {
@@ -463,18 +463,18 @@ namespace Shrinerain.AutoTester.Framework
 
         }
 
-        /* void GetDataPool(string drivenFile)
+        /* void GetDataPool(string DriverFile)
          * Parse the 3rd tab, datapool, store datapool to a list.
          */
-        private void GetDataPool(string drivenFile)
+        private void GetDataPool(string DriverFile)
         {
-            if (String.IsNullOrEmpty(drivenFile) || !File.Exists(this._driveFile))
+            if (String.IsNullOrEmpty(DriverFile) || !File.Exists(this._driveFile))
             {
-                throw new DriveNotFoundException("Can not find driven file:" + drivenFile);
+                throw new DriveNotFoundException("Can not find driven file:" + DriverFile);
             }
             try
             {
-                _excelReader.FileName = drivenFile;
+                _excelReader.FileName = DriverFile;
                 _excelReader.Sheet = "Data";
                 _excelReader.Open();
 
@@ -523,7 +523,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new BadFormatDrivenFileException("Can not get test data pool: " + e.Message);
+                throw new BadFormatDriverFileException("Can not get test data pool: " + e.Message);
             }
             finally
             {

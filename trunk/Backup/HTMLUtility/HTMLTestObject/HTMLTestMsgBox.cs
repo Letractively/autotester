@@ -25,7 +25,6 @@ using System.Drawing;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Core.Interface;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility

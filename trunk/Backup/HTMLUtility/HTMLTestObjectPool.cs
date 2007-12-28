@@ -26,7 +26,6 @@ using System.Threading;
 using mshtml;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Core.Helper;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
@@ -45,7 +44,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private const string _keySplitter = "__shrinerain__";
 
         //the default similar pencent to  find an object, if 100, that means we should make sure 100% match. 
-        private static int _similarPercent = 100;
+        private static bool _autoAdjustSimilarPercent = true;
+        private static int _similarPercentUpBound = 100;
+        private static int _similarPercentLowBound = 70;
+        private static int _customSimilarPercent = 100;
 
         //IHTMLElement is the interface for mshtml html object. We build actual test object on IHTMLElement.
         private IHTMLElement _tempElement;
@@ -94,14 +96,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
             set { _maxWaitSeconds = value; }
         }
 
+        //set the custom similary percent.
         public int SimilarPercent
         {
-            get { return HTMLTestObjectPool._similarPercent; }
+            get { return HTMLTestObjectPool._customSimilarPercent; }
             set
             {
-                HTMLTestObjectPool._similarPercent = value;
+                _autoAdjustSimilarPercent = false;
+                HTMLTestObjectPool._customSimilarPercent = value;
                 Searcher.DefaultPercent = value;
             }
+        }
+
+        public bool AutoAdjustSimilarPercent
+        {
+            get { return HTMLTestObjectPool._autoAdjustSimilarPercent; }
+            set { HTMLTestObjectPool._autoAdjustSimilarPercent = value; }
         }
 
         #endregion
@@ -320,6 +330,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* Object GetObjectByProperty(string property, string value)
          * return the test object by expect property.
          * eg: to find a image, we can find it by it's .src property, like .src="111.jpg"
+         * we will use "Fuzzy Search" in this method
          */
         public Object GetObjectByProperty(string property, string value)
         {
@@ -341,6 +352,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             while (property.StartsWith("."))
             {
                 property = property.Remove(0, 1);
+            }
+
+            //the similar percent to find an object.
+            int simPercent;
+            if (_autoAdjustSimilarPercent)
+            {
+                simPercent = _similarPercentUpBound;
+            }
+            else
+            {
+                simPercent = _customSimilarPercent;
             }
 
             //we will try 120s to find an object.
@@ -379,7 +401,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         if (!String.IsNullOrEmpty(propertyValue))
                         {
                             //if equal, means we found it.
-                            if (Searcher.IsStringEqual(propertyValue, value, _similarPercent))
+                            if (Searcher.IsStringEqual(propertyValue, value, simPercent))
                             {
                                 _testObj = BuildObjectByType(_tempElement);
 
@@ -401,6 +423,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 times += _interval;
                 Thread.Sleep(_interval * 1000);
+
+                //while current simpercent is bigger than the low bound,we can still try lower similarity
+                if (_autoAdjustSimilarPercent && simPercent > _similarPercentLowBound)
+                {
+                    simPercent -= 10;
+                }
             }
 
             throw new ObjectNotFoundException("Can not find object by property[" + property + "] with value [" + value + "].");
@@ -562,6 +590,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          *  return the test object by an TYPE text, eg: button.
          *  values means the visible value of the control, 
          *  index means if we have more than one object, return which one, normally, it should be 0, return the first one.
+         *  we will use "Fuzzy Search" in this method
          */
         public Object GetObjectByType(string type, string values, int index)
         {
@@ -618,6 +647,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //if we can find more than one test object, we need to consider about the index.
             int leftIndex = index;
 
+            //the similar percent to find an object.
+            int simPercent;
+            if (_autoAdjustSimilarPercent)
+            {
+                simPercent = _similarPercentUpBound;
+            }
+            else
+            {
+                simPercent = _customSimilarPercent;
+            }
+
             //we will try 120s to find a object.
             int times = 0;
             while (times < _maxWaitSeconds)
@@ -649,7 +689,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             {
                                 leftIndex--;
                             }
-                            else if (CheckObjectByType(_tempElement, typeValue, values)) //check object by type
+                            else if (CheckObjectByType(_tempElement, typeValue, values, simPercent)) //check object by type
                             {
                                 leftIndex--;
                             }
@@ -679,6 +719,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //not found, sleep 3 seconds, then try again.
                 times += _interval;
                 Thread.Sleep(_interval * 1000);
+
+                //not found, we will try lower similarity
+                if (_autoAdjustSimilarPercent && simPercent > _similarPercentLowBound)
+                {
+                    simPercent -= 10;
+                }
             }
 
             throw new ObjectNotFoundException("Can not find object by type [" + type.ToString() + "] with value [" + values.ToString() + "]");
@@ -912,25 +958,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * For different object, we need to check different property.
          * eg: for a listbox, we need to check it's first item.
          */
-        private static bool CheckObjectByType(IHTMLElement element, HTMLTestObjectType type, string value)
+        private static bool CheckObjectByType(IHTMLElement element, HTMLTestObjectType type, string value, int simPercent)
         {
 
             //check special types
             if (type == HTMLTestObjectType.ListBox || type == HTMLTestObjectType.ComboBox)
             {
-                return CheckSelectObject(element, value);
+                return CheckSelectObject(element, value, simPercent);
             }
             else if (type == HTMLTestObjectType.RadioButton)
             {
-                return CheckRadioObject(element, value);
+                return CheckRadioObject(element, value, simPercent);
             }
             else if (type == HTMLTestObjectType.CheckBox)
             {
-                return CheckCheckBoxObject(element, value);
+                return CheckCheckBoxObject(element, value, simPercent);
             }
             else if (type == HTMLTestObjectType.Image)
             {
-                return CheckImageObject(element, value);
+                return CheckImageObject(element, value, simPercent);
             }
 
             string tag = element.tagName.ToString();
@@ -952,7 +998,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             string propertyValue = element.getAttribute(property, 0).ToString().Trim();
             if (!String.IsNullOrEmpty(propertyValue))
             {
-                if (Searcher.IsStringEqual(propertyValue, value, _similarPercent))
+                if (Searcher.IsStringEqual(propertyValue, value, simPercent))
                 {
                     return true;
                 }
@@ -965,7 +1011,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          *  check select object like ListBox , Combobox etc.
          *  for select object, we need to check it's first item.
          */
-        private static bool CheckSelectObject(IHTMLElement element, string value)
+        private static bool CheckSelectObject(IHTMLElement element, string value, int simPercent)
         {
 
             try
@@ -987,7 +1033,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 // then we can get the first item of select object.
                 string firstItem = items.Substring(pos1 + 1, pos2 - pos1 - 1);
 
-                if (Searcher.IsStringEqual(firstItem, value, _similarPercent))
+                if (Searcher.IsStringEqual(firstItem, value, simPercent))
                 {
                     return true;
                 }
@@ -1003,7 +1049,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* bool CheckImageObject(IHTMLElement element, string value)
          * return true if the src of img is ends witdh the input value.
          */
-        private static bool CheckImageObject(IHTMLElement element, string value)
+        private static bool CheckImageObject(IHTMLElement element, string value, int simPercent)
         {
             try
             {
@@ -1018,7 +1064,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 imgSrc = System.IO.Path.GetFileName(imgSrc);
 
-                if (Searcher.IsStringEqual(imgSrc, value, _similarPercent))
+                if (Searcher.IsStringEqual(imgSrc, value, simPercent))
                 {
                     return true;
                 }
@@ -1038,7 +1084,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * 1. check it's .value property.
          * 2. check it's label. label is the text, you click the text makes you click the radio button
          */
-        private static bool CheckRadioObject(IHTMLElement element, string value)
+        private static bool CheckRadioObject(IHTMLElement element, string value, int simPercent)
         {
             try
             {
@@ -1055,7 +1101,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
                 {
                     string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
-                    if (Searcher.IsStringEqual(actualValue, value, _similarPercent))
+                    if (Searcher.IsStringEqual(actualValue, value, simPercent))
                     {
                         return true;
                     }
@@ -1075,7 +1121,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * 1. check it's .value property.
          * 2. check it's label
          */
-        private static bool CheckCheckBoxObject(IHTMLElement element, string value)
+        private static bool CheckCheckBoxObject(IHTMLElement element, string value, int simPercent)
         {
             try
             {
@@ -1092,7 +1138,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
                 {
                     string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
-                    if (Searcher.IsStringEqual(actualValue, value, _similarPercent))
+                    if (Searcher.IsStringEqual(actualValue, value, simPercent))
                     {
                         return true;
                     }
