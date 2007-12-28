@@ -109,7 +109,7 @@ namespace Shrinerain.AutoTester
 
             string url = @"www.google.com"; // @"http://127.0.0.1/AutoTester/test.htm";// @"http://192.168.17.111:9081/wps/portal/!ut/p/.scr/Login"; //
             myHost.Load(url);
-            myHost.Wait(3);
+           // myHost.Wait(3);
 
             // myHost.WaitForNextPage();
 

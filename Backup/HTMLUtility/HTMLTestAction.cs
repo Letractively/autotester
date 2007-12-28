@@ -20,7 +20,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Core.Interface;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Win32;
 

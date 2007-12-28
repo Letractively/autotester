@@ -33,11 +33,11 @@ namespace Shrinerain.AutoTester.DataUtility
         {
             if (!File.Exists(fileName))
             {
-                throw new DrivenFileNotFoundException("Excel: " + fileName + " not found.");
+                throw new DriverFileNotFoundException("Excel: " + fileName + " not found.");
             }
             if (String.IsNullOrEmpty(sheet))
             {
-                throw new BadFormatDrivenFileException("Sheet: " + sheet + " not found.");
+                throw new BadFormatDriverFileException("Sheet: " + sheet + " not found.");
             }
             this._fileName = fileName;
             this._sheet = sheet;
@@ -95,7 +95,7 @@ namespace Shrinerain.AutoTester.DataUtility
         {
             if (String.IsNullOrEmpty(this._fileName) || !File.Exists(this._fileName) || String.IsNullOrEmpty(this._sheet))
             {
-                throw new DrivenFileNotFoundException("Excel file not found: " + this._fileName);
+                throw new DriverFileNotFoundException("Excel file not found: " + this._fileName);
             }
 
             try
@@ -110,7 +110,7 @@ namespace Shrinerain.AutoTester.DataUtility
             }
             catch (Exception e)
             {
-                throw new CannotOpenDrivenFileException("Can not open " + this._fileName + " " + e.Message);
+                throw new CannotOpenDriverFileException("Can not open " + this._fileName + " " + e.Message);
             }
 
         }
