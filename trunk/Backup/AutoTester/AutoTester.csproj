@@ -46,13 +46,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Framework\Framework.csproj">
       <Project>{3554AFF5-0D9A-43A8-B048-D38C8C9F0C1D}</Project>
       <Name>Framework</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Functional\Core.csproj">
-      <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
-      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\HTMLUtility\HtmlUtility.csproj">
       <Project>{E5761F00-01D5-4090-9277-3BE12686B808}</Project>
@@ -66,6 +66,9 @@
       <Project>{C27330C3-8F5D-46C6-9601-CDD96134E717}</Project>
       <Name>Win32API</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Readme.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
