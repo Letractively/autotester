@@ -47,6 +47,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private static bool _autoAdjustSimilarPercent = true;
         private static int _similarPercentUpBound = 100;
         private static int _similarPercentLowBound = 70;
+        private static int _similarPercentStep = 10;
         private static int _customSimilarPercent = 100;
 
         //IHTMLElement is the interface for mshtml html object. We build actual test object on IHTMLElement.
@@ -427,7 +428,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //while current simpercent is bigger than the low bound,we can still try lower similarity
                 if (_autoAdjustSimilarPercent && simPercent > _similarPercentLowBound)
                 {
-                    simPercent -= 10;
+                    simPercent -= _similarPercentStep;
                 }
             }
 
@@ -723,7 +724,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //not found, we will try lower similarity
                 if (_autoAdjustSimilarPercent && simPercent > _similarPercentLowBound)
                 {
-                    simPercent -= 10;
+                    simPercent -= _similarPercentStep;
                 }
             }
 
