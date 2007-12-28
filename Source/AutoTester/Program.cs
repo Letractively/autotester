@@ -19,7 +19,7 @@ using System.Diagnostics;
 using System.Threading;
 
 using Shrinerain.AutoTester.HTMLUtility;
-using Shrinerain.AutoTester.Function;
+using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Framework;
 using Shrinerain.AutoTester.Win32;
