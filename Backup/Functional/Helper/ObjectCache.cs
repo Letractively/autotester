@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Shrinerain.AutoTester.Function
+namespace Shrinerain.AutoTester.Core
 {
     public sealed class ObjectCache
     {

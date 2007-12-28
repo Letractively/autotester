@@ -19,7 +19,7 @@ using System.Text;
 
 using System.Drawing;
 
-namespace Shrinerain.AutoTester.Function.Interface
+namespace Shrinerain.AutoTester.Core
 {
     public interface IVisible
     {

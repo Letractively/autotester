@@ -73,14 +73,14 @@
       <FileName>TestException.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Shrinerain.AutoTester.Function.DrivenFileNotFoundException" Collapsed="true">
+  <Class Name="Shrinerain.AutoTester.Function.DriverFileNotFoundException" Collapsed="true">
     <Position X="88.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>TestException.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Shrinerain.AutoTester.Function.BadFormatDrivenFileException" Collapsed="true">
+  <Class Name="Shrinerain.AutoTester.Function.BadFormatDriverFileException" Collapsed="true">
     <Position X="97.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
