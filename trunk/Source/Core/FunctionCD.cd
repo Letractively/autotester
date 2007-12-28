@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Shrinerain.AutoTester.Function.TestApp" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="106.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAgBQigALCLUEjBMAQOiQBoABAAABggABAAQEGIEAE=</HashCode>
+      <FileName>TestApp.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestBrowser" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="108.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQDCwkQVJKBANIieogBUgUYIBhRKJAAyr6AgKVfBCMo=</HashCode>
+      <FileName>TestBrowser.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestDataPool" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="110.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYAAUAAADAIIAQAgAAgAAEAAGAAAgEGMQOAAQCBAsA=</HashCode>
+      <FileName>TestDataPool.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestException" Collapsed="true">
+    <Position X="52.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAIAEAAAAAAAAAAAAAAAAAkQAAAAACAAAAAAgAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestBrowserException" Collapsed="true">
+    <Position X="62.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestBrowserNotFoundException" Collapsed="true">
+    <Position X="57" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestAppException" Collapsed="true">
+    <Position X="22.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestConfigException" Collapsed="true">
+    <Position X="87.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.ConfigFileNotFoundException" Collapsed="true">
+    <Position X="75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.BadFormatConfigFileException" Collapsed="true">
+    <Position X="84" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.DriverFileNotFoundException" Collapsed="true">
+    <Position X="88.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.BadFormatDriverFileException" Collapsed="true">
+    <Position X="97.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.FolderNotFoundException" Collapsed="true">
+    <Position X="77.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.DllNotFoundException" Collapsed="true">
+    <Position X="81.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.InvalidDllException" Collapsed="true">
+    <Position X="90.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TemplateFileNotFoundException" Collapsed="true">
+    <Position X="95.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.InvalidTemplateException" Collapsed="true">
+    <Position X="99.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestObjectException" Collapsed="true">
+    <Position X="44.75" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.ObjectNotFoundException" Collapsed="true">
+    <Position X="52.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.ItemNotFoundException" Collapsed="true">
+    <Position X="39" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.PropertyNotFoundException" Collapsed="true">
+    <Position X="41.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TimeoutException" Collapsed="true">
+    <Position X="48" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.VerifyPointException" Collapsed="true">
+    <Position X="50.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestLogException" Collapsed="true">
+    <Position X="3" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestEngineException" Collapsed="true">
+    <Position X="7.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.UnSupportedKeywordException" Collapsed="true">
+    <Position X="7.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TestException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestLog" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="106.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>cdMl4gD8yegANgYpSUK3IAMPAVWAAlkUGDbGhQDvDCQ=</HashCode>
+      <FileName>TestLog.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Shrinerain.AutoTester.Function.TestObject" Collapsed="true">
+    <Position X="108.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIICAAAAAkAAAIABAQAQQAgAAIQAAAAAAIAQEABA=</HashCode>
+      <FileName>TestObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.ICheckable" Collapsed="true">
+    <Position X="4" Y="8.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgAACAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\ICheckable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IClickable" Collapsed="true">
+    <Position X="4" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAKAAAAAgA=</HashCode>
+      <FileName>Interface\IClickable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IDragable" Collapsed="true">
+    <Position X="1.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\IDragable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IInputable" Collapsed="true">
+    <Position X="1.5" Y="9.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>Interface\IInputable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IInteractive" Collapsed="true">
+    <Position X="4" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ADAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\IInteractive.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.ISelectable" Collapsed="true">
+    <Position X="7" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAACAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Interface\ISelectable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IShowInfo" Collapsed="true">
+    <Position X="6.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAABAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>Interface\IShowInfo.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IVisible" Collapsed="true">
+    <Position X="0.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAQAEAAAAAAA=</HashCode>
+      <FileName>Interface\IVisible.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IContainer" Collapsed="true">
+    <Position X="1.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\IContainer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IMSAA" Collapsed="true">
+    <Position X="3.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAA=</HashCode>
+      <FileName>Interface\IMSAA.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IStateChangeable" Collapsed="true">
+    <Position X="5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Interface\IStateChangeable.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IWindows" Collapsed="true">
+    <Position X="1.5" Y="11" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interface\IWindows.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

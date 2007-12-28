@@ -1,0 +1,131 @@
+﻿/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: ObjectCache.cs
+*
+* Description: ObjectCache use a hashtable to store used object.
+*              If we will use the object at 2nd time, we can get the 
+*              object from cache directly. 
+*
+* History: 2007/12/20 wan,yu Init version
+*
+*********************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Shrinerain.AutoTester.Core
+{
+    public sealed class ObjectCache
+    {
+
+        #region fields
+
+        //flag to specify if we should use cache.
+        private static bool _useCache = true;
+
+        //we use a hashtable to store our test objects.
+        private static Dictionary<String, TestObject> _testObjectCache = new Dictionary<string, TestObject>();
+
+        #endregion
+
+        #region properties
+
+        public static bool UseCache
+        {
+            get { return ObjectCache._useCache; }
+            set { ObjectCache._useCache = value; }
+        }
+
+        #endregion
+
+        #region methods
+
+        #region ctor
+
+        #endregion
+
+        #region public methods
+
+        /*  void InsertObjectToCache(string info, HTMLGuiTestObject testObj)
+         *  insert a HTMLGuiTestObject to the cache.
+         */
+        public static void InsertObjectToCache(string key, TestObject testObj)
+        {
+            if (_useCache)
+            {
+                if (!String.IsNullOrEmpty(key))
+                {
+                    if (_testObjectCache.ContainsKey(key))
+                    {
+                        _testObjectCache.Remove(key);
+                    }
+
+                    _testObjectCache.Add(key, testObj);
+                }
+            }
+        }
+
+
+        /* HTMLGuiTestObject GetObjectFromCache(string info)
+        * Get HTMLGuiTestObject from the cache.
+        */
+        public static bool GetObjectFromCache(string key, out TestObject testObj)
+        {
+            testObj = null;
+
+            if (_useCache)
+            {
+
+                if (String.IsNullOrEmpty(key))
+                {
+                    return false;
+                }
+
+                return _testObjectCache.TryGetValue(key, out testObj);
+
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /* void Remove(string key)
+         * remove object by key
+         */
+        public static void Remove(string key)
+        {
+            _testObjectCache.Remove(key);
+        }
+
+        /* static void Clear()
+         * Clear all objects.
+         */
+        public static void Clear()
+        {
+            _testObjectCache.Clear();
+        }
+
+        /* int GetObjectCount()
+         * Get the count of test objects.
+         */
+        public static int GetObjectCount()
+        {
+            return _testObjectCache.Count;
+        }
+
+        #endregion
+
+        #region private methods
+
+        #endregion
+
+        #endregion
+
+    }
+}
