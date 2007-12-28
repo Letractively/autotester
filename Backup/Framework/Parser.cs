@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Data.OleDb;
 using System.IO;
-using Shrinerain.AutoTester.Function;
+using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.DataUtility;
 
 namespace Shrinerain.AutoTester.Framework

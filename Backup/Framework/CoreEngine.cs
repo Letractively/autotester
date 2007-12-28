@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-using Shrinerain.AutoTester.Function;
+using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Interface;
 
 namespace Shrinerain.AutoTester.Framework
@@ -269,7 +269,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception e)
             {
-                throw new TestEngineException("Fatal Error: Can not load engines: " + e.Message);
+                throw new TestFrameworkException("Fatal Error: Can not load engines: " + e.Message);
             }
         }
 
@@ -483,8 +483,6 @@ namespace Shrinerain.AutoTester.Framework
             }
             else
             {
-
-
                 TestObject obj = _objEngine.GetTestObject(step);
 
                 _testBrowser.Active();
@@ -554,7 +552,7 @@ namespace Shrinerain.AutoTester.Framework
 
             if (subSteps == null || subSteps.Count < 1)
             {
-                throw new CannotLoadSubException("Sub steps must contains more than one step.");
+                throw new CannotLoadSubException("Sub steps must contains step.");
             }
 
             TestStepStatus tmp = new TestStepStatus();

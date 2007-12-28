@@ -26,7 +26,7 @@ using System.Xml;
 using System.Reflection;
 using System.Windows.Forms;
 
-using Shrinerain.AutoTester.Function;
+using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.Framework
 {

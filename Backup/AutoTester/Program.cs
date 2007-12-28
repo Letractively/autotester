@@ -19,7 +19,7 @@ using System.Diagnostics;
 using System.Threading;
 
 using Shrinerain.AutoTester.HTMLUtility;
-using Shrinerain.AutoTester.Function;
+using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Framework;
 using Shrinerain.AutoTester.Win32;
@@ -102,13 +102,13 @@ namespace Shrinerain.AutoTester
             //return;
 
             HTMLTestBrowser myHost = HTMLTestBrowser.GetInstance();
-            //myHost.Start();
-            myHost.Find("Google");
+            myHost.Start();
+            //myHost.Find("Google");
             myHost.MaxSize();
             myHost.Active();
 
             string url = @"www.google.com"; // @"http://127.0.0.1/AutoTester/test.htm";// @"http://192.168.17.111:9081/wps/portal/!ut/p/.scr/Login"; //
-            // myHost.Load(url);
+            myHost.Load(url);
             myHost.Wait(3);
 
             // myHost.WaitForNextPage();

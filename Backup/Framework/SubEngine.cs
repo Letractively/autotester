@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Shrinerain.AutoTester.Function;
+using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.Framework
 {
