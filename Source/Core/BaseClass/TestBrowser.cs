@@ -355,11 +355,7 @@ namespace Shrinerain.AutoTester.Core
                 }
 
             }
-            catch (CannotAttachTestBrowserException)
-            {
-                throw;
-            }
-            catch (CannotStartTestBrowserException)
+            catch (TestException)
             {
                 throw;
             }
@@ -418,7 +414,7 @@ namespace Shrinerain.AutoTester.Core
                 }
 
             }
-            catch (CannotAttachTestBrowserException)
+            catch (TestException)
             {
                 throw;
             }
@@ -464,7 +460,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 // navigate to the expected url.
                 _ie.Navigate(url, ref tmp, ref tmp, ref tmp, ref tmp);
-                //Thread.Sleep(1 * 1000);
             }
             catch (Exception e)
             {
