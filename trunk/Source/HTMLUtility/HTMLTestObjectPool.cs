@@ -1423,7 +1423,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 //clear last key.
-                _keySB.Remove(0, _keySB.Length);
+                if (_keySB.Length > 0)
+                {
+                    _keySB.Remove(0, _keySB.Length);
+                }
 
                 _keySB.Append(this._htmlTestBrowser.GetCurrentUrl());
                 _keySB.Append(_keySplitter);

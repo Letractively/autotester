@@ -69,7 +69,11 @@ namespace Shrinerain.AutoTester.Core
          */
         public static bool IsStringLike(string str1, string str2, int percent)
         {
-            if (string.IsNullOrEmpty(str1) || string.IsNullOrEmpty(str2))
+            if (String.IsNullOrEmpty(str1) && String.IsNullOrEmpty(str2))
+            {
+                return true;
+            }
+            else if (string.IsNullOrEmpty(str1) || string.IsNullOrEmpty(str2))
             {
                 return false;
             }
@@ -113,7 +117,12 @@ namespace Shrinerain.AutoTester.Core
         */
         private static int GetSimilarPercent(string str1, string str2)
         {
-            if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
+            //both are empty, they are the same
+            if (String.IsNullOrEmpty(str1) && String.IsNullOrEmpty(str2))
+            {
+                return 100;
+            }
+            else if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
             {
                 return 0;
             }
