@@ -81,7 +81,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                return _HTMLDom.all;
+                return (IHTMLElementCollection)_HTMLDom.body.all;
             }
             catch (Exception e)
             {

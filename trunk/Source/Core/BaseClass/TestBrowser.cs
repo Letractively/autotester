@@ -1018,7 +1018,7 @@ namespace Shrinerain.AutoTester.Core
                 {
                     if (isByTitle)
                     {
-                        if (Searcher.IsStringEqual(p.MainWindowTitle, title, simPercent))
+                        if (Searcher.IsStringLike(p.MainWindowTitle, title, simPercent))
                         {
                             browserFound = true;
                         }
@@ -1072,6 +1072,10 @@ namespace Shrinerain.AutoTester.Core
                 if (simPercent > 70)
                 {
                     simPercent -= 10;
+                }
+                else
+                {
+                    simPercent = 100;
                 }
             }
         }
@@ -1527,7 +1531,7 @@ namespace Shrinerain.AutoTester.Core
                 //this._startDownload.Set();
 
                 //this._documentLoadComplete.Reset();
-                this._documentLoadComplete.WaitOne(_maxWaitSeconds * 1000, true);
+                //this._documentLoadComplete.WaitOne(_maxWaitSeconds * 1000, true);
             }
             catch (Exception e)
             {
@@ -1567,6 +1571,10 @@ namespace Shrinerain.AutoTester.Core
                 _documentLoadComplete.Set();
 
             }
+            catch (TestException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 throw new CannotAttachTestBrowserException("Error OnDocumentLoadComplete: " + e.Message);
@@ -1583,6 +1591,10 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 GetSize();
+            }
+            catch (TestException)
+            {
+                throw;
             }
             catch (Exception e)
             {

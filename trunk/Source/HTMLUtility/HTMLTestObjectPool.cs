@@ -10,9 +10,11 @@
 *              we can get HTML object from HTMLTestObjectPool
 *
 * History: 2007/09/04 wan,yu Init version.
-*                2007/12/21 wan,yu update for "button" object. 
-*                2007/12/24 wan,yu divide cache to Function compent
-*                2007/12/24 wan,yu add fuzzy search, we don't need to match the value 100%.
+*          2007/12/21 wan,yu update for "button" object. 
+*          2007/12/24 wan,yu divide cache to Function compent
+*          2007/12/24 wan,yu add fuzzy search, we don't need to match the value 100%.
+*          2008/01/06 wan,yu update fuzzt search, we will try lower similar percent if object is not found.                
+*          2008/01/08 wan,yu add CheckButtonObject to check button object.                
 *
 *********************************************************************/
 
@@ -61,8 +63,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //current object used.
         private TestObject _testObj;
 
-        //the max time we need to wait, eg: we may wait for 120s to find a test object.
-        private int _maxWaitSeconds = 120;
+        //the max time we need to wait, eg: we may wait for 30s to find a test object.
+        private int _maxWaitSeconds = 30;
 
         //very time we sleep for 3 seconds, and find again.
         private const int _interval = 3;
@@ -170,7 +172,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return _testObj;
             }
 
-            //we will try 120 seconds to find an object.
+            //we will try 30 seconds to find an object.
             int times = 0;
             while (times < _maxWaitSeconds)
             {
@@ -229,7 +231,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return _testObj;
             }
 
-            //we will try 120s to find a object
+            //we will try 30s to find a object
             int times = 0;
             while (times < _maxWaitSeconds)
             {
@@ -402,7 +404,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         if (!String.IsNullOrEmpty(propertyValue))
                         {
                             //if equal, means we found it.
-                            if (Searcher.IsStringEqual(propertyValue, value, simPercent))
+                            if (Searcher.IsStringLike(propertyValue, value, simPercent))
                             {
                                 _testObj = BuildObjectByType(_tempElement);
 
@@ -426,9 +428,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Thread.Sleep(_interval * 1000);
 
                 //while current simpercent is bigger than the low bound,we can still try lower similarity
-                if (_autoAdjustSimilarPercent && simPercent > _similarPercentLowBound)
+                if (_autoAdjustSimilarPercent)
                 {
-                    simPercent -= _similarPercentStep;
+                    if (simPercent > _similarPercentLowBound)
+                    {
+                        simPercent -= _similarPercentStep;
+                    }
+                    else
+                    {
+                        simPercent = _similarPercentUpBound;
+                    }
                 }
             }
 
@@ -535,7 +544,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 }
 
                                 //check the similarity.
-                                if (Searcher.IsStringEqual(propertyValue, value, expectexPercent))
+                                if (Searcher.IsStringLike(propertyValue, value, expectexPercent))
                                 {
                                     if (useAll && j < properties.Length - 1)
                                     {
@@ -672,11 +681,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //check object one by one
                     for (int i = 0; i < _tmpElementCol.length; i++)
                     {
+
+                        nameObj = (object)i;
+                        indexObj = (object)i;
+
                         try
                         {
-                            nameObj = (object)i;
-                            indexObj = (object)i;
-
                             _tempElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
 
                             // check if it is a interactive object.
@@ -722,9 +732,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Thread.Sleep(_interval * 1000);
 
                 //not found, we will try lower similarity
-                if (_autoAdjustSimilarPercent && simPercent > _similarPercentLowBound)
+                if (_autoAdjustSimilarPercent)
                 {
-                    simPercent -= _similarPercentStep;
+                    if (simPercent > _similarPercentLowBound)
+                    {
+                        simPercent -= _similarPercentStep;
+                    }
+                    else
+                    {
+                        simPercent = _similarPercentUpBound;
+                    }
                 }
             }
 
@@ -973,39 +990,34 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (type == HTMLTestObjectType.CheckBox)
             {
-                return CheckCheckBoxObject(element, value, simPercent);
+                return CheckBoxObject(element, value, simPercent);
             }
             else if (type == HTMLTestObjectType.Image)
             {
                 return CheckImageObject(element, value, simPercent);
+            }
+            else if (type == HTMLTestObjectType.Button)
+            {
+                return CheckButtonObject(element, value, simPercent);
             }
 
             string tag = element.tagName.ToString();
 
             //get default property of each tag
             //eg: for a textbox, the property is .value
-            string property = GetVisibleTextPropertyByTag(type, tag);
+            string propertyName = GetVisibleTextPropertyByTag(type, tag);
 
-            if (String.IsNullOrEmpty(property))
+            if (String.IsNullOrEmpty(propertyName))
             {
                 return false;
             }
-            else if (element.getAttribute(property, 0) == null || element.getAttribute(property, 0).GetType().ToString() == "System.DBNull")
+            else if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
             {
                 return false;
             }
 
             //not special type, just need to check some property.
-            string propertyValue = element.getAttribute(property, 0).ToString().Trim();
-            if (!String.IsNullOrEmpty(propertyValue))
-            {
-                if (Searcher.IsStringEqual(propertyValue, value, simPercent))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return IsPropertyLike(element, propertyName, value, simPercent);
         }
 
         /*  bool CheckSelectObject(IHTMLElement element, string value)
@@ -1034,17 +1046,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 // then we can get the first item of select object.
                 string firstItem = items.Substring(pos1 + 1, pos2 - pos1 - 1);
 
-                if (Searcher.IsStringEqual(firstItem, value, simPercent))
-                {
-                    return true;
-                }
+                return Searcher.IsStringLike(firstItem, value, simPercent);
             }
             catch
             {
-
+                return false;
             }
 
-            return false;
         }
 
         /* bool CheckImageObject(IHTMLElement element, string value)
@@ -1065,17 +1073,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 imgSrc = System.IO.Path.GetFileName(imgSrc);
 
-                if (Searcher.IsStringEqual(imgSrc, value, simPercent))
-                {
-                    return true;
-                }
+                return Searcher.IsStringLike(imgSrc, value, simPercent);
 
             }
             catch
             {
+                return false;
             }
-
-            return false;
 
         }
 
@@ -1099,30 +1103,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     propertyName = "innerText";
                 }
 
-                if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
-                {
-                    string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
-                    if (Searcher.IsStringEqual(actualValue, value, simPercent))
-                    {
-                        return true;
-                    }
-                }
+                return IsPropertyLike(element, propertyName, value, simPercent);
             }
             catch
             {
-
+                return false;
             }
 
-            return false;
         }
 
-        /* bool CheckCheckBoxObject(IHTMLElement element, string value)
+        /* bool CheckBoxObject(IHTMLElement element, string value)
          * check check box.
          * we have 2 ways to check a check box
          * 1. check it's .value property.
          * 2. check it's label
          */
-        private static bool CheckCheckBoxObject(IHTMLElement element, string value, int simPercent)
+        private static bool CheckBoxObject(IHTMLElement element, string value, int simPercent)
         {
             try
             {
@@ -1136,22 +1132,72 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     propertyName = "innerText";
                 }
 
-                if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
-                {
-                    string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
-                    if (Searcher.IsStringEqual(actualValue, value, simPercent))
-                    {
-                        return true;
-                    }
-                }
+                return IsPropertyLike(element, propertyName, value, simPercent);
 
             }
             catch
             {
+                return false;
+            }
+        }
 
+        /* bool CheckButtonObject(IHTMLElement element, string value, int simPercent)
+         * check button object.
+         */
+        private static bool CheckButtonObject(IHTMLElement element, string value, int simPercent)
+        {
+            string buttonTypeProperty = null;
+            string propertyName = null;
+
+            if (element.tagName == "INPUT")
+            {
+                buttonTypeProperty = "type";
+                if (element.getAttribute(buttonTypeProperty, 0) != null && element.getAttribute(buttonTypeProperty, 0).GetType().ToString() != "System.DBNull")
+                {
+                    //we need to skip <input type="text"> and <input type="password">
+                    if (String.Compare(element.getAttribute(buttonTypeProperty, 0).ToString(), "text", true) == 0 || String.Compare(element.getAttribute(buttonTypeProperty, 0).ToString(), "password", true) == 0)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+
+                propertyName = "value";
+            }
+            else if (element.tagName == "IMG")
+            {
+                buttonTypeProperty = "onclick";
+
+                //if "onclick" is not found, we think it is a normal img.
+                if (element.getAttribute(buttonTypeProperty, 0) == null || element.getAttribute(buttonTypeProperty, 0).GetType().ToString() == "System.DBNull")
+                {
+                    return false;
+                }
+
+                propertyName = "src";
             }
 
-            return false;
+            return IsPropertyLike(element, propertyName, value, simPercent);
+        }
+
+        /* bool IsPropertyEqual(IHTMLElement element, string propertyName, string value, int simPercent)
+         * check if the property == value with the expected similar percent.
+         */
+        private static bool IsPropertyLike(IHTMLElement element, string propertyName, string value, int simPercent)
+        {
+            if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
+            {
+                string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
+
+                return Searcher.IsStringLike(actualValue, value, simPercent);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /*  string GetVisibleTextPropertyByTag(HTMLTestObjectType type, string tag)
@@ -1288,7 +1334,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.CheckBox;
             }
-            else if (type == "FILEDIAGLOG")
+            else if (type == "FILEDIAGLOG" || type == "FILE" || type == "FOLDER" || type == "FOLDERDIALOG")
             {
                 return HTMLTestObjectType.FileDialog;
             }
@@ -1296,11 +1342,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.ActiveX;
             }
-            else if (type == "MSGBOX" || type == "MESSAGE" || type == "POPWINDOW" || type == "POPBOX")
+            else if (type == "MSGBOX" || type == "MSG" || type == "MESSAGE" || type == "MESSAGEBOX" || type == "POPWINDOW" || type == "POPBOX")
             {
                 return HTMLTestObjectType.MsgBox;
             }
-            else if (type == "TABLE")
+            else if (type == "TABLE" || type == "TBL")
             {
                 return HTMLTestObjectType.Table;
             }

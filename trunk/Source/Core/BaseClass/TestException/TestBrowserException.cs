@@ -37,7 +37,7 @@ namespace Shrinerain.AutoTester.Core
     public class TestBrowserNotFoundException : TestBrowserException
     {
         public TestBrowserNotFoundException()
-            : this("Can not find Internet Explorer.")
+            : this("Can not find test browser.")
         {
 
         }
@@ -50,8 +50,9 @@ namespace Shrinerain.AutoTester.Core
     public class CannotStartTestBrowserException : TestBrowserException
     {
         public CannotStartTestBrowserException()
-            : this("Can not start Internet Explorer.")
+            : this("Can not start test browser.")
         {
+
         }
         public CannotStartTestBrowserException(string message)
             : base(message)
@@ -62,7 +63,7 @@ namespace Shrinerain.AutoTester.Core
     public class CannotAttachTestBrowserException : TestBrowserException
     {
         public CannotAttachTestBrowserException()
-            : this("Can not hook Internet Explorer.")
+            : this("Can not hook test browser.")
         {
         }
         public CannotAttachTestBrowserException(string message)
@@ -74,7 +75,7 @@ namespace Shrinerain.AutoTester.Core
     public class CannotActiveTestBrowserException : TestBrowserException
     {
         public CannotActiveTestBrowserException()
-            : this("Can not active Internet Explorer.")
+            : this("Can not active test browser.")
         {
 
         }
@@ -84,6 +85,22 @@ namespace Shrinerain.AutoTester.Core
 
         }
     };
+
+    public class CannotStopTestBrowserException : TestBrowserException
+    {
+        public CannotStopTestBrowserException()
+            : this("Can not stop test browser.")
+        {
+
+        }
+
+        public CannotStopTestBrowserException(string message)
+            : base(message)
+        {
+
+        }
+    }
+
     public class CannotLoadUrlException : TestBrowserException
     {
         public CannotLoadUrlException()

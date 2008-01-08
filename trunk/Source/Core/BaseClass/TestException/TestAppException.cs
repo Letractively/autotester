@@ -23,14 +23,14 @@ namespace Shrinerain.AutoTester.Core
     public class TestAppException : TestException
     {
         public TestAppException()
-            : base()
+            : this("Error of application under test.")
         {
 
         }
-        public TestAppException(string appName)
-            : this(appName, "Test application exception.")
+        public TestAppException(string message)
+            : base(message)
         {
-            this._app = appName;
+
         }
 
         public TestAppException(string appName, string message)
