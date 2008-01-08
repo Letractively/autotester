@@ -10,6 +10,8 @@
 * Description: this class defines some helper methods for search an object.
 *
 * History: 2007/12/24 wan,yu Init version
+*          2008/01/08 wan,yu bug fix for GetSimilarPercent, may enter dead loop when
+*                            two strings are 100% different.                 
 *
 *********************************************************************/
 
@@ -59,13 +61,13 @@ namespace Shrinerain.AutoTester.Core
          */
         public static bool IsStringEqual(string str1, string str2)
         {
-            return IsStringEqual(str1, str2, _defaultPercent);
+            return IsStringLike(str1, str2, _defaultPercent);
         }
 
         /* static bool IsStringEqual(string str1, string str2, int percent)
          * return true if the two string match the percent of similarity.
          */
-        public static bool IsStringEqual(string str1, string str2, int percent)
+        public static bool IsStringLike(string str1, string str2, int percent)
         {
             if (string.IsNullOrEmpty(str1) || string.IsNullOrEmpty(str2))
             {
@@ -219,13 +221,10 @@ namespace Shrinerain.AutoTester.Core
 
                     totalSameCharCount += sameCharCount;
 
-                    str1Index = maxStr1Index;
-                    str2Index = maxStr2Index;
-
                     if (sameCharCount > 0)
                     {
-                        str1Index -= sameCharCount;
-                        str2Index -= sameCharCount;
+                        str1Index = maxStr1Index - sameCharCount;
+                        str2Index = maxStr2Index - sameCharCount;
                     }
                     else
                     {

@@ -66,10 +66,10 @@ namespace Shrinerain.AutoTester.Interface
         int GetThreadCount();
 
         //get performance information
-        int GetCPUTime();
-        int GetMemory();
-        int GetIORead();
-        int GetIOWrite();
+        long GetCPUTime(); //return the total CPU time, in Millisecond.
+        long GetMemory();  //return the physical memory, in byte.
+        long GetIORead();  //return the IO read, in byte.
+        long GetIOWrite(); //return the IO write, in byte.
 
         //other information
         string GetAppName();

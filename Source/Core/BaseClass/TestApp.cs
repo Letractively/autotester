@@ -80,6 +80,15 @@ namespace Shrinerain.AutoTester.Core
             set { _appPath = value; }
         }
 
+        //return the handle of the application.
+        public IntPtr Handle
+        {
+            get
+            {
+                return this._appProcess.MainWindowHandle;
+            }
+        }
+
         #endregion
 
         #region methods
@@ -107,7 +116,7 @@ namespace Shrinerain.AutoTester.Core
             }
 
             string arg = "";
-            if (parameters != null)
+            if (parameters != null && parameters.Length > 0)
             {
                 foreach (string i in parameters)
                 {
@@ -149,17 +158,28 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual void Move(int x, int y)
         {
-            throw new NotImplementedException();
+            //Win32API
         }
 
         public virtual void Resize(int left, int top, int width, int height)
         {
-            throw new NotImplementedException();
+            try
+            {
+                Win32API.SetWindowPos(this.Handle, IntPtr.Zero, left, top, width, height, 0);
+            }
+            catch (Exception e)
+            {
+                throw new CannotResizeAppException("Can not resize application to " + left.ToString() + "," + top.ToString() + "," + width.ToString() + "," + height.ToString() + ": " + e.Message);
+            }
+
         }
 
         public virtual void Max()
         {
-            throw new NotImplementedException();
+            //try
+            //{
+
+            //}
         }
 
         public virtual void Min()
@@ -183,7 +203,16 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual bool IsActive()
         {
-            throw new NotImplementedException();
+            try
+            {
+                IntPtr currentActiveWindow = Win32API.GetActiveWindow();
+
+                return currentActiveWindow == this.Handle ? true : false;
+            }
+            catch (Exception e)
+            {
+                throw new CannotGetAppStatusException("Can not determine if test app is active.");
+            }
         }
 
         public virtual bool IsTopMost()
@@ -270,7 +299,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual int GetProcessID()
         {
-            throw new NotImplementedException();
+            return this._appProcess.Id;
         }
 
         public virtual Process GetProcess()
@@ -280,31 +309,31 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual int GetThreadCount()
         {
-            throw new NotImplementedException();
+            return this._appProcess.Threads.Count;
         }
 
         #endregion
 
         #region performance information
 
-        public virtual int GetCPUTime()
+        public virtual long GetCPUTime()
         {
-            throw new NotImplementedException();
+            return this._appProcess.TotalProcessorTime.Milliseconds;
         }
 
-        public virtual int GetMemory()
+        public virtual long GetMemory()
         {
-            throw new NotImplementedException();
+            return this._appProcess.WorkingSet64;
         }
 
-        public virtual int GetIORead()
+        public virtual long GetIORead()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
-        public virtual int GetIOWrite()
+        public virtual long GetIOWrite()
         {
-            throw new NotImplementedException();
+            return 0;
         }
 
         #endregion
@@ -313,7 +342,15 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual string GetAppName()
         {
-            return this._appName;
+            if (!String.IsNullOrEmpty(this._appName))
+            {
+                return this._appName;
+            }
+            else
+            {
+                return this._appProcess.ProcessName;
+            }
+
         }
 
         public virtual string GetVersion()
@@ -342,6 +379,21 @@ namespace Shrinerain.AutoTester.Core
         protected virtual void GetSize()
         {
 
+            Win32API.Rect rect = new Win32API.Rect();
+
+            try
+            {
+                Win32API.GetWindowRect(this.Handle, ref rect);
+
+                this._left = rect.left;
+                this._top = rect.top;
+                this._width = rect.Width;
+                this._height = rect.Height;
+            }
+            catch (Exception e)
+            {
+                throw new CannotGetAppInfoException("Can not get size of test app: " + e.Message);
+            }
         }
 
 
