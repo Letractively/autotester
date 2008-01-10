@@ -27,12 +27,32 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.Framework
 {
+    public enum TestAppType : int
+    {
+        Unknow = 0,
+        Web = 1,
+        Desktop = 2
+    }
+
     public sealed class TestFactory
     {
 
         #region fields
         //assembly used to load dll.
         private static Assembly _assembly;
+
+        //flag to indicate desktop application or browser
+        // 0 means unknow, 1 means web, 2 means desktop application
+        private static int _appType = 0;
+
+        //return the application type
+        public static TestAppType AppType
+        {
+            get
+            {
+                return (TestAppType)TestFactory._appType;
+            }
+        }
 
         //interface 
         private static ITestBrowser _browser;
@@ -86,6 +106,11 @@ namespace Shrinerain.AutoTester.Framework
          */
         public static ITestApp CreateTestApp()
         {
+            //if it is not desktop application, return null.
+            if (_appType != 2)
+            {
+                return null;
+            }
 
             if (String.IsNullOrEmpty(_testActionDLL))
             {
@@ -115,6 +140,12 @@ namespace Shrinerain.AutoTester.Framework
          */
         public static ITestBrowser CreateTestBrowser()
         {
+            // if it is not web application, return null.
+            if (_appType != 1)
+            {
+                return null;
+            }
+
             if (String.IsNullOrEmpty(_testBrowserDLL))
             {
                 throw new CannotLoadDllException("Test browser dll can not be null.");
@@ -266,17 +297,23 @@ namespace Shrinerain.AutoTester.Framework
                     _testVPDLL = tmp._testVPDLL;
                     _testVPClassName = tmp._testVP;
 
+                    //default , we think it is web application.
+                    _appType = 1;
+
                     bool isApp = false;
 
                     //if the <TestApp> text in config file is not empty, we think it is desktop application.
                     if (!String.IsNullOrEmpty(_testAppDLL))
                     {
+                        _appType = 2;
                         isApp = true;
                     }
                     else
                     {
                         if (String.IsNullOrEmpty(_testBrowserDLL))
                         {
+                            _appType = 0;
+
                             throw new CannotLoadDllException(" Test app and Test browser can not be null.");
                         }
                     }
@@ -316,16 +353,16 @@ namespace Shrinerain.AutoTester.Framework
 
                     if (!allFound)
                     {
-                        throw new CannotLoadDllException("Can not load the plugin dll.");
+                        throw new CannotLoadDllException("Can not find the plugin dll.");
                     }
                 }
-                catch (CannotLoadDllException)
+                catch (TestException)
                 {
                     throw;
                 }
                 catch (Exception e)
                 {
-                    throw new CannotLoadDllException("Can not get the dll path: " + e.Message);
+                    throw new CannotLoadDllException("Can not find the dll path: " + e.Message);
                 }
             }
         }

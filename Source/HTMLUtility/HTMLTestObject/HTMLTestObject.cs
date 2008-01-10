@@ -92,6 +92,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         protected HTMLTestObject(IHTMLElement element)
+            : base()
         {
             if (element == null)
             {
@@ -255,7 +256,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (tag == "SELECT")
             {
-                if (element.getAttribute("size", 0).GetType().ToString() == "System.DBNull")
+                if (element.getAttribute("size", 0) == null || element.getAttribute("size", 0).GetType().ToString() == "System.DBNull")
                 {
                     return HTMLTestObjectType.ComboBox;
                 }
@@ -289,7 +290,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 propertyName = propertyName.Replace(".", "");
 
-                if (this._sourceElement.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+                if (this._sourceElement.getAttribute(propertyName, 0) == null || this._sourceElement.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
                 {
                     throw new PropertyNotFoundException("Property " + propertyName + " not found.");
                 }
@@ -304,6 +305,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new PropertyNotFoundException("Property " + propertyName + " not found.");
             }
         }
+
+
         public override bool SetPropertyByName(string propertyName, object value)
         {
             try
@@ -323,7 +326,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected virtual bool IsVisible(IHTMLElement element)
         {
-            if (element.getAttribute("visibility", 0).GetType().ToString() == "System.DBNull")
+            if (element.getAttribute("visibility", 0) == null || element.getAttribute("visibility", 0).GetType().ToString() == "System.DBNull")
             {
                 return true;
             }
@@ -344,7 +347,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected virtual bool IsEnable(IHTMLElement element)
         {
-            if (element.getAttribute("enabled", 0).GetType().ToString() == "System.DBNull")
+            if (element.getAttribute("enabled", 0) == null || element.getAttribute("enabled", 0).GetType().ToString() == "System.DBNull")
             {
                 return true;
             }

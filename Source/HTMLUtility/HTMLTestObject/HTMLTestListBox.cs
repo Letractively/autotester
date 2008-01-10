@@ -10,6 +10,7 @@
 *              the important actions include "Select" and "SelectByIndex"
 *
 * History: 2007/09/04 wan,yu Init version
+*          2008/01/10 wan,yu update, change _htmlSelectClass to _htmlSelectElement
 *
 *********************************************************************/
 
@@ -46,7 +47,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //handle for listbox, listbox is a windows control
         protected IntPtr _handle;
 
-        protected HTMLSelectElementClass _htmlSelectClass;
+        protected IHTMLSelectElement _htmlSelectElement;
+        //protected HTMLSelectElementClass _htmlSelectClass;
 
         #endregion
 
@@ -81,19 +83,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                _htmlSelectClass = (HTMLSelectElementClass)element;
+                _htmlSelectElement = (IHTMLSelectElement)element;
+                //_htmlSelectClass = (HTMLSelectElementClass)element;
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotBuildObjectException("HTML source element can not be null.");
+                throw new CannotBuildObjectException("HTML source element can not be null: " + e.Message);
             }
             try
             {
                 this._allValues = this.GetAllValues();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not get the list values.");
+                throw new CannotBuildObjectException("Can not get the list values: " + e.Message);
             }
             try
             {
@@ -148,9 +151,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not get windows handle of list box.");
+                throw new CannotBuildObjectException("Can not get windows handle of list box: " + e.Message);
             }
 
             try
@@ -250,14 +253,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public String[] GetAllValues()
         {
-            string[] values = new string[_htmlSelectClass.length];
+
+            string[] values = new string[_htmlSelectElement.length];
+
+            // 2008/01/10 wan,yu update change HTMLOptionElementClass to IHTMLOptionElement
+            IHTMLOptionElement optionElement;
+            //HTMLOptionElementClass optionClass;
+
             try
             {
-                HTMLOptionElementClass optionClass;
-                for (int i = 0; i < _htmlSelectClass.length; i++)
+                for (int i = 0; i < _htmlSelectElement.length; i++)
                 {
-                    optionClass = (HTMLOptionElementClass)_htmlSelectClass.item(i, i);
-                    values[i] = optionClass.innerText;
+                    optionElement = (IHTMLOptionElement)_htmlSelectElement.item(i, i);
+                    values[i] = optionElement.text;
                 }
                 return values;
             }
@@ -335,7 +343,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual int GetSelectedIndex()
         {
-            return _htmlSelectClass.selectedIndex;
+            return _htmlSelectElement.selectedIndex;
         }
 
         /* string GetSelectedValue()
@@ -350,7 +358,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                return this._allValues[_htmlSelectClass.selectedIndex];
+                return this._allValues[_htmlSelectElement.selectedIndex];
             }
             catch
             {

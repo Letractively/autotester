@@ -10,7 +10,9 @@
 *              It will calculate the screen position for GUI object. 
 *
 * History: 2007/09/04 wan,yu Init version
-*
+*          2008/01/10 wan,yu update, move the calculate logic of center point
+*                            from GetCenterPoint to  GetRectOnScreen
+* 
 *********************************************************************/
 
 
@@ -35,6 +37,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the rectangle on screen of the object.
         protected Rectangle _rect;
+
+        //the center point of the object, this is very useful for GUI testing.
+        //lot's of our actions we need move the mouse to the center point.
+        protected Point _centerPoint;
 
         //sync event to ensure action is finished before next step.
         protected static AutoResetEvent _actionFinished = new AutoResetEvent(true);
@@ -113,12 +119,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual Point GetCenterPoint()
         {
-            Point tmp = new Point();
-
-            tmp.X = Rect.Left + Rect.Width / 2;
-            tmp.Y = Rect.Top + Rect.Height / 2;
-
-            return tmp;
+            return _centerPoint;
         }
 
 
@@ -134,7 +135,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int width = _sourceElement.offsetWidth;
             int height = _sourceElement.offsetHeight;
 
+            //if width or height is 0, error.
+            if (width <= 0 || height <= 0)
+            {
+                throw new CannotGetObjectPositionException("width and height of object can not be 0.");
+            }
+
             //find parent object, calculate 
+            //the offsetTop/offsetLeft... is the distance between current object and it's parent object.
+            //so we need a loop to get the actual position on the screen.
             IHTMLElement parent = _sourceElement.offsetParent;
             while (parent != null)
             {
@@ -149,6 +158,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             top -= HTMLTestBrowser.ScrollTop;
             left -= HTMLTestBrowser.ScrollLeft;
+
+            // we will calculate the center point of this object.
+            CalCenterPoint(left, top, width, height);
 
             Rect = new Rectangle(left, top, width, height);
 
@@ -176,14 +188,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 ScrollIntoView(false);
 
                 //get the center point of the object, and move mouse to it.
-                Point tmp = this.GetCenterPoint();
-                MouseOp.MoveTo(tmp.X, tmp.Y);
+                MouseOp.MoveTo(_centerPoint.X, _centerPoint.Y);
 
-                Thread.Sleep(300 * 1);
+                //after move mouse to the control, wait for 0.2s, make it looks like human action.
+                Thread.Sleep(200 * 1);
             }
-            catch
+            catch (TestException)
             {
-                throw new CannotPerformActionException("Can not perform Hover action.");
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not perform Hover action:" + e.Message);
             }
         }
 
@@ -199,7 +215,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 ThreadPool.QueueUserWorkItem(HighLightRectCallback, null);
 
             }
-            catch (CannotHighlightObjectException)
+            catch (TestException)
             {
                 throw;
             }
@@ -289,9 +305,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 Win32API.ReleaseDC(handle, hDC);
 
-                Thread.Sleep(500 * 1); // the red rect last for 0.2 seconds.
+                // the red rect last for 0.5 seconds.
+                Thread.Sleep(500 * 1);
 
-                Win32API.InvalidateRect(handle, IntPtr.Zero, 1 /* TRUE */);
+                //refresh the window
+                Win32API.InvalidateRect(handle, IntPtr.Zero, 1);
                 Win32API.UpdateWindow(handle);
                 Win32API.RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, Win32API.RDW_FRAME | Win32API.RDW_INVALIDATE | Win32API.RDW_UPDATENOW | Win32API.RDW_ALLCHILDREN);
 
@@ -299,8 +317,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CannotHighlightObjectException("Can not high light object: "+e.Message);
+                throw new CannotHighlightObjectException("Can not high light object: " + e.Message);
             }
+        }
+
+        /* CalCenterPoint(int top, int left, int width, int height)
+         * get the center point of the control
+         */
+        protected virtual Point CalCenterPoint(int left, int top, int width, int height)
+        {
+            _centerPoint.X = left + width / 2;
+            _centerPoint.Y = top + height / 2;
+
+            return _centerPoint;
         }
 
         #endregion

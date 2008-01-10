@@ -211,7 +211,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception e)
             {
-                throw new CannotGetAppStatusException("Can not determine if test app is active.");
+                throw new CannotGetAppStatusException("Can not determine if test app is active: " + e.Message);
             }
         }
 

@@ -10,6 +10,8 @@
 *              The important actions include "Download" and "Click". 
 *
 * History: 2007/09/04 wan,yu Init version
+*          2008/01/10 wan,yu update, when downloading an image, we don't
+*                                    have to wait for this action. 
 *
 *********************************************************************/
 
@@ -65,7 +67,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not get SRC of image: " + e.Message);
+                throw new CannotBuildObjectException("Can not get the source of image: " + e.Message);
             }
         }
 
@@ -87,13 +89,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 client.DownloadFileAsync(new System.Uri(this._src), des);
 
-                _actionFinished.WaitOne();
-
+                // _actionFinished.WaitOne();
 
             }
             catch (Exception e)
             {
-                _actionFinished.Set();
+                //_actionFinished.Set();
 
                 throw new CannotPerformActionException("Can not download image: " + e.Message);
             }
@@ -148,12 +149,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public object GetDefaultAction()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return "Click";
         }
 
         public void PerformDefaultAction(object para)
         {
-            throw new Exception("The method or operation is not implemented.");
+            Click();
         }
 
         #endregion
@@ -162,6 +163,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
+        /* private void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+         * callback function when the image is downloaded.
+         */
         private void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             _actionFinished.Set();

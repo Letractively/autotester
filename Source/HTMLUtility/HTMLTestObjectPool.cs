@@ -1251,8 +1251,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                   || tag == "TH"
                   || tag == "SCRIPT"
                   || tag == "FORM"
-                  || tag == "TITLE"
-                  || tag == "HEAD"
                     )
             {
                 return false;
@@ -1302,39 +1300,39 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             type = type.ToUpper().Replace(" ", "");
 
-            if (type == "BUTTON" || type == "BTN")
+            if (type == "BUTTON" || type == "BTN" || type == "B")
             {
                 return HTMLTestObjectType.Button;
             }
-            else if (type == "TEXTBOX" || type == "TEXT" || type == "INPUTBOX")
+            else if (type == "TEXTBOX" || type == "TEXT" || type == "INPUTBOX" || type == "TXT" || type == "T")
             {
                 return HTMLTestObjectType.TextBox;
             }
-            else if (type == "LINK" || type == "HYPERLINK")
+            else if (type == "LINK" || type == "HYPERLINK" || type == "LK")
             {
                 return HTMLTestObjectType.Link;
             }
-            else if (type == "IMAGE" || type == "IMG")
+            else if (type == "IMAGE" || type == "IMG" || type == "PICTURE" || type == "PIC" || type == "I" || type == "P")
             {
                 return HTMLTestObjectType.Image;
             }
-            else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN")
+            else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN" || type == "CB")
             {
                 return HTMLTestObjectType.ComboBox;
             }
-            else if (type == "LISTBOX" || type == "LIST")
+            else if (type == "LISTBOX" || type == "LIST" || type == "LST" || type == "LS")
             {
                 return HTMLTestObjectType.ListBox;
             }
-            else if (type == "RADIOBOX" || type == "RADIOBUTTON" || type == "RADIO")
+            else if (type == "RADIOBOX" || type == "RADIOBUTTON" || type == "RADIO" || type == "RAD" || type == "R")
             {
                 return HTMLTestObjectType.RadioButton;
             }
-            else if (type == "CHECKBOX" || type == "CHECK")
+            else if (type == "CHECKBOX" || type == "CHECK" || type == "CHK" || type == "CK")
             {
                 return HTMLTestObjectType.CheckBox;
             }
-            else if (type == "FILEDIAGLOG" || type == "FILE" || type == "FOLDER" || type == "FOLDERDIALOG")
+            else if (type == "FILEDIAGLOG" || type == "FILE" || type == "FOLDER" || type == "FOLDERDIALOG" || type == "F")
             {
                 return HTMLTestObjectType.FileDialog;
             }
@@ -1342,11 +1340,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.ActiveX;
             }
-            else if (type == "MSGBOX" || type == "MSG" || type == "MESSAGE" || type == "MESSAGEBOX" || type == "POPWINDOW" || type == "POPBOX")
+            else if (type == "MSGBOX" || type == "MSG" || type == "MESSAGE" || type == "MESSAGEBOX" || type == "POPWINDOW" || type == "POPBOX" || type == "M")
             {
                 return HTMLTestObjectType.MsgBox;
             }
-            else if (type == "TABLE" || type == "TBL")
+            else if (type == "TABLE" || type == "TBL" || type == "T")
             {
                 return HTMLTestObjectType.Table;
             }
