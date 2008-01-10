@@ -1515,10 +1515,6 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-                if (_downloadTime == null)
-                {
-                    _downloadTime = new TimeSpan();
-                }
 
                 //get the start time, used to cal response time.
                 _startTime = _downloadTime.Milliseconds;
@@ -1543,21 +1539,12 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-
-                //get the response time.
-                if (_downloadTime == null)
-                {
-                    _downloadTime = new TimeSpan();
-                }
-
                 _endTime = _downloadTime.Milliseconds;
                 _responseTime = _endTime - _startTime;
 
                 string key = GetCurrentUrl();
 
                 _performanceTimeHT.Add(key, _responseTime);
-
-
 
                 _HTMLDom = (HTMLDocument)_ie.Document;
 

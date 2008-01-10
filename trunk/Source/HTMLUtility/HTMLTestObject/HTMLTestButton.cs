@@ -97,7 +97,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 // see the definition in HTMLGUiTestObject.cs
                 Hover();
 
-                //click
                 MouseOp.Click();
 
                 //action is finished, signal.

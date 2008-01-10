@@ -68,6 +68,14 @@ namespace Shrinerain.AutoTester.Framework
             return (ITestBrowser)_testBrowser;
         }
 
+        /* ITestApp GetTestApp()
+         * return the test application.
+         */
+        public ITestApp GetTestApp()
+        {
+            return (ITestApp)_testApp;
+        }
+
         /* TestObject GetTestObject(TestStep step)
          * return the test object we need.
          * will get object from actual test object pool.
@@ -129,11 +137,23 @@ namespace Shrinerain.AutoTester.Framework
          */
         private void LoadPlugin()
         {
-            //_testApp = TestFactory.CreateTestApp();
-            _testBrowser = TestFactory.CreateTestBrowser();
-
             _objPool = TestFactory.CreateTestObjectPool();
-            _objPool.SetTestBrowser(_testBrowser);
+
+            if (TestFactory.AppType == TestAppType.Desktop)
+            {
+                _testApp = TestFactory.CreateTestApp();
+                _objPool.SetTestApp(_testApp);
+            }
+            else if (TestFactory.AppType == TestAppType.Web)
+            {
+                _testBrowser = TestFactory.CreateTestBrowser();
+                _objPool.SetTestBrowser(_testBrowser);
+            }
+            else
+            {
+                throw new CannotInitCoreEngineException("Unknow application type.");
+            }
+
         }
 
 

@@ -10,6 +10,8 @@
 *              the important actions include "Select" and "SelectByIndex"
 * 
 * History: 2007/09/04 wan,yu Init version
+*          2007/01/09 wan,yu bug fix, change the _htmlSelectClass to
+*                                                _htmlSelectElement 
 *
 *********************************************************************/
 
@@ -46,7 +48,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected int _itemHeight;
 
         //HTML element.
-        protected HTMLSelectElementClass _htmlSelectClass;
+        protected IHTMLSelectElement _htmlSelectElement;
+        //protected HTMLSelectElementClass _htmlSelectClass;
 
         #endregion
 
@@ -75,7 +78,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                _htmlSelectClass = (HTMLSelectElementClass)element;
+                _htmlSelectElement = (IHTMLSelectElement)element;
+                //_htmlSelectClass = (HTMLSelectElementClass)element;
             }
             catch
             {
@@ -204,7 +208,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (ItemNotFoundException)
+            catch (TestException)
             {
                 throw;
             }
@@ -278,17 +282,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IContainer methods
 
+        /*  public String[] GetAllValues()
+         *  get all values of combo box, the value means the text we seen.
+         */
         public String[] GetAllValues()
         {
-            string[] values = new string[_htmlSelectClass.length];
+            string[] values = new string[_htmlSelectElement.length];
+            IHTMLOptionElement optionElement;
+
             try
             {
-                HTMLOptionElementClass optionClass;
-                for (int i = 0; i < _htmlSelectClass.length; i++)
+                for (int i = 0; i < _htmlSelectElement.length; i++)
                 {
-                    optionClass = (HTMLOptionElementClass)_htmlSelectClass.item(i, i);
-                    values[i] = optionClass.innerText;
+                    optionElement = (IHTMLOptionElement)_htmlSelectElement.item(i, i);
+                    values[i] = optionElement.text;
                 }
+
                 return values;
             }
             catch
@@ -315,7 +324,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                return this._allValues[_htmlSelectClass.selectedIndex];
+
+                return this._allValues[_htmlSelectElement.selectedIndex];
             }
             catch
             {

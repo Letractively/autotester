@@ -267,6 +267,10 @@ namespace Shrinerain.AutoTester.Framework
                 this._isHighlight = this._autoConfig.IsHighlight;
 
             }
+            catch (TestException)
+            {
+                throw;
+            }
             catch (Exception e)
             {
                 throw new TestFrameworkException("Fatal Error: Can not load engines: " + e.Message);
@@ -479,7 +483,10 @@ namespace Shrinerain.AutoTester.Framework
             }
             else if (item.ToUpper() == "APP")
             {
-
+                if (_testApp == null)
+                {
+                    _testApp = (ITestApp)_objEngine.GetTestApp();
+                }
             }
             else
             {
