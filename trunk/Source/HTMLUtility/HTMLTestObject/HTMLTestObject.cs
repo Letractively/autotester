@@ -8,7 +8,8 @@
 *
 * Description: The base class of test object for HTML testing.
 * 
-* History: 2007/09/04 wan,yu Init version
+* History: 2007/09/04 wan,yu Init version.
+*          2008/01/11 wan,yu update, add IsReadOnly property and method. 
 *
 *********************************************************************/
 
@@ -16,14 +17,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Drawing;
-using System.Diagnostics;
 using System.Threading;
 
 using mshtml;
 
-using Shrinerain.AutoTester.Win32;
-using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
@@ -52,8 +49,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region fields
 
         protected string _tag;
+
         protected bool _visible;
         protected bool _enable;
+        protected bool _readOnly;
+
         protected HTMLTestObjectType _type;
         protected IHTMLElement _sourceElement;
 
@@ -66,19 +66,28 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestObjectType Type
         {
             get { return this._type; }
-            set
-            {
-                this._type = value;
-            }
         }
+
         public string Tag
         {
             get { return this._tag; }
-            set
-            {
-                this._tag = value;
-            }
         }
+
+        public bool Enable
+        {
+            get { return _enable; }
+        }
+
+        public bool Visible
+        {
+            get { return _visible; }
+        }
+
+        public bool ReadOnly
+        {
+            get { return _readOnly; }
+        }
+
         #endregion
 
         #region methods
@@ -98,52 +107,74 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("Element is null.");
             }
+
+
             try
             {
                 this._sourceElement = element;
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not build HTML object.");
+                throw new CannotBuildObjectException("Can not convert element to IHTMLElement: " + e.Message);
             }
+
+
             try
             {
+                //get tag, like <A>, <Input>...
                 this._domain = "HTML";
                 this._tag = element.tagName;
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not find tag name.");
+                throw new CannotBuildObjectException("Can not find tag name: " + e.Message);
             }
+
+
             try
             {
+                //get id, like <input id="btn1">
                 this._id = element.id;
             }
-            catch
+            catch (Exception e)
             {
-                throw new PropertyNotFoundException("Property [ID] not found of element " + element.ToString());
+                throw new CannotBuildObjectException("ID is not found of element " + element.ToString() + ": " + e.Message);
             }
+
+
             try
             {
-                this._name = (string)element.getAttribute("name", 0);
+                //get name, like <input name="btn2">
+                if (element.getAttribute("name", 0) == null || element.getAttribute("name", 0).GetType().ToString() == "System.DBNull")
+                {
+                    this._name = "";
+                }
+                else
+                {
+                    this._name = element.getAttribute("name", 0).ToString().Trim();
+                }
             }
             catch
             {
                 this._name = "";
             }
 
+
             try
             {
-                this._visible = IsVisible(element);
+                //check the "visibility" property.
+                this._visible = IsVisible();
             }
             catch
             {
                 this._visible = true;
             }
 
+
             try
             {
-                this._enable = IsEnable(element);
+                //check the "enable" property
+                this._enable = IsEnable();
 
             }
             catch
@@ -151,22 +182,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._enable = true;
             }
 
+
             try
             {
-                this._properties = null;// BuildProperties(element);
+                //check the "readonly" property
+                this._readOnly = IsReadOnly();
             }
             catch
             {
-                throw new PropertyNotFoundException("Can not get the properties of object: " + element.toString());
+                this._readOnly = false;
             }
-            try
-            {
-                this._type = GetObjectType(element);
-            }
-            catch
-            {
-                throw new CannotBuildObjectException();
-            }
+
         }
 
         ~HTMLTestObject()
@@ -184,111 +210,34 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             GC.SuppressFinalize(this);
         }
+
         #endregion
 
         #region public methods
-
-        public static HTMLTestObjectType GetObjectType(IHTMLElement element)
-        {
-            string tag = element.tagName;
-
-            if (string.IsNullOrEmpty(tag))
-            {
-                return HTMLTestObjectType.Unknow;
-            }
-            else if (tag == "A")
-            {
-                return HTMLTestObjectType.Link;
-            }
-            else if (tag == "IMG")
-            {
-
-                try
-                {
-                    if (element.getAttribute("onclick", 0).GetType().ToString() == "System.DBNull")
-                    {
-                        return HTMLTestObjectType.Image;
-                    }
-                    else
-                    {
-                        return HTMLTestObjectType.Image;
-                    }
-
-                }
-                catch (PropertyNotFoundException)
-                {
-                    return HTMLTestObjectType.Image;
-                }
-                catch
-                {
-                    throw;
-                }
-
-            }
-            else if (tag == "INPUT")
-            {
-                string inputType = element.getAttribute("type", 0).ToString().ToUpper();
-                if (inputType == "TEXT" || inputType == "PASSWORD")
-                {
-                    return HTMLTestObjectType.TextBox;
-                }
-                else if (inputType == "BUTTON" || inputType == "SUBMIT" || inputType == "RESET"
-                      || inputType == "FILE" || inputType == "IMAGE")
-                {
-                    return HTMLTestObjectType.Button;
-                }
-                else if (inputType == "CHECKBOX")
-                {
-                    return HTMLTestObjectType.CheckBox;
-                }
-                else if (inputType == "RADIO")
-                {
-                    return HTMLTestObjectType.RadioButton;
-                }
-            }
-            else if (tag == "TEXTAERA")
-            {
-                return HTMLTestObjectType.TextBox;
-            }
-            else if (tag == "TABLE")
-            {
-                return HTMLTestObjectType.Table;
-            }
-            else if (tag == "SELECT")
-            {
-                if (element.getAttribute("size", 0) == null || element.getAttribute("size", 0).GetType().ToString() == "System.DBNull")
-                {
-                    return HTMLTestObjectType.ComboBox;
-                }
-                else
-                {
-                    int selectSize = int.Parse(element.getAttribute("size", 0).ToString());
-
-                    if (selectSize < 2)
-                    {
-                        return HTMLTestObjectType.ComboBox;
-                    }
-                    else
-                    {
-                        return HTMLTestObjectType.ListBox;
-                    }
-                }
-
-            }
-
-            return HTMLTestObjectType.Unknow;
-
-        }
 
         #region action
 
         #endregion
 
+
+        /* object GetPropertyByName(string propertyName)
+         * return the property value by name.
+         */
         public override object GetPropertyByName(string propertyName)
         {
             try
             {
-                propertyName = propertyName.Replace(".", "");
+                if (String.IsNullOrEmpty(propertyName))
+                {
+                    throw new PropertyNotFoundException("Property name can not be empty.");
+                }
+
+                propertyName = propertyName.Replace(" ", "");
+
+                while (propertyName.StartsWith("."))
+                {
+                    propertyName = propertyName.Replace(".", "");
+                }
 
                 if (this._sourceElement.getAttribute(propertyName, 0) == null || this._sourceElement.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
                 {
@@ -300,19 +249,39 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
             }
-            catch
+            catch (TestException)
             {
-                throw new PropertyNotFoundException("Property " + propertyName + " not found.");
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new PropertyNotFoundException("Property " + propertyName + " not found: " + e.Message);
             }
         }
 
-
+        /* bool SetPropertyByName(string propertyName, object value)
+         * set the property value.
+         * return true if success.
+         */
         public override bool SetPropertyByName(string propertyName, object value)
         {
-            try
+            if (String.IsNullOrEmpty(propertyName))
+            {
+                return false;
+            }
+
+            propertyName = propertyName.Trim();
+
+            //if the propertyName is start with ".", we will remove it.
+            while (propertyName.StartsWith("."))
             {
                 propertyName = propertyName.Replace(".", "");
+            }
+
+            try
+            {
                 this._sourceElement.setAttribute(propertyName, value, 0);
+
                 return true;
             }
             catch
@@ -324,44 +293,54 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        protected virtual bool IsVisible(IHTMLElement element)
+        /* bool IsVisible()
+         * return true if it is a visible object.
+         */
+        public override bool IsVisible()
         {
-            if (element.getAttribute("visibility", 0) == null || element.getAttribute("visibility", 0).GetType().ToString() == "System.DBNull")
+            if (_sourceElement.getAttribute("visibility", 0) == null || _sourceElement.getAttribute("visibility", 0).GetType().ToString() == "System.DBNull")
             {
                 return true;
             }
             else
             {
-                string isVisiable = element.getAttribute("visibility", 0).ToString();
+                string isVisiable = _sourceElement.getAttribute("visibility", 0).ToString().Trim();
 
-                if (isVisiable.ToUpper() == "HIDDEN")
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return String.Compare(isVisiable, "HIDDEN", true) == 0;
             }
         }
 
-        protected virtual bool IsEnable(IHTMLElement element)
+        /* bool IsEnable()
+         * return true if it is a enable object.
+         */
+        public virtual bool IsEnable()
         {
-            if (element.getAttribute("enabled", 0) == null || element.getAttribute("enabled", 0).GetType().ToString() == "System.DBNull")
+            if (_sourceElement.getAttribute("enabled", 0) == null || _sourceElement.getAttribute("enabled", 0).GetType().ToString() == "System.DBNull")
             {
                 return true;
             }
             else
             {
-                string isEnable = element.getAttribute("enabled", 0).ToString();
-                if (isEnable.ToUpper() == "FALSE")
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                string isEnable = _sourceElement.getAttribute("enabled", 0).ToString().Trim();
+
+                return String.Compare(isEnable, "FALSE", true) == 0;
+            }
+        }
+
+        /* bool IsReadOnly()
+         * return true if it is a readonly object.
+         */
+        public virtual bool IsReadOnly()
+        {
+            if (_sourceElement.getAttribute("readonly", 0) == null || _sourceElement.getAttribute("readonly", 0).GetType().ToString() == "System.DBNull")
+            {
+                return false;
+            }
+            else
+            {
+                string isReadonly = _sourceElement.getAttribute("readonly", 0).ToString().Trim();
+
+                return String.Compare(isReadonly, "TRUE", true) == 0;
             }
         }
 

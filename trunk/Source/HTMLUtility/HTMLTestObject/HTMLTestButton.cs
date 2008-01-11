@@ -52,6 +52,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestButton(IHTMLElement element)
             : base(element)
         {
+            this._type = HTMLTestObjectType.Button;
+
             try
             {
                 // get the text , in HTML , it is .value property.

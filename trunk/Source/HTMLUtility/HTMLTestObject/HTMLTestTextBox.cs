@@ -54,17 +54,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestTextBox(IHTMLElement element)
             : base(element)
         {
+
+            this._type = HTMLTestObjectType.TextBox;
+
             try
             {
                 if (this.Tag == "TEXTAERA")
                 {
-                    _currentStr = element.getAttribute("innerText", 0).ToString();
+                    _currentStr = element.getAttribute("innerText", 0).ToString().Trim();
 
                     _textAreaElement = (IHTMLTextAreaElement)element;
                 }
                 else
                 {
-                    _currentStr = element.getAttribute("value", 0).ToString();
+                    _currentStr = element.getAttribute("value", 0).ToString().Trim();
 
                     _textElement = (IHTMLInputTextElement)element;
                 }

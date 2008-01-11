@@ -76,6 +76,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestComboBox(IHTMLElement element)
             : base(element)
         {
+
+            this._type = HTMLTestObjectType.ComboBox;
+
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;

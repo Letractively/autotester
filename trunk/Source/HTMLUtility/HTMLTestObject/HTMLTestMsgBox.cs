@@ -13,6 +13,7 @@
 * 
 *
 * History: 2007/12/10 wan,yu Init version.
+*          2008/01/10 wan,yu update, modify Click() method, add Hover() method 
 *
 *********************************************************************/
 
@@ -69,6 +70,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestMsgBox()
             : base()
         {
+
+            this._type = HTMLTestObjectType.MsgBox;
+
             //get windows handle of message box.
             try
             {
@@ -172,7 +176,42 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             //Get the "OK" button position
             //It is OK for JavaScript.
-            return GetButtonPosition("OK");
+            try
+            {
+                return GetButtonPosition("OK");
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotGetObjectPositionException("Can not get position of message box: " + e.Message);
+            }
+        }
+
+        /*  public override void Hover()
+         *  Move mouse the the control.
+         *  MessageBox is a special contorl, it is a standard Windows control, not a HTML control.
+         *  So we don't need ScrollIntoView().
+         */
+        public override void Hover()
+        {
+            try
+            {
+                MouseOp.MoveTo(_centerPoint.X, _centerPoint.Y);
+
+                //sleep for 0.2s, make it looks like human action.
+                System.Threading.Thread.Sleep(200 * 1);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not move mouse to message box: " + e.Message);
+            }
         }
 
 
@@ -221,9 +260,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.WaitOne();
 
-                Point okPos = GetCenterPoint();
+                Hover();
 
-                MouseOp.Click(okPos.X, okPos.Y);
+                MouseOp.Click();
 
                 _actionFinished.Set();
             }
@@ -332,12 +371,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._rect = GetButtonPosition(text);
 
-                Point btnPos = GetCenterPoint();
+                Hover();
 
-                MouseOp.Click(btnPos.X, btnPos.Y);
+                MouseOp.Click();
 
             }
-            catch (CannotBuildObjectException)
+            catch (TestException)
             {
                 throw;
             }
@@ -381,8 +420,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             Win32API.Rect tmp = new Win32API.Rect();
                             Win32API.GetClientRect(okHandle, ref tmp);
 
-                            Rectangle tmpRect = new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height);
-                            return tmpRect;
+                            return new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height); ;
                         }
                         else
                         {

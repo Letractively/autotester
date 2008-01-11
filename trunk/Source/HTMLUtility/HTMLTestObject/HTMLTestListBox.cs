@@ -81,6 +81,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestListBox(IHTMLElement element)
             : base(element)
         {
+
+            this._type = HTMLTestObjectType.ListBox;
+
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;

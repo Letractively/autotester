@@ -48,7 +48,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestFileDialog()
             : base()
         {
-
+            this._type = HTMLTestObjectType.FileDialog;
         }
 
         #endregion

@@ -11,7 +11,7 @@
 *              by these methods. 
 *
 * History:  2007/09/04 wan,yu Init version
-*           2007/11/20 wan,yu add void SetTestApp() 
+*           2007/11/20 wan,yu update, add void SetTestApp() 
 *
 *********************************************************************/
 
