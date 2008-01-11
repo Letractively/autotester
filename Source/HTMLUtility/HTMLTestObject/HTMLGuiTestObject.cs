@@ -219,6 +219,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
+            catch (Exception e)
+            {
+                throw new CannotHighlightObjectException("Can not highlight the object: " + e.Message);
+            }
 
         }
 

@@ -10,11 +10,13 @@
 *              we can get HTML object from HTMLTestObjectPool
 *
 * History: 2007/09/04 wan,yu Init version.
-*          2007/12/21 wan,yu update for "button" object. 
-*          2007/12/24 wan,yu divide cache to Function compent
-*          2007/12/24 wan,yu add fuzzy search, we don't need to match the value 100%.
-*          2008/01/06 wan,yu update fuzzt search, we will try lower similar percent if object is not found.                
-*          2008/01/08 wan,yu add CheckButtonObject to check button object.                
+*          2007/12/21 wan,yu udpate, update for "button" object. 
+*          2007/12/24 wan,yu update, divide cache to Core compent
+*          2007/12/24 wan,yu update, add fuzzy search, we don't need to match the value 100%.
+*          2008/01/06 wan,yu update, update fuzzy search, we will try lower similar percent if object is not found.                
+*          2008/01/08 wan,yu update, add CheckButtonObject to check button object.     
+*          2008/01/10 wan,yu update, update GetTypeByString() method, accept more strings.   
+*          2008/01/10 wan,yu update, move GetObjectType from HTMLTestObject.cs to HTMLTestObjectPool.cs          
 *
 *********************************************************************/
 
@@ -908,45 +910,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
 
-        /*  string[] GetObjectTags(HTMLTestObjectType type)
-         *  convert HTMLTestObjectType to HTML tags.
-         */
-        public static string[] GetObjectTags(HTMLTestObjectType type)
-        {
-            switch (type)
-            {
-                case HTMLTestObjectType.ActiveX:
-                    return new string[] { "object" };
-                case HTMLTestObjectType.Button:
-                    return new string[] { "input", "button", "img" };
-                case HTMLTestObjectType.CheckBox:
-                    return new string[] { "input", "label" };
-                case HTMLTestObjectType.ComboBox:
-                    return new string[] { "select" };
-                case HTMLTestObjectType.FileDialog:
-                    return new string[] { "input" };
-                case HTMLTestObjectType.Image:
-                    return new string[] { "img" };
-                case HTMLTestObjectType.Link:
-                    return new string[] { "a" };
-                case HTMLTestObjectType.ListBox:
-                    return new string[] { "select" };
-                case HTMLTestObjectType.MsgBox:
-                    return new string[] { };
-                case HTMLTestObjectType.RadioButton:
-                    return new string[] { "input", "label" };
-                case HTMLTestObjectType.Table:
-                    return new string[] { "table" };
-                case HTMLTestObjectType.TextBox:
-                    return new string[] { "input", "textarea" };
-                case HTMLTestObjectType.Unknow:
-                    return new string[] { };
-                default:
-                    return new string[] { };
-            }
-        }
-
-
         #region private methods
 
         /* void GetAllElements()
@@ -1355,13 +1318,151 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+
+        /*  string[] GetObjectTags(HTMLTestObjectType type)
+        *  convert HTMLTestObjectType to HTML tags.
+        */
+        private static string[] GetObjectTags(HTMLTestObjectType type)
+        {
+            switch (type)
+            {
+                case HTMLTestObjectType.ActiveX:
+                    return new string[] { "object" };
+                case HTMLTestObjectType.Button:
+                    return new string[] { "input", "button", "img" };
+                case HTMLTestObjectType.CheckBox:
+                    return new string[] { "input", "label" };
+                case HTMLTestObjectType.ComboBox:
+                    return new string[] { "select" };
+                case HTMLTestObjectType.FileDialog:
+                    return new string[] { "input" };
+                case HTMLTestObjectType.Image:
+                    return new string[] { "img" };
+                case HTMLTestObjectType.Link:
+                    return new string[] { "a" };
+                case HTMLTestObjectType.ListBox:
+                    return new string[] { "select" };
+                case HTMLTestObjectType.MsgBox:
+                    return new string[] { };
+                case HTMLTestObjectType.RadioButton:
+                    return new string[] { "input", "label" };
+                case HTMLTestObjectType.Table:
+                    return new string[] { "table" };
+                case HTMLTestObjectType.TextBox:
+                    return new string[] { "input", "textarea" };
+                case HTMLTestObjectType.Unknow:
+                    return new string[] { };
+                default:
+                    return new string[] { };
+            }
+        }
+
+        /*  private static HTMLTestObjectType GetObjectType(IHTMLElement element)
+         *  Get the HTMLTestObjectType from element's tag name.
+         */
+        private static HTMLTestObjectType GetObjectType(IHTMLElement element)
+        {
+            string tag = element.tagName;
+
+            if (string.IsNullOrEmpty(tag))
+            {
+                return HTMLTestObjectType.Unknow;
+            }
+            else if (tag == "A")
+            {
+                return HTMLTestObjectType.Link;
+            }
+            else if (tag == "IMG")
+            {
+
+                try
+                {
+                    if (element.getAttribute("onclick", 0) == null || element.getAttribute("onclick", 0).GetType().ToString() == "System.DBNull")
+                    {
+                        return HTMLTestObjectType.Image;
+                    }
+                    else
+                    {
+                        return HTMLTestObjectType.Button;
+                    }
+
+                }
+                catch
+                {
+                    throw;
+                }
+
+            }
+            else if (tag == "BUTTON")
+            {
+                return HTMLTestObjectType.Button;
+            }
+            else if (tag == "INPUT")
+            {
+                string inputType = element.getAttribute("type", 0).ToString().Trim().ToUpper();
+                if (inputType == "TEXT" || inputType == "PASSWORD")
+                {
+                    return HTMLTestObjectType.TextBox;
+                }
+                else if (inputType == "BUTTON" || inputType == "SUBMIT" || inputType == "RESET"
+                      || inputType == "FILE" || inputType == "IMAGE")
+                {
+                    return HTMLTestObjectType.Button;
+                }
+                else if (inputType == "CHECKBOX")
+                {
+                    return HTMLTestObjectType.CheckBox;
+                }
+                else if (inputType == "RADIO")
+                {
+                    return HTMLTestObjectType.RadioButton;
+                }
+            }
+            else if (tag == "TEXTAERA")
+            {
+                return HTMLTestObjectType.TextBox;
+            }
+            else if (tag == "TABLE")
+            {
+                return HTMLTestObjectType.Table;
+            }
+            else if (tag == "SELECT")
+            {
+                if (element.getAttribute("size", 0) == null || element.getAttribute("size", 0).GetType().ToString() == "System.DBNull")
+                {
+                    return HTMLTestObjectType.ComboBox;
+                }
+                else
+                {
+                    int selectSize = int.Parse(element.getAttribute("size", 0).ToString());
+
+                    if (selectSize < 2)
+                    {
+                        return HTMLTestObjectType.ComboBox;
+                    }
+                    else
+                    {
+                        return HTMLTestObjectType.ListBox;
+                    }
+                }
+
+            }
+            else if (tag == "OBJECT")
+            {
+                return HTMLTestObjectType.ActiveX;
+            }
+
+            return HTMLTestObjectType.Unknow;
+
+        }
+
         /* HTMLTestObject BuildObjectByType(IHTMLElement element)
          * build the actual test object by an IHTMLElement for different type.
          * It will call the actual constructor of each test object.
          */
         private static HTMLGuiTestObject BuildObjectByType(IHTMLElement element)
         {
-            HTMLTestObjectType type = HTMLTestObject.GetObjectType(element);
+            HTMLTestObjectType type = GetObjectType(element);
 
             return BuildObjectByType(element, type);
         }

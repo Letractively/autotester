@@ -71,6 +71,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestLink(IHTMLElement element)
             : base(element)
         {
+
+            this._type = HTMLTestObjectType.Link;
+
             try
             {
                 _acnchorElement = (HTMLAnchorElement)element;

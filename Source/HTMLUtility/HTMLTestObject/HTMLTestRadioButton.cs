@@ -48,6 +48,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestRadioButton(IHTMLElement element)
             : base(element)
         {
+
+            this._type = HTMLTestObjectType.RadioButton;
+
             try
             {
                 this._radioElement = (IHTMLInputElement)element;

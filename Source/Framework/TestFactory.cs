@@ -11,7 +11,10 @@
 *              dll. 
 *
 * History: 2007/09/04 wan,yu Init version
-*
+*          2008/01/09 wan,yu update, add TestAppType enum, add _appType 
+*                            and AppType to TestFactory
+*  
+* 
 *********************************************************************/
 
 
