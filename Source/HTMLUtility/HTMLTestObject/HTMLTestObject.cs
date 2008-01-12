@@ -103,11 +103,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected HTMLTestObject(IHTMLElement element)
             : base()
         {
+
             if (element == null)
             {
                 throw new CannotBuildObjectException("Element is null.");
             }
-
 
             try
             {
@@ -117,7 +117,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("Can not convert element to IHTMLElement: " + e.Message);
             }
-
 
             try
             {
@@ -130,7 +129,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotBuildObjectException("Can not find tag name: " + e.Message);
             }
 
-
             try
             {
                 //get id, like <input id="btn1">
@@ -140,7 +138,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("ID is not found of element " + element.ToString() + ": " + e.Message);
             }
-
 
             try
             {
@@ -159,7 +156,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._name = "";
             }
 
-
             try
             {
                 //check the "visibility" property.
@@ -169,7 +165,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._visible = true;
             }
-
 
             try
             {
@@ -181,7 +176,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._enable = true;
             }
-
 
             try
             {
@@ -232,7 +226,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     throw new PropertyNotFoundException("Property name can not be empty.");
                 }
 
-                propertyName = propertyName.Replace(" ", "");
+                propertyName = propertyName.Trim();
 
                 while (propertyName.StartsWith("."))
                 {

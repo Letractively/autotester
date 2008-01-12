@@ -10,7 +10,8 @@
 *              The important actions is "Click". 
 *
 * History: 2007/09/04 wan,yu Init version
-*
+*          2008/01/12 wan,yu update, remove HTMLTestObject[] GetLinkChildren()
+* 
 *********************************************************************/
 
 using System;
@@ -23,7 +24,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestLink : HTMLGuiTestObject, IClickable, IContainer
+    public class HTMLTestLink : HTMLGuiTestObject, IClickable, IContainer, IShowInfo
     {
 
         #region fields
@@ -46,11 +47,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region properties
-
-        public IHTMLImgElement LinkImg
-        {
-            get { return _linkImgElement; }
-        }
 
         public string LinkText
         {
@@ -80,7 +76,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not build test link object: " + e.Message);
+                throw new CannotBuildObjectException("Can not convert to HTMLAnchorElement: " + e.Message);
             }
 
             try
@@ -183,6 +179,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return null;
         }
 
+        #region IShowInfo Members
+
+        public string GetText()
+        {
+            return this._linkText;
+        }
+
+        public string GetFontStyle()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetFontFamily()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+
         #endregion
 
         #region private methods
@@ -190,26 +206,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* HTMLTestObject[] GetLinkChildren()
          * Return the children object of link
          */
-        protected virtual HTMLTestObject[] GetLinkChildren()
-        {
-            return null;
-        }
+        //protected virtual HTMLTestObject[] GetLinkChildren()
+        //{
+        //    return GetChildren();
+        //}
 
         /* bool IsImage()
          * Return true if the link is an image link.
          */
         protected virtual bool IsImage()
         {
-            if (String.IsNullOrEmpty(_linkText))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-
+            return String.IsNullOrEmpty(_linkText);
         }
 
         #endregion

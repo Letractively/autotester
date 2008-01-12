@@ -10,7 +10,8 @@
 *              The most important action is Click.
 *
 * History: 2007/09/04 wan,yu Init version
-*          2007/12/21 wan,yu add IHTMLButtonElement for <button> tag. 
+*          2007/12/21 wan,yu update, add IHTMLButtonElement for <button> tag. 
+*          2008/01/12 wan,yu update, add HTMLTestButtonType.         
 *
 *********************************************************************/
 
@@ -26,6 +27,15 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
+    //for HTML test button, we may have <input type="button">, <input type="submit">, <input type="reset">
+    public enum HTMLTestButtonType : int
+    {
+        Custom = 0,
+        Submit = 1,
+        Reset = 3,
+        Unknow = 4
+    }
+
     public class HTMLTestButton : HTMLGuiTestObject, IClickable, IShowInfo
     {
 
@@ -35,13 +45,31 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _currentStr;
 
         //the HTML element of the object. we build HTMLTestButton based on the HTML element.
+        //<input>
         protected IHTMLInputElement _inputElement;
+
+        //<button>
         protected IHTMLButtonElement _buttonElement;
+
+        protected HTMLTestButtonType _btnType = HTMLTestButtonType.Unknow;
+
+        //if the button type is not "submit" or "reset", we can get method name of "onclick" property.
+        protected string _customMethodName;
+
 
         #endregion
 
         #region properties
 
+        public HTMLTestButtonType ButtonType
+        {
+            get { return _btnType; }
+        }
+
+        public string CustomMethodName
+        {
+            get { return _customMethodName; }
+        }
 
         #endregion
 
@@ -56,28 +84,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                // get the text , in HTML , it is .value property.
-                this._currentStr = element.getAttribute("value", 0).ToString();
-            }
-            catch
-            {
-                this._currentStr = "";
-            }
-
-            try
-            {
                 if (String.Compare(element.tagName, "INPUT", true) == 0)
                 {
                     this._inputElement = (IHTMLInputElement)element;
+
+                    this._currentStr = this._inputElement.value;
+
+                    this._btnType = GetButtonType();
                 }
                 else if (String.Compare(element.tagName, "BUTTON", true) == 0)
                 {
                     this._buttonElement = (IHTMLButtonElement)element;
+
+                    this._currentStr = this._buttonElement.value;
+
+                    this._btnType = HTMLTestButtonType.Custom;
                 }
             }
             catch (Exception e)
             {
                 throw new CannotBuildObjectException("Can not build test button: " + e.Message);
+            }
+
+            try
+            {
+                this._customMethodName = GetCustomMethodName();
+            }
+            catch
+            {
+                this._customMethodName = "";
             }
         }
 
@@ -121,6 +156,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Hover();
+
                 MouseOp.DoubleClick();
 
                 _actionFinished.Set();
@@ -141,6 +177,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Hover();
+
                 MouseOp.RightClick();
 
                 _actionFinished.Set();
@@ -197,12 +234,51 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             throw new PropertyNotFoundException();
         }
+
         #endregion
 
         #endregion
 
         #region private methods
 
+        /* HTMLTestButtonType GetButtonType()
+         * return the button type by checking <input type="">.
+         */
+        protected virtual HTMLTestButtonType GetButtonType()
+        {
+            if (this._sourceElement.getAttribute("type", 0) != null && this._sourceElement.getAttribute("type", 0).GetType().ToString() != "System.DBNull")
+            {
+                string type = this._sourceElement.getAttribute("type", 0).ToString().Trim();
+
+                if (String.Compare(type, "SUBMIT", true) == 0)
+                {
+                    return HTMLTestButtonType.Submit;
+                }
+                else if (String.Compare(type, "RESET", true) == 0)
+                {
+                    return HTMLTestButtonType.Reset;
+                }
+            }
+
+            return HTMLTestButtonType.Custom;
+        }
+
+
+        /* string GetCustomMethodName()
+         * return the method name by checking "onclick" property.
+         */
+        protected virtual string GetCustomMethodName()
+        {
+            if (this._btnType == HTMLTestButtonType.Custom)
+            {
+                if (this._sourceElement.getAttribute("onclick", 0) != null && this._sourceElement.getAttribute("onclick", 0).GetType().ToString() != "System.DBNull")
+                {
+                    return this._sourceElement.getAttribute("onclick", 0).ToString().Trim();
+                }
+            }
+
+            return "";
+        }
 
         #endregion
 

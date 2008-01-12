@@ -16,6 +16,7 @@
 
 
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace Shrinerain.AutoTester.Win32
@@ -65,9 +66,15 @@ namespace Shrinerain.AutoTester.Win32
         {
             NClick(-99, -99, 1);
         }
+
         public static void Click(int x, int y)
         {
             NClick(x, y, 1);
+        }
+
+        public static void Click(Point point)
+        {
+            Click(point.X, point.Y);
         }
 
         public static void DoubleClick()
@@ -97,6 +104,11 @@ namespace Shrinerain.AutoTester.Win32
             {
                 Win32API.SetCursorPos(x, y);
             }
+        }
+
+        public static void MoveTo(Point p)
+        {
+            MoveTo(p.X, p.Y);
         }
         #endregion
     }

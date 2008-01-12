@@ -12,6 +12,8 @@
 * History: 2007/09/04 wan,yu Init version
 *          2008/01/10 wan,yu update, when downloading an image, we don't
 *                                    have to wait for this action. 
+*          2008/01/12 wan,yu update, add two methods, DownloadImageSync
+*                                    and DownloadImageAsync          
 *
 *********************************************************************/
 
@@ -78,27 +80,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
-        /* void DownloadImage(string des)
-         * Download source image.
+        /* void DownloadImageSync(string des)
+         * Download source image, wait until the image is downloaded.
          */
-        public void DownloadImage(string des)
+        public void DownloadImageSync(string des)
         {
             try
             {
-                //use web client to download the image.
-                //web client often NO use if cookie needed.
-                WebClient client = new WebClient();
-                client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
+                DowloadImage(des);
 
-                client.DownloadFileAsync(new System.Uri(this._src), des);
-
-                // _actionFinished.WaitOne();
+                _actionFinished.WaitOne();
 
             }
             catch (Exception e)
             {
-                //_actionFinished.Set();
+                throw new CannotPerformActionException("Can not download image: " + e.Message);
+            }
+        }
 
+        /* void DownloadImageAsync(string des)
+         * Download the image, DO NOT wait.
+         */
+        public void DownloadImageAsync(string des)
+        {
+            try
+            {
+                DowloadImage(des);
+            }
+            catch (Exception e)
+            {
                 throw new CannotPerformActionException("Can not download image: " + e.Message);
             }
         }
@@ -165,6 +175,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
+
+        /* void DowloadImage(string des)
+         * use web client to download the image.
+         * web client often NO use if cookie needed.
+         */
+        private void DowloadImage(string des)
+        {
+            if (String.IsNullOrEmpty(des))
+            {
+                des = @"C:\" + this._src.Trim();
+            }
+
+            WebClient client = new WebClient();
+            client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
+
+            client.DownloadFileAsync(new System.Uri(this._src), des);
+        }
 
         /* private void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
          * callback function when the image is downloaded.

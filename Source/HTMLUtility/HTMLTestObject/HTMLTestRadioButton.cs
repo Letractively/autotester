@@ -57,7 +57,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not build Test Radio Button: " + e.Message);
+                throw new CannotBuildObjectException("Can not convert to IHTMLInputElement: " + e.Message);
             }
         }
 
@@ -129,6 +129,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Hover();
+
                 MouseOp.Click();
 
                 _actionFinished.Set();
@@ -166,7 +167,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                base.Hover();
+                Hover();
                 MouseOp.Click();
             }
             catch (Exception e)
@@ -190,6 +191,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
+        /*  string GetAroundText(int position)
+         *  return the human readable text around the control.
+         *  NOTE: NEED UPDATE!!!
+         */
         protected virtual string GetAroundText(int position)
         {
             //position : 0 for right, 1 for up, 2 for left, 3 for down

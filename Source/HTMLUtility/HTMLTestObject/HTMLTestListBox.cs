@@ -93,6 +93,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("HTML source element can not be null: " + e.Message);
             }
+
             try
             {
                 this._allValues = this.GetAllValues();
@@ -101,6 +102,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("Can not get the list values: " + e.Message);
             }
+
             try
             {
                 this._selectedValue = this.GetSelectedValue();
@@ -109,6 +111,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._selectedValue = "";
             }
+
             try
             {
                 this._itemCountPerPage = int.Parse(element.getAttribute("size", 0).ToString());
@@ -117,6 +120,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("Can not get size of list box: " + e.Message);
             }
+
             try
             {
                 this._class = "Internet Explorer_TridentLstBox";
@@ -145,18 +149,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
-                if (this._handle == IntPtr.Zero)
-                {
-                    throw new CannotBuildObjectException("Can not get windows handle of list box.");
-                }
+                //if (this._handle == IntPtr.Zero)
+                //{
+                //    throw new CannotBuildObjectException("Can not get windows handle of list box.");
+                //}
             }
-            catch (CannotBuildObjectException)
+            //catch (CannotBuildObjectException)
+            //{
+            //    throw;
+            //}
+            catch //(Exception e)
             {
-                throw;
-            }
-            catch (Exception e)
-            {
-                throw new CannotBuildObjectException("Can not get windows handle of list box: " + e.Message);
+                // throw new CannotBuildObjectException("Can not get windows handle of list box: " + e.Message);
             }
 
             try
@@ -231,8 +235,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get the actual position on the screen.
                 Point itemPosition = GetItemPosition(index);
 
-                //click at this point.
-                MouseOp.Click(itemPosition.X, itemPosition.Y);
+                MouseOp.Click(itemPosition);
 
                 //refresh the selected value.
                 this._selectedValue = this._allValues[index];

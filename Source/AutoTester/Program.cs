@@ -113,7 +113,7 @@ namespace Shrinerain.AutoTester
             HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByProperty("name", "q"); //pool.GetObjectByName("q");
             obj1.Input("statestreet");
 
-            HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Search", 0);
+            HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Sea", 0);
             obj2.Click();
 
             myHost.WaitForNextPage();

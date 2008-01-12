@@ -84,17 +84,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _htmlSelectElement = (IHTMLSelectElement)element;
                 //_htmlSelectClass = (HTMLSelectElementClass)element;
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotBuildObjectException("HTML source element can not be null.");
+                throw new CannotBuildObjectException("Can not convert IHTMLElement to IHTMLSelectElement: " + e.Message);
             }
             try
             {
                 this._allValues = this.GetAllValues();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not get the list values.");
+                throw new CannotBuildObjectException("Can not get the list values: " + e.Message);
             }
             try
             {
@@ -190,18 +190,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
 
-
-                //get the position on the screen 
-                Point itemPosition = GetItemPosition(index);
-
                 //click the object.
                 Click();
 
-                //sleep for 0.5 second, make sure the user can see this action.
-                //if no sleep, the the action may too fast.
-                System.Threading.Thread.Sleep(500 * 1);
-
                 _actionFinished.WaitOne();
+
+
+                //get the position on the screen 
+                Point itemPosition = GetItemPosition(index);
 
                 //click on the actual item.
                 MouseOp.Click(itemPosition.X, itemPosition.Y);
@@ -327,7 +323,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-
                 return this._allValues[_htmlSelectElement.selectedIndex];
             }
             catch
@@ -460,6 +455,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int y = this.Rect.Top + height / 2;
 
             MouseOp.Click(x, y);
+
+            //sleep for 0.2 second, make sure the user can see this action.
+            //if no sleep, the the action may too fast.
+            System.Threading.Thread.Sleep(200 * 1);
 
             _actionFinished.Set();
         }

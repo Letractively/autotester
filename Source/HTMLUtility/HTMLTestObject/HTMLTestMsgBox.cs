@@ -14,6 +14,8 @@
 *
 * History: 2007/12/10 wan,yu Init version.
 *          2008/01/10 wan,yu update, modify Click() method, add Hover() method 
+*          2008/01/12 wan,yu update, wait for 30s to find the MessageBox, like 
+*                                    other normal HTMLTestObject.          
 *
 *********************************************************************/
 
@@ -78,8 +80,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _class = "#32770 (Dialog)";
 
-                //get the handle, the text of MessageBox is "Windows Internet Explorer", we use this to find it.
-                IntPtr msgBoxHandle = Win32API.FindWindowEx(TestBrowser.MainHandle, IntPtr.Zero, null, "Windows Internet Explorer");
+                IntPtr msgBoxHandle=IntPtr.Zero;
+
+                //we will try to find the message box in 30s.
+                int times = 0;
+                while (times < 30)
+                {
+                    times++;
+                    System.Threading.Thread.Sleep(1000 * 1);
+
+                    //get the handle, the text of MessageBox is "Windows Internet Explorer", we use this to find it.
+                    msgBoxHandle = Win32API.FindWindowEx(TestBrowser.MainHandle, IntPtr.Zero, null, "Windows Internet Explorer");
+
+                    if (msgBoxHandle != IntPtr.Zero)
+                    {
+                        break;
+                    }
+                }
+
                 if (msgBoxHandle == IntPtr.Zero)
                 {
                     throw new CannotBuildObjectException("Can not get the windows handle of MessageBox.");
@@ -95,41 +113,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotBuildObjectException("Can not build HTMLTestMsgBox: " + e.Message);
             }
 
-            //get text information displayed.
+
             try
             {
-
-                //firstly we need to get the handle.
-                // the first handle is for the icon.
-                IntPtr messageHandle = Win32API.FindWindowEx(this._handle, IntPtr.Zero, "Static", null);
-
-                if (messageHandle == IntPtr.Zero)
-                {
-                    throw new CannotBuildObjectException("Can not get icon handle.");
-                }
-                else
-                {
-                    //the 2nd handle is the actual handle for the text.
-                    messageHandle = Win32API.FindWindowEx(this._handle, messageHandle, "Static", null);
-
-                    if (messageHandle == IntPtr.Zero)
-                    {
-                        throw new CannotBuildObjectException("Can not get text handle.");
-                    }
-                    else
-                    {
-                        StringBuilder text = new StringBuilder(50);
-                        Win32API.GetWindowText(messageHandle, text, 50);
-
-                        this._message = text.ToString();
-
-                        if (String.IsNullOrEmpty(this._message))
-                        {
-                            throw new CannotBuildObjectException("Can not Can not get the message text");
-                        }
-                    }
-
-                }
+                //get text information displayed.
+                this._message = GetMessage();
 
             }
             catch (CannotBuildObjectException)
@@ -199,7 +187,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                MouseOp.MoveTo(_centerPoint.X, _centerPoint.Y);
+                MouseOp.MoveTo(_centerPoint);
 
                 //sleep for 0.2s, make it looks like human action.
                 System.Threading.Thread.Sleep(200 * 1);
@@ -422,10 +410,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                             return new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height); ;
                         }
-                        else
-                        {
-                            continue;
-                        }
 
                     }
                     else
@@ -435,6 +419,41 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
+        }
+
+        protected virtual string GetMessage()
+        {
+            //firstly we need to get the handle.
+            // the first handle is for the icon.
+            IntPtr messageHandle = Win32API.FindWindowEx(this._handle, IntPtr.Zero, "Static", null);
+
+            if (messageHandle == IntPtr.Zero)
+            {
+                throw new CannotBuildObjectException("Can not get icon handle.");
+            }
+            else
+            {
+                //the 2nd handle is the actual handle for the text.
+                messageHandle = Win32API.FindWindowEx(this._handle, messageHandle, "Static", null);
+
+                if (messageHandle == IntPtr.Zero)
+                {
+                    throw new CannotBuildObjectException("Can not get text handle.");
+                }
+                else
+                {
+                    StringBuilder text = new StringBuilder(50);
+                    Win32API.GetWindowText(messageHandle, text, 50);
+
+                    if (text.Length == 0)
+                    {
+                        throw new CannotBuildObjectException("Can not get the message text");
+                    }
+
+                    return text.ToString();
+                }
+
+            }
         }
 
         #endregion

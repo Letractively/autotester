@@ -10,6 +10,7 @@
 *              The important actions include "Input" and "InputKeys". 
 *
 * History: 2007/09/04 wan,yu Init version
+*          2008/01/12 wan,yu update, add HTMLTestTextBoxType
 *
 *********************************************************************/
 
@@ -26,6 +27,15 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
+    //the type for textbox. <input type="text">,<input type="password">,<textarea>
+    public enum HTMLTestTextBoxType : int
+    {
+        SingleLine = 0,
+        MutilLine = 1,
+        Password = 2,
+        Unknow = 3
+    }
+
     public class HTMLTestTextBox : HTMLGuiTestObject, IInputable
     {
 
@@ -35,8 +45,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _currentStr;
 
         //we may have 2 types of textbox, one is <input type="text"> and the other maybe "<textarea>"
-        protected IHTMLInputTextElement _textElement;
+        protected IHTMLInputTextElement _textInputElement;
         protected IHTMLTextAreaElement _textAreaElement;
+
+        protected HTMLTestTextBoxType _textBoxType = HTMLTestTextBoxType.Unknow;
 
         protected static Regex _specialKeysReg = new Regex(@"{[a-zA-Z]+}", RegexOptions.Compiled);
 
@@ -44,6 +56,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region properties
 
+        public HTMLTestTextBoxType HTMLTextBoxType
+        {
+            get { return _textBoxType; }
+        }
 
         #endregion
 
@@ -61,21 +77,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 if (this.Tag == "TEXTAERA")
                 {
-                    _currentStr = element.getAttribute("innerText", 0).ToString().Trim();
-
                     _textAreaElement = (IHTMLTextAreaElement)element;
+
+                    _currentStr = _textAreaElement.value;
+
+                    this._textBoxType = HTMLTestTextBoxType.MutilLine;
                 }
                 else
                 {
-                    _currentStr = element.getAttribute("value", 0).ToString().Trim();
+                    _textInputElement = (IHTMLInputTextElement)element;
 
-                    _textElement = (IHTMLInputTextElement)element;
+                    _currentStr = _textInputElement.value;
+
+                    this._textBoxType = GetTextBoxType();
                 }
             }
-            catch
+            catch (Exception e)
             {
-                _currentStr = "";
+                throw new CannotBuildObjectException("Can not build text box: " + e.Message);
             }
+
         }
 
         #endregion
@@ -91,11 +112,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 value = "";
             }
+
             try
             {
                 _actionFinished.WaitOne();
 
                 Focus();
+
                 KeyboardOp.SendChars(value);
 
                 _actionFinished.Set();
@@ -135,13 +158,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.WaitOne();
 
-                this._sourceElement.setAttribute("value", "", 0);
+                if (this._tag == "INPUT")
+                {
+                    this._textInputElement.value = "";
+                }
+                else
+                {
+                    this._textAreaElement.value = "";
+                }
 
                 _actionFinished.Set();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotPerformActionException("Can not perform clear action.");
+                throw new CannotPerformActionException("Can not perform clear action: " + e.Message);
             }
         }
 
@@ -193,8 +223,28 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
+        /* HTMLTestTextBoxType GetTextBoxType()
+         * return the text box type by checking the "type" property.
+         */
+        protected virtual HTMLTestTextBoxType GetTextBoxType()
+        {
+            if (this._sourceElement.getAttribute("type", 0) != null && this._sourceElement.getAttribute("type", 0).GetType().ToString() == "System.DBNull")
+            {
+                string type = this._sourceElement.getAttribute("type", 0).ToString().Trim();
+
+                if (String.Compare(type, "PASSWORD", 0) == 0)
+                {
+                    return HTMLTestTextBoxType.Password;
+                }
+            }
+
+            return HTMLTestTextBoxType.SingleLine;
+        }
+
+
         /* string[] ExtractSpecialKeys(string text)
          * Return array of special keys.
+         * NEED UPDATE!!!
          */
         protected virtual string[] ExtractSpecialKeys(string text)
         {
