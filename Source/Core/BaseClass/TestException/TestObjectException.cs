@@ -168,4 +168,17 @@ namespace Shrinerain.AutoTester.Core
 
         }
     };
+
+    public class FuzzySearchException : TestObjectException
+    {
+        public FuzzySearchException()
+            : this("Fuzzy Search Error.")
+        {
+        }
+
+        public FuzzySearchException(string message)
+            : base(message)
+        {
+        }
+    }
 }

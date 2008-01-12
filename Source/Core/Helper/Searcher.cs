@@ -9,9 +9,12 @@
 *
 * Description: this class defines some helper methods for search an object.
 *
-* History: 2007/12/24 wan,yu Init version
+* History: 2007/12/24 wan,yu Init version.
 *          2008/01/08 wan,yu bug fix for GetSimilarPercent, may enter dead loop when
-*                            two strings are 100% different.                 
+*                            two strings are 100% different.            
+*          2008/01/10 wan,yu update, rename IsStringEqual to IsStringLike.  
+*          2008/01/12 wan,yu update, modify GetSimilarPercent, use unsafe code to 
+*                            improve performance.          
 *
 *********************************************************************/
 
@@ -59,7 +62,7 @@ namespace Shrinerain.AutoTester.Core
         /* bool IsStringEqual(string str1, string str2)
          * Check if two string is "equal".
          */
-        public static bool IsStringEqual(string str1, string str2)
+        public static bool IsStringLike(string str1, string str2)
         {
             return IsStringLike(str1, str2, _defaultPercent);
         }
@@ -69,13 +72,9 @@ namespace Shrinerain.AutoTester.Core
          */
         public static bool IsStringLike(string str1, string str2, int percent)
         {
-            if (String.IsNullOrEmpty(str1) && String.IsNullOrEmpty(str2))
+            if (percent > 100 || percent < 1)
             {
-                return true;
-            }
-            else if (string.IsNullOrEmpty(str1) || string.IsNullOrEmpty(str2))
-            {
-                return false;
+                throw new FuzzySearchException("Similar percent must between 1 and 100.");
             }
 
             if (String.Compare(str1, str2, true) == 0)
@@ -84,24 +83,14 @@ namespace Shrinerain.AutoTester.Core
             }
             else
             {
-                if (percent > 100)
+                try
                 {
-                    percent = 100;
+                    return GetSimilarPercent(str1, str2) >= percent;
                 }
-                else if (percent < 1)
+                catch (Exception e)
                 {
-                    percent = 1;
+                    throw new FuzzySearchException("Fuzzy search error: " + e.Message);
                 }
-
-                if (percent == 100)
-                {
-                    return String.Compare(str1, str2, true) == 0;
-                }
-                else
-                {
-                    return GetSimilarPercent(str1, str2) >= percent ? true : false;
-                }
-
             }
 
         }
@@ -114,20 +103,23 @@ namespace Shrinerain.AutoTester.Core
         * return the similarity bewteen 2 string, use dynamic programming.
         * the similarity = the count of same chracters *2 /(length of str1 + length of str2)
         * eg: test1, test2, they have 4 same chracters, so the similarity = 4*2/(5+5)=0.8=80%
+        * for performance issue, use unsafe code to access the array. 
         */
-        private static int GetSimilarPercent(string str1, string str2)
+        private unsafe static int GetSimilarPercent(string str1, string str2)
         {
-            //both are empty, they are the same
-            if (String.IsNullOrEmpty(str1) && String.IsNullOrEmpty(str2))
+            //check if they are equal
+            if (String.Compare(str1, str2, true) == 0)
             {
                 return 100;
             }
-            else if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
+            else if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2)) //one string is null, return 0
             {
                 return 0;
             }
             else
             {
+
+                //both two strings are not empty, then we can start to check the similar percent.
                 str1 = str1.Trim();
                 str2 = str2.Trim();
 
@@ -156,32 +148,37 @@ namespace Shrinerain.AutoTester.Core
                 int len2 = str2.Length;
 
                 //dynamic programming array.
-                int[,] dpArray = new int[len1 + 1, len2 + 1];
+                //to improve performance, we use 1 dim stack arrary and unsafe code.
+                int* dpArr = stackalloc int[(len1 + 1) * (len2 + 1)];
 
                 //init array
+                int curIndex = 0;
+
                 for (int i = 0; i < len1; i++)
                 {
                     for (int j = 0; j < len2; j++)
                     {
+                        curIndex = (j + 1) * (len1 + 1) + i + 1;
+
                         if (str1[i] == str2[j])
                         {
                             if (i == 0 || j == 0)
                             {
-                                dpArray[i + 1, j + 1] = 1;
+                                dpArr[curIndex] = 1;
                             }
                             else
                             {
-                                dpArray[i + 1, j + 1] = dpArray[i, j] + 1;
+                                dpArr[curIndex] = dpArr[j * (len1 + 1) + i] + 1;
                             }
                         }
                         else
                         {
-                            dpArray[i + 1, j + 1] = 0;
+                            dpArr[curIndex] = 0;
                         }
                     }
                 }
 
-                int sameCharCount = 0;
+                int currentSameCharCount = 0;
                 int totalSameCharCount = 0;
                 int totalLen = len1 + len2;
 
@@ -194,19 +191,21 @@ namespace Shrinerain.AutoTester.Core
 
                 while (str1Index > 0 && str2Index > 0)
                 {
-                    sameCharCount = 0;
+                    currentSameCharCount = 0;
 
                     for (int i = str1Index; i > 0; i--)
                     {
-                        if (dpArray[i, str2Index] > sameCharCount)
+                        curIndex = str2Index * (len1 + 1) + i;
+
+                        if (dpArr[curIndex] > currentSameCharCount)
                         {
-                            sameCharCount = dpArray[i, str2Index];
+                            currentSameCharCount = dpArr[curIndex];
 
                             maxStr1Index = i;
                             maxStr2Index = str2Index;
                         }
 
-                        if (sameCharCount >= i)
+                        if (currentSameCharCount >= i)
                         {
                             break;
                         }
@@ -214,26 +213,28 @@ namespace Shrinerain.AutoTester.Core
 
                     for (int j = str2Index; j > 0; j--)
                     {
-                        if (dpArray[str1Index, j] > sameCharCount)
+                        curIndex = j * (len1 + 1) + str1Index;
+
+                        if (dpArr[curIndex] > currentSameCharCount)
                         {
-                            sameCharCount = dpArray[str1Index, j];
+                            currentSameCharCount = dpArr[curIndex];
 
                             maxStr1Index = str1Index;
                             maxStr2Index = j;
                         }
 
-                        if (sameCharCount >= j)
+                        if (currentSameCharCount >= j)
                         {
                             break;
                         }
                     }
 
-                    totalSameCharCount += sameCharCount;
+                    totalSameCharCount += currentSameCharCount;
 
-                    if (sameCharCount > 0)
+                    if (currentSameCharCount > 0)
                     {
-                        str1Index = maxStr1Index - sameCharCount;
-                        str2Index = maxStr2Index - sameCharCount;
+                        str1Index = maxStr1Index - currentSameCharCount;
+                        str2Index = maxStr2Index - currentSameCharCount;
                     }
                     else
                     {
