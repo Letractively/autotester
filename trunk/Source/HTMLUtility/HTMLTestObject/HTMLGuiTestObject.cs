@@ -188,7 +188,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 ScrollIntoView(false);
 
                 //get the center point of the object, and move mouse to it.
-                MouseOp.MoveTo(_centerPoint.X, _centerPoint.Y);
+                MouseOp.MoveTo(_centerPoint);
 
                 //after move mouse to the control, wait for 0.2s, make it looks like human action.
                 Thread.Sleep(200 * 1);
@@ -255,7 +255,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._sourceElement.scrollIntoView(toTop);
 
-                Thread.Sleep(1000 * 1);
+                Thread.Sleep(500 * 1);
 
                 //re-calculate the position, because we had move it.
                 this.Rect = GetRectOnScreen();

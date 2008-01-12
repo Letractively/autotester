@@ -165,11 +165,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotPerformActionException("Invalid regular expression: " + e.Message);
             }
 
-            foreach (string value in values)
+            foreach (string v in values)
             {
-                if (reg.IsMatch(value))
+                if (reg.IsMatch(v))
                 {
-                    _selectObj.Select(value);
+                    _selectObj.Select(v);
                     return;
                 }
             }

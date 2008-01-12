@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
@@ -128,6 +129,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Hover();
+
                 MouseOp.Click();
 
                 _actionFinished.Set();
@@ -168,12 +170,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public object GetDefaultAction()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return "Check";
         }
 
         public void PerformDefaultAction(object para)
         {
-            throw new Exception("The method or operation is not implemented.");
+            Check();
         }
 
         #endregion

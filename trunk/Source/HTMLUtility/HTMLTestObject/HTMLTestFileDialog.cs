@@ -55,10 +55,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
-        //public override Rectangle GetRectOnScreen()
-        //{
-        //    return null;
-        //}
+        public override Rectangle GetRectOnScreen()
+        {
+            return new Rectangle();
+        }
 
         #region IWindows Members
 
