@@ -1271,7 +1271,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.TextBox;
             }
-            else if (type == "LINK" || type == "HYPERLINK" || type == "LK")
+            else if (type == "LINK" || type == "HYPERLINK" || type == "LK" || type == "A")
             {
                 return HTMLTestObjectType.Link;
             }
@@ -1375,21 +1375,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else if (tag == "IMG")
             {
 
-                try
+                if (element.getAttribute("onclick", 0) == null || element.getAttribute("onclick", 0).GetType().ToString() == "System.DBNull")
                 {
-                    if (element.getAttribute("onclick", 0) == null || element.getAttribute("onclick", 0).GetType().ToString() == "System.DBNull")
-                    {
-                        return HTMLTestObjectType.Image;
-                    }
-                    else
-                    {
-                        return HTMLTestObjectType.Button;
-                    }
-
+                    return HTMLTestObjectType.Image;
                 }
-                catch
+                else
                 {
-                    throw;
+                    return HTMLTestObjectType.Button;
                 }
 
             }
