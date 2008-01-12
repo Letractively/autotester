@@ -16,7 +16,8 @@
 *          2008/01/06 wan,yu update, update fuzzy search, we will try lower similar percent if object is not found.                
 *          2008/01/08 wan,yu update, add CheckButtonObject to check button object.     
 *          2008/01/10 wan,yu update, update GetTypeByString() method, accept more strings.   
-*          2008/01/10 wan,yu update, move GetObjectType from HTMLTestObject.cs to HTMLTestObjectPool.cs          
+*          2008/01/10 wan,yu update, move GetObjectType from HTMLTestObject.cs to HTMLTestObjectPool.cs  
+*          2008/01/12 wan,yu update, add CheckTableObject, we can find the <table> object.
 *
 *********************************************************************/
 
@@ -670,7 +671,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 simPercent = _customSimilarPercent;
             }
 
-            //we will try 120s to find a object.
+            //we will try 30s to find a object.
             int times = 0;
             while (times < _maxWaitSeconds)
             {
@@ -934,6 +935,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+
+        #region check test object
+
         /* bool CheckObjectByType(IHTMLElement element, HTMLTestObjectType type, string value)
          * Check the object by expected type.
          * For different object, we need to check different property.
@@ -953,7 +957,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (type == HTMLTestObjectType.CheckBox)
             {
-                return CheckBoxObject(element, value, simPercent);
+                return CheckCheckBoxObject(element, value, simPercent);
             }
             else if (type == HTMLTestObjectType.Image)
             {
@@ -963,8 +967,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return CheckButtonObject(element, value, simPercent);
             }
+            else if (type == HTMLTestObjectType.Table)
+            {
+                return CheckTableObject(element, value, simPercent);
+            }
 
-            string tag = element.tagName.ToString();
+            string tag = element.tagName;
 
             //get default property of each tag
             //eg: for a textbox, the property is .value
@@ -993,6 +1001,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 string propertyName = "innerHTML";
+
                 if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
                 {
                     return false;
@@ -1075,13 +1084,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        /* bool CheckBoxObject(IHTMLElement element, string value)
+        /* bool CheckCheckBoxObject(IHTMLElement element, string value)
          * check check box.
          * we have 2 ways to check a check box
          * 1. check it's .value property.
          * 2. check it's label
          */
-        private static bool CheckBoxObject(IHTMLElement element, string value, int simPercent)
+        private static bool CheckCheckBoxObject(IHTMLElement element, string value, int simPercent)
         {
             try
             {
@@ -1109,42 +1118,76 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private static bool CheckButtonObject(IHTMLElement element, string value, int simPercent)
         {
-            string buttonTypeProperty = null;
-            string propertyName = null;
-
-            if (element.tagName == "INPUT")
+            try
             {
-                buttonTypeProperty = "type";
-                if (element.getAttribute(buttonTypeProperty, 0) != null && element.getAttribute(buttonTypeProperty, 0).GetType().ToString() != "System.DBNull")
+                string buttonTypeProperty = null;
+                string propertyName = null;
+
+                if (element.tagName == "INPUT")
                 {
-                    //we need to skip <input type="text"> and <input type="password">
-                    if (String.Compare(element.getAttribute(buttonTypeProperty, 0).ToString(), "text", true) == 0 || String.Compare(element.getAttribute(buttonTypeProperty, 0).ToString(), "password", true) == 0)
+                    buttonTypeProperty = "type";
+                    if (element.getAttribute(buttonTypeProperty, 0) != null && element.getAttribute(buttonTypeProperty, 0).GetType().ToString() != "System.DBNull")
+                    {
+                        //we need to skip <input type="text"> and <input type="password">
+                        if (String.Compare(element.getAttribute(buttonTypeProperty, 0).ToString(), "text", true) == 0 || String.Compare(element.getAttribute(buttonTypeProperty, 0).ToString(), "password", true) == 0)
+                        {
+                            return false;
+                        }
+                    }
+                    else
                     {
                         return false;
                     }
+
+                    propertyName = "value";
                 }
-                else
+                else if (element.tagName == "IMG")
                 {
-                    return false;
+                    buttonTypeProperty = "onclick";
+
+                    //if "onclick" is not found, we think it is a normal img.
+                    if (element.getAttribute(buttonTypeProperty, 0) == null || element.getAttribute(buttonTypeProperty, 0).GetType().ToString() == "System.DBNull")
+                    {
+                        return false;
+                    }
+
+                    propertyName = "src";
                 }
 
-                propertyName = "value";
+                return IsPropertyLike(element, propertyName, value, simPercent);
             }
-            else if (element.tagName == "IMG")
+            catch
             {
-                buttonTypeProperty = "onclick";
+                return false;
+            }
+        }
 
-                //if "onclick" is not found, we think it is a normal img.
-                if (element.getAttribute(buttonTypeProperty, 0) == null || element.getAttribute(buttonTypeProperty, 0).GetType().ToString() == "System.DBNull")
-                {
-                    return false;
-                }
-
-                propertyName = "src";
+        /* bool CheckTableObject(IHTMLElement element, string value, int simPercent)
+         * check the test table <table>
+         * NEED UPDATE!!!
+         */
+        private static bool CheckTableObject(IHTMLElement element, string value, int simPercent)
+        {
+            if (element.tagName != "TABLE")
+            {
+                return false;
             }
 
-            return IsPropertyLike(element, propertyName, value, simPercent);
+            try
+            {
+                IHTMLTable tableElement = (IHTMLTable)element;
+
+                //tableElement.
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
+
+        #endregion
 
         /* bool IsPropertyEqual(IHTMLElement element, string propertyName, string value, int simPercent)
          * check if the property == value with the expected similar percent.
