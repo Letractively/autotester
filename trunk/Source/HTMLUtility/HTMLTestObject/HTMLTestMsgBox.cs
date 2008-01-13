@@ -15,7 +15,8 @@
 * History: 2007/12/10 wan,yu Init version.
 *          2008/01/10 wan,yu update, modify Click() method, add Hover() method 
 *          2008/01/12 wan,yu update, wait for 30s to find the MessageBox, like 
-*                                    other normal HTMLTestObject.          
+*                                    other normal HTMLTestObject.
+*          2008/01/12 wan,yu update, build message box by expected handle.                                    
 *
 *********************************************************************/
 
@@ -33,7 +34,7 @@ using Shrinerain.AutoTester.Win32;
 namespace Shrinerain.AutoTester.HTMLUtility
 {
     //the icon type of Message box, we may have Warn(a yellow triangle), Error(a red cross), Info(a white triangle.)
-    //Use Java Script, we can only generate Warn window, but use VB Script, we can generate other types.
+    //Use Java Script, the default is Warn window, but use VB Script, we can generate other types.
     public enum HTMLTestMsgBoxIcon
     {
         Warn,
@@ -78,9 +79,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //get windows handle of message box.
             try
             {
-                _class = "#32770 (Dialog)";
+                this._class = "#32770 (Dialog)";
 
-                IntPtr msgBoxHandle=IntPtr.Zero;
+                IntPtr msgBoxHandle = IntPtr.Zero;
 
                 //we will try to find the message box in 30s.
                 int times = 0;
@@ -94,6 +95,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     if (msgBoxHandle != IntPtr.Zero)
                     {
+                        this._handle = msgBoxHandle;
                         break;
                     }
                 }
@@ -102,6 +104,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     throw new CannotBuildObjectException("Can not get the windows handle of MessageBox.");
                 }
+
+                GetMessageBoxInfo();
 
             }
             catch (CannotBuildObjectException)
@@ -113,12 +117,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotBuildObjectException("Can not build HTMLTestMsgBox: " + e.Message);
             }
 
+        }
+
+        /* HTMLTestMsgBox(IntPtr handle)
+         * build message box by expected handle.
+         */
+        public HTMLTestMsgBox(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                throw new CannotBuildObjectException("Handle of message box can not be 0.");
+            }
+
+            this._handle = handle;
+
+            this._class = "#32770 (Dialog)";
 
             try
             {
-                //get text information displayed.
-                this._message = GetMessage();
-
+                GetMessageBoxInfo();
             }
             catch (CannotBuildObjectException)
             {
@@ -126,27 +143,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception e)
             {
-                throw new CannotBuildObjectException("Can not get the message text: " + e.Message);
-            }
-
-            try
-            {
-                //get icon
-                this._icon = GetIcon();
-            }
-            catch (Exception e)
-            {
-                throw new CannotBuildObjectException("Can not get icon of MessageBox: " + e.Message);
-            }
-
-            try
-            {
-                //get button groups
-                _buttons = GetButtons();
-            }
-            catch (Exception e)
-            {
-                throw new CannotBuildObjectException("Can not get Buttons of MessageBox: " + e.Message);
+                throw new CannotBuildObjectException("Can not build test message box: " + e.Message);
             }
 
         }
@@ -327,6 +324,47 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
+
+        /* void GetMessageBoxInfo()
+         * get message/button/icon information.
+         */
+        protected virtual void GetMessageBoxInfo()
+        {
+            try
+            {
+                //get text information displayed.
+                this._message = GetMessage();
+
+            }
+            catch (CannotBuildObjectException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get the message text: " + e.Message);
+            }
+
+            try
+            {
+                //get icon
+                this._icon = GetIcon();
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get icon of MessageBox: " + e.Message);
+            }
+
+            try
+            {
+                //get button groups
+                _buttons = GetButtons();
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get Buttons of MessageBox: " + e.Message);
+            }
+        }
 
         /* String[] GetButtons()
          * Return the button groups on the MessageBox.
