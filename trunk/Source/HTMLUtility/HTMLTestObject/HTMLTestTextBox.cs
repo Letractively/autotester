@@ -9,8 +9,9 @@
 * Description: This class defines the actions provide by TextBox.
 *              The important actions include "Input" and "InputKeys". 
 *
-* History: 2007/09/04 wan,yu Init version
-*          2008/01/12 wan,yu update, add HTMLTestTextBoxType
+* History: 2007/09/04 wan,yu Init version.
+*          2008/01/12 wan,yu update, add HTMLTestTextBoxType.
+*          2008/01/14 wan,yu bug fix, sometimes Input may input incorrect string.          
 *
 *********************************************************************/
 
@@ -117,9 +118,51 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.WaitOne();
 
-                Focus();
+                string lastStr = GetText();
 
-                KeyboardOp.SendChars(value);
+                int tryTimes = 0;
+
+                //we need to make sure the text is inputted correctly.
+                while (true)
+                {
+                    Focus();
+
+                    //if we tried more than 1 times, we need also input the origin string.
+                    if (tryTimes > 0)
+                    {
+                        KeyboardOp.SendChars(lastStr + value);
+                    }
+                    else
+                    {
+                        KeyboardOp.SendChars(value);
+                    }
+
+                    //if we already try 2 times, break.
+                    if (String.Compare(GetText(), lastStr + value, 0) == 0)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        //not correct, retry.
+                        tryTimes++;
+
+                        //firstly, clear old text
+                        if (this._tag == "INPUT")
+                        {
+                            this._textInputElement.value = "";
+                        }
+                        else
+                        {
+                            this._textAreaElement.value = "";
+                        }
+
+                        if (tryTimes >= 3)
+                        {
+                            throw new CannotPerformActionException("Can not input string: " + value);
+                        }
+                    }
+                }
 
                 _actionFinished.Set();
 
@@ -204,7 +247,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region IShowInfo interface
         public virtual string GetText()
         {
-            return this._currentStr;
+            try
+            {
+                if (this._tag == "INPUT")
+                {
+                    return this._textInputElement.value == null ? "" : this._textInputElement.value;
+                }
+                else
+                {
+                    return this._textAreaElement.value == null ? "" : this._textAreaElement.value;
+                }
+            }
+            catch
+            {
+                return "";
+            }
         }
 
         public virtual string GetFontStyle()

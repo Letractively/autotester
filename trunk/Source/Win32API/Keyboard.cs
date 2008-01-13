@@ -43,6 +43,12 @@ namespace Shrinerain.AutoTester.Win32
          */
         public static void SendChars(string str)
         {
+
+            if (String.IsNullOrEmpty(str))
+            {
+                return;
+            }
+
             Win32API.INPUT[] structInput = new Win32API.INPUT[1];
 
             bool specialKeys = false;
@@ -101,7 +107,10 @@ namespace Shrinerain.AutoTester.Win32
          */
         public static void SendKey(string keys)
         {
-            SendKeys.SendWait(keys);
+            if (!String.IsNullOrEmpty(keys))
+            {
+                SendKeys.SendWait(keys);
+            }
         }
 
         #endregion
