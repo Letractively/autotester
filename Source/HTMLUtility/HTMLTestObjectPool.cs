@@ -18,7 +18,8 @@
 *          2008/01/10 wan,yu update, update GetTypeByString() method, accept more strings.   
 *          2008/01/10 wan,yu update, move GetObjectType from HTMLTestObject.cs to HTMLTestObjectPool.cs  
 *          2008/01/12 wan,yu update, add CheckTableObject, we can find the <table> object.
-*          2008/01/12 wan,yu update, add CheckMsgBoxObject and CheckFileDialogObject          
+*          2008/01/12 wan,yu update, add CheckMsgBoxObject and CheckFileDialogObject         
+*          2008/01/12 wan,yu update, bug fix for GetObjectByName, origin version will just check the first one.          
 *
 *********************************************************************/
 
@@ -30,8 +31,10 @@ using System.Drawing;
 using System.Threading;
 
 using mshtml;
+
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
@@ -185,18 +188,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //get IHTMLElement interface
                     _tempElement = HTMLTestBrowser.GetObjectByID(id);
 
-                    //build actual test object.
-                    if (!IsInteractive(_tempElement))
+                    if (_tempElement != null)
                     {
-                        continue;
+
+                        //build actual test object.
+                        _testObj = BuildObjectByType(_tempElement);
+
+                        ObjectCache.InsertObjectToCache(key, _testObj);
+
+                        return _testObj;
                     }
-
-                    _testObj = BuildObjectByType(_tempElement);
-
-                    ObjectCache.InsertObjectToCache(key, _testObj);
-
-                    return _testObj;
-
 
                 }
                 catch (CannotBuildObjectException)
@@ -241,24 +242,34 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
-                    object nameObj = (object)name;
-                    object indexObj = (object)0;
+                    //2008/01/12 wan,yu update
+                    //getObjectByName will return more than 1 object(if have), so we need a collection to
+                    //store these objects.
+                    //we will check each object.
+                    IHTMLElementCollection nameObjectsCol = HTMLTestBrowser.GetObjectsByName(name);
 
-                    //get the object collection with the same name.
-                    // in HTML, .id is unique, but .name is not, so we may get a collection.
-                    _tempElement = (IHTMLElement)HTMLTestBrowser.GetObjectsByName(name).item(nameObj, indexObj);
-
-                    if (!IsInteractive(_tempElement))
+                    for (int i = 0; i < nameObjectsCol.length; i++)
                     {
-                        continue;
+                        object nameObj = (object)i;
+                        object indexObj = (object)i;
+
+                        //get the object collection with the same name.
+                        // in HTML, .id is unique, but .name is not, so we may get a collection.
+                        _tempElement = (IHTMLElement)nameObjectsCol.item(nameObj, indexObj);
+
+
+                        if (!IsInteractive(_tempElement))
+                        {
+                            continue;
+                        }
+
+                        _testObj = BuildObjectByType(_tempElement);
+
+                        ObjectCache.InsertObjectToCache(key, _testObj);
+
+                        return _testObj;
+
                     }
-
-                    _testObj = BuildObjectByType(_tempElement);
-
-                    ObjectCache.InsertObjectToCache(key, _testObj);
-
-                    return _testObj;
-
 
                 }
                 catch (CannotBuildObjectException)
@@ -299,21 +310,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
-                    GetAllObjects();
+                    GetAllElements();
 
-                    _tempElement = (IHTMLElement)_allObjects[index];
+                    _tempElement = (IHTMLElement)_allElements.item((object)index, (object)index);
 
-                    if (!IsInteractive(_tempElement))
+                    if (_tempElement != null)
                     {
-                        continue;
+                        if (!IsInteractive(_tempElement))
+                        {
+                            //this object is not interactive, we will try next object.
+                            index++;
+                            continue;
+                        }
+
+                        _testObj = BuildObjectByType(_tempElement);
+
+                        ObjectCache.InsertObjectToCache(key, _testObj);
+
+                        return _testObj;
                     }
-
-                    _testObj = BuildObjectByType(_tempElement);
-
-                    ObjectCache.InsertObjectToCache(key, _testObj);
-
-                    return _testObj;
-
 
                 }
                 catch (CannotBuildObjectException)
@@ -380,13 +395,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get all HTML objects.
                 GetAllElements();
 
-                IHTMLElementCollection tmpCollection = _allElements;
-
                 object nameObj = null;
                 object indexObj = null;
 
                 //go through all element, check it's property value.
-                for (int i = 0; i < tmpCollection.length; i++)
+                for (int i = 0; i < _allElements.length; i++)
                 {
                     try
                     {
@@ -394,7 +407,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         indexObj = (object)i;
 
                         //get element by index.
-                        _tempElement = (IHTMLElement)tmpCollection.item(nameObj, indexObj);
+                        _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
 
                         //if not interactive object or the property is not found. 
                         if (!IsInteractive(_tempElement) || _tempElement.getAttribute(property, 0) == null || _tempElement.getAttribute(property, 0).GetType().ToString() == "System.DBNull")
@@ -478,13 +491,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get all HTML objects.
                 GetAllElements();
 
-                IHTMLElementCollection tmpCollection = _allElements;
-
                 object nameObj = null;
                 object indexObj = null;
 
                 //go through all element, check it's property value.
-                for (int i = 0; i < tmpCollection.length; i++)
+                for (int i = 0; i < _allElements.length; i++)
                 {
                     try
                     {
@@ -492,7 +503,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         indexObj = (object)i;
 
                         //get element by index.
-                        _tempElement = (IHTMLElement)tmpCollection.item(nameObj, indexObj);
+                        _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
 
                         if (!IsInteractive(_tempElement))
                         {
@@ -575,6 +586,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 }
                             }
                         }
+
                     }
                     catch (CannotBuildObjectException)
                     {
@@ -673,6 +685,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 simPercent = _customSimilarPercent;
             }
 
+            //windows handle of Message Box and File Dialog
+            IntPtr handle = IntPtr.Zero;
+
+            //convert the type to HTML tags.
+            //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
+            string[] tags = GetObjectTags(typeValue);
+
             //we will try 30s to find a object.
             int times = 0;
             while (times <= _maxWaitSeconds)
@@ -680,26 +699,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //special type, we don't need to check HTML object.
                 if (typeValue == HTMLTestObjectType.FileDialog || typeValue == HTMLTestObjectType.MsgBox)
                 {
-                    //handle of message box or file dialog
-                    IntPtr handle;
 
                     try
                     {
                         //check object by type
-                        if (CheckObjectByType(out handle, typeValue, values, simPercent))
+                        if (CheckObjectByType(ref handle, typeValue, values, simPercent))
                         {
                             leftIndex--;
+
+                            if (leftIndex >= 0)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                //if index is 0 , that means we found the object.
+                                _testObj = BuildObjectByType(handle, typeValue);
+
+                                ObjectCache.InsertObjectToCache(key, _testObj);
+
+                                return _testObj;
+                            }
+
                         }
 
-                        //if index is 0 , that means we found the object.
-                        if (leftIndex < 0 && handle != IntPtr.Zero)
-                        {
-                            _testObj = BuildObjectByType(handle, typeValue);
-
-                            ObjectCache.InsertObjectToCache(key, _testObj);
-
-                            return _testObj;
-                        }
                     }
                     catch (CannotBuildObjectException)
                     {
@@ -712,23 +735,28 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    //convert the type to HTML tags.
-                    //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
-                    string[] tags = GetObjectTags(typeValue);
 
-                    IHTMLElementCollection _tmpElementCol;
+                    if (tags == null)
+                    {
+                        throw new CannotBuildObjectException("Tags can not be empty.");
+                    }
+
+                    //normal HTML objects
+
+                    IHTMLElementCollection _tagElementCol;
 
                     object nameObj = null;
                     object indexObj = null;
 
                     //because we may convert one type to mutil tags, so check them one by one.
+                    //eg: Button to <input> and <button>
                     foreach (string tag in tags)
                     {
                         //find the object by tag.
-                        _tmpElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
+                        _tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
 
                         //check object one by one
-                        for (int i = 0; i < _tmpElementCol.length; i++)
+                        for (int i = 0; i < _tagElementCol.length; i++)
                         {
 
                             nameObj = (object)i;
@@ -736,7 +764,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                             try
                             {
-                                _tempElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
+                                _tempElement = (IHTMLElement)_tagElementCol.item(nameObj, indexObj);
 
                                 // check if it is a interactive object.
                                 if (!IsInteractive(_tempElement))
@@ -772,6 +800,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             }
                             catch
                             {
+
                             }
                         }
                     }
@@ -866,16 +895,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
 
-                    if (!IsInteractive(_tempElement))
+                    if (IsInteractive(_tempElement))
                     {
-                        continue;
+
+                        _testObj = BuildObjectByType(_tempElement);
+
+                        ObjectCache.InsertObjectToCache(key, _testObj);
+
+                        return _testObj;
+
                     }
 
-                    _testObj = BuildObjectByType(_tempElement);
-
-                    ObjectCache.InsertObjectToCache(key, _testObj);
-
-                    return _testObj;
                 }
                 catch (CannotBuildObjectException)
                 {
@@ -1039,21 +1069,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return IsPropertyLike(element, propertyName, value, simPercent);
         }
 
-
-        private static bool CheckObjectByType(out IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
+        /* bool CheckObjectByType(ref IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
+         * check windows object, like message box and file dialog
+         */
+        private static bool CheckObjectByType(ref IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
         {
-            handle = IntPtr.Zero;
 
             if (type == HTMLTestObjectType.MsgBox)
             {
-                return CheckMsgBoxObject(out handle, value, simPercent);
+                return CheckMsgBoxObject(ref handle, value, simPercent);
             }
             else if (type == HTMLTestObjectType.FileDialog)
             {
-                return CheckFileDialogObject(out handle, value, simPercent);
+                return CheckFileDialogObject(ref handle, value, simPercent);
+            }
+            else
+            {
+                return false;
             }
 
-            return false;
         }
 
         /*  bool CheckSelectObject(IHTMLElement element, string value)
@@ -1255,18 +1289,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* bool CheckMsgBoxObject(string value, int simPercent)
          * check pop up message box.
          * it is a window control, not a HTML control, so we don't need IHTMLElement.
+         * NEED UPDATE!!!
          */
-        private static bool CheckMsgBoxObject(out IntPtr handle, string value, int simPercent)
+        private static bool CheckMsgBoxObject(ref IntPtr handle, string value, int simPercent)
         {
-            handle = IntPtr.Zero;
-            return false;
+
+            //get the handle, the text of MessageBox is "Windows Internet Explorer", we use this to find it.
+            handle = Win32API.FindWindowEx(TestBrowser.MainHandle, handle, null, "Windows Internet Explorer");
+
+            return handle != IntPtr.Zero;
         }
 
         /* bool CheckFileDialogObject(string value, int simPercent)
          * check file dialog, when you need input/browse file/folder, we can see this control.
          * it is a windows control, not a HTML control, so we don't need IHTMLElement.
          */
-        private static bool CheckFileDialogObject(out IntPtr handle, string value, int simPercent)
+        private static bool CheckFileDialogObject(ref IntPtr handle, string value, int simPercent)
         {
             handle = IntPtr.Zero;
             return false;
@@ -1330,7 +1368,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private static bool IsInteractive(IHTMLElement element)
         {
-            string tag = element.tagName.ToUpper();
+            if (element == null)
+            {
+                return false;
+            }
+
+            string tag = element.tagName;
 
             if (String.IsNullOrEmpty(tag))
             {
@@ -1454,30 +1497,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             switch (type)
             {
-                case HTMLTestObjectType.ActiveX:
-                    return new string[] { "object" };
+                case HTMLTestObjectType.Link:
+                    return new string[] { "a" };
                 case HTMLTestObjectType.Button:
-                    return new string[] { "input", "button", "img" };
+                    return new string[] { "input", "button" };
+                case HTMLTestObjectType.TextBox:
+                    return new string[] { "input", "textarea" };
+                case HTMLTestObjectType.Image:
+                    return new string[] { "img" };
                 case HTMLTestObjectType.CheckBox:
+                    return new string[] { "input", "label" };
+                case HTMLTestObjectType.RadioButton:
                     return new string[] { "input", "label" };
                 case HTMLTestObjectType.ComboBox:
                     return new string[] { "select" };
-                case HTMLTestObjectType.FileDialog:
-                    return new string[] { "input" };
-                case HTMLTestObjectType.Image:
-                    return new string[] { "img" };
-                case HTMLTestObjectType.Link:
-                    return new string[] { "a" };
                 case HTMLTestObjectType.ListBox:
                     return new string[] { "select" };
-                case HTMLTestObjectType.MsgBox:
-                    return new string[] { };
-                case HTMLTestObjectType.RadioButton:
-                    return new string[] { "input", "label" };
                 case HTMLTestObjectType.Table:
                     return new string[] { "table" };
-                case HTMLTestObjectType.TextBox:
-                    return new string[] { "input", "textarea" };
+                case HTMLTestObjectType.FileDialog:
+                    return new string[] { };
+                case HTMLTestObjectType.MsgBox:
+                    return new string[] { };
+                case HTMLTestObjectType.ActiveX:
+                    return new string[] { "object" };
                 case HTMLTestObjectType.Unknow:
                     return new string[] { };
                 default:
@@ -1636,7 +1679,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             switch (type)
             {
                 case HTMLTestObjectType.MsgBox:
-                    tmp = new HTMLTestMsgBox();
+                    tmp = new HTMLTestMsgBox(handle);
                     break;
                 case HTMLTestObjectType.FileDialog:
                     tmp = new HTMLTestFileDialog();
