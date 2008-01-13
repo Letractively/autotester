@@ -112,8 +112,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 return 100;
             }
-            else if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2)) //one string is null, return 0
+            else if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
             {
+                //one string is null, return 0
                 return 0;
             }
             else

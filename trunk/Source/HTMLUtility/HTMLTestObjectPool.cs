@@ -18,6 +18,7 @@
 *          2008/01/10 wan,yu update, update GetTypeByString() method, accept more strings.   
 *          2008/01/10 wan,yu update, move GetObjectType from HTMLTestObject.cs to HTMLTestObjectPool.cs  
 *          2008/01/12 wan,yu update, add CheckTableObject, we can find the <table> object.
+*          2008/01/12 wan,yu update, add CheckMsgBoxObject and CheckFileDialogObject          
 *
 *********************************************************************/
 
@@ -177,7 +178,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //we will try 30 seconds to find an object.
             int times = 0;
-            while (times < _maxWaitSeconds)
+            while (times <= _maxWaitSeconds)
             {
                 try
                 {
@@ -236,7 +237,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //we will try 30s to find a object
             int times = 0;
-            while (times < _maxWaitSeconds)
+            while (times <= _maxWaitSeconds)
             {
                 try
                 {
@@ -294,7 +295,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             int times = 0;
-            while (times < _maxWaitSeconds)
+            while (times <= _maxWaitSeconds)
             {
                 try
                 {
@@ -371,9 +372,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 simPercent = _customSimilarPercent;
             }
 
-            //we will try 120s to find an object.
+            //we will try 30s to find an object.
             int times = 0;
-            while (times < _maxWaitSeconds)
+            while (times <= _maxWaitSeconds)
             {
 
                 //get all HTML objects.
@@ -471,7 +472,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             int times = 0;
-            while (times < _maxWaitSeconds)
+            while (times <= _maxWaitSeconds)
             {
 
                 //get all HTML objects.
@@ -607,45 +608,46 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByType(string type, string values, int index)
         {
-            if (String.IsNullOrEmpty(type) || String.IsNullOrEmpty(values))
+            if (String.IsNullOrEmpty(type))
             {
-                throw new ObjectNotFoundException("Can not get object by type: type and values can not be empty.");
+                throw new ObjectNotFoundException("Can not get object by type: type can not be empty.");
             }
 
             type = type.Trim();
-            values = values.Trim();
 
             if (index < 0)
             {
                 index = 0;
             }
 
-            HTMLTestObjectType typeValue;
-
-            //convert the TYPE text to valid internal type.
-            // eg: button to HTMLTestObjectType.Button
-            typeValue = GetTypeByString(type);
-
-            if (typeValue == HTMLTestObjectType.Unknow)
-            {
-                throw new ObjectNotFoundException("Unknow HTML object type.");
-            }
-
-            string key = GetKey(type + values + index);
+            //try to get object from cache.
+            string key = GetKey(type + values + index.ToString());
 
             if (ObjectCache.GetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
 
-            //convert the type to HTML tags.
-            //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
-            string[] tags = GetObjectTags(typeValue);
+            //convert the TYPE text to valid internal type.
+            // eg: "button" to HTMLTestObjectType.Button
+            HTMLTestObjectType typeValue = GetTypeByString(type);
 
-            IHTMLElementCollection _tmpElementCol;
-
-            object nameObj = null;
-            object indexObj = null;
+            if (typeValue == HTMLTestObjectType.Unknow)
+            {
+                throw new ObjectNotFoundException("Unknow HTML object type.");
+            }
+            else if (typeValue != HTMLTestObjectType.MsgBox && typeValue != HTMLTestObjectType.FileDialog) //special type, not HTML object.
+            {
+                //not special type, then we need values to find the object.
+                if (String.IsNullOrEmpty(values))
+                {
+                    throw new ObjectNotFoundException("Can not get object by type: values can not be empty.");
+                }
+                else
+                {
+                    values = values.Trim();
+                }
+            }
 
             //if the expected value is number like, we think it is stand for the index of the object, not text on it.
             // eg: we can use type="textbox", values="1" to find the first textbox.
@@ -673,59 +675,104 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //we will try 30s to find a object.
             int times = 0;
-            while (times < _maxWaitSeconds)
+            while (times <= _maxWaitSeconds)
             {
-                //because we may convert one type to mutil tags, so check them one by one.
-                foreach (string tag in tags)
+                //special type, we don't need to check HTML object.
+                if (typeValue == HTMLTestObjectType.FileDialog || typeValue == HTMLTestObjectType.MsgBox)
                 {
-                    //find the object by tag.
-                    _tmpElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
+                    //handle of message box or file dialog
+                    IntPtr handle;
 
-                    //check object one by one
-                    for (int i = 0; i < _tmpElementCol.length; i++)
+                    try
                     {
-
-                        nameObj = (object)i;
-                        indexObj = (object)i;
-
-                        try
+                        //check object by type
+                        if (CheckObjectByType(out handle, typeValue, values, simPercent))
                         {
-                            _tempElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
-
-                            // check if it is a interactive object.
-                            if (!IsInteractive(_tempElement))
-                            {
-                                continue;
-                            }
-
-                            //if mutil object, check if it is the object at expectd index
-                            if (isByIndex)
-                            {
-                                leftIndex--;
-                            }
-                            else if (CheckObjectByType(_tempElement, typeValue, values, simPercent)) //check object by type
-                            {
-                                leftIndex--;
-                            }
-
-                            //if index is 0 , that means we found the object.
-                            if (leftIndex < 0)
-                            {
-                                _testObj = BuildObjectByType(_tempElement, typeValue);
-
-                                ObjectCache.InsertObjectToCache(key, _testObj);
-
-                                return _testObj;
-                            }
-
-
+                            leftIndex--;
                         }
-                        catch (CannotBuildObjectException)
+
+                        //if index is 0 , that means we found the object.
+                        if (leftIndex < 0 && handle != IntPtr.Zero)
                         {
-                            throw;
+                            _testObj = BuildObjectByType(handle, typeValue);
+
+                            ObjectCache.InsertObjectToCache(key, _testObj);
+
+                            return _testObj;
                         }
-                        catch
+                    }
+                    catch (CannotBuildObjectException)
+                    {
+                        throw;
+                    }
+                    catch
+                    {
+                    }
+
+                }
+                else
+                {
+                    //convert the type to HTML tags.
+                    //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
+                    string[] tags = GetObjectTags(typeValue);
+
+                    IHTMLElementCollection _tmpElementCol;
+
+                    object nameObj = null;
+                    object indexObj = null;
+
+                    //because we may convert one type to mutil tags, so check them one by one.
+                    foreach (string tag in tags)
+                    {
+                        //find the object by tag.
+                        _tmpElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
+
+                        //check object one by one
+                        for (int i = 0; i < _tmpElementCol.length; i++)
                         {
+
+                            nameObj = (object)i;
+                            indexObj = (object)i;
+
+                            try
+                            {
+                                _tempElement = (IHTMLElement)_tmpElementCol.item(nameObj, indexObj);
+
+                                // check if it is a interactive object.
+                                if (!IsInteractive(_tempElement))
+                                {
+                                    continue;
+                                }
+
+                                //if mutil object, check if it is the object at expectd index
+                                if (isByIndex)
+                                {
+                                    leftIndex--;
+                                }
+                                else if (CheckObjectByType(_tempElement, typeValue, values, simPercent)) //check object by type
+                                {
+                                    leftIndex--;
+                                }
+
+                                //if index is 0 , that means we found the object.
+                                if (leftIndex < 0)
+                                {
+                                    _testObj = BuildObjectByType(_tempElement, typeValue);
+
+                                    ObjectCache.InsertObjectToCache(key, _testObj);
+
+                                    return _testObj;
+                                }
+
+
+                            }
+                            catch (CannotBuildObjectException)
+                            {
+                                throw;
+                            }
+                            catch
+                            {
+                            }
                         }
                     }
                 }
@@ -764,8 +811,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             value = value.Trim();
 
-            //we will try some normal properties to find the object.
-            string[] possibleProperties = new string[] { "value", "innerText", "innerHTML", "title" };
+            //we will try some properties to find the object.
+            string[] possibleProperties = new string[] { "value", "innerText", "innerHTML", "title", "id", "name" };
 
             TestObject tmpObj;
 
@@ -775,6 +822,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
+                    //each object we just try 3s, because we need to check other property.
                     _maxWaitSeconds = 3;
 
                     tmpObj = (TestObject)GetObjectByProperty(s, value);
@@ -785,17 +833,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 finally
                 {
+                    //we need to resume the _maxWaitSeconds, because other methods not just wait for 3s.
                     _maxWaitSeconds = lastMaxSnds;
                 }
 
                 if (tmpObj != null)
                 {
-                    _testObj = tmpObj;
-                    return _testObj;
+                    return tmpObj;
                 }
             }
 
-            throw new ObjectNotFoundException("Can not find object by AI.");
+            throw new ObjectNotFoundException("Can not find object by AI with value: " + value);
         }
 
 
@@ -812,7 +860,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             int times = 0;
-            while (times < _maxWaitSeconds)
+            while (times <= _maxWaitSeconds)
             {
                 try
                 {
@@ -989,6 +1037,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //not special type, just need to check some property.
             return IsPropertyLike(element, propertyName, value, simPercent);
+        }
+
+
+        private static bool CheckObjectByType(out IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
+        {
+            handle = IntPtr.Zero;
+
+            if (type == HTMLTestObjectType.MsgBox)
+            {
+                return CheckMsgBoxObject(out handle, value, simPercent);
+            }
+            else if (type == HTMLTestObjectType.FileDialog)
+            {
+                return CheckFileDialogObject(out handle, value, simPercent);
+            }
+
+            return false;
         }
 
         /*  bool CheckSelectObject(IHTMLElement element, string value)
@@ -1185,6 +1250,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
+        }
+
+        /* bool CheckMsgBoxObject(string value, int simPercent)
+         * check pop up message box.
+         * it is a window control, not a HTML control, so we don't need IHTMLElement.
+         */
+        private static bool CheckMsgBoxObject(out IntPtr handle, string value, int simPercent)
+        {
+            handle = IntPtr.Zero;
+            return false;
+        }
+
+        /* bool CheckFileDialogObject(string value, int simPercent)
+         * check file dialog, when you need input/browse file/folder, we can see this control.
+         * it is a windows control, not a HTML control, so we don't need IHTMLElement.
+         */
+        private static bool CheckFileDialogObject(out IntPtr handle, string value, int simPercent)
+        {
+            handle = IntPtr.Zero;
+            return false;
         }
 
         #endregion
@@ -1533,6 +1618,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.CheckBox:
                     tmp = new HTMLTestCheckBox(element);
                     break;
+                default:
+                    tmp = null;
+                    break;
+            }
+
+            return tmp;
+        }
+
+        /* HTMLGuiTestObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
+         * Build some special object, like MessageBox and FileDialog, they are Windows control.
+         */
+        private static HTMLGuiTestObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
+        {
+            HTMLGuiTestObject tmp;
+
+            switch (type)
+            {
                 case HTMLTestObjectType.MsgBox:
                     tmp = new HTMLTestMsgBox();
                     break;
@@ -1546,6 +1648,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             return tmp;
         }
+
 
         #region object cache
 
