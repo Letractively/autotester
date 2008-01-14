@@ -17,10 +17,13 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
+
+using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.MFCUtility
 {
-    public class MFCTestGUIObject : MFCTestObject
+    public class MFCTestGUIObject : MFCTestObject, IVisible
     {
 
         #region fields
@@ -40,7 +43,29 @@ namespace Shrinerain.AutoTester.MFCUtility
         #endregion
 
         #region public methods
+        #region IVisible Members
 
+        public Point GetCenterPoint()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Rectangle GetRectOnScreen()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Bitmap GetControlPrint()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Hover()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
         #endregion
 
         #region private methods
@@ -49,6 +74,7 @@ namespace Shrinerain.AutoTester.MFCUtility
         #endregion
 
         #endregion
+
 
     }
 }
