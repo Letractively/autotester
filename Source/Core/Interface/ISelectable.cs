@@ -10,6 +10,7 @@
 *              Like ListBox, ComboBox etc.
 *
 * History: 2007/09/04 wan,yu Init version
+*          2008/01/14 wan,yu update, add void SelectMulti(string[] strs)
 *
 *********************************************************************/
 
@@ -24,6 +25,9 @@ namespace Shrinerain.AutoTester.Core
     {
         //select the item by it's text
         void Select(string str);
+
+        //select more than 1 item.
+        void SelectMulti(string[] strs);
 
         //select the item by it's index, eg: the 1st one.
         void SelectByIndex(int index);

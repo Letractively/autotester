@@ -122,6 +122,19 @@ namespace Shrinerain.AutoTester.Core
         }
     }
 
+    public class CannotMaxAppException : TestAppException
+    {
+        public CannotMaxAppException()
+            : this("Can not maxsize test application.")
+        {
+        }
+
+        public CannotMaxAppException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class CannotGetAppStatusException : TestAppException
     {
         public CannotGetAppStatusException()

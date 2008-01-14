@@ -944,19 +944,16 @@ namespace Shrinerain.AutoTester.Core
                         try
                         {
                             tempIE = (InternetExplorer)allBrowsers.Item(i);
-                        }
-                        catch
-                        {
-                            continue;
-                        }
 
-                        if (tempIE == null)
-                        {
-                            continue;
-                        }
-                        try
-                        {
-                            currentHandle = tempIE.HWND;
+                            if (tempIE == null)
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                currentHandle = tempIE.HWND;
+                            }
+
                         }
                         catch
                         {
@@ -992,6 +989,8 @@ namespace Shrinerain.AutoTester.Core
             }
 
             bool isByTitle = true;
+
+            //if the title is empty, we need to find the browser by process id.
             if (String.IsNullOrEmpty(title))
             {
                 isByTitle = false;
@@ -1002,15 +1001,14 @@ namespace Shrinerain.AutoTester.Core
             IntPtr ieHwd = IntPtr.Zero;
 
             int times = 0;
-
             while (times <= seconds)
             {
-                //if title is empty, we will try to get the 1st browser.
 
                 Process[] pArr = Process.GetProcessesByName("iexplore");
 
                 foreach (Process p in pArr)
                 {
+                    //find the browser by it's title
                     if (isByTitle)
                     {
                         if (Searcher.IsStringLike(p.MainWindowTitle, title, simPercent))
@@ -1022,23 +1020,35 @@ namespace Shrinerain.AutoTester.Core
                             continue;
                         }
                     }
-                    else
+                    else //find the browser by process id.
                     {
-                        // after starting an iexplorer, if we use _browserProcess.MainWindowHandle, it is always 0.
-                        // so we use this way to find the main handle.
-                        if (p.Id == _browserProcess.Id)
+                        //if we didn't start a browser process, we will use the first one.
+                        if (_browserProcess == null)
                         {
                             browserFound = true;
                         }
                         else
                         {
-                            continue;
+                            // after starting an iexplorer, if we use _browserProcess.MainWindowHandle, it is always 0 and will not change.
+                            // currently I don't know why????
+                            // so we use this way to find the main handle.
+                            if (p.Id == _browserProcess.Id)
+                            {
+                                browserFound = true;
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
+
                     }
 
                     if (browserFound)
                     {
                         _browserProcess = p;
+
+                        //main window handle is the handle of Internet explorer.
                         ieHwd = p.MainWindowHandle;
 
                         break;
@@ -1072,7 +1082,10 @@ namespace Shrinerain.AutoTester.Core
                 {
                     simPercent = 100;
                 }
+
             }
+
+            throw new TestBrowserNotFoundException();
         }
 
         protected virtual void WaitForBrowser()
@@ -1356,14 +1369,15 @@ namespace Shrinerain.AutoTester.Core
             if (ieServerHandle != IntPtr.Zero)
             {
                 int nMsg = Win32API.RegisterWindowMessage("WM_HTML_GETOBJECT");
+
                 UIntPtr lRes;
-                if (Win32API.SendMessageTimeout(ieServerHandle, nMsg, 0, 0,
-                     Win32API.SMTO_ABORTIFHUNG, 1000, out lRes) == 0)
+
+                if (Win32API.SendMessageTimeout(ieServerHandle, nMsg, 0, 0, Win32API.SMTO_ABORTIFHUNG, 1000, out lRes) == 0)
                 {
                     return null;
                 }
-                return (HTMLDocument)Win32API.ObjectFromLresult(lRes,
-                     typeof(IHTMLDocument).GUID, IntPtr.Zero);
+
+                return (HTMLDocument)Win32API.ObjectFromLresult(lRes, typeof(IHTMLDocument).GUID, IntPtr.Zero);
             }
             else
             {

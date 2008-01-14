@@ -55,6 +55,11 @@ namespace Shrinerain.AutoTester.Core
 
         #region ctor
 
+        private Searcher()
+        {
+
+        }
+
         #endregion
 
         #region public methods
@@ -129,6 +134,8 @@ namespace Shrinerain.AutoTester.Core
                 {
                     string[] str1Arr = str1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     string[] str2Arr = str2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                    //if the two strings have the same number of words, check each word.
                     if (str1Arr.Length > 1 && str1Arr.Length == str2Arr.Length)
                     {
                         int totalSimPercent = 0;

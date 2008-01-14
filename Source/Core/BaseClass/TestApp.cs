@@ -112,7 +112,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (!File.Exists(appFullPath))
             {
-                throw new CannotStartAppException("Can not find application: " + appFullPath);
+                throw new CannotStartAppException("Can not find test application: " + appFullPath);
             }
 
             string arg = "";
@@ -176,10 +176,14 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual void Max()
         {
-            //try
-            //{
-
-            //}
+            try
+            {
+                Win32API.PostMessage(this.Handle, Convert.ToInt32(Win32API.WindowMessages.WM_SYSCOMMAND), Convert.ToInt32(Win32API.WindowMenuMessage.SC_MAXIMIZE), 0);
+            }
+            catch (Exception e)
+            {
+                throw new CannotMaxAppException("Can not max size test application: " + e.Message);
+            }
         }
 
         public virtual void Min()

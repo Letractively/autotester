@@ -11,6 +11,7 @@
 *
 * History: 2007/09/04 wan,yu Init version
 *          2008/01/10 wan,yu update, change _htmlSelectClass to _htmlSelectElement
+*          2008/01/14 wan,yu update, add SelectMulti method to select more than 1 item in listbox. 
 *
 *********************************************************************/
 
@@ -87,7 +88,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
-                //_htmlSelectClass = (HTMLSelectElementClass)element;
             }
             catch (Exception e)
             {
@@ -208,6 +208,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        /* void SelectByIndex(int index)
+         * select an item by index.
+         */
         public virtual void SelectByIndex(int index)
         {
             if (this._allValues == null)
@@ -252,6 +255,54 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotPerformActionException(e.ToString());
             }
 
+        }
+
+        /* void SelectMulti(string[] values)
+         * Select more than 1 items.
+         */
+        public virtual void SelectMulti(string[] values)
+        {
+
+            if (values == null)
+            {
+                throw new CannotPerformActionException("Can not select in listbox, no item.");
+            }
+
+            if (this._allValues == null)
+            {
+                this._allValues = GetAllValues();
+            }
+
+            //firstly, we need to get index for each text.
+            int[] index = GetIndexByString(values);
+
+            try
+            {
+                _actionFinished.WaitOne();
+
+                Hover();
+
+                Point itemPosition;
+
+                //click each item.
+                foreach (int itemIndex in index)
+                {
+                    //get the actual position on the screen.
+                    itemPosition = GetItemPosition(itemIndex);
+
+                    MouseOp.Click(itemPosition);
+
+                    //refresh the selected value.
+                    this._selectedValue = this._allValues[itemIndex];
+                }
+
+                _actionFinished.Set();
+
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException(e.ToString());
+            }
         }
 
         /* String[] GetAllValues()
@@ -415,13 +466,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             //find the position of the first visible item.
-            int itemX = this.Rect.Width / 3 + this.Rect.Left;
-            int itemY = this.Rect.Top + this.ItemHeight / 2;
+            int itemX = this._rect.Width / 3 + this._rect.Left;
+            int itemY = this._rect.Top + this._itemHeight / 2;
 
             if (positionFlag == 0)
             {
                 //currently, we can see it, just click it.
-                itemY += (index - startIndex) * this.ItemHeight;
+                itemY += (index - startIndex) * this._itemHeight;
             }
             else if (positionFlag == 1)
             {
@@ -434,7 +485,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 int expectedStartIndex = index - this._itemCountPerPage + 1;
                 Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_SETTOPINDEX), expectedStartIndex, 0);
 
-                itemY += (this._itemCountPerPage - 1) * this.ItemHeight;
+                itemY += (this._itemCountPerPage - 1) * this._itemHeight;
             }
 
             return new Point(itemX, itemY);
@@ -457,26 +508,49 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        /* int GetIndexByString(string value)
+        /* int[] GetIndexByString(string[] value)
          * get the index of expected text.
          */
         protected virtual int GetIndexByString(string value)
+        {
+            return GetIndexByString(new string[1] { value })[0];
+        }
+
+        protected virtual int[] GetIndexByString(string[] values)
         {
             if (this._allValues == null)
             {
                 this._allValues = GetAllValues();
             }
 
-
-            for (int i = 0; i < this._allValues.Length; i++)
+            if (values == null)
             {
-                if (String.Compare(_allValues[i], value, true) == 0)
+                throw new ItemNotFoundException("Can not find item: values can not be empty.");
+            }
+
+            int[] res = new int[values.Length];
+
+            for (int j = 0; j < values.Length; j++)
+            {
+                bool found = false;
+
+                for (int i = 0; i < this._allValues.Length; i++)
                 {
-                    return i;
+                    if (String.Compare(_allValues[i], values[j], true) == 0)
+                    {
+                        res[j] = i;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    throw new ItemNotFoundException("Can not find item: " + values[j]);
                 }
             }
 
-            throw new ItemNotFoundException("Can not find item: " + value);
+            return res;
 
         }
 

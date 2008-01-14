@@ -174,7 +174,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //first, we will try get object from cache --- a hash table.
             string key = GetKey(id);
 
-            if (ObjectCache.GetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -231,7 +231,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             name = name.Trim();
 
             string key = GetKey(name);
-            if (ObjectCache.GetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -300,7 +300,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             string key = GetKey(index.ToString());
 
-            if (ObjectCache.GetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -365,7 +365,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             value = value.Trim();
 
             string key = GetKey(property + value);
-            if (ObjectCache.GetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -479,7 +479,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             string key = GetKey(properties.ToString() + values.ToString() + similarity.ToString() + useAll.ToString());
 
-            if (ObjectCache.GetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -635,7 +635,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //try to get object from cache.
             string key = GetKey(type + values + index.ToString());
 
-            if (ObjectCache.GetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
@@ -743,20 +743,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     //normal HTML objects
 
-                    IHTMLElementCollection _tagElementCol;
+                    IHTMLElementCollection tagElementCol;
 
                     object nameObj = null;
                     object indexObj = null;
 
-                    //because we may convert one type to mutil tags, so check them one by one.
+                    //because we may convert one type to multi tags, so check them one by one.
                     //eg: Button to <input> and <button>
                     foreach (string tag in tags)
                     {
                         //find the object by tag.
-                        _tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
+                        tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
 
                         //check object one by one
-                        for (int i = 0; i < _tagElementCol.length; i++)
+                        for (int i = 0; i < tagElementCol.length; i++)
                         {
 
                             nameObj = (object)i;
@@ -764,7 +764,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                             try
                             {
-                                _tempElement = (IHTMLElement)_tagElementCol.item(nameObj, indexObj);
+                                _tempElement = (IHTMLElement)tagElementCol.item(nameObj, indexObj);
 
                                 // check if it is a interactive object.
                                 if (!IsInteractive(_tempElement))
@@ -772,7 +772,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                     continue;
                                 }
 
-                                //if mutil object, check if it is the object at expectd index
+                                //if multi object, check if it is the object at expectd index
                                 if (isByIndex)
                                 {
                                     leftIndex--;
@@ -883,7 +883,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public Object GetObjectByPoint(int x, int y)
         {
             string key = GetKey(x.ToString() + " " + y.ToString());
-            if (ObjectCache.GetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
             {
                 return _testObj;
             }
