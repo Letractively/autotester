@@ -127,6 +127,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new NotImplementedException();
         }
 
+        public virtual void SelectMulti(string[] values)
+        {
+
+        }
+
         public string[] GetAllValues()
         {
             throw new NotImplementedException();

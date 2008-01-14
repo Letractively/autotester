@@ -47,12 +47,17 @@ namespace Shrinerain.AutoTester.Core
 
         #region ctor
 
+        private ObjectCache()
+        {
+
+        }
+
         #endregion
 
         #region public methods
 
-        /*  void InsertObjectToCache(string info, HTMLGuiTestObject testObj)
-         *  insert a HTMLGuiTestObject to the cache.
+        /*  void InsertObjectToCache(string info, TestObject testObj)
+         *  insert a test object to the cache.
          */
         public static void InsertObjectToCache(string key, TestObject testObj)
         {
@@ -71,10 +76,10 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-        /* HTMLGuiTestObject GetObjectFromCache(string info)
-        * Get HTMLGuiTestObject from the cache.
+        /* bool TryGetObjectFromCache(string info)
+        *  try to get a test object from the cache.
         */
-        public static bool GetObjectFromCache(string key, out TestObject testObj)
+        public static bool TryGetObjectFromCache(string key, out TestObject testObj)
         {
             testObj = null;
 

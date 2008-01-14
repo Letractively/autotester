@@ -218,6 +218,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        public virtual void SelectMulti(string[] values)
+        {
+            throw new CannotPerformActionException("Can not select more than 1 item in  Combo box.");
+        }
+
         #region IInteractive methods
 
         public virtual void Focus()

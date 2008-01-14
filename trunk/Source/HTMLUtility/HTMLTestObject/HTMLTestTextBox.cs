@@ -32,7 +32,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     public enum HTMLTestTextBoxType : int
     {
         SingleLine = 0,
-        MutilLine = 1,
+        MultiLine = 1,
         Password = 2,
         Unknow = 3
     }
@@ -82,7 +82,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     _currentStr = _textAreaElement.value;
 
-                    this._textBoxType = HTMLTestTextBoxType.MutilLine;
+                    this._textBoxType = HTMLTestTextBoxType.MultiLine;
                 }
                 else
                 {
@@ -137,7 +137,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         KeyboardOp.SendChars(value);
                     }
 
-                    //if we already try 2 times, break.
                     if (String.Compare(GetText(), lastStr + value, 0) == 0)
                     {
                         break;
@@ -147,7 +146,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //not correct, retry.
                         tryTimes++;
 
-                        //firstly, clear old text
+                        //if we already tried 3 times, break.
+                        if (tryTimes > 3)
+                        {
+                            throw new CannotPerformActionException("Can not input string: " + value);
+                        }
+
+                        //clear old text
                         if (this._tag == "INPUT")
                         {
                             this._textInputElement.value = "";
@@ -157,10 +162,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             this._textAreaElement.value = "";
                         }
 
-                        if (tryTimes >= 3)
-                        {
-                            throw new CannotPerformActionException("Can not input string: " + value);
-                        }
+
                     }
                 }
 
@@ -226,9 +228,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Hover();
                 MouseOp.Click();
             }
-            catch
+            catch (Exception e)
             {
-                throw new CannotPerformActionException("Can not perform focus action.");
+                throw new CannotPerformActionException("Can not perform focus action: " + e.Message);
             }
         }
 
