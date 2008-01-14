@@ -12,6 +12,7 @@
 *              The actual test object must inherit TestObject.
 *
 * History:  2007/09/04 wan,yu Init version
+*           2008/01/14 wan,yu update, remove id,name,handle,class from TestObject 
 *
 *********************************************************************/
 
@@ -27,18 +28,10 @@ namespace Shrinerain.AutoTester.Core
     {
         #region fields
 
-        protected string _name;
-        protected string _id;
-
         //domain means the object type, eg: HTML
         protected string _domain;
 
-        //class means it's class, often used for Windows control. eg: Dialog.
-        protected string _class;
-        protected object _parent;
-
-        protected bool _isVisible;
-        protected bool _isInteractive;
+        protected bool _visible;
 
         // this hashtable is used to store properties for a test object.
         // key is the property name.
@@ -47,40 +40,10 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region properties
-        public string Name
-        {
-            get { return this._name; }
-            set
-            {
-                this._name = value;
-            }
-        }
-        public string ID
-        {
-            get { return this._id; }
-            set
-            {
-                this._id = value;
-            }
-        }
+
         public string Domain
         {
             get { return this._domain; }
-            set
-            {
-                this._domain = value;
-            }
-        }
-        public object Parent
-        {
-            get { return _parent; }
-            set
-            {
-                if (value != null)
-                {
-                    _parent = value;
-                }
-            }
         }
 
         #endregion
@@ -134,12 +97,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual bool IsVisible()
         {
-            return this._isVisible;
-        }
-
-        public virtual bool IsInteractive()
-        {
-            return this._isInteractive;
+            return this._visible;
         }
 
         /* void HightLight()
@@ -159,10 +117,6 @@ namespace Shrinerain.AutoTester.Core
 
         #region parent and children
 
-        public virtual TestObject GetParent()
-        {
-            return (TestObject)this._parent;
-        }
         #endregion
 
         #endregion

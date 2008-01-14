@@ -940,7 +940,8 @@ namespace Shrinerain.AutoTester.Win32
         public delegate bool EnumWindowEventHandler(IntPtr hWnd, Int32 lParam);
 
         [DllImport("user32.dll", EntryPoint = "GetCursorPos")]
-        public static unsafe extern int GetCursorPos(POINT* lpPoint);
+        public static extern int GetCursorPos(ref POINT lpPoint);
+        //public static unsafe extern int GetCursorPos(POINT* lpPoint);
 
         [DllImport("User32.dll")]
         public extern static void mouse_event(int dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);

@@ -110,6 +110,15 @@ namespace Shrinerain.AutoTester.Win32
         {
             MoveTo(p.X, p.Y);
         }
+
+        //move shift, by current position.
+        public static void MoveShift(int shiftX, int shiftY)
+        {
+            Win32API.POINT p = new Win32API.POINT();
+            Win32API.GetCursorPos(ref p);
+
+            MoveTo(p.x + shiftX, p.y + shiftY);
+        }
         #endregion
     }
 }

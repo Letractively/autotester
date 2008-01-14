@@ -24,7 +24,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestLink : HTMLGuiTestObject, IClickable, IContainer, IShowInfo
+    public class HTMLTestLink : HTMLTestGUIObject, IClickable, IContainer, IShowInfo
     {
 
         #region fields

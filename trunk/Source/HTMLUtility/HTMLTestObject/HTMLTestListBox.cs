@@ -29,7 +29,7 @@ using Shrinerain.AutoTester.Win32;
 namespace Shrinerain.AutoTester.HTMLUtility
 {
     //HTMLTestListBox is NOT a HTML control, it is a standard windows control.
-    public class HTMLTestListBox : HTMLGuiTestObject, ISelectable, IWindows
+    public class HTMLTestListBox : HTMLTestGUIObject, ISelectable, IWindows
     {
         #region fields
 
@@ -47,6 +47,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //handle for listbox, listbox is a windows control
         protected IntPtr _handle;
+        protected string _className;
 
         protected IHTMLSelectElement _htmlSelectElement;
         //protected HTMLSelectElementClass _htmlSelectClass;
@@ -123,10 +124,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                this._class = "Internet Explorer_TridentLstBox";
+                this._className = "Internet Explorer_TridentLstBox";
 
                 //get the windows handle
-                IntPtr listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, this._class, null);
+                IntPtr listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, this._className, null);
                 while (listboxHandle != IntPtr.Zero)
                 {
                     // get the rect of this control
@@ -145,7 +146,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     else
                     {
                         //else, go to next listbox
-                        listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, listboxHandle, this._class, null);
+                        listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, listboxHandle, this._className, null);
                     }
                 }
 
@@ -342,7 +343,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual string GetClass()
         {
-            return this._class;
+            return this._className;
         }
 
         #endregion

@@ -43,7 +43,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Custom
     }
 
-    public class HTMLTestMsgBox : HTMLGuiTestObject, IWindows, IShowInfo, IClickable, IContainer
+    public class HTMLTestMsgBox : HTMLTestGUIObject, IWindows, IShowInfo, IClickable, IContainer
     {
 
         #region fields
@@ -55,6 +55,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _message;
 
         protected IntPtr _handle;
+        protected string _className;
 
         //button groups, for different messagebox, we may have different buttons. eg: OK, Yes,No, Cancel.
         protected string[] _buttons = new string[] { "OK" };
@@ -79,7 +80,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //get windows handle of message box.
             try
             {
-                this._class = "#32770 (Dialog)";
+                this._className = "#32770 (Dialog)";
 
                 IntPtr msgBoxHandle = IntPtr.Zero;
 
@@ -131,7 +132,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             this._handle = handle;
 
-            this._class = "#32770 (Dialog)";
+            this._className = "#32770 (Dialog)";
 
             try
             {
@@ -209,7 +210,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public string GetClass()
         {
-            return this._class;
+            return this._className;
         }
 
         #endregion

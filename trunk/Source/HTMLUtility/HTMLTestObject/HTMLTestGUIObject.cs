@@ -4,7 +4,7 @@
 * AutoTester is a free software, you can use it in any commercial work. 
 * But you CAN NOT redistribute it and/or modify it.
 *--------------------------------------------------------------------
-* Component: HTMLGuiTestObject.cs
+* Component: HTMLTestGUIObject.cs
 *
 * Description: This class defines the methods for HTML GUI testing.
 *              It will calculate the screen position for GUI object. 
@@ -12,6 +12,7 @@
 * History: 2007/09/04 wan,yu Init version
 *          2008/01/10 wan,yu update, move the calculate logic of center point
 *                            from GetCenterPoint to  GetRectOnScreen
+*          2008/01/14 wan,yu update, modify class name to HTMLTestGUIObject.                            
 * 
 *********************************************************************/
 
@@ -30,7 +31,7 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLGuiTestObject : HTMLTestObject, IVisible
+    public class HTMLTestGUIObject : HTMLTestObject, IVisible
     {
 
         #region fields
@@ -68,20 +69,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
-        public HTMLGuiTestObject()
+        public HTMLTestGUIObject()
             : base()
-        {
-            GetRectOnScreen();
-        }
-
-        public HTMLGuiTestObject(IHTMLElement element)
-            : base(element)
         {
             //when init, get the position information.
             GetRectOnScreen();
         }
 
-        ~HTMLGuiTestObject()
+        public HTMLTestGUIObject(IHTMLElement element)
+            : base(element)
+        {
+
+            GetRectOnScreen();
+        }
+
+        ~HTMLTestGUIObject()
         {
             Dispose();
         }
@@ -162,9 +164,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             // we will calculate the center point of this object.
             CalCenterPoint(left, top, width, height);
 
-            Rect = new Rectangle(left, top, width, height);
+            this._rect = new Rectangle(left, top, width, height);
 
-            return Rect;
+            return _rect;
         }
 
         /* Bitmap GetControlPrint()

@@ -28,7 +28,7 @@ using Shrinerain.AutoTester.Win32;
 namespace Shrinerain.AutoTester.HTMLUtility
 {
     //HTMLTestFileDialog is NOT a HTML control, it is a standard Windows control.
-    public class HTMLTestFileDialog : HTMLGuiTestObject, IWindows, IInputable, IClickable
+    public class HTMLTestFileDialog : HTMLTestGUIObject, IWindows, IInputable, IClickable
     {
 
         #region fields
