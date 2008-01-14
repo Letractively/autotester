@@ -1623,17 +1623,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * build the actual test object by an IHTMLElement for different type.
          * It will call the actual constructor of each test object.
          */
-        private static HTMLGuiTestObject BuildObjectByType(IHTMLElement element)
+        private static HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
         {
             HTMLTestObjectType type = GetObjectType(element);
 
             return BuildObjectByType(element, type);
         }
 
-        private static HTMLGuiTestObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
+        private static HTMLTestGUIObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
         {
 
-            HTMLGuiTestObject tmp;
+            HTMLTestGUIObject tmp;
 
             switch (type)
             {
@@ -1672,9 +1672,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* HTMLGuiTestObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
          * Build some special object, like MessageBox and FileDialog, they are Windows control.
          */
-        private static HTMLGuiTestObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
+        private static HTMLTestGUIObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
         {
-            HTMLGuiTestObject tmp;
+            HTMLTestGUIObject tmp;
 
             switch (type)
             {

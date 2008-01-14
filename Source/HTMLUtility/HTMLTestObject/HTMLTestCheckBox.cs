@@ -25,7 +25,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestCheckBox : HTMLGuiTestObject, ICheckable
+    public class HTMLTestCheckBox : HTMLTestGUIObject, ICheckable
     {
 
         #region fields

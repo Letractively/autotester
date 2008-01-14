@@ -1085,7 +1085,11 @@ namespace Shrinerain.AutoTester.Core
 
             }
 
-            throw new TestBrowserNotFoundException();
+            if (!browserFound)
+            {
+                throw new TestBrowserNotFoundException();
+            }
+
         }
 
         protected virtual void WaitForBrowser()

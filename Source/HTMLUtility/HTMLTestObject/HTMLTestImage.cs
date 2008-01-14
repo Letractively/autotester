@@ -28,7 +28,7 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestImage : HTMLGuiTestObject, IClickable
+    public class HTMLTestImage : HTMLTestGUIObject, IClickable
     {
 
         #region fields

@@ -21,7 +21,7 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestTable : HTMLGuiTestObject, IClickable, IShowInfo, ISelectable, IContainer
+    public class HTMLTestTable : HTMLTestGUIObject, IClickable, IShowInfo, ISelectable, IContainer
     {
 
 

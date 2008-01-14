@@ -11,7 +11,8 @@
 *
 * History: 2007/09/04 wan,yu Init version.
 *          2008/01/12 wan,yu update, add HTMLTestTextBoxType.
-*          2008/01/14 wan,yu bug fix, sometimes Input may input incorrect string.          
+*          2008/01/14 wan,yu bug fix, sometimes Input may input incorrect string.
+*          2008/01/14 wan,yu update, add ClickAbove() method.          
 *
 *********************************************************************/
 
@@ -37,7 +38,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Unknow = 3
     }
 
-    public class HTMLTestTextBox : HTMLGuiTestObject, IInputable
+    public class HTMLTestTextBox : HTMLTestGUIObject, IInputable
     {
 
         #region fields
@@ -143,7 +144,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else
                     {
-                        //not correct, retry.
+                        // incorrect, retry.
                         tryTimes++;
 
                         //if we already tried 3 times, break.
@@ -165,6 +166,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     }
                 }
+
+                //click just above the text box, to elimate some auto fill dropdown list, like Google.com
+                ClickAbove();
 
                 _actionFinished.Set();
 
@@ -300,6 +304,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return HTMLTestTextBoxType.SingleLine;
         }
 
+        /* protected virtual void ClickAbove()
+         * Click at the top of the object.
+         * Sometimes we will meet auto fill like Google.com, if you input some word, there may display
+         * a dropdown list to let you select, this dropdown list may cover some object we need, so after
+         * input some string, we need click above the text box, to make the dropdown list disappear.
+         */
+        protected virtual void ClickAbove()
+        {
+            try
+            {
+                //move just above the text box.
+                MouseOp.MoveShift(0, -(this._rect.Height / 2 + 1));
+                MouseOp.Click();
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not click above the text box: " + e.Message);
+            }
+        }
 
         /* string[] ExtractSpecialKeys(string text)
          * Return array of special keys.

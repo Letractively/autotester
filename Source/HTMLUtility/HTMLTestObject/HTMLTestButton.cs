@@ -36,7 +36,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Unknow = 4
     }
 
-    public class HTMLTestButton : HTMLGuiTestObject, IClickable, IShowInfo
+    public class HTMLTestButton : HTMLTestGUIObject, IClickable, IShowInfo
     {
 
         #region fields

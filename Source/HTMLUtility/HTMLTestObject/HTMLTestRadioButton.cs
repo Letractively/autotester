@@ -25,7 +25,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestRadioButton : HTMLGuiTestObject, ICheckable
+    public class HTMLTestRadioButton : HTMLTestGUIObject, ICheckable
     {
         #region fields
 

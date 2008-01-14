@@ -28,6 +28,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     // HTMLTestObjectType defines the object type we used in HTML Testing.
     public enum HTMLTestObjectType
     {
+        Unknow = 0,
         Button,
         CheckBox,
         RadioButton,
@@ -39,8 +40,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Link,
         MsgBox,
         FileDialog,
-        ActiveX,
-        Unknow
+        ActiveX
     }
 
     #region html object base class
@@ -48,9 +48,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         #region fields
 
+        protected string _id;
+        protected string _name;
+
         protected string _tag;
 
-        protected bool _visible;
         protected bool _enable;
         protected bool _readOnly;
 
@@ -63,6 +65,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region Properties
+
+        public string ID
+        {
+            get
+            {
+                return this._id;
+            }
+        }
+
+        public string Name
+        {
+            get
+            {
+                return this._name;
+            }
+        }
+
         public HTMLTestObjectType Type
         {
             get { return this._type; }

@@ -27,13 +27,14 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestComboBox : HTMLGuiTestObject, ISelectable, IWindows
+    public class HTMLTestComboBox : HTMLTestGUIObject, ISelectable, IWindows
     {
 
         #region fields
 
         //HTML combobox is NOT a HTML control, it is a standard windows control, so we can  get it's handle.
         protected IntPtr _handle;
+        protected string _className;
 
         //all items.
         protected string[] _allValues;
@@ -107,10 +108,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                this._class = "Internet Explorer_TridentCmboBx";
+                this._className = "Internet Explorer_TridentCmboBx";
 
                 //find the windows handle of combo box, it's class name is "Internet Explorer_TridentCmboBx".
-                IntPtr comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, this._class, null);
+                IntPtr comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, this._className, null);
                 while (comboboxHandle != IntPtr.Zero)
                 {
                     //get the position of the control
@@ -128,7 +129,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     else
                     {
                         //not found, go to next control
-                        comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, comboboxHandle, this._class, null);
+                        comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, comboboxHandle, this._className, null);
                     }
                 }
             }
@@ -279,7 +280,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
         public virtual string GetClass()
         {
-            return this._class;
+            return this._className;
         }
 
         #endregion
