@@ -4,7 +4,7 @@
 * AutoTester is a free software, you can use it in any commercial work. 
 * But you CAN NOT redistribute it and/or modify it.
 *--------------------------------------------------------------------
-* Component: HTMLTestGUIObject.cs
+* Component: HTMLGuiTestObject.cs
 *
 * Description: This class defines the methods for HTML GUI testing.
 *              It will calculate the screen position for GUI object. 
@@ -12,9 +12,6 @@
 * History: 2007/09/04 wan,yu Init version
 *          2008/01/10 wan,yu update, move the calculate logic of center point
 *                            from GetCenterPoint to  GetRectOnScreen
-*          2008/01/14 wan,yu update, modify class name to HTMLTestGUIObject.
-*          2008/01/15 wan,yu update, move GetRectOnScreen from creator to
-*                                    Browser proeprty.   
 * 
 *********************************************************************/
 
@@ -33,7 +30,7 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestGUIObject : HTMLTestObject, IVisible
+    public class HTMLGuiTestObject : HTMLTestObject, IVisible
     {
 
         #region fields
@@ -65,41 +62,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        //when set the html browser, we can start to calculate the position
-        public override HTMLTestBrowser Browser
-        {
-            set
-            {
-                this._browser = value;
-                GetRectOnScreen();
-            }
-            get
-            {
-                return this._browser;
-            }
-        }
-
         #endregion
 
         #region methods
 
         #region ctor
 
-        public HTMLTestGUIObject()
+        public HTMLGuiTestObject()
             : base()
         {
-            //when init, get the position information.
-            //GetRectOnScreen();
+            GetRectOnScreen();
         }
 
-        public HTMLTestGUIObject(IHTMLElement element)
+        public HTMLGuiTestObject(IHTMLElement element)
             : base(element)
         {
-
-            //GetRectOnScreen();
+            //when init, get the position information.
+            GetRectOnScreen();
         }
 
-        ~HTMLTestGUIObject()
+        ~HTMLGuiTestObject()
         {
             Dispose();
         }
@@ -171,18 +153,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             //get the browser information, get the real position on screen.
-            top += _browser.ClientTop;
-            left += _browser.ClientLeft;
+            top += HTMLTestBrowser.ClientTop;
+            left += HTMLTestBrowser.ClientLeft;
 
-            top -= _browser.ScrollTop;
-            left -= _browser.ScrollLeft;
+            top -= HTMLTestBrowser.ScrollTop;
+            left -= HTMLTestBrowser.ScrollLeft;
 
             // we will calculate the center point of this object.
             CalCenterPoint(left, top, width, height);
 
-            this._rect = new Rectangle(left, top, width, height);
+            Rect = new Rectangle(left, top, width, height);
 
-            return _rect;
+            return Rect;
         }
 
         /* Bitmap GetControlPrint()
@@ -265,8 +247,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int right = this._rect.X + this._rect.Width;
             int buttom = this._rect.Y + this._rect.Height;
 
-            int currentWidth = _browser.ClientLeft + _browser.ClientWidth;
-            int currentHeight = _browser.ClientTop + _browser.ClientHeight;
+            int currentWidth = HTMLTestBrowser.ClientLeft + HTMLTestBrowser.ClientWidth;
+            int currentHeight = HTMLTestBrowser.ClientTop + HTMLTestBrowser.ClientHeight;
 
             //if the object is not visible, then move the scrollbar.
             if (right > currentWidth || buttom > currentHeight)
@@ -313,8 +295,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (!isWindowsControl)
                 {
-                    left -= _browser.ClientLeft;
-                    top -= _browser.ClientTop;
+                    left -= HTMLTestBrowser.ClientLeft;
+                    top -= HTMLTestBrowser.ClientTop;
                 }
 
                 IntPtr hDC = Win32API.GetWindowDC(handle);
@@ -327,8 +309,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 Win32API.ReleaseDC(handle, hDC);
 
-                // the red rect last for 1 seconds.
-                Thread.Sleep(1000 * 1);
+                // the red rect last for 0.5 seconds.
+                Thread.Sleep(500 * 1);
 
                 //refresh the window
                 Win32API.InvalidateRect(handle, IntPtr.Zero, 1);

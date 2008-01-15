@@ -101,7 +101,7 @@ namespace Shrinerain.AutoTester
 
             //return;
 
-            HTMLTestBrowser myHost = HTMLTestBrowser.GetInstance();
+            HTMLTestBrowser myHost = new HTMLTestBrowser();
             myHost.Start();
             myHost.MaxSize();
 

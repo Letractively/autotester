@@ -9,7 +9,8 @@
 * Description: This class manage desktop application. It implement
 *              ITestApp interface.  
 *
-* History: 2007/11/20 wan,yu Init version
+* History: 2007/11/20 wan,yu Init version.
+*          2008/01/15 wan,yu update, add Wait() methods. 
 *
 *********************************************************************/
 
@@ -30,6 +31,8 @@ namespace Shrinerain.AutoTester.Core
     {
 
         #region fields
+
+        IntPtr _rootHandle;
 
         //process to start the desktop application
         Process _appProcess;
@@ -85,7 +88,7 @@ namespace Shrinerain.AutoTester.Core
         {
             get
             {
-                return this._appProcess.MainWindowHandle;
+                return this._rootHandle;
             }
         }
 
@@ -103,6 +106,9 @@ namespace Shrinerain.AutoTester.Core
 
         #region operations
 
+        /* void Start(string appFullPath)
+         * Create a process to start a desktop application.
+         */
         public virtual void Start(string appFullPath)
         {
             Start(appFullPath, null);
@@ -138,8 +144,16 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotStartAppException("Can not start test application: " + appFullPath + " with parameters: " + arg);
             }
+            else
+            {
+                //get the main handle.
+                this._rootHandle = _appProcess.MainWindowHandle;
+            }
         }
 
+        /* void Close()
+         * Close a desktop application, kill the process.
+         */
         public virtual void Close()
         {
             if (_appProcess != null)
@@ -158,11 +172,20 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual void Move(int x, int y)
         {
-            //Win32API
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotMoveAppException("Handle can not be 0.");
+            }
+
         }
 
         public virtual void Resize(int left, int top, int width, int height)
         {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotResizeAppException("Handle can not be 0.");
+            }
+
             try
             {
                 Win32API.SetWindowPos(this.Handle, IntPtr.Zero, left, top, width, height, 0);
@@ -176,6 +199,11 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual void Max()
         {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotMaxAppException("Handle can not be 0.");
+            }
+
             try
             {
                 Win32API.PostMessage(this.Handle, Convert.ToInt32(Win32API.WindowMessages.WM_SYSCOMMAND), Convert.ToInt32(Win32API.WindowMenuMessage.SC_MAXIMIZE), 0);
@@ -188,17 +216,78 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual void Min()
         {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotResizeAppException("Handle can not be 0.");
+            }
+
+
             throw new NotImplementedException();
         }
 
         public virtual void Restore()
         {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotResizeAppException("Handle can not be 0.");
+            }
+
             throw new NotImplementedException();
         }
 
         public virtual void Active()
         {
-            throw new NotImplementedException();
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotActiveAppException("Handle can not be 0.");
+            }
+
+            try
+            {
+                Win32API.SetForegroundWindow(this._rootHandle);
+            }
+            catch (Exception e)
+            {
+                throw new CannotActiveAppException("Can not active test application: " + e.Message);
+            }
+        }
+
+        public virtual void Wait(int seconds)
+        {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotWaitAppException("Handle can not be 0.");
+            }
+
+            try
+            {
+                if (seconds > 0)
+                {
+                    Thread.Sleep(seconds * 1000);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new CannotWaitAppException("Can not wait test application: " + e.Message);
+            }
+        }
+
+        public virtual void WaitForExist()
+        {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotWaitAppException("Handle can not be 0.");
+            }
+
+        }
+
+        public virtual void WaitForDisappear()
+        {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotWaitAppException("Handle can not be 0.");
+            }
+
         }
 
         #endregion
@@ -379,6 +468,21 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region private methods
+
+        protected virtual void WaitForApp()
+        {
+
+        }
+
+        protected virtual void WaitForApp(Object title)
+        {
+
+        }
+
+        protected virtual void WaitForApp(string title, int seconds)
+        {
+
+        }
 
         protected virtual void GetSize()
         {

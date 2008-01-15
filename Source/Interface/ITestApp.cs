@@ -11,7 +11,8 @@
 *              Automation tester can control application by these methods.
 *              Also, object pool must get an instance of test application.
 *
-* History: 2007/11/20  wan,yu  Init version
+* History: 2007/11/20 wan,yu Init version
+*          2008/01/15 wan,yu update, add Wait() methods 
 *
 *********************************************************************/
 
@@ -34,6 +35,11 @@ namespace Shrinerain.AutoTester.Interface
         void Resize(int left, int top, int width, int height);
         void Max();
         void Min();
+
+        //sync methods
+        void Wait(int seconds);
+        void WaitForExist();
+        void WaitForDisappear();
 
         // restore to the origin size.
         void Restore();

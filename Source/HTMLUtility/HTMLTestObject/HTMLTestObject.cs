@@ -10,6 +10,7 @@
 * 
 * History: 2007/09/04 wan,yu Init version.
 *          2008/01/11 wan,yu update, add IsReadOnly property and method. 
+*          2008/01/15 wan,yu update, add _browser field. 
 *
 *********************************************************************/
 
@@ -59,6 +60,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected HTMLTestObjectType _type;
         protected IHTMLElement _sourceElement;
 
+        //the host browser of this object.
+        protected HTMLTestBrowser _browser;
+
         protected AutoResetEvent _stateChanged = new AutoResetEvent(false);
 
 
@@ -106,6 +110,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get { return _readOnly; }
         }
+
+        public virtual HTMLTestBrowser Browser
+        {
+            get { return _browser; }
+            set { _browser = value; }
+        }
+
 
         #endregion
 

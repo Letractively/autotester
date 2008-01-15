@@ -1,4 +1,3 @@
-
 /********************************************************************
 *                      AutoTester     
 *                        Wan,Yu
@@ -11,6 +10,8 @@
 *              we use HTML DOM to get the object from Internet Explorer.
 *
 * History: 2007/09/04 wan,yu Init version
+*          2008/01/15 wan,yu update, modify some static memebers to instance,
+*                            elimate singleton.  
 *
 *********************************************************************/
 
@@ -42,12 +43,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region Methods
 
-        //for reflecting issue, I keep the constructor as "public"
         public HTMLTestBrowser()
         {
             _browserName = "Internet Explorer";
         }
-
 
         ~HTMLTestBrowser()
         {
@@ -55,15 +54,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         //singleton
-        public new static HTMLTestBrowser GetInstance()
-        {
-            if (_testBrowser == null)
-            {
-                _testBrowser = new HTMLTestBrowser();
-            }
+        //public new static HTMLTestBrowser GetInstance()
+        //{
+        //    if (_testBrowser == null)
+        //    {
+        //        _testBrowser = new HTMLTestBrowser();
+        //    }
 
-            return (HTMLTestBrowser)_testBrowser;
-        }
+        //    return (HTMLTestBrowser)_testBrowser;
+        //}
 
         #region public methods
 
@@ -73,7 +72,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetAllObjects()
          * return all element of HTML DOM.
          */
-        public static IHTMLElementCollection GetAllObjects()
+        public IHTMLElementCollection GetAllObjects()
         {
             if (_HTMLDom == null)
             {
@@ -93,7 +92,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElement GetObjectByID(string id)
          * return element by .id property.
          */
-        public static IHTMLElement GetObjectByID(string id)
+        public IHTMLElement GetObjectByID(string id)
         {
             if (String.IsNullOrEmpty(id))
             {
@@ -117,16 +116,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetObjectsByName(string name)
          * return elements by .name property.
          */
-        public static IHTMLElementCollection GetObjectsByName(string name)
+        public IHTMLElementCollection GetObjectsByName(string name)
         {
             if (String.IsNullOrEmpty(name))
             {
                 throw new PropertyNotFoundException("Name can not be null.");
             }
+
             if (_HTMLDom == null)
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 return _HTMLDom.getElementsByName(name);
@@ -146,10 +147,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new PropertyNotFoundException("Tag name can not be null.");
             }
+
             if (_HTMLDom == null)
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 return _HTMLDom.getElementsByTagName(name);

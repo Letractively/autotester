@@ -92,7 +92,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     System.Threading.Thread.Sleep(1000 * 1);
 
                     //get the handle, the text of MessageBox is "Windows Internet Explorer", we use this to find it.
-                    msgBoxHandle = Win32API.FindWindowEx(TestBrowser.MainHandle, IntPtr.Zero, null, "Windows Internet Explorer");
+                    msgBoxHandle = Win32API.FindWindowEx(_browser.MainHandle, IntPtr.Zero, null, "Windows Internet Explorer");
 
                     if (msgBoxHandle != IntPtr.Zero)
                     {

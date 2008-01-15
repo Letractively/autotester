@@ -167,6 +167,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
+                System.Threading.Thread.Sleep(200 * 1);
                 //click just above the text box, to elimate some auto fill dropdown list, like Google.com
                 ClickAbove();
 

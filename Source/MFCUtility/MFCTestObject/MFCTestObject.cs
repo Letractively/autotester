@@ -53,7 +53,7 @@ namespace Shrinerain.AutoTester.MFCUtility
         protected string _caption;
 
         //we often need parent handle to find a MFC control.
-        protected IntPtr _parentHandle;
+        protected List<IntPtr> _parentHandles = new List<IntPtr>(5);
 
         protected bool _isVisible;
 
@@ -78,8 +78,17 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         public IntPtr ParentHandle
         {
-            get { return _parentHandle; }
-            set { _parentHandle = value; }
+            get
+            {
+                if (_parentHandles.Count > 0)
+                {
+                    return _parentHandles[_parentHandles.Count - 1];
+                }
+                else
+                {
+                    return IntPtr.Zero;
+                }
+            }
         }
 
         public MFCTestObjectType Type
@@ -106,6 +115,32 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw new CannotBuildObjectException("Handle can not be 0.");
             }
+
+            try
+            {
+                this._className = GetClassNameByHandle();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get class name: " + e.Message);
+            }
+
+            try
+            {
+                this._caption = GetCaptionByHandle();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get caption: " + e.Message);
+            }
         }
 
         public MFCTestObject(string className)
@@ -116,6 +151,39 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw new CannotBuildObjectException("Class name can not be empty.");
             }
+
+            try
+            {
+                this._handle = GetObjectHandle(className);
+
+                if (this._handle == IntPtr.Zero)
+                {
+                    throw new CannotBuildObjectException("Can not get handle.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get handle: " + e.Message);
+            }
+
+            try
+            {
+                this._caption = GetCaptionByHandle();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get caption: " + e.Message);
+            }
+
+
         }
 
         public MFCTestObject(string caption, string className)
@@ -126,6 +194,25 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw new CannotBuildObjectException("Caption and Class name can not be both empty.");
             }
+
+            try
+            {
+                this._handle = GetObjectHandle(className, caption);
+
+                if (this._handle == IntPtr.Zero)
+                {
+                    throw new CannotBuildObjectException("Can not get handle.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get handle: " + e.Message);
+            }
+
         }
 
         #endregion
@@ -162,6 +249,7 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         /* IntPtr GetObjectHandle(string className)
          * return the windows handle by expected class
+         * use FindWindow and FindWindowEx.
          */
         protected virtual IntPtr GetObjectHandle(string className)
         {
@@ -226,6 +314,67 @@ namespace Shrinerain.AutoTester.MFCUtility
                 throw new CannotBuildObjectException("Can not get windows handle: " + e.Message);
             }
 
+        }
+
+        /* string GetClassNameByHandle()
+         * return the class name of current object.
+         */
+        protected virtual string GetClassNameByHandle()
+        {
+            if (this._handle == IntPtr.Zero)
+            {
+                throw new CannotBuildObjectException("Can not get class name.");
+            }
+
+            try
+            {
+                StringBuilder sb = new StringBuilder(50);
+
+                Win32API.GetClassName(this._handle, sb, sb.Capacity);
+
+                if (sb.Length > 0)
+                {
+                    return sb.ToString().Trim();
+                }
+                else
+                {
+                    throw new CannotBuildObjectException("Can not get class name.");
+                }
+
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get class name: " + e.Message);
+            }
+        }
+
+
+        /* string GetCaptionByHandle()
+         * get the text(caption) of this object.
+         */
+        protected virtual string GetCaptionByHandle()
+        {
+            if (this._handle == IntPtr.Zero)
+            {
+                throw new CannotBuildObjectException("Handle can not be 0");
+            }
+
+            try
+            {
+                StringBuilder sb = new StringBuilder(50);
+
+                Win32API.GetWindowText(this._handle, sb, sb.Capacity);
+
+                return sb.ToString().Trim();
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get caption: " + e.Message);
+            }
         }
 
         #endregion
