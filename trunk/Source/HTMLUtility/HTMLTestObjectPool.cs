@@ -19,7 +19,8 @@
 *          2008/01/10 wan,yu update, move GetObjectType from HTMLTestObject.cs to HTMLTestObjectPool.cs  
 *          2008/01/12 wan,yu update, add CheckTableObject, we can find the <table> object.
 *          2008/01/12 wan,yu update, add CheckMsgBoxObject and CheckFileDialogObject         
-*          2008/01/12 wan,yu update, bug fix for GetObjectByName, origin version will just check the first one.          
+*          2008/01/12 wan,yu update, bug fix for GetObjectByName, origin version will just check the first one. 
+*          2008/01/15 wan,yu update, update, modify some static members to instance. 
 *
 *********************************************************************/
 
@@ -49,15 +50,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private static bool _needRefresh = false;
 
         //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter.
-        private static bool _useCache = true;
+        private bool _useCache = true;
         private const string _keySplitter = "__shrinerain__";
 
         //the default similar pencent to  find an object, if 100, that means we should make sure 100% match. 
-        private static bool _autoAdjustSimilarPercent = true;
-        private static int _similarPercentUpBound = 100;
-        private static int _similarPercentLowBound = 70;
-        private static int _similarPercentStep = 10;
-        private static int _customSimilarPercent = 100;
+        private bool _autoAdjustSimilarPercent = true;
+        private int _similarPercentUpBound = 100;
+        private int _similarPercentLowBound = 70;
+        private int _similarPercentStep = 10;
+        private int _customSimilarPercent = 100;
 
         //IHTMLElement is the interface for mshtml html object. We build actual test object on IHTMLElement.
         private IHTMLElement _tempElement;
@@ -96,8 +97,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //flag to determin if we should use cache to store test object.
         public bool UseCache
         {
-            get { return HTMLTestObjectPool._useCache; }
-            set { HTMLTestObjectPool._useCache = value; }
+            get { return _useCache; }
+            set { _useCache = value; }
         }
 
         public int MaxWaitSeconds
@@ -109,19 +110,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //set the custom similary percent.
         public int SimilarPercent
         {
-            get { return HTMLTestObjectPool._customSimilarPercent; }
+            get { return _customSimilarPercent; }
             set
             {
                 _autoAdjustSimilarPercent = false;
-                HTMLTestObjectPool._customSimilarPercent = value;
+                _customSimilarPercent = value;
                 Searcher.DefaultPercent = value;
             }
         }
 
         public bool AutoAdjustSimilarPercent
         {
-            get { return HTMLTestObjectPool._autoAdjustSimilarPercent; }
-            set { HTMLTestObjectPool._autoAdjustSimilarPercent = value; }
+            get { return _autoAdjustSimilarPercent; }
+            set { _autoAdjustSimilarPercent = value; }
         }
 
         #endregion
@@ -164,6 +165,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByID(string id)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             if (String.IsNullOrEmpty(id))
             {
                 throw new ObjectNotFoundException("Can not find object by id: id can not be empty.");
@@ -186,7 +192,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     //get IHTMLElement interface
-                    _tempElement = HTMLTestBrowser.GetObjectByID(id);
+                    _tempElement = _htmlTestBrowser.GetObjectByID(id);
 
                     if (_tempElement != null)
                     {
@@ -223,6 +229,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByName(string name)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             if (string.IsNullOrEmpty(name))
             {
                 throw new ObjectNotFoundException("Can not find object by name: name can not be empty.");
@@ -246,7 +257,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //getObjectByName will return more than 1 object(if have), so we need a collection to
                     //store these objects.
                     //we will check each object.
-                    IHTMLElementCollection nameObjectsCol = HTMLTestBrowser.GetObjectsByName(name);
+                    IHTMLElementCollection nameObjectsCol = _htmlTestBrowser.GetObjectsByName(name);
 
                     for (int i = 0; i < nameObjectsCol.length; i++)
                     {
@@ -293,6 +304,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByIndex(int index)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             if (index < 0)
             {
                 index = 0;
@@ -356,6 +372,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByProperty(string property, string value)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
 
             if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(value))
             {
@@ -468,6 +488,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectBySimilarProperties(string[] properties, string[] values, int[] similarity, bool useAll)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             if (properties == null || values == null)
             {
                 throw new ObjectNotFoundException("Properties and values can not be null.");
@@ -609,6 +634,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByRegex(string property, string regex)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             return null;
         }
 
@@ -620,6 +650,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByType(string type, string values, int index)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             if (String.IsNullOrEmpty(type))
             {
                 throw new ObjectNotFoundException("Can not get object by type: type can not be empty.");
@@ -833,6 +868,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByAI(string value)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             if (String.IsNullOrEmpty(value))
             {
                 throw new ObjectNotFoundException("Can not find object by AI: value can not be empty.");
@@ -882,6 +922,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByPoint(int x, int y)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             string key = GetKey(x.ToString() + " " + y.ToString());
             if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
             {
@@ -929,6 +974,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByRect(int top, int left, int width, int height, string type)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             return null;
         }
 
@@ -938,6 +988,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByColor(string color)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             return null;
         }
 
@@ -946,6 +1001,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByCustomer(object value)
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             return null;
         }
 
@@ -955,6 +1015,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object[] GetAllObjects()
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             //firstly, get all IHTMLElement from the browser
             GetAllElements();
 
@@ -998,13 +1063,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private void GetAllElements()
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             if (_needRefresh || _allElements == null)
             {
                 _needRefresh = false;
 
                 try
                 {
-                    this._allElements = HTMLTestBrowser.GetAllObjects();
+                    this._allElements = _htmlTestBrowser.GetAllObjects();
                 }
                 catch
                 {
@@ -1072,7 +1142,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* bool CheckObjectByType(ref IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
          * check windows object, like message box and file dialog
          */
-        private static bool CheckObjectByType(ref IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
+        private bool CheckObjectByType(ref IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
         {
 
             if (type == HTMLTestObjectType.MsgBox)
@@ -1291,11 +1361,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * it is a window control, not a HTML control, so we don't need IHTMLElement.
          * NEED UPDATE!!!
          */
-        private static bool CheckMsgBoxObject(ref IntPtr handle, string value, int simPercent)
+        private bool CheckMsgBoxObject(ref IntPtr handle, string value, int simPercent)
         {
 
             //get the handle, the text of MessageBox is "Windows Internet Explorer", we use this to find it.
-            handle = Win32API.FindWindowEx(TestBrowser.MainHandle, handle, null, "Windows Internet Explorer");
+            handle = Win32API.FindWindowEx(_htmlTestBrowser.MainHandle, handle, null, "Windows Internet Explorer");
 
             return handle != IntPtr.Zero;
         }
@@ -1304,7 +1374,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * check file dialog, when you need input/browse file/folder, we can see this control.
          * it is a windows control, not a HTML control, so we don't need IHTMLElement.
          */
-        private static bool CheckFileDialogObject(ref IntPtr handle, string value, int simPercent)
+        private bool CheckFileDialogObject(ref IntPtr handle, string value, int simPercent)
         {
             handle = IntPtr.Zero;
             return false;
@@ -1619,18 +1689,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        /* HTMLTestObject BuildObjectByType(IHTMLElement element)
+        /* HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
          * build the actual test object by an IHTMLElement for different type.
          * It will call the actual constructor of each test object.
          */
-        private static HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
+        private HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
         {
             HTMLTestObjectType type = GetObjectType(element);
 
             return BuildObjectByType(element, type);
         }
 
-        private static HTMLTestGUIObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
+        private HTMLTestGUIObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
         {
 
             HTMLTestGUIObject tmp;
@@ -1666,13 +1736,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     break;
             }
 
-            return tmp;
+            if (tmp != null)
+            {
+                tmp.Browser = _htmlTestBrowser;
+                return tmp;
+            }
+            else
+            {
+                throw new CannotBuildObjectException();
+            }
+
         }
 
         /* HTMLGuiTestObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
          * Build some special object, like MessageBox and FileDialog, they are Windows control.
          */
-        private static HTMLTestGUIObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
+        private HTMLTestGUIObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
         {
             HTMLTestGUIObject tmp;
 
@@ -1689,7 +1768,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     break;
             }
 
-            return tmp;
+            if (tmp != null)
+            {
+                tmp.Browser = _htmlTestBrowser;
+                return tmp;
+            }
+            else
+            {
+                throw new CannotBuildObjectException();
+            }
         }
 
 

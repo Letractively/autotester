@@ -18,7 +18,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+using System.Diagnostics;
+using System.Threading;
 
+using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.MFCUtility
@@ -28,11 +31,26 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         #region fields
 
+        //rect on the screen.
+        protected Rectangle _rect;
+        protected Point _centerPoint;
+
+        //sync event to control action 
+        protected static AutoResetEvent _actionFinished = new AutoResetEvent(true);
 
         #endregion
 
         #region properties
 
+        public Rectangle Rect
+        {
+            get { return _rect; }
+        }
+
+        public Point CenterPoint
+        {
+            get { return _centerPoint; }
+        }
 
         #endregion
 
@@ -40,29 +58,102 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         #region ctor
 
+        public MFCTestGUIObject()
+            : base()
+        {
+
+        }
+
+        public MFCTestGUIObject(IntPtr handle)
+            : base(handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                throw new CannotBuildObjectException("Handle can not be 0.");
+            }
+
+            try
+            {
+                GetRectOnScreen();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotBuildObjectException("Can not get rect on screen: " + e.Message);
+            }
+
+        }
+
         #endregion
 
         #region public methods
         #region IVisible Members
 
-        public Point GetCenterPoint()
+        public virtual Point GetCenterPoint()
+        {
+            return this._centerPoint;
+        }
+
+        public virtual Rectangle GetRectOnScreen()
+        {
+            try
+            {
+                if (this._handle == IntPtr.Zero)
+                {
+                    throw new CannotGetObjectPositionException("Handle can not be 0.");
+                }
+
+                Win32API.Rect rect = new Win32API.Rect();
+                Win32API.GetWindowRect(this._handle, ref rect);
+
+                if (rect.Width <= 0 || rect.Height <= 0)
+                {
+                    throw new CannotGetObjectPositionException("Can not get width/height of object.");
+                }
+
+                this._rect = new Rectangle(rect.left, rect.top, rect.Width, rect.Height);
+
+                this._centerPoint = CalCenterPoint();
+
+                return this._rect;
+
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotGetObjectPositionException("Can not get rect on screen: " + e.Message);
+            }
+
+        }
+
+        public virtual Bitmap GetControlPrint()
         {
             throw new NotImplementedException();
         }
 
-        public Rectangle GetRectOnScreen()
+        public virtual void Hover()
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                MouseOp.MoveTo(this._centerPoint);
 
-        public Bitmap GetControlPrint()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Hover()
-        {
-            throw new NotImplementedException();
+                //sleep for 0.2s, make it looks like human action.
+                Thread.Sleep(200 * 1);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new CannotPerformActionException("Can not move mouse to this object: " + e.Message);
+            }
         }
 
         #endregion
@@ -70,6 +161,30 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         #region private methods
 
+        /*  Point CalCenterPoint()
+         *  Calculate the center point of this object.
+         */
+        protected virtual Point CalCenterPoint()
+        {
+            if (this._rect.Width <= 0 || this._rect.Height <= 0)
+            {
+                throw new CannotGetObjectPositionException("Can not get center point.");
+            }
+
+            try
+            {
+                Point p = new Point();
+
+                p.X = this._rect.Left + this._rect.Width / 2;
+                p.Y = this._rect.Top + this._rect.Height / 2;
+
+                return p;
+            }
+            catch (Exception e)
+            {
+                throw new CannotGetObjectPositionException("Can not get center point: " + e.Message);
+            }
+        }
 
         #endregion
 

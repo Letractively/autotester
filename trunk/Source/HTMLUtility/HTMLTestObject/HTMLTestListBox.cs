@@ -127,7 +127,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._className = "Internet Explorer_TridentLstBox";
 
                 //get the windows handle
-                IntPtr listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, this._className, null);
+                IntPtr listboxHandle = Win32API.FindWindowEx(_browser.IEServerHandle, IntPtr.Zero, this._className, null);
                 while (listboxHandle != IntPtr.Zero)
                 {
                     // get the rect of this control
@@ -146,7 +146,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     else
                     {
                         //else, go to next listbox
-                        listboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, listboxHandle, this._className, null);
+                        listboxHandle = Win32API.FindWindowEx(_browser.IEServerHandle, listboxHandle, this._className, null);
                     }
                 }
 

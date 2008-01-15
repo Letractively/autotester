@@ -101,23 +101,23 @@ namespace Shrinerain.AutoTester
 
             //return;
 
-            HTMLTestBrowser myHost = HTMLTestBrowser.GetInstance();
+            HTMLTestBrowser myHost = new HTMLTestBrowser();
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"http://www.google.com/advanced_search?hl=en";// @"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
+            string url = @"www.google.com"; // @"http://www.google.com/advanced_search?hl=en";// @"http://127.0.0.1/AutoTester/";// 
             myHost.Load(url);
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
 
-            HTMLTestComboBox cbBox = (HTMLTestComboBox)pool.GetObjectByName("num");
-            cbBox.Select("20 results");
+            //HTMLTestComboBox cbBox = (HTMLTestComboBox)pool.GetObjectByName("num");
+           // cbBox.Select("20 results");
 
             HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByProperty("name", "q"); //pool.GetObjectByName("q");
             obj1.Input("statestreet");
 
-            HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Search", 0);
+            HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Sear", 0);
             obj2.Click();
 
             //  myHost.WaitForNextPage();

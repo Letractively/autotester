@@ -135,6 +135,19 @@ namespace Shrinerain.AutoTester.Core
         }
     }
 
+    public class CannotWaitAppException : TestAppException
+    {
+        public CannotWaitAppException()
+            : this("Can not wait test application.")
+        {
+        }
+
+        public CannotWaitAppException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class CannotGetAppStatusException : TestAppException
     {
         public CannotGetAppStatusException()

@@ -28,6 +28,7 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         #region fields
 
+        private MFCTestApp _mfcTestApp;
 
         #endregion
 
@@ -39,6 +40,15 @@ namespace Shrinerain.AutoTester.MFCUtility
         #region methods
 
         #region ctor
+
+        public MFCTestObjectPool()
+        {
+        }
+
+        public MFCTestObjectPool(ITestApp testApp)
+        {
+            this._mfcTestApp = (MFCTestApp)testApp;
+        }
 
         #endregion
 
@@ -118,7 +128,7 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         public void SetTestApp(ITestApp testApp)
         {
-            throw new NotImplementedException();
+            this._mfcTestApp = (MFCTestApp)testApp;
         }
 
         #endregion

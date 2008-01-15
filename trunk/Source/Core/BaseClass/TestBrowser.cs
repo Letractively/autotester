@@ -13,7 +13,8 @@
 *
 * History: 2007/09/04 wan,yu Init version.
 *          2007/12/26 wan,yu add void Find(object) method. 
-*          2007/12/27 wan,yu rename WaitForIEExist to WaitForBrowser.          
+*          2007/12/27 wan,yu rename WaitForIEExist to WaitForBrowser.     
+*          2008/01/15 wan,yu update, modify some static members to instance, elimate singleton
 *
 *********************************************************************/
 using System;
@@ -50,28 +51,28 @@ namespace Shrinerain.AutoTester.Core
 
 
         //stack to save the browser status.
-        protected static Stack<TestBrowserStatus> _statusStack = new Stack<TestBrowserStatus>(5);
+        protected Stack<TestBrowserStatus> _statusStack = new Stack<TestBrowserStatus>(5);
 
-        protected static TestBrowser _testBrowser;
+        protected TestBrowser _testBrowser;
 
         //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
-        protected static InternetExplorer _ie;
+        protected InternetExplorer _ie;
 
-        protected static Process _browserProcess;
+        protected Process _browserProcess;
 
         //Handle of IE.
-        protected static IntPtr _mainHandle;
+        protected IntPtr _mainHandle;
 
         //handle of client area.
         // client area means the area to display web pages, not include the menu, address bar, etc.
         // we can use Spy++ to get these information.
-        protected static IntPtr _ieServerHandle;
+        protected IntPtr _ieServerHandle;
 
         //handle of shell doc.
-        protected static IntPtr _shellDocHandle;
+        protected IntPtr _shellDocHandle;
 
         //HTML dom, we use HTML dom to get the HTML object.
-        protected static HTMLDocument _HTMLDom;
+        protected HTMLDocument _HTMLDom;
 
         //wait for 120 secs, for example, to wait for the browser exist.
         protected int _maxWaitSeconds = 120;
@@ -91,10 +92,10 @@ namespace Shrinerain.AutoTester.Core
         protected Dictionary<string, int> _performanceTimeHT = new Dictionary<string, int>();
 
         //the version of browser, eg 7.0
-        protected static string _version;
+        protected string _version;
 
         //the name of browser, eg Internet Explorer.
-        protected static string _browserName;
+        protected string _browserName;
 
         /*we have 3 area here.
          * 1. rectangle of borwser, including menu bar, address bar.
@@ -104,22 +105,22 @@ namespace Shrinerain.AutoTester.Core
          */
 
         // the browser window's rect
-        protected static int _ieLeft;
-        protected static int _ieTop;
-        protected static int _ieWidth;
-        protected static int _ieHeight;
+        protected int _ieLeft;
+        protected int _ieTop;
+        protected int _ieWidth;
+        protected int _ieHeight;
 
         // the client area's rect
-        protected static int _clientTop;
-        protected static int _clientLeft;
-        protected static int _clientWidth;
-        protected static int _clientHeight;
+        protected int _clientTop;
+        protected int _clientLeft;
+        protected int _clientWidth;
+        protected int _clientHeight;
 
         //the web page's rect, may larger than client area because of scroll bar.
-        protected static int _scrollLeft;
-        protected static int _scrollTop;
-        protected static int _scrollWidth;
-        protected static int _scrollHeight;
+        protected int _scrollLeft;
+        protected int _scrollTop;
+        protected int _scrollWidth;
+        protected int _scrollHeight;
 
 
         #endregion
@@ -153,7 +154,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int Left
+        public int Left
         {
             get
             {
@@ -161,7 +162,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int Top
+        public int Top
         {
             get
             {
@@ -169,7 +170,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int Width
+        public int Width
         {
             get
             {
@@ -177,7 +178,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int Height
+        public int Height
         {
             get
             {
@@ -185,7 +186,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int ClientTop
+        public int ClientTop
         {
             get
             {
@@ -193,7 +194,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int ClientLeft
+        public int ClientLeft
         {
             get
             {
@@ -201,7 +202,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int ClientWidth
+        public int ClientWidth
         {
             get
             {
@@ -209,7 +210,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int ClientHeight
+        public int ClientHeight
         {
             get
             {
@@ -217,7 +218,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static int ScrollLeft
+        public int ScrollLeft
         {
             get
             {
@@ -225,7 +226,7 @@ namespace Shrinerain.AutoTester.Core
                 return _scrollLeft;
             }
         }
-        public static int ScrollTop
+        public int ScrollTop
         {
             get
             {
@@ -233,7 +234,7 @@ namespace Shrinerain.AutoTester.Core
                 return _scrollTop;
             }
         }
-        public static int ScrollWidth
+        public int ScrollWidth
         {
             get
             {
@@ -241,7 +242,7 @@ namespace Shrinerain.AutoTester.Core
                 return _scrollWidth;
             }
         }
-        public static int ScrollHeight
+        public int ScrollHeight
         {
             get
             {
@@ -252,13 +253,13 @@ namespace Shrinerain.AutoTester.Core
         }
 
         //main handle of ie window
-        public static IntPtr MainHandle
+        public IntPtr MainHandle
         {
             get { return _mainHandle; }
         }
 
         //handle of client area, Internet Explorer_Server
-        public static IntPtr IEServerHandle
+        public IntPtr IEServerHandle
         {
             get { return _ieServerHandle; }
         }
@@ -281,17 +282,6 @@ namespace Shrinerain.AutoTester.Core
             // default version number is 6.0
             _browserName = "Internet Explorer";
             _version = "6.0";
-        }
-
-        //singleton
-        public static TestBrowser GetInstance()
-        {
-            if (_testBrowser == null)
-            {
-                _testBrowser = new TestBrowser();
-            }
-
-            return _testBrowser;
         }
 
         ~TestBrowser()
@@ -434,7 +424,15 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
-            _ie.Quit();
+
+            try
+            {
+                _ie.Quit();
+            }
+            catch (Exception e)
+            {
+                throw new CannotStopTestBrowserException("Can not close browser: " + e.Message);
+            }
         }
 
         /* void Load(string url)
@@ -451,9 +449,8 @@ namespace Shrinerain.AutoTester.Core
             // if ie is not started, wait for 120s.
             if (_ie == null)
             {
-                _browserExisted.WaitOne(this._maxWaitSeconds * 1000, true);
+                throw new TestBrowserNotFoundException();
             }
-
 
             object tmp = new object();
             try
@@ -482,11 +479,11 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void Move(int top, int left)
         {
-
             if (_ie == null)
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 _ie.Top = top;
@@ -503,6 +500,11 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void Resize(int width, int height)
         {
+            if (_ie == null)
+            {
+                throw new TestBrowserNotFoundException();
+            }
+
             if (width < 1)
             {
                 width = 1;
@@ -511,6 +513,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 height = 1;
             }
+
             try
             {
                 _ie.Width = width;
@@ -532,6 +535,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 _ie.GoBack();
@@ -552,6 +556,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 _ie.GoForward();
@@ -571,6 +576,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 _ie.GoHome();
@@ -591,6 +597,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 _ie.Refresh();
@@ -607,9 +614,9 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void Wait(int seconds)
         {
-            if (seconds < 0)
+            if (_ie == null)
             {
-                seconds = int.MaxValue;
+                throw new TestBrowserNotFoundException();
             }
 
             if (seconds > 0)
@@ -623,7 +630,10 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void WaitForNewWindow()
         {
-
+            if (_ie == null)
+            {
+                throw new TestBrowserNotFoundException();
+            }
         }
 
         /* void WaitForNewTab()
@@ -632,7 +642,10 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void WaitForNewTab()
         {
-
+            if (_ie == null)
+            {
+                throw new TestBrowserNotFoundException();
+            }
         }
 
         /* void WaitForNextPage()
@@ -642,6 +655,11 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void WaitForNextPage()
         {
+            if (_ie == null)
+            {
+                throw new TestBrowserNotFoundException();
+            }
+
             WaitDocumentLoadComplete();
         }
 
@@ -652,12 +670,9 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void WaitForPopWindow()
         {
-
-            _mainHandle = GetIEMainHandle();
-
-            if (_mainHandle == IntPtr.Zero)
+            if (_ie == null)
             {
-                throw new TestBrowserNotFoundException("Can not find Internet explorer.");
+                throw new TestBrowserNotFoundException();
             }
 
             int times = 0;
@@ -701,6 +716,11 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void MaxSize()
         {
+            if (_ie == null)
+            {
+                throw new TestBrowserNotFoundException();
+            }
+
             try
             {
                 Win32API.PostMessage(_mainHandle, Convert.ToInt32(Win32API.WindowMessages.WM_SYSCOMMAND), Convert.ToInt32(Win32API.WindowMenuMessage.SC_MAXIMIZE), 0);
@@ -716,6 +736,11 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void Active()
         {
+            if (_ie == null)
+            {
+                throw new TestBrowserNotFoundException();
+            }
+
             try
             {
                 Win32API.SetForegroundWindow(_mainHandle);
@@ -740,6 +765,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 return _ie.LocationURL;
@@ -759,6 +785,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 return _ie.StatusText;
@@ -779,6 +806,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 return _ie.MenuBar;
@@ -799,6 +827,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 return _ie.Resizable;
@@ -819,6 +848,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
             try
             {
                 return _ie.FullScreen;
@@ -847,6 +877,9 @@ namespace Shrinerain.AutoTester.Core
             return _version;
         }
 
+        /* GetPerformanceTimeByURL(Uri uri)
+         * get the ms time to load the url.
+         */
         public virtual int GetPerformanceTimeByURL(Uri uri)
         {
             return GetPerformanceTimeByURL(uri.ToString());
@@ -1118,7 +1151,7 @@ namespace Shrinerain.AutoTester.Core
         /* void GetBrowserRect()
          * browser rect: the whole rect of IE, include menu, address bar etc.
          */
-        protected static void GetBrowserRect()
+        protected void GetBrowserRect()
         {
             if (_ie == null)
             {
@@ -1142,7 +1175,7 @@ namespace Shrinerain.AutoTester.Core
         /* void GetClientRect()
          * client rect: the web page rect, not include menu, address bar ect.
          */
-        protected static void GetClientRect()
+        protected void GetClientRect()
         {
 
             _mainHandle = GetIEMainHandle();
@@ -1198,7 +1231,7 @@ namespace Shrinerain.AutoTester.Core
          * the whole web page rect, include invisible part, for example, some web pages are too long to display, we need to scroll them.
          * 
          */
-        protected static void GetScrollRect()
+        protected void GetScrollRect()
         {
             _HTMLDom = (HTMLDocument)_ie.Document;
 
@@ -1246,7 +1279,7 @@ namespace Shrinerain.AutoTester.Core
          * return the handle of IEFrame, this is the parent handle of Internet Explorer. 
          * we can use Spy++ to get the the handle.
          */
-        protected static IntPtr GetIEMainHandle()
+        protected IntPtr GetIEMainHandle()
         {
             if (_mainHandle == IntPtr.Zero)
             {
@@ -1263,7 +1296,7 @@ namespace Shrinerain.AutoTester.Core
          * return the handle of Shell DocObject View.
          * we can use Spy++ to get the tree structrue of Internet Explorer handles. 
          */
-        protected static IntPtr GetShellDocHandle(IntPtr mainHandle)
+        protected IntPtr GetShellDocHandle(IntPtr mainHandle)
         {
             if (_shellDocHandle == IntPtr.Zero)
             {
@@ -1299,7 +1332,7 @@ namespace Shrinerain.AutoTester.Core
          * return the warning bar handle. in Internet Explorer 6.0 with XP2 or Internet Explorer 7.0.
          * when the web page contains ActiveX (eg: FlashPlayer), we can see a yellow bar on the browser.
          */
-        protected static IntPtr GetWarnBarHandle(IntPtr shellHandle)
+        protected IntPtr GetWarnBarHandle(IntPtr shellHandle)
         {
             if (shellHandle == IntPtr.Zero)
             {
@@ -1312,7 +1345,7 @@ namespace Shrinerain.AutoTester.Core
          * return the handle of Internet Explorer_Server.
          * This control is used to display web page.
          */
-        protected static IntPtr GetIEServerHandle(IntPtr shellHandle)
+        protected IntPtr GetIEServerHandle(IntPtr shellHandle)
         {
             if (_ieServerHandle == IntPtr.Zero)
             {
@@ -1334,7 +1367,7 @@ namespace Shrinerain.AutoTester.Core
          * return the handle of pop up page.
          * the name is Internet Explorer_TridentDlgFrame.
          */
-        protected static IntPtr GetDialogHandle(IntPtr mainHandle)
+        protected IntPtr GetDialogHandle(IntPtr mainHandle)
         {
             if (mainHandle == IntPtr.Zero)
             {
@@ -1363,7 +1396,7 @@ namespace Shrinerain.AutoTester.Core
          *  When we get a pop up window, we need to get it's HTML Dom to get HTML object.
          *  So we need to convert it's handle to HTML Document.
          */
-        protected static HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
+        protected HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
         {
             if (ieServerHandle == IntPtr.Zero)
             {

@@ -111,7 +111,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._className = "Internet Explorer_TridentCmboBx";
 
                 //find the windows handle of combo box, it's class name is "Internet Explorer_TridentCmboBx".
-                IntPtr comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, IntPtr.Zero, this._className, null);
+                IntPtr comboboxHandle = Win32API.FindWindowEx(_browser.IEServerHandle, IntPtr.Zero, this._className, null);
                 while (comboboxHandle != IntPtr.Zero)
                 {
                     //get the position of the control
@@ -129,7 +129,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     else
                     {
                         //not found, go to next control
-                        comboboxHandle = Win32API.FindWindowEx(TestBrowser.IEServerHandle, comboboxHandle, this._className, null);
+                        comboboxHandle = Win32API.FindWindowEx(_browser.IEServerHandle, comboboxHandle, this._className, null);
                     }
                 }
             }
@@ -396,7 +396,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 listHeight = this._itemHeight * this._allValues.Length;
             }
 
-            if (this._rect.Top + listHeight > TestBrowser.ClientHeight)
+            if (this._rect.Top + listHeight > _browser.ClientHeight)
             {
                 isDownward = false;
             }
