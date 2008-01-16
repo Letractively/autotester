@@ -94,9 +94,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     this._textBoxType = GetTextBoxType();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build text box: " + e.Message);
+                throw new CannotBuildObjectException("Can not build text box: " + ex.Message);
             }
 
         }
@@ -192,9 +192,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     Focus();
                     KeyboardOp.SendKey(keys);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new CannotPerformActionException("Can not input keys: " + keys + " to textbox :" + e.Message);
+                    throw new CannotPerformActionException("Can not input keys: " + keys + " to textbox :" + ex.Message);
                 }
             }
         }
@@ -219,9 +219,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform clear action: " + e.Message);
+                throw new CannotPerformActionException("Can not perform clear action: " + ex.Message);
             }
         }
 
@@ -233,9 +233,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Hover();
                 MouseOp.Click();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform focus action: " + e.Message);
+                throw new CannotPerformActionException("Can not perform focus action: " + ex.Message);
             }
         }
 
@@ -319,9 +319,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 MouseOp.MoveShift(0, -(this._rect.Height / 2 + 1));
                 MouseOp.Click();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click above the text box: " + e.Message);
+                throw new CannotPerformActionException("Can not click above the text box: " + ex.Message);
             }
         }
 

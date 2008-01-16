@@ -1,3 +1,19 @@
+/********************************************************************
+*                      AutoTester     
+*                        Wan,Yu
+* AutoTester is a free software, you can use it in any commercial work. 
+* But you CAN NOT redistribute it and/or modify it.
+*--------------------------------------------------------------------
+* Component: MonitorFrm.cs
+*
+* Description: This class creates a form to control/retrieve the running 
+*              status of UAF. we can start/pause/stop/resume UAF.
+*                            
+*
+* History: 2007/09/04 wan,yu Init version.
+*
+*********************************************************************/
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -48,7 +64,6 @@ namespace Shrinerain.AutoTester.GUI
         }
         #endregion
 
-
         #region ctor
 
         public Monitor()
@@ -61,9 +76,6 @@ namespace Shrinerain.AutoTester.GUI
         }
 
         #endregion
-
-
-
 
         #region public methods
 
@@ -150,9 +162,9 @@ namespace Shrinerain.AutoTester.GUI
                 Clipboard.Clear();
                 Clipboard.SetDataObject(this.actionBox.Text, true);
             }
-            catch (System.Exception e)
+            catch (Exception ex)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(ex.Message);
             }
 
         }
@@ -163,9 +175,9 @@ namespace Shrinerain.AutoTester.GUI
             {
                 this.actionBox.Clear();
             }
-            catch (System.Exception e)
+            catch (Exception ex)
             {
-                MessageBox.Show(e.Message);
+                MessageBox.Show(ex.Message);
             }
 
         }

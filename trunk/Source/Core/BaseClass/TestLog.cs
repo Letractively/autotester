@@ -418,9 +418,9 @@ namespace Shrinerain.AutoTester.Core
                     // write template head
                     WriteHead();
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new CannotWriteLogException(e.Message);
+                    throw new CannotWriteLogException(ex.Message);
                 }
             }
 
@@ -482,9 +482,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw;
             }
-            catch (IOException e)
+            catch (Exception ex)
             {
-                throw new CannotSaveScreenPrintException("Can not save screen print file: " + fileFullName + "," + e.Message);
+                throw new CannotSaveScreenPrintException("Can not save screen print file: " + fileFullName + "," + ex.Message);
             }
         }
 
@@ -528,9 +528,9 @@ namespace Shrinerain.AutoTester.Core
                 this._logWriter.WriteLine(this._templateHeadBuf.ToString());
                 this._logWriter.Flush();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotWriteLogException(e.Message);
+                throw new CannotWriteLogException(ex.Message);
             }
 
         }
@@ -553,9 +553,9 @@ namespace Shrinerain.AutoTester.Core
                 this._logWriter.WriteLine(this._templateBodyBuf.ToString());
                 this._logWriter.Flush();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotWriteLogException(e.Message);
+                throw new CannotWriteLogException(ex.Message);
             }
         }
 
@@ -575,9 +575,9 @@ namespace Shrinerain.AutoTester.Core
                 this._logWriter.WriteLine(this._templateTailBuf.ToString());
                 this._logWriter.Flush();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotWriteLogException(e.Message);
+                throw new CannotWriteLogException(ex.Message);
             }
         }
 
@@ -678,9 +678,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 templateBuf.Replace("<%" + propertyName + "%>", value);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotWriteLogException("Can not write property+ " + propertyName + " : " + e.Message);
+                throw new CannotWriteLogException("Can not write property+ " + propertyName + " : " + ex.Message);
             }
 
         }
@@ -768,9 +768,9 @@ namespace Shrinerain.AutoTester.Core
                 return img;
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotSaveScreenPrintException(e.Message);
+                throw new CannotSaveScreenPrintException(ex.Message);
             }
 
         }

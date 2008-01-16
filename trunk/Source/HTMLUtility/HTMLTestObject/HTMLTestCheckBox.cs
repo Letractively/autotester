@@ -54,9 +54,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._checkBoxElement = (IHTMLInputElement)element;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get IHTMLInputElement: " + e.Message);
+                throw new CannotBuildObjectException("Can not get IHTMLInputElement: " + ex.Message);
             }
 
         }
@@ -80,9 +80,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform Check action on checkbox: " + e.Message);
+                throw new CannotPerformActionException("Can not perform Check action on checkbox: " + ex.Message);
             }
 
         }
@@ -100,9 +100,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform UnCheck action on checkbox: " + e.Message);
+                throw new CannotPerformActionException("Can not perform UnCheck action on checkbox: " + ex.Message);
             }
         }
 
@@ -112,9 +112,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return _checkBoxElement.@checked;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not get status of checkbox: " + e.Message);
+                throw new CannotPerformActionException("Can not get status of checkbox: " + ex.Message);
             }
         }
 
@@ -138,9 +138,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click on the checkbox: " + e.Message);
+                throw new CannotPerformActionException("Can not click on the checkbox: " + ex.Message);
             }
         }
 

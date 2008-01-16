@@ -92,9 +92,9 @@ namespace Shrinerain.AutoTester.Core
                 {
                     return GetSimilarPercent(str1, str2) >= percent;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new FuzzySearchException("Fuzzy search error: " + e.Message);
+                    throw new FuzzySearchException("Fuzzy search error: " + ex.Message);
                 }
             }
 

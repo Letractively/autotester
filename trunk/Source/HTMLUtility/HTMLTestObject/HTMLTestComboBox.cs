@@ -85,17 +85,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _htmlSelectElement = (IHTMLSelectElement)element;
                 //_htmlSelectClass = (HTMLSelectElementClass)element;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert IHTMLElement to IHTMLSelectElement: " + e.Message);
+                throw new CannotBuildObjectException("Can not convert IHTMLElement to IHTMLSelectElement: " + ex.Message);
             }
             try
             {
                 this._allValues = this.GetAllValues();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the list values: " + e.Message);
+                throw new CannotBuildObjectException("Can not get the list values: " + ex.Message);
             }
             try
             {
@@ -212,9 +212,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform select action on Combobox: " + e.ToString());
+                throw new CannotPerformActionException("Can not perform select action on Combobox: " + ex.Message);
             }
 
         }

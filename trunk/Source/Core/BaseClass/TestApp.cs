@@ -163,9 +163,9 @@ namespace Shrinerain.AutoTester.Core
                     _appProcess.Close();
                     _appProcess = null;
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new CannotStopAppException("Can not stop test application: " + e.Message);
+                    throw new CannotStopAppException("Can not stop test application: " + ex.Message);
                 }
             }
         }
@@ -190,9 +190,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 Win32API.SetWindowPos(this.Handle, IntPtr.Zero, left, top, width, height, 0);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotResizeAppException("Can not resize application to " + left.ToString() + "," + top.ToString() + "," + width.ToString() + "," + height.ToString() + ": " + e.Message);
+                throw new CannotResizeAppException("Can not resize application to " + left.ToString() + "," + top.ToString() + "," + width.ToString() + "," + height.ToString() + ": " + ex.Message);
             }
 
         }
@@ -208,9 +208,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 Win32API.PostMessage(this.Handle, Convert.ToInt32(Win32API.WindowMessages.WM_SYSCOMMAND), Convert.ToInt32(Win32API.WindowMenuMessage.SC_MAXIMIZE), 0);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotMaxAppException("Can not max size test application: " + e.Message);
+                throw new CannotMaxAppException("Can not max size test application: " + ex.Message);
             }
         }
 
@@ -246,9 +246,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 Win32API.SetForegroundWindow(this._rootHandle);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotActiveAppException("Can not active test application: " + e.Message);
+                throw new CannotActiveAppException("Can not active test application: " + ex.Message);
             }
         }
 
@@ -266,9 +266,9 @@ namespace Shrinerain.AutoTester.Core
                     Thread.Sleep(seconds * 1000);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotWaitAppException("Can not wait test application: " + e.Message);
+                throw new CannotWaitAppException("Can not wait test application: " + ex.Message);
             }
         }
 
@@ -302,9 +302,9 @@ namespace Shrinerain.AutoTester.Core
 
                 return currentActiveWindow == this.Handle ? true : false;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotGetAppStatusException("Can not determine if test app is active: " + e.Message);
+                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.Message);
             }
         }
 
@@ -498,9 +498,9 @@ namespace Shrinerain.AutoTester.Core
                 this._width = rect.Width;
                 this._height = rect.Height;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotGetAppInfoException("Can not get size of test app: " + e.Message);
+                throw new CannotGetAppInfoException("Can not get size of test app: " + ex.Message);
             }
         }
 

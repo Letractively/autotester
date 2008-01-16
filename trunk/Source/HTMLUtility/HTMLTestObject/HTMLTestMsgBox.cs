@@ -113,9 +113,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build HTMLTestMsgBox: " + e.Message);
+                throw new CannotBuildObjectException("Can not build HTMLTestMsgBox: " + ex.Message);
             }
 
         }
@@ -142,9 +142,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build test message box: " + e.Message);
+                throw new CannotBuildObjectException("Can not build test message box: " + ex.Message);
             }
 
         }
@@ -170,9 +170,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotGetObjectPositionException("Can not get position of message box: " + e.Message);
+                throw new CannotGetObjectPositionException("Can not get position of message box: " + ex.Message);
             }
         }
 
@@ -194,9 +194,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not move mouse to message box: " + e.Message);
+                throw new CannotPerformActionException("Can not move mouse to message box: " + ex.Message);
             }
         }
 
@@ -252,9 +252,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click on message box: " + e.Message);
+                throw new CannotPerformActionException("Can not click on message box: " + ex.Message);
             }
         }
 
@@ -271,9 +271,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click on message box: " + e.Message);
+                throw new CannotPerformActionException("Can not click on message box: " + ex.Message);
             }
         }
 
@@ -341,9 +341,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the message text: " + e.Message);
+                throw new CannotBuildObjectException("Can not get the message text: " + ex.Message);
             }
 
             try
@@ -351,9 +351,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get icon
                 this._icon = GetIcon();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get icon of MessageBox: " + e.Message);
+                throw new CannotBuildObjectException("Can not get icon of MessageBox: " + ex.Message);
             }
 
             try
@@ -361,9 +361,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get button groups
                 _buttons = GetButtons();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get Buttons of MessageBox: " + e.Message);
+                throw new CannotBuildObjectException("Can not get Buttons of MessageBox: " + ex.Message);
             }
         }
 
@@ -407,9 +407,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click button: " + text + " with " + e.Message);
+                throw new CannotPerformActionException("Can not click button: " + text + " with " + ex.Message);
             }
         }
 

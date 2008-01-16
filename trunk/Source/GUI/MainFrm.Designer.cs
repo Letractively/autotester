@@ -585,7 +585,7 @@ namespace Shrinerain.AutoTester.GUI
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(384, 244);
+            this.tabPage2.Size = new System.Drawing.Size(384, 246);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Drive File";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -597,7 +597,7 @@ namespace Shrinerain.AutoTester.GUI
             this.dataGridView1.Location = new System.Drawing.Point(3, 3);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 23;
-            this.dataGridView1.Size = new System.Drawing.Size(378, 238);
+            this.dataGridView1.Size = new System.Drawing.Size(378, 240);
             this.dataGridView1.TabIndex = 0;
             // 
             // menuStrip1
@@ -634,7 +634,7 @@ namespace Shrinerain.AutoTester.GUI
             this.newToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem1.Image")));
             this.newToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newToolStripMenuItem1.Name = "newToolStripMenuItem1";
-            this.newToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.newToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
             this.newToolStripMenuItem1.Text = "&New Project";
             this.newToolStripMenuItem1.Click += new System.EventHandler(this.newToolStripMenuItem1_Click);
             // 
@@ -657,14 +657,14 @@ namespace Shrinerain.AutoTester.GUI
             this.saveToolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem1.Image")));
             this.saveToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.saveToolStripMenuItem1.Name = "saveToolStripMenuItem1";
-            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
             this.saveToolStripMenuItem1.Text = "&Save";
             this.saveToolStripMenuItem1.Click += new System.EventHandler(this.saveToolStripMenuItem1_Click);
             // 
             // saveAsToolStripMenuItem1
             // 
             this.saveAsToolStripMenuItem1.Name = "saveAsToolStripMenuItem1";
-            this.saveAsToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveAsToolStripMenuItem1.Size = new System.Drawing.Size(137, 22);
             this.saveAsToolStripMenuItem1.Text = "Save &As";
             this.saveAsToolStripMenuItem1.Click += new System.EventHandler(this.saveAsToolStripMenuItem1_Click);
             // 
@@ -834,7 +834,7 @@ namespace Shrinerain.AutoTester.GUI
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainFrm";
-            this.Text = "AutoTester - Framework";
+            this.Text = "UAT Automation Framework";
             this.Load += new System.EventHandler(this.MainFrm_Load);
             this.tabProject.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);

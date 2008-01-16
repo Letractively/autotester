@@ -270,9 +270,9 @@ namespace Shrinerain.AutoTester.Framework
                 _myProjectReader = new XmlTextReader(this._projectConfigFile);
                 _myProjectReader.WhitespaceHandling = WhitespaceHandling.None;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotOpenConfigFileException(e.Message);
+                throw new CannotOpenConfigFileException(ex.Message);
             }
 
             try
