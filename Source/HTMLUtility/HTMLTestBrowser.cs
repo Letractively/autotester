@@ -82,9 +82,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return (IHTMLElementCollection)_HTMLDom.body.all;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not get all objects: " + e.Message);
+                throw new ObjectNotFoundException("Can not get all objects: " + ex.Message);
             }
 
         }
@@ -106,9 +106,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return _HTMLDom.getElementById(id);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found test object by id:" + id + ": " + e.Message);
+                throw new ObjectNotFoundException("Can not found test object by id:" + id + ": " + ex.Message);
             }
 
         }
@@ -132,9 +132,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return _HTMLDom.getElementsByName(name);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found test object by name:" + name + ":" + e.Message);
+                throw new ObjectNotFoundException("Can not found test object by name:" + name + ":" + ex.Message);
             }
         }
 
@@ -157,9 +157,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return _HTMLDom.getElementsByTagName(name);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found test object by tag name:" + name + ":" + e.Message);
+                throw new ObjectNotFoundException("Can not found test object by tag name:" + name + ":" + ex.Message);
             }
         }
 
@@ -172,9 +172,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return _HTMLDom.elementFromPoint(x, y);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + e.Message);
+                throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + ex.Message);
             }
         }
 

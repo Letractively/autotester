@@ -60,9 +60,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _imgElement = (IHTMLImgElement)element;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert to IHTMLImgElement: " + e.Message);
+                throw new CannotBuildObjectException("Can not convert to IHTMLImgElement: " + ex.Message);
             }
 
             try
@@ -70,9 +70,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 // get the image source
                 this._src = _imgElement.src;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the source of image: " + e.Message);
+                throw new CannotBuildObjectException("Can not get the source of image: " + ex.Message);
             }
         }
 
@@ -92,9 +92,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not download image: " + e.Message);
+                throw new CannotPerformActionException("Can not download image: " + ex.Message);
             }
         }
 
@@ -107,9 +107,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 DowloadImage(des);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not download image: " + e.Message);
+                throw new CannotPerformActionException("Can not download image: " + ex.Message);
             }
         }
 
@@ -130,9 +130,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click an image: " + e.Message);
+                throw new CannotPerformActionException("Can not click an image: " + ex.Message);
             }
         }
 

@@ -143,9 +143,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._sourceElement = element;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert element to IHTMLElement: " + e.Message);
+                throw new CannotBuildObjectException("Can not convert element to IHTMLElement: " + ex.Message);
             }
 
             try
@@ -154,9 +154,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._domain = "HTML";
                 this._tag = element.tagName;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not find tag name: " + e.Message);
+                throw new CannotBuildObjectException("Can not find tag name: " + ex.Message);
             }
 
             try
@@ -164,9 +164,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get id, like <input id="btn1">
                 this._id = element.id;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("ID is not found of element " + element.ToString() + ": " + e.Message);
+                throw new CannotBuildObjectException("ID is not found of element " + element.ToString() + ": " + ex.Message);
             }
 
             try
@@ -277,9 +277,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Property " + propertyName + " not found: " + e.Message);
+                throw new PropertyNotFoundException("Property " + propertyName + " not found: " + ex.Message);
             }
         }
 

@@ -74,9 +74,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _acnchorElement = (HTMLAnchorElement)element;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert to HTMLAnchorElement: " + e.Message);
+                throw new CannotBuildObjectException("Can not convert to HTMLAnchorElement: " + ex.Message);
             }
 
             try
@@ -97,9 +97,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     _linkImgElement = (IHTMLImgElement)_acnchorElement.firstChild;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the image of link: " + e.Message);
+                throw new CannotBuildObjectException("Can not get the image of link: " + ex.Message);
             }
 
             try
@@ -107,9 +107,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get the url of the link.
                 _href = _acnchorElement.href;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get href of link: " + e.Message);
+                throw new CannotBuildObjectException("Can not get href of link: " + ex.Message);
             }
 
         }

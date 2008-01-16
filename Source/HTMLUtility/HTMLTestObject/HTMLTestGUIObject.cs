@@ -215,9 +215,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform Hover action:" + e.Message);
+                throw new CannotPerformActionException("Can not perform Hover action:" + ex.Message);
             }
         }
 
@@ -237,9 +237,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotHighlightObjectException("Can not highlight the object: " + e.Message);
+                throw new CannotHighlightObjectException("Can not highlight the object: " + ex.Message);
             }
 
         }
@@ -337,9 +337,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotHighlightObjectException("Can not high light object: " + e.Message);
+                throw new CannotHighlightObjectException("Can not high light object: " + ex.Message);
             }
         }
 

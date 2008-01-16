@@ -80,9 +80,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get rect on screen: " + e.Message);
+                throw new CannotBuildObjectException("Can not get rect on screen: " + ex.Message);
             }
 
         }
@@ -125,9 +125,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotGetObjectPositionException("Can not get rect on screen: " + e.Message);
+                throw new CannotGetObjectPositionException("Can not get rect on screen: " + ex.Message);
             }
 
         }
@@ -150,9 +150,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not move mouse to this object: " + e.Message);
+                throw new CannotPerformActionException("Can not move mouse to this object: " + ex.Message);
             }
         }
 
@@ -180,9 +180,9 @@ namespace Shrinerain.AutoTester.MFCUtility
 
                 return p;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotGetObjectPositionException("Can not get center point: " + e.Message);
+                throw new CannotGetObjectPositionException("Can not get center point: " + ex.Message);
             }
         }
 

@@ -101,9 +101,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     this._btnType = HTMLTestButtonType.Custom;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build test button: " + e.Message);
+                throw new CannotBuildObjectException("Can not build test button: " + ex.Message);
             }
 
             try
@@ -140,9 +140,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.Set();
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform click action: " + e.Message);
+                throw new CannotPerformActionException("Can not perform click action: " + ex.Message);
             }
         }
 
@@ -161,9 +161,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform double click action: " + e.Message);
+                throw new CannotPerformActionException("Can not perform double click action: " + ex.Message);
             }
         }
 
@@ -182,9 +182,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform right click action: " + e.Message);
+                throw new CannotPerformActionException("Can not perform right click action: " + ex.Message);
             }
         }
 

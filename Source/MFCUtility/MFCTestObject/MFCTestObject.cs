@@ -124,9 +124,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get class name: " + e.Message);
+                throw new CannotBuildObjectException("Can not get class name: " + ex.Message);
             }
 
             try
@@ -137,9 +137,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get caption: " + e.Message);
+                throw new CannotBuildObjectException("Can not get caption: " + ex.Message);
             }
         }
 
@@ -165,9 +165,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get handle: " + e.Message);
+                throw new CannotBuildObjectException("Can not get handle: " + ex.Message);
             }
 
             try
@@ -178,9 +178,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get caption: " + e.Message);
+                throw new CannotBuildObjectException("Can not get caption: " + ex.Message);
             }
 
 
@@ -208,9 +208,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get handle: " + e.Message);
+                throw new CannotBuildObjectException("Can not get handle: " + ex.Message);
             }
 
         }
@@ -279,9 +279,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get windows handle: " + e.Message);
+                throw new CannotBuildObjectException("Can not get windows handle: " + ex.Message);
             }
 
 
@@ -309,9 +309,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get windows handle: " + e.Message);
+                throw new CannotBuildObjectException("Can not get windows handle: " + ex.Message);
             }
 
         }
@@ -346,9 +346,9 @@ namespace Shrinerain.AutoTester.MFCUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get class name: " + e.Message);
+                throw new CannotBuildObjectException("Can not get class name: " + ex.Message);
             }
         }
 
@@ -371,9 +371,9 @@ namespace Shrinerain.AutoTester.MFCUtility
 
                 return sb.ToString().Trim();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get caption: " + e.Message);
+                throw new CannotBuildObjectException("Can not get caption: " + ex.Message);
             }
         }
 

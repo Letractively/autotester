@@ -160,9 +160,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 reg = new Regex(regExp);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Invalid regular expression: " + e.Message);
+                throw new CannotPerformActionException("Invalid regular expression: " + ex.Message);
             }
 
             foreach (string v in values)

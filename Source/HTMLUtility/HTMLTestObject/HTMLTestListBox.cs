@@ -90,18 +90,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("HTML source element can not be null: " + e.Message);
+                throw new CannotBuildObjectException("HTML source element can not be null: " + ex.Message);
             }
 
             try
             {
                 this._allValues = this.GetAllValues();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the list values: " + e.Message);
+                throw new CannotBuildObjectException("Can not get the list values: " + ex.Message);
             }
 
             try
@@ -117,9 +117,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._itemCountPerPage = int.Parse(element.getAttribute("size", 0).ToString());
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get size of list box: " + e.Message);
+                throw new CannotBuildObjectException("Can not get size of list box: " + ex.Message);
             }
 
             try
@@ -159,9 +159,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //{
             //    throw;
             //}
-            catch //(Exception e)
+            catch //(Exception ex)
             {
-                // throw new CannotBuildObjectException("Can not get windows handle of list box: " + e.Message);
+                // throw new CannotBuildObjectException("Can not get windows handle of list box: " + ex.Message);
             }
 
             try
@@ -251,9 +251,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException(e.ToString());
+                throw new CannotPerformActionException("Can not select by index: " + index.ToString() + ": " + ex.Message);
             }
 
         }
@@ -300,9 +300,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.Set();
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException(e.ToString());
+                throw new CannotPerformActionException("Can not select multi stings: " + values.ToString() + ": " + ex.Message);
             }
         }
 

@@ -55,9 +55,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._radioElement = (IHTMLInputElement)element;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert to IHTMLInputElement: " + e.Message);
+                throw new CannotBuildObjectException("Can not convert to IHTMLInputElement: " + ex.Message);
             }
         }
 
@@ -80,9 +80,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform Check action on radio button: " + e.Message);
+                throw new CannotPerformActionException("Can not perform Check action on radio button: " + ex.Message);
             }
 
         }
@@ -100,9 +100,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform UnCheck action on radio button: " + e.Message);
+                throw new CannotPerformActionException("Can not perform UnCheck action on radio button: " + ex.Message);
             }
         }
 
@@ -112,9 +112,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return _radioElement.@checked;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not get status of radio button: " + e.Message);
+                throw new CannotPerformActionException("Can not get status of radio button: " + ex.Message);
             }
         }
 
@@ -138,9 +138,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click on the radio button: " + e.Message);
+                throw new CannotPerformActionException("Can not click on the radio button: " + ex.Message);
             }
         }
 
@@ -170,9 +170,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Hover();
                 MouseOp.Click();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not focus on radiobox: " + e.Message);
+                throw new CannotPerformActionException("Can not focus on radiobox: " + ex.Message);
             }
         }
 

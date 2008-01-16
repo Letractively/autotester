@@ -158,9 +158,9 @@ namespace Shrinerain.AutoTester.Framework
                 {
                     Directory.CreateDirectory(this._config.ScreenPrintDir);
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    throw new CannotSaveScreenPrintException("Can not get folder of screen print: " + e.Message);
+                    throw new CannotSaveScreenPrintException("Can not get folder of screen print: " + ex.Message);
                 }
             }
 
@@ -221,9 +221,9 @@ namespace Shrinerain.AutoTester.Framework
                 fileName.Append(GenerateTimeStamp() + ".htm");
                 return fileName.ToString();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotWriteLogException("Can not generate log file name: " + e.Message);
+                throw new CannotWriteLogException("Can not generate log file name: " + ex.Message);
             }
         }
 
@@ -241,9 +241,9 @@ namespace Shrinerain.AutoTester.Framework
                 fileName.Append(GenerateTimeStamp() + ".jpg");
                 return fileName.ToString();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new CannotSaveScreenPrintException("Can not generate screen print file name: " + e.Message);
+                throw new CannotSaveScreenPrintException("Can not generate screen print file name: " + ex.Message);
             }
         }
 

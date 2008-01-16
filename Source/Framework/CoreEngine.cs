@@ -192,9 +192,9 @@ namespace Shrinerain.AutoTester.Framework
                         //we can handle it...
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    OnNewMessage(e.ToString());
+                    OnNewMessage(ex.ToString());
                     break;
                 }
             }
@@ -271,9 +271,9 @@ namespace Shrinerain.AutoTester.Framework
             {
                 throw;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new TestFrameworkException("Fatal Error: Can not load engines: " + e.Message);
+                throw new TestFrameworkException("Fatal Error: Can not load engines: " + ex.Message);
             }
         }
 
@@ -541,9 +541,9 @@ namespace Shrinerain.AutoTester.Framework
                 this._logEngine.WriteLog();
 
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw new VerifyPointException("Can not perform VP with step [" + step.ToString() + "]: " + e.Message);
+                throw new VerifyPointException("Can not perform VP with step [" + step.ToString() + "]: " + ex.Message);
             }
         }
 
