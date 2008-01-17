@@ -385,7 +385,7 @@ namespace Shrinerain.AutoTester.Core
                 ieExistT.Start(title);
 
                 //wait until the internet explorer is found.
-                _browserExisted.WaitOne();
+                _browserExisted.WaitOne(this._maxWaitSeconds * 1000, true);
 
                 if (_ie != null)
                 {
@@ -770,9 +770,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 return _ie.LocationURL;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the current url.");
+                throw new CannotGetBrowserInfoException("Can not get the current url: " + ex.Message);
             }
         }
 
@@ -790,9 +790,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 return _ie.StatusText;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the status text.");
+                throw new CannotGetBrowserInfoException("Can not get the status text: " + ex.Message);
             }
         }
 
@@ -811,9 +811,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 return _ie.MenuBar;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the menu status.");
+                throw new CannotGetBrowserInfoException("Can not get the menu status: " + ex.Message);
             }
         }
 
@@ -832,9 +832,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 return _ie.Resizable;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the resize status.");
+                throw new CannotGetBrowserInfoException("Can not get the resize status: " + ex.Message);
             }
         }
 
@@ -853,9 +853,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 return _ie.FullScreen;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the full screen status.");
+                throw new CannotGetBrowserInfoException("Can not get the full screen status: " + ex.Message);
             }
 
         }
@@ -935,7 +935,6 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-
         #endregion
 
 
@@ -943,7 +942,7 @@ namespace Shrinerain.AutoTester.Core
 
         #region protected virtual help methods
 
-        /* InternetExplorer AttacchIE(IntPtr ieHandle)
+        /* InternetExplorer AttachBrowser(IntPtr ieHandle)
          * return the instance of InternetExplorer.
          * 
          */
@@ -970,7 +969,7 @@ namespace Shrinerain.AutoTester.Core
                     int currentHandle = 0;
 
                     //if we start a new browser, it will be the last ShellWindow,
-                    //so we try from end to start.
+                    //so we try from the last ShellWindow to the first.
                     for (int i = allBrowsers.Count - 1; i >= 0; i--)
                     {
 
@@ -1031,7 +1030,6 @@ namespace Shrinerain.AutoTester.Core
 
             int simPercent = 100;
             bool browserFound = false;
-            IntPtr ieHwd = IntPtr.Zero;
 
             int times = 0;
             while (times <= seconds)
@@ -1055,7 +1053,7 @@ namespace Shrinerain.AutoTester.Core
                     }
                     else //find the browser by process id.
                     {
-                        //if we didn't start a browser process, we will use the first one.
+                        //if we didn't start a browser process, we will use an exist browser.
                         if (_browserProcess == null)
                         {
                             browserFound = true;
@@ -1082,23 +1080,14 @@ namespace Shrinerain.AutoTester.Core
                         _browserProcess = p;
 
                         //main window handle is the handle of Internet explorer.
-                        ieHwd = p.MainWindowHandle;
+                        _mainHandle = p.MainWindowHandle;
 
-                        break;
-                    }
-                }
+                        _ie = AttachBrowser(_mainHandle);
 
-                if (ieHwd != IntPtr.Zero)
-                {
-                    _mainHandle = ieHwd;
-
-                    _ie = AttachBrowser(ieHwd);
-
-                    //we attached to IE successfully.
-                    if (_ie != null)
-                    {
+                        //we attached to IE successfully.
                         _browserExisted.Set();
-                        break;
+
+                        return;
                     }
                 }
 
@@ -1115,13 +1104,9 @@ namespace Shrinerain.AutoTester.Core
                 {
                     simPercent = 100;
                 }
-
             }
 
-            if (!browserFound)
-            {
-                throw new TestBrowserNotFoundException();
-            }
+            throw new TestBrowserNotFoundException();
 
         }
 
