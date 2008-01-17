@@ -75,4 +75,18 @@ namespace Shrinerain.AutoTester.Core
 
         }
     };
+
+    public class CannotSendMailExpcetion : TestLogException
+    {
+        public CannotSendMailExpcetion()
+            : this("Can not send email.")
+        {
+        }
+
+        public CannotSendMailExpcetion(string message)
+            : base(message)
+        {
+
+        }
+    }
 }

@@ -34,8 +34,10 @@ namespace Shrinerain.AutoTester.MFCUtility
         ComboBox,
         ListBox,
         Tree,
+        Tab,
         Table,
         Image,
+        ScrollBar,
         MsgBox,
         FileDialog,
     }
