@@ -20,8 +20,6 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Shrinerain.AutoTester.Core
 {
@@ -104,11 +102,11 @@ namespace Shrinerain.AutoTester.Core
 
         #region private methods
 
-        /* int GetSimilarity(string str1, string str2)
-        * return the similarity bewteen 2 string, use dynamic programming.
+        /* int GetSimilarPercent(string str1, string str2)
+        * return the similarity of 2 strings, use dynamic programming.
         * the similarity = the count of same chracters *2 /(length of str1 + length of str2)
         * eg: test1, test2, they have 4 same chracters, so the similarity = 4*2/(5+5)=0.8=80%
-        * for performance issue, use unsafe code to access the array. 
+        * for performance issue, use unsafe code to access the dynamic array. 
         */
         private unsafe static int GetSimilarPercent(string str1, string str2)
         {
@@ -136,15 +134,15 @@ namespace Shrinerain.AutoTester.Core
                     string[] str2Arr = str2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
                     //if the two strings have the same number of words, check each word.
-                    if (str1Arr.Length > 1 && str1Arr.Length == str2Arr.Length)
+                    if (str1Arr.Length == str2Arr.Length)
                     {
                         int totalSimPercent = 0;
-                        float weighted = 0;
+                        float weight = 0;
 
                         for (int i = 0; i < str1Arr.Length; i++)
                         {
-                            weighted = (float)(str1Arr[i].Length + str2Arr[i].Length) / (float)(str1.Length + str2.Length);
-                            totalSimPercent += Convert.ToInt32(GetSimilarPercent(str1Arr[i], str2Arr[i]) * weighted);
+                            weight = (float)(str1Arr[i].Length + str2Arr[i].Length) / (float)(str1.Length + str2.Length);
+                            totalSimPercent += Convert.ToInt32(GetSimilarPercent(str1Arr[i], str2Arr[i]) * weight);
                         }
 
                         return totalSimPercent;
@@ -193,7 +191,7 @@ namespace Shrinerain.AutoTester.Core
                 int str1Index = len1;
                 int str2Index = len2;
 
-                //the max number's position in the array of sepcific line and row.
+                //the max number's position in the array of sepcific col and row.
                 int maxStr1Index = str1Index;
                 int maxStr2Index = str2Index;
 

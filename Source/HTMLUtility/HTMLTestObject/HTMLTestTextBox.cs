@@ -17,14 +17,12 @@
 *********************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Drawing;
+
 using mshtml;
 
-using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Win32;
 
 
 namespace Shrinerain.AutoTester.HTMLUtility

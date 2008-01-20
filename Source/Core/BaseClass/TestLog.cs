@@ -18,17 +18,12 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Threading;
-using System.Diagnostics;
-using System.Drawing;
+using System.Text;
+using System.Text.RegularExpressions;
 
-using Shrinerain.AutoTester.Interface;
-using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.Core

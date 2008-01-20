@@ -19,15 +19,13 @@
 *********************************************************************/
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
 using System.Diagnostics;
+using System.Threading;
 
-using SHDocVw;
 using mshtml;
-using Shrinerain.AutoTester.Win32;
+using SHDocVw;
 using Shrinerain.AutoTester.Interface;
-using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.Core
 {

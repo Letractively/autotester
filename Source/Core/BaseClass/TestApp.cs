@@ -16,14 +16,12 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
-using System.Threading;
 using System.IO;
+using System.Threading;
 
-using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Interface;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.Core
 {

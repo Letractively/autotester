@@ -17,13 +17,11 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
+
 using mshtml;
 
-using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
@@ -269,12 +267,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual string GetCustomMethodName()
         {
-            if (this._btnType == HTMLTestButtonType.Custom)
+
+            if (this._sourceElement.getAttribute("onclick", 0) != null && this._sourceElement.getAttribute("onclick", 0).GetType().ToString() != "System.DBNull")
             {
-                if (this._sourceElement.getAttribute("onclick", 0) != null && this._sourceElement.getAttribute("onclick", 0).GetType().ToString() != "System.DBNull")
-                {
-                    return this._sourceElement.getAttribute("onclick", 0).ToString().Trim();
-                }
+                return this._sourceElement.getAttribute("onclick", 0).ToString().Trim();
             }
 
             return "";

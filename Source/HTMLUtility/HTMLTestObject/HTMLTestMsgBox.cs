@@ -22,11 +22,9 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
-using mshtml;
+using System.Text;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Win32;

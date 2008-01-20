@@ -16,17 +16,9 @@
 *********************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Diagnostics;
-using System.Runtime;
 
-using SHDocVw;
 using mshtml;
-using Shrinerain.AutoTester.Win32;
-using Shrinerain.AutoTester.Interface;
+
 using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
