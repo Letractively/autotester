@@ -18,13 +18,12 @@
 *********************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Net;
+
 using mshtml;
 
-using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {

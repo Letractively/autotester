@@ -8,180 +8,301 @@
 *
 * Description: This compent provides functions to send an email.
 *              After testing, we often need to send test result by email. 
+*              we can send a mail by Outlook or SMTP server.               
 *
 * History: 2008/01/17 wan,yu Init version
 *
 *********************************************************************/
 
+#undef OUTLOOK
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
+using System.Net.Mail;
 
+#if OUTLOOK
 using Outlook = Microsoft.Office.Interop.Outlook;
+#endif
 
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class Mail
+    public enum MailType : int
     {
-
+        Text = 0,
+        HTML
     }
 
-    //OutlookMail will use Outlook com to send a mail.
-    public class OutlookMail : IDisposable
+    //use smtp or outlook to send a mail.
+    public enum MailServerType : int
     {
-        private static Outlook.Application oApp;
-        private static Outlook.NameSpace oNS;
-        private static Outlook._MailItem oMsg;
-        private static Outlook.Recipients oRecips;
-        private static Outlook.Recipient oRecip;
+        SMTP = 0,
+        Outlook
+    }
 
-        private static string _title = "";
-        private static List<string> _mailAddrs = new List<string>(8);
-        private static string _mailContent = "";
+    public class Mail : IDisposable
+    {
 
+        #region fields
 
-        public String Title
+        //for smtp mail
+        protected MailMessage _netMail;
+        protected SmtpClient _smtpServer;
+        //default mail server
+        protected string _mailServer = "localhost";
+
+#if OUTLOOK
+
+#endif
+
+        protected MailServerType _serverType = MailServerType.SMTP;
+
+        //fields for a mail.
+        protected string _subject;
+        protected string _from;
+        protected List<string> _to;
+        protected List<string> _cc;
+        protected string _body;
+
+        //mail type
+        protected MailType _mailType = MailType.Text;
+
+        #endregion
+
+        #region properties
+
+        public string Subject
         {
-            get { return _title; }
-            set { _title = value; }
+            get { return _subject; }
+            set { _subject = value; }
         }
 
-        public String Body
+        public string From
         {
-            get { return _mailContent; }
+            get { return _from; }
+            set { _from = value; }
+        }
+
+        public string Body
+        {
+            get { return _body; }
+            set { _body = value; }
+        }
+
+        public MailType Type
+        {
+            get { return _mailType; }
             set
             {
-                if (!String.IsNullOrEmpty(value))
+                _mailType = value;
+                if (value == MailType.HTML)
                 {
-                    string content = value.Trim();
-
-                    //if the body starts with http:// or https://, we think it is the url for HTML mail. 
-                    if (content.StartsWith("Http://", StringComparison.CurrentCultureIgnoreCase) ||
-                        content.StartsWith("Https://", StringComparison.CurrentCultureIgnoreCase)
-                        )
+                    if (_serverType == MailServerType.SMTP)
                     {
-                        content = GetHTMLString(content);
+                        _netMail.IsBodyHtml = true;
                     }
+                    else
+                    {
 
-                    _mailContent = content;
-
+                    }
                 }
+            }
+        }
 
+        public MailServerType ServerType
+        {
+            get { return _serverType; }
+            set { _serverType = value; }
+        }
+
+        public string MailServer
+        {
+            get { return _mailServer; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value) && _serverType == MailServerType.SMTP)
+                {
+                    _mailServer = value;
+
+                    try
+                    {
+                        _smtpServer = new SmtpClient(value);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new CannotSendMailExpcetion("Can not start smtp server: " + ex.Message);
+                    }
+                }
             }
         }
 
 
-        static OutlookMail()
+
+        #endregion
+
+        #region methods
+
+        #region ctor
+
+        public Mail()
         {
-            try
-            {
-                //create outlook
-                oApp = new Outlook.Application();
-                oNS = oApp.GetNamespace("mapi");
-
-                //logon
-                oNS.Logon(null, null, false, false);
-            }
-            catch (Exception ex)
-            {
-                throw new CannotSendMailExpcetion("Can not attach Outlook: " + ex.Message);
-            }
-
+            _to = new List<string>();
+            _cc = new List<string>();
         }
 
         public void Dispose()
         {
-            Close();
-        }
-
-        public void CreateNewMail()
-        {
             try
             {
-                oMsg = (Outlook.MailItem)oApp.CreateItem(Outlook.OlItemType.olMailItem);
-                _mailAddrs.Clear();
-            }
-            catch (Exception ex)
-            {
-                throw new CannotSendMailExpcetion("Can not create a new mail: " + ex.Message);
-            }
-
-        }
-
-        public void AddMailAddr(string mailAddr)
-        {
-            if (!String.IsNullOrEmpty(mailAddr) && !_mailAddrs.Contains(mailAddr))
-            {
-                _mailAddrs.Add(mailAddr);
-            }
-        }
-
-        public void Send()
-        {
-            if (String.IsNullOrEmpty(_title) || String.IsNullOrEmpty(_mailContent) || _mailAddrs.Count == 0)
-            {
-                throw new CannotSendMailExpcetion("Title, Body, To address can not be empty.");
-            }
-
-            try
-            {
-                if (oMsg == null)
+                if (_serverType == MailServerType.SMTP)
                 {
-                    CreateNewMail();
+                    if (_netMail != null)
+                    {
+                        _netMail.Dispose();
+                        _netMail = null;
+                    }
                 }
-
-                //set title and content
-                oMsg.Subject = _title;
-                oMsg.HTMLBody = _mailContent;
-
-                oRecips = (Outlook.Recipients)oMsg.Recipients;
-
-                // add each To address
-                foreach (string addr in _mailAddrs)
+                else
                 {
-                    oRecip = (Outlook.Recipient)oRecips.Add(addr);
-                    oRecip.Resolve();
 
                 }
 
-                oMsg.Send();
+                GC.Collect();
 
-            }
-            catch (Exception ex)
-            {
-                throw new CannotSendMailExpcetion("Can not send a mail: " + ex.Message);
-            }
-        }
-
-
-        public void Close()
-        {
-            try
-            {
-                if (oRecip != null)
-                {
-                    // Log off.
-                    oNS.Logoff();
-
-                    // Clean up.
-                    oRecip = null;
-                    oRecips = null;
-                    oMsg = null;
-                    oNS = null;
-                    oApp = null;
-                }
+                GC.SuppressFinalize(this);
             }
             catch
             {
             }
+
         }
 
-        /* string GetHTMLString(string url)
+        #endregion
+
+        #region public methods
+
+        /* void CreateNewMail()
+         * Init parameters, prepare to send a new mail.
+         */
+        public void CreateNewMail()
+        {
+            if (this._serverType == MailServerType.SMTP)
+            {
+                _netMail = new MailMessage();
+                _netMail.IsBodyHtml = false;
+            }
+            else
+            {
+                //outlook
+            }
+
+            _subject = null;
+            _from = null;
+            _body = null;
+            _to.Clear();
+            _cc.Clear();
+        }
+
+        /* void AddToAddress(string addr)
+         * add "to" mail address 
+         */
+        public void AddToAddress(string addr)
+        {
+            if (!String.IsNullOrEmpty(addr) && !_to.Contains(addr))
+            {
+                _to.Add(addr);
+            }
+        }
+
+        /*  void AddCCAddress(string addr)
+         *  add "CC" mail address
+         */
+        public void AddCCAddress(string addr)
+        {
+            if (!String.IsNullOrEmpty(addr) && !_cc.Contains(addr))
+            {
+                _cc.Add(addr);
+            }
+        }
+
+        /* void Send()
+         * send a mail.
+         */
+        public void Send()
+        {
+
+            //check information
+            if (String.IsNullOrEmpty(_subject) || String.IsNullOrEmpty(_body)
+                || _to.Count == 0)
+            {
+                throw new CannotSendMailExpcetion("Subject, Body and To address can not be empty.");
+            }
+
+            try
+            {
+                if (_serverType == MailServerType.SMTP)
+                {
+                    //send a SMTP mail.
+                    if (String.IsNullOrEmpty(_from) || String.IsNullOrEmpty(_mailServer))
+                    {
+                        throw new CannotSendMailExpcetion("From and Mail server can not be empty.");
+                    }
+
+                    _netMail.Subject = _subject;
+                    _netMail.From = new MailAddress(_from);
+
+                    //if format is HTML, we will try to get the HTML string.
+                    if (_mailType == MailType.HTML)
+                    {
+                        _netMail.Body = GetHTML(_body);
+                    }
+                    else
+                    {
+                        _netMail.Body = _body;
+                    }
+
+                    //add TO address
+                    _netMail.To.Clear();
+                    foreach (string to in _to)
+                    {
+                        _netMail.To.Add(to);
+                    }
+
+                    //add CC address
+                    _netMail.CC.Clear();
+                    foreach (string cc in _cc)
+                    {
+                        _netMail.CC.Add(cc);
+                    }
+
+                    if (_smtpServer == null)
+                    {
+                        _smtpServer = new SmtpClient(_mailServer);
+                    }
+
+                    _smtpServer.Send(_netMail);
+                }
+                else
+                {
+                    //send a outlook mail.
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new CannotSendMailExpcetion("Can not send email: " + ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region private methods
+
+        /* string GetHTML(string url)
          * return the string of expected url.
          */
-        private static string GetHTMLString(string url)
+        private static string GetHTML(string url)
         {
             if (String.IsNullOrEmpty(url))
             {
@@ -190,13 +311,14 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 WebClient webClient = new WebClient();
-                webClient.Encoding = Encoding.UTF8;
+
+                //webClient.Encoding = Encoding.UTF8;
 
                 String html = webClient.DownloadString(url);
 
                 int viewStatePosStart = html.IndexOf("__VIEWSTATE") - 27;
 
-                //remove view state, make the mail smaller
+                //remove view state of Asp.net page, make the mail smaller
                 if (viewStatePosStart > 0)
                 {
                     int viewStatePosEnd = html.IndexOf("/>", viewStatePosStart) + 2;
@@ -205,11 +327,16 @@ namespace Shrinerain.AutoTester.Core
 
                 return html;
             }
-            catch (Exception ex)
+            catch
             {
-                throw new CannotSendMailExpcetion("Can not get HTML from " + url + ": " + ex.Message);
+                return url;
             }
 
         }
+
+        #endregion
+
+        #endregion
+
     }
 }

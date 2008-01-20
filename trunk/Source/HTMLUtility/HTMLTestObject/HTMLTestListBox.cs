@@ -16,13 +16,10 @@
 *********************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 using mshtml;
 
-using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Win32;
 
