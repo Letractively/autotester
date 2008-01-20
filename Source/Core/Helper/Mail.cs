@@ -29,6 +29,7 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 
 namespace Shrinerain.AutoTester.Core
 {
+    //we have two types, normal TEXT and HTML.
     public enum MailType : int
     {
         Text = 0,
@@ -42,32 +43,32 @@ namespace Shrinerain.AutoTester.Core
         Outlook
     }
 
-    public class Mail : IDisposable
+    public sealed class Mail : IDisposable
     {
 
         #region fields
 
         //for smtp mail
-        protected MailMessage _netMail;
-        protected SmtpClient _smtpServer;
-        //default mail server
-        protected string _mailServer = "localhost";
+        private MailMessage _netMail;
+        private SmtpClient _smtpServer;
+        //default smtp server address
+        private string _smtpServerAddr = "localhost";
 
 #if OUTLOOK
 
 #endif
 
-        protected MailServerType _serverType = MailServerType.SMTP;
+        private MailServerType _serverType = MailServerType.SMTP;
 
-        //fields for a mail.
-        protected string _subject;
-        protected string _from;
-        protected List<string> _to;
-        protected List<string> _cc;
-        protected string _body;
+        //information of a mail.
+        private string _subject;
+        private string _from;
+        private List<string> _to;
+        private List<string> _cc;
+        private string _body;
 
-        //mail type
-        protected MailType _mailType = MailType.Text;
+        //default mail type is TEXT
+        private MailType _mailType = MailType.Text;
 
         #endregion
 
@@ -97,17 +98,6 @@ namespace Shrinerain.AutoTester.Core
             set
             {
                 _mailType = value;
-                if (value == MailType.HTML)
-                {
-                    if (_serverType == MailServerType.SMTP)
-                    {
-                        _netMail.IsBodyHtml = true;
-                    }
-                    else
-                    {
-
-                    }
-                }
             }
         }
 
@@ -117,14 +107,16 @@ namespace Shrinerain.AutoTester.Core
             set { _serverType = value; }
         }
 
-        public string MailServer
+        public string SmtpServerAddr
         {
-            get { return _mailServer; }
+            get { return _smtpServerAddr; }
             set
             {
+                //when set the smtp server address, we will use this address to create a new smtp server.
+                //when changing smtp server address, we need to create a new instance.
                 if (!String.IsNullOrEmpty(value) && _serverType == MailServerType.SMTP)
                 {
-                    _mailServer = value;
+                    _smtpServerAddr = value;
 
                     try
                     {
@@ -183,28 +175,6 @@ namespace Shrinerain.AutoTester.Core
 
         #region public methods
 
-        /* void CreateNewMail()
-         * Init parameters, prepare to send a new mail.
-         */
-        public void CreateNewMail()
-        {
-            if (this._serverType == MailServerType.SMTP)
-            {
-                _netMail = new MailMessage();
-                _netMail.IsBodyHtml = false;
-            }
-            else
-            {
-                //outlook
-            }
-
-            _subject = null;
-            _from = null;
-            _body = null;
-            _to.Clear();
-            _cc.Clear();
-        }
-
         /* void AddToAddress(string addr)
          * add "to" mail address 
          */
@@ -242,10 +212,14 @@ namespace Shrinerain.AutoTester.Core
 
             try
             {
+                //init a new mail.
+                CreateNewMail();
+
+                //send a SMTP mail.
                 if (_serverType == MailServerType.SMTP)
                 {
-                    //send a SMTP mail.
-                    if (String.IsNullOrEmpty(_from) || String.IsNullOrEmpty(_mailServer))
+
+                    if (String.IsNullOrEmpty(_from) || String.IsNullOrEmpty(_smtpServerAddr))
                     {
                         throw new CannotSendMailExpcetion("From and Mail server can not be empty.");
                     }
@@ -277,17 +251,17 @@ namespace Shrinerain.AutoTester.Core
                         _netMail.CC.Add(cc);
                     }
 
-                    if (_smtpServer == null)
-                    {
-                        _smtpServer = new SmtpClient(_mailServer);
-                    }
-
                     _smtpServer.Send(_netMail);
+
                 }
                 else
                 {
                     //send a outlook mail.
                 }
+            }
+            catch (CannotSendMailExpcetion)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -298,6 +272,44 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region private methods
+
+        /* void CreateNewMail()
+         * Init parameters, prepare to send a new mail.
+         */
+        private void CreateNewMail()
+        {
+            try
+            {
+                if (this._serverType == MailServerType.SMTP)
+                {
+                    _netMail = new MailMessage();
+
+                    _netMail.IsBodyHtml = _mailType == MailType.HTML;
+
+                    if (_smtpServer == null)
+                    {
+                        _smtpServer = new SmtpClient(_smtpServerAddr);
+                    }
+
+                }
+                else
+                {
+                    //outlook
+                }
+
+                //clear these fields
+                _subject = null;
+                _from = null;
+                _body = null;
+                _to.Clear();
+                _cc.Clear();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotSendMailExpcetion("Can not create a new mail: " + ex.Message);
+            }
+
+        }
 
         /* string GetHTML(string url)
          * return the string of expected url.
