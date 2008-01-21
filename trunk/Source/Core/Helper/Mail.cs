@@ -8,14 +8,14 @@
 *
 * Description: This compent provides functions to send an email.
 *              After testing, we often need to send test result by email. 
-*              we can send a mail by Outlook or SMTP server.               
+*              we can send an email by Outlook or SMTP server.               
 *
 * History: 2008/01/17 wan,yu Init version
 *
 *********************************************************************/
 
-//my laptop doesn't have Outlook installed, so I comments these codes when I am using my laptop
-#define OUTLOOK
+//my laptop doesn't have Outlook installed, so I comments these codes when using my laptop
+//#define OUTLOOK
 
 using System;
 using System.Collections.Generic;
@@ -67,7 +67,8 @@ namespace Shrinerain.AutoTester.Core
         private static bool _logged = false;
 #endif
 
-        private MailServerType _serverType = MailServerType.SMTP;
+        //default, we will use Outlook
+        private MailServerType _serverType = MailServerType.Outlook;
 
         //information of a mail.
         private string _subject;
@@ -280,6 +281,7 @@ namespace Shrinerain.AutoTester.Core
                     //send a outlook mail.
                     //set title and content
                     _oMsg.Subject = _subject;
+
                     //if format is HTML, we will try to get the HTML string.
                     if (_mailType == MailType.HTML)
                     {
