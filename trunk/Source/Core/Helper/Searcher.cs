@@ -15,6 +15,7 @@
 *          2008/01/10 wan,yu update, rename IsStringEqual to IsStringLike.  
 *          2008/01/12 wan,yu update, modify GetSimilarPercent, use unsafe code to 
 *                            improve performance.          
+*          2008/01/21 wan,yu update, add ignoreCase parameter.                  
 *
 *********************************************************************/
 
@@ -75,12 +76,17 @@ namespace Shrinerain.AutoTester.Core
          */
         public static bool IsStringLike(string str1, string str2, int percent)
         {
+            return IsStringLike(str1, str2, percent, true);
+        }
+
+        public static bool IsStringLike(string str1, string str2, int percent, bool ignoreCase)
+        {
             if (percent > 100 || percent < 1)
             {
                 throw new FuzzySearchException("Similar percent must between 1 and 100.");
             }
 
-            if (String.Compare(str1, str2, true) == 0)
+            if (String.Compare(str1, str2, ignoreCase) == 0)
             {
                 return true;
             }
@@ -88,14 +94,13 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
-                    return GetSimilarPercent(str1, str2) >= percent;
+                    return GetSimilarPercent(str1, str2, ignoreCase) >= percent;
                 }
                 catch (Exception ex)
                 {
                     throw new FuzzySearchException("Fuzzy search error: " + ex.Message);
                 }
             }
-
         }
 
         #endregion
@@ -108,10 +113,16 @@ namespace Shrinerain.AutoTester.Core
         * eg: test1, test2, they have 4 same chracters, so the similarity = 4*2/(5+5)=0.8=80%
         * for performance issue, use unsafe code to access the dynamic array. 
         */
-        private unsafe static int GetSimilarPercent(string str1, string str2)
+
+        private static int GetSimilarPercent(string str1, string str2)
+        {
+            return GetSimilarPercent(str1, str2, true);
+        }
+
+        private unsafe static int GetSimilarPercent(string str1, string str2, bool ignoreCase)
         {
             //check if they are equal
-            if (String.Compare(str1, str2, true) == 0)
+            if (String.Compare(str1, str2, ignoreCase) == 0)
             {
                 return 100;
             }
@@ -126,6 +137,13 @@ namespace Shrinerain.AutoTester.Core
                 //both two strings are not empty, then we can start to check the similar percent.
                 str1 = str1.Trim();
                 str2 = str2.Trim();
+
+                //if ignore case, convert to upper case.
+                if (ignoreCase)
+                {
+                    str1 = str1.ToUpper();
+                    str2 = str2.ToUpper();
+                }
 
                 //if the two strings is a sentence(contains blank) not a single word, then split the sentence to words, check each word.
                 if (str1.IndexOf(" ") > 0 && str2.IndexOf(" ") > 0)
