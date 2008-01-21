@@ -23,9 +23,8 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestTable : HTMLTestGUIObject, IClickable, IShowInfo, ISelectable, IMatrix
+    public class HTMLTestTable : HTMLTestGUIObject, IShowInfo, IMatrix
     {
-
 
         #region fields
 
@@ -177,30 +176,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
-        #region IClickable Members
-
-        public virtual void Click()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void DoubleClick()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void RightClick()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void MiddleClick()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
         #region IInteractive Members
 
         public virtual void Focus()
@@ -233,30 +208,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         public virtual string GetFontFamily()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region ISelectable Members
-
-        public virtual void Select(string str)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void SelectByIndex(int index)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void SelectMulti(string[] values)
-        {
-
-        }
-
-        public virtual string[] GetAllValues()
         {
             throw new NotImplementedException();
         }

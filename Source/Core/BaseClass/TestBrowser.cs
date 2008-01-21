@@ -1027,11 +1027,11 @@ namespace Shrinerain.AutoTester.Core
             }
 
             int simPercent = 100;
-            bool browserFound = false;
 
             int times = 0;
             while (times <= seconds)
             {
+                bool browserFound = false;
 
                 Process[] pArr = Process.GetProcessesByName("iexplore");
 
@@ -1075,6 +1075,12 @@ namespace Shrinerain.AutoTester.Core
 
                     if (browserFound)
                     {
+                        if (p.MainWindowHandle == IntPtr.Zero)
+                        {
+                            //not ready, try again.
+                            break;
+                        }
+
                         _browserProcess = p;
 
                         //main window handle is the handle of Internet explorer.
@@ -1086,6 +1092,7 @@ namespace Shrinerain.AutoTester.Core
                         _browserExisted.Set();
 
                         return;
+
                     }
                 }
 
@@ -1094,14 +1101,18 @@ namespace Shrinerain.AutoTester.Core
                 Thread.Sleep(_interval * 1000);
 
                 //try to use lower similarity to find the browser.
-                if (simPercent > 70)
+                if (!browserFound)
                 {
-                    simPercent -= 10;
+                    if (simPercent > 70)
+                    {
+                        simPercent -= 10;
+                    }
+                    else
+                    {
+                        simPercent = 100;
+                    }
                 }
-                else
-                {
-                    simPercent = 100;
-                }
+
             }
 
             throw new TestBrowserNotFoundException();

@@ -110,7 +110,7 @@ namespace Shrinerain.AutoTester
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
-            HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByName("q"); //pool.GetObjectByProperty("name", "q"); //
+            HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByProperty("name", "q"); //
             obj1.Input("statestreetfayt");
 
             HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Searc", 0);

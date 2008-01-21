@@ -7,8 +7,8 @@
 * Component: HTMLTestLabel.cs
 *
 * Description: This class defines the actions provide by label.
-*              Actually, there isn't a "Label" control in html, I treat
-*              <span>text</span> and <td>text</td> as the Label.
+*              Actually, there isn't a "Label" control in html, I treat              
+*              <label>text</label>,<span>text</span> and <td>text</td> as the Label.
 *               
 * History: 2008/01/21 wan,yu Init version.       
 *
@@ -27,9 +27,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
     public class HTMLTestLabel : HTMLTestGUIObject, IShowInfo
     {
 
+        #region fields
+
+        protected IHTMLLabelElement _labelElement;
         protected IHTMLSpanElement _spanElement;
         protected IHTMLTableCell _cellElement;
 
+        #endregion
+
+        #region properties
+
+
+        #endregion
+
+        #region methods
+
+        #region ctor
 
         public HTMLTestLabel(IHTMLElement element)
         {
@@ -37,7 +50,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                if (element.tagName == "SPAN")
+                if (element.tagName == "LABEL")
+                {
+                    _labelElement = (IHTMLLabelElement)element;
+                }
+                else if (element.tagName == "SPAN")
                 {
                     _spanElement = (IHTMLSpanElement)element;
                 }
@@ -52,6 +69,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
         }
+
+        #endregion
+
+        #region public methods
+
         #region IShowInfo Members
 
         public string GetText()
@@ -70,5 +92,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #endregion
+
+        #endregion
+
+        #region private methods
+
+
+        #endregion
+
+        #endregion
+
     }
 }

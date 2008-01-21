@@ -393,12 +393,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return _testObj;
             }
 
-            //if user input the property start with "." like ".id", we think it is a mistake, remove "."
-            while (property.StartsWith("."))
-            {
-                property = property.Remove(0, 1);
-            }
-
             //the similar percent to find an object.
             int simPercent;
             if (_autoAdjustSimilarPercent)
@@ -432,16 +426,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //get element by index.
                         _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
 
+
+
+                        //get property value
+                        string propertyValue;
+
                         //if not interactive object or the property is not found. 
-                        if (!IsInteractive(_tempElement) || _tempElement.getAttribute(property, 0) == null || _tempElement.getAttribute(property, 0).GetType().ToString() == "System.DBNull")
+                        if (!HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue) || !IsInteractive(_tempElement))
                         {
                             continue;
                         }
-
-                        //get property value
-                        string propertyValue = _tempElement.getAttribute(property, 0).ToString().Trim();
-
-                        if (!String.IsNullOrEmpty(propertyValue))
+                        else
                         {
                             //if equal, means we found it.
                             if (Searcher.IsStringLike(propertyValue, value, simPercent))
@@ -453,7 +448,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 return _testObj;
                             }
                         }
-
                     }
                     catch (CannotBuildObjectException)
                     {
@@ -543,26 +537,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             string property = properties[j].Trim();
                             string value = values[j].Trim();
 
-                            //if user input the property start with "." like ".id", we think it is a mistake, remove "."
-                            while (property.StartsWith("."))
-                            {
-                                property = property.Remove(0, 1);
-                            }
-
-                            if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value))
-                            {
-                                if (useAll)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    continue;
-                                }
-                            }
-
+                            string propertyValue;
                             //if not interactive object or the property is not found. 
-                            if (_tempElement.getAttribute(property, 0) == null || _tempElement.getAttribute(property, 0).GetType().ToString() == "System.DBNull")
+                            if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value)
+                                || !HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue))
                             {
                                 if (useAll)
                                 {
@@ -573,21 +551,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                     continue;
                                 }
                             }
-
-                            //get property value
-                            string propertyValue = _tempElement.getAttribute(property, 0).ToString().Trim();
-
-                            if (!String.IsNullOrEmpty(propertyValue))
+                            else
                             {
+                                int expectedPercent = 100;
 
-                                int expectexPercent = 100;
                                 if (similarity.Length > j)
                                 {
-                                    expectexPercent = similarity[j];
+                                    expectedPercent = similarity[j];
                                 }
 
                                 //check the similarity.
-                                if (Searcher.IsStringLike(propertyValue, value, expectexPercent))
+                                if (Searcher.IsStringLike(propertyValue, value, expectedPercent))
                                 {
                                     if (useAll && j < properties.Length - 1)
                                     {
@@ -613,6 +587,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                     }
                                 }
                             }
+
                         }
 
                     }
@@ -1573,7 +1548,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             switch (type)
             {
                 case HTMLTestObjectType.Label:
-                    return new string[] { "span", "td" };
+                    return new string[] { "label", "span", "td" };
                 case HTMLTestObjectType.Link:
                     return new string[] { "a" };
                 case HTMLTestObjectType.Button:
@@ -1620,7 +1595,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Link;
             }
-            else if (tag == "SPAN")
+            else if (tag == "SPAN" || tag == "LABEL")
             {
                 return HTMLTestObjectType.Label;
             }
