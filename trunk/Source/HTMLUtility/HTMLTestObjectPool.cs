@@ -20,13 +20,15 @@
 *          2008/01/12 wan,yu update, add CheckTableObject, we can find the <table> object.
 *          2008/01/12 wan,yu update, add CheckMsgBoxObject and CheckFileDialogObject         
 *          2008/01/12 wan,yu update, bug fix for GetObjectByName, origin version will just check the first one. 
-*          2008/01/15 wan,yu update, update, modify some static members to instance. 
+*          2008/01/15 wan,yu update, modify some static members to instance. 
+*          2008/01/21 wan,yu update, modify to use HTMLTestObject.TryGetValueByProperty to check something. 
 *
 *********************************************************************/
 
 
 using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 using mshtml;
@@ -77,6 +79,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //buf to store the key for cache. 
         private static StringBuilder _keySB = new StringBuilder(128);
+
+        //regex to match tag
+        private static Regex _tagReg = new Regex("<[a-zA-Z]+ ", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         #endregion
 
@@ -1123,12 +1128,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //get default property of each tag
             //eg: for a textbox, the property is .value
             string propertyName = GetVisibleTextPropertyByTag(type, tag);
+            string propertyValue;
 
             if (String.IsNullOrEmpty(propertyName))
             {
                 return false;
             }
-            else if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+            else if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out propertyValue))
             {
                 return false;
             }
@@ -1169,12 +1175,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 string propertyName = "innerHTML";
 
-                if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+                string items;
+
+                if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out items))
                 {
                     return false;
                 }
-
-                string items = element.getAttribute(propertyName, 0).ToString().Trim();
 
                 //get the position of ">"
                 int pos1 = items.IndexOf(">");
@@ -1203,12 +1209,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 //check the .src property.
                 string propertyName = "src";
-                if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+
+                string imgSrc;
+
+                if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out imgSrc))
                 {
                     return false;
                 }
-
-                string imgSrc = element.getAttribute(propertyName, 0).ToString().Trim();
 
                 imgSrc = System.IO.Path.GetFileName(imgSrc);
 
@@ -1289,14 +1296,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 string buttonTypeProperty = null;
                 string propertyName = null;
+                string buttonTypeValue;
 
                 if (element.tagName == "INPUT")
                 {
                     buttonTypeProperty = "type";
-                    if (element.getAttribute(buttonTypeProperty, 0) != null && element.getAttribute(buttonTypeProperty, 0).GetType().ToString() != "System.DBNull")
+
+                    if (HTMLTestObject.TryGetValueByProperty(element, buttonTypeProperty, out buttonTypeValue))
                     {
-                        //we need to skip <input type="text"> and <input type="password">
-                        if (String.Compare(element.getAttribute(buttonTypeProperty, 0).ToString(), "text", true) == 0 || String.Compare(element.getAttribute(buttonTypeProperty, 0).ToString(), "password", true) == 0)
+                        if (String.Compare(buttonTypeValue, "text", true) == 0 || String.Compare(buttonTypeValue, "password", true) == 0)
                         {
                             return false;
                         }
@@ -1313,7 +1321,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     buttonTypeProperty = "onclick";
 
                     //if "onclick" is not found, we think it is a normal img.
-                    if (element.getAttribute(buttonTypeProperty, 0) == null || element.getAttribute(buttonTypeProperty, 0).GetType().ToString() == "System.DBNull")
+                    if (!HTMLTestObject.TryGetValueByProperty(element, buttonTypeProperty, out buttonTypeValue))
                     {
                         return false;
                     }
@@ -1385,10 +1393,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private static bool IsPropertyLike(IHTMLElement element, string propertyName, string value, int simPercent)
         {
-            if (element.getAttribute(propertyName, 0) != null && element.getAttribute(propertyName, 0).GetType().ToString() != "System.DBNull")
-            {
-                string actualValue = element.getAttribute(propertyName, 0).ToString().Trim();
+            string actualValue;
 
+            if (HTMLTestObject.TryGetValueByProperty(element, propertyName, out actualValue))
+            {
                 return Searcher.IsStringLike(actualValue, value, simPercent);
             }
             else
@@ -1458,32 +1466,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return false;
             }
 
+            string value;
+
             if (tag == "INPUT")
             {
                 //return false, if the it is a hidden object.
-                if (element.getAttribute("type", 0).ToString().Trim().ToUpper() == "HIDDEN")
+                if (HTMLTestObject.TryGetValueByProperty(element, "type", out value))
                 {
-                    return false;
+                    return String.Compare(value, "HIDDEN", true) != 0;
                 }
-
             }
 
-            if (element.getAttribute("enable", 0) != null && element.getAttribute("enable", 0).GetType().ToString() != "System.DBNull")
+            if (HTMLTestObject.TryGetValueByProperty(element, "enable", out value))
             {
                 //return false if it is not enabled.
-                if (element.getAttribute("enable", 0).ToString().Trim().ToUpper() == "FALSE")
-                {
-                    return false;
-                }
+                return String.Compare(value, "FALSE", true) != 0;
             }
 
-            if (element.getAttribute("visibility", 0) != null && element.getAttribute("visibility", 0).GetType().ToString() != "System.DBNull")
+            if (HTMLTestObject.TryGetValueByProperty(element, "visibility", out value))
             {
-                //return false if it is not visbile.
-                if (element.getAttribute("visibility", 0).ToString().Trim().ToUpper() == "HIDDEN")
-                {
-                    return false;
-                }
+                //return false if it is hidden.
+                return String.Compare(value, "HIDDEN", true) != 0;
             }
 
             return true;
@@ -1505,6 +1508,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (type == "BUTTON" || type == "BTN" || type == "B")
             {
                 return HTMLTestObjectType.Button;
+            }
+            else if (type == "LABEL" || type == "LB")
+            {
+                return HTMLTestObjectType.Label;
             }
             else if (type == "TEXTBOX" || type == "TEXT" || type == "INPUTBOX" || type == "TXT" || type == "T")
             {
@@ -1565,6 +1572,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             switch (type)
             {
+                case HTMLTestObjectType.Label:
+                    return new string[] { "span", "td" };
                 case HTMLTestObjectType.Link:
                     return new string[] { "a" };
                 case HTMLTestObjectType.Button:
@@ -1611,16 +1620,53 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Link;
             }
+            else if (tag == "SPAN")
+            {
+                return HTMLTestObjectType.Label;
+            }
+            else if (tag == "TD")
+            {
+                string innerHTML;
+
+                if (HTMLTestObject.TryGetValueByProperty(element, "innerHTML", out innerHTML))
+                {
+                    if (innerHTML.IndexOf("<") >= 0 && innerHTML.IndexOf(">") > 0)
+                    {
+                        MatchCollection mc = _tagReg.Matches(innerHTML);
+
+                        bool isLabel = true;
+                        foreach (Match m in mc)
+                        {
+                            if (String.Compare(m.Value, "<SPAN", true) != 0 && String.Compare(m.Value, "<FONT", true) != 0)
+                            {
+                                isLabel = false;
+                                break;
+                            }
+                        }
+
+                        if (isLabel)
+                        {
+                            return HTMLTestObjectType.Label;
+                        }
+
+                    }
+                    else
+                    {
+                        return HTMLTestObjectType.Label;
+                    }
+                }
+            }
             else if (tag == "IMG")
             {
+                string value;
 
-                if (element.getAttribute("onclick", 0) == null || element.getAttribute("onclick", 0).GetType().ToString() == "System.DBNull")
+                if (HTMLTestObject.TryGetValueByProperty(element, "onclick", out value))
                 {
-                    return HTMLTestObjectType.Image;
+                    return HTMLTestObjectType.Button;
                 }
                 else
                 {
-                    return HTMLTestObjectType.Button;
+                    return HTMLTestObjectType.Image;
                 }
 
             }
@@ -1630,7 +1676,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (tag == "INPUT")
             {
-                string inputType = element.getAttribute("type", 0).ToString().Trim().ToUpper();
+                string inputType;
+
+                if (!HTMLTestObject.TryGetValueByProperty(element, "type", out inputType))
+                {
+                    return HTMLTestObjectType.Unknow;
+                }
+
+                inputType = inputType.ToUpper();
+
                 if (inputType == "TEXT" || inputType == "PASSWORD")
                 {
                     return HTMLTestObjectType.TextBox;
@@ -1659,13 +1713,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (tag == "SELECT")
             {
-                if (element.getAttribute("size", 0) == null || element.getAttribute("size", 0).GetType().ToString() == "System.DBNull")
+
+                string selectValue;
+
+                if (!HTMLTestObject.TryGetValueByProperty(element, "size", out selectValue))
                 {
                     return HTMLTestObjectType.ComboBox;
                 }
                 else
                 {
-                    int selectSize = int.Parse(element.getAttribute("size", 0).ToString());
+                    int selectSize = int.Parse(selectValue);
 
                     if (selectSize < 2)
                     {
@@ -1691,20 +1748,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * build the actual test object by an IHTMLElement for different type.
          * It will call the actual constructor of each test object.
          */
-        private HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
+        public HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
         {
+            if (element == null)
+            {
+                throw new CannotBuildObjectException("Element can not be null.");
+            }
+
             HTMLTestObjectType type = GetObjectType(element);
 
             return BuildObjectByType(element, type);
         }
 
-        private HTMLTestGUIObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
+        public HTMLTestGUIObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
         {
+            if (element == null || type == HTMLTestObjectType.Unknow)
+            {
+                throw new CannotBuildObjectException("Element and type can not be null.");
+            }
 
             HTMLTestGUIObject tmp;
 
             switch (type)
             {
+                case HTMLTestObjectType.Label:
+                    tmp = new HTMLTestLabel(element);
+                    break;
                 case HTMLTestObjectType.Button:
                     tmp = new HTMLTestButton(element);
                     break;
@@ -1749,8 +1818,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* HTMLGuiTestObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
          * Build some special object, like MessageBox and FileDialog, they are Windows control.
          */
-        private HTMLTestGUIObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
+        public HTMLTestGUIObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
         {
+            if (handle == IntPtr.Zero || type == HTMLTestObjectType.Unknow)
+            {
+                throw new CannotBuildObjectException("Handle and type can not be null.");
+            }
+
             HTMLTestGUIObject tmp;
 
             switch (type)

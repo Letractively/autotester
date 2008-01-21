@@ -226,6 +226,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region menu action
+        public void ClickMenuPath(Object testObj, String path)
+        {
+            throw new CannotPerformActionException("The method or operation is not implemented.");
+        }
+
+        public void SelectMenuPath(Object testObj, String path)
+        {
+            throw new CannotPerformActionException("The method or operation is not implemented.");
+        }
+
+        public void UnselectMenuPath(Object testObj, String path)
+        {
+            throw new CannotPerformActionException("The method or operation is not implemented.");
+        }
+        #endregion
+
         #region table action
         public void ClickCell(object obj, int row, int col)
         {

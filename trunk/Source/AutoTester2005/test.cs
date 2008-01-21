@@ -112,7 +112,7 @@ namespace Shrinerain.AutoTester
 
 
             //HTMLTestComboBox cbBox = (HTMLTestComboBox)pool.GetObjectByName("num");
-           // cbBox.Select("20 results");
+            // cbBox.Select("20 results");
 
             HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByProperty("name", "q"); //pool.GetObjectByName("q");
             obj1.Input("statestreet");

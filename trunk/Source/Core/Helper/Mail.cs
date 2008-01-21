@@ -14,7 +14,8 @@
 *
 *********************************************************************/
 
-#undef OUTLOOK
+//my laptop doesn't have Outlook installed, so I comments these codes when I am using my laptop
+#define OUTLOOK
 
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,14 @@ namespace Shrinerain.AutoTester.Core
 
 #if OUTLOOK
 
+        private static Outlook.Application _oApp = new Outlook.Application();
+        private static Outlook.NameSpace _oNS = _oApp.GetNamespace("mapi");
+        private Outlook._MailItem _oMsg;
+        private Outlook.Recipients _oRecips;
+        private Outlook.Recipient _oRecip;
+
+        //flag to show whether we have logged to Outlook.
+        private static bool _logged = false;
 #endif
 
         private MailServerType _serverType = MailServerType.SMTP;
@@ -112,8 +121,7 @@ namespace Shrinerain.AutoTester.Core
             get { return _smtpServerAddr; }
             set
             {
-                //when set the smtp server address, we will use this address to create a new smtp server.
-                //when changing smtp server address, we need to create a new instance.
+                //when changing the smtp server address, we will use this address to create a new smtp server.
                 if (!String.IsNullOrEmpty(value) && _serverType == MailServerType.SMTP)
                 {
                     _smtpServerAddr = value;
@@ -142,6 +150,8 @@ namespace Shrinerain.AutoTester.Core
         {
             _to = new List<string>();
             _cc = new List<string>();
+
+            Clear();
         }
 
         public void Dispose()
@@ -158,7 +168,17 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
+#if OUTLOOK
+                    // Log off.
+                    _oNS.Logoff();
 
+                    // Clean up.
+                    _oRecip = null;
+                    _oRecips = null;
+                    _oMsg = null;
+                    _oNS = null;
+                    _oApp = null;
+#endif
                 }
 
                 GC.Collect();
@@ -256,7 +276,31 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
+#if OUTLOOK
                     //send a outlook mail.
+                    //set title and content
+                    _oMsg.Subject = _subject;
+                    //if format is HTML, we will try to get the HTML string.
+                    if (_mailType == MailType.HTML)
+                    {
+                        _oMsg.HTMLBody = GetHTML(_body);
+                    }
+                    else
+                    {
+                        _oMsg.HTMLBody = _body;
+                    }
+
+                    _oRecips = (Outlook.Recipients)_oMsg.Recipients;
+
+                    // add each To address
+                    foreach (string to in _to)
+                    {
+                        _oRecip = (Outlook.Recipient)_oRecips.Add(to);
+                        _oRecip.Resolve();
+                    }
+
+                    _oMsg.Send();
+#endif
                 }
             }
             catch (CannotSendMailExpcetion)
@@ -266,6 +310,10 @@ namespace Shrinerain.AutoTester.Core
             catch (Exception ex)
             {
                 throw new CannotSendMailExpcetion("Can not send email: " + ex.Message);
+            }
+            finally
+            {
+                Clear();
             }
         }
 
@@ -294,21 +342,43 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
-                    //outlook
+#if OUTLOOK
+                    if (!_logged)
+                    {
+                        _oNS.Logon(null, null, false, false);
+                        _logged = true;
+                    }
+
+                    _oMsg = (Outlook.MailItem)_oApp.CreateItem(Outlook.OlItemType.olMailItem);
+#endif
                 }
 
-                //clear these fields
-                _subject = null;
-                _from = null;
-                _body = null;
-                _to.Clear();
-                _cc.Clear();
             }
             catch (Exception ex)
             {
                 throw new CannotSendMailExpcetion("Can not create a new mail: " + ex.Message);
             }
 
+        }
+
+        /* void Clear()
+         * clean all information .
+         */
+        private void Clear()
+        {
+            try
+            {
+                _subject = null;
+                _from = null;
+                _body = null;
+
+                _to.Clear();
+                _cc.Clear();
+            }
+            catch
+            {
+
+            }
         }
 
         /* string GetHTML(string url)
