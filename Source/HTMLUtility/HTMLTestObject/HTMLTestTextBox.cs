@@ -166,7 +166,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 System.Threading.Thread.Sleep(200 * 1);
-                //click just above the text box, to elimate some auto fill dropdown list, like Google.com
+
+                //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
+                //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
+                //and we can not click this button, so we need to elimate it. 
+                //click just above the text box, to elimate it.
                 ClickAbove();
 
                 _actionFinished.Set();
@@ -250,6 +254,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region IShowInfo interface
+
         public virtual string GetText()
         {
             try
@@ -305,8 +310,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         /* protected virtual void ClickAbove()
          * Click at the top of the object.
-         * Sometimes we will meet auto fill like Google.com, if you input some word, there may display
-         * a dropdown list to let you select, this dropdown list may cover some object we need, so after
+         * Sometimes we will meet auto fill like Google.com, if you input some words, there may display
+         * a dropdown list to let you to select, this dropdown list may cover some objects we need, so after
          * input some string, we need click above the text box, to make the dropdown list disappear.
          */
         protected virtual void ClickAbove()

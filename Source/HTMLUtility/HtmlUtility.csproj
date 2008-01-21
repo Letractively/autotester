@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E5761F00-01D5-4090-9277-3BE12686B808}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -56,6 +56,7 @@
     <Compile Include="HTMLTestObject\HTMLTestComboBox.cs" />
     <Compile Include="HTMLTestObject\HTMLTestFileDialog.cs" />
     <Compile Include="HTMLTestObject\HTMLTestImage.cs" />
+    <Compile Include="HTMLTestObject\HTMLTestLabel.cs" />
     <Compile Include="HTMLTestObject\HTMLTestLink.cs" />
     <Compile Include="HTMLTestObject\HTMLTestListBox.cs" />
     <Compile Include="HTMLTestObject\HTMLTestMsgBox.cs" />

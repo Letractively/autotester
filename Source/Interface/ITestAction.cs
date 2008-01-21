@@ -10,7 +10,8 @@
 *              Once the automation tester get an object from object 
 *              pool, he can perform some actions on the object. 
 *
-* History:  2007/09/04 wan,yu Init version
+* History:  2007/09/04 wan,yu Init version.
+*           2008/01/21 wan,yu update, add Menu actions. 
 *
 *********************************************************************/
 
@@ -58,6 +59,10 @@ namespace Shrinerain.AutoTester.Interface
         void RightClickIndex(Object testObj, int deep, int index);
         void RightClickNode(Object testObj, String node);
 
+        //Menu actions
+        void ClickMenuPath(Object testObj, String path);
+        void SelectMenuPath(Object testObj, String path);
+        void UnselectMenuPath(Object testObj, String path);
 
         //Table actions
         void ClickCell(Object testObj, int row, int col);

@@ -16,9 +16,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Shrinerain.AutoTester.Core;
+
 namespace Shrinerain.AutoTester.MFCUtility
 {
-    public class MFCTestTree : MFCTestGUIObject
+    public class MFCTestTree : MFCTestGUIObject, IPath
     {
 
         #region fields
@@ -39,6 +41,48 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         #region public methods
 
+        #region IPath Members
+
+        public int GetDepth()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public object[] GetObjectsAtPath(string path)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IInteractive Members
+
+        public void Focus()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public object GetDefaultAction()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public void PerformDefaultAction(object parameter)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+        #region IContainer Members
+
+        public object[] GetChildren()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
         #endregion
 
         #region private methods
@@ -47,6 +91,7 @@ namespace Shrinerain.AutoTester.MFCUtility
         #endregion
 
         #endregion
+
 
     }
 }

@@ -11,6 +11,9 @@
 * History: 2007/09/04 wan,yu Init version.
 *          2008/01/11 wan,yu update, add IsReadOnly property and method. 
 *          2008/01/15 wan,yu update, add _browser field. 
+*          2008/01/21 wan,yu update, add TryGetValueByProperty and 
+*                                    TrySetValueByProperty. 
+*          2008/01/21 wan,yu update, add _htmlObjPool field.
 *
 *********************************************************************/
 
@@ -28,6 +31,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     public enum HTMLTestObjectType
     {
         Unknow = 0,
+        Label,
         Button,
         CheckBox,
         RadioButton,
@@ -60,6 +64,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the host browser of this object.
         protected HTMLTestBrowser _browser;
+
+        //object pool of this object.
+        protected HTMLTestObjectPool _htmlObjPool;
 
         protected AutoResetEvent _stateChanged = new AutoResetEvent(false);
 
@@ -113,6 +120,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get { return _browser; }
             set { _browser = value; }
+        }
+
+        public virtual HTMLTestObjectPool HtmlObjPool
+        {
+            get { return _htmlObjPool; }
+            set { _htmlObjPool = value; }
         }
 
 
@@ -247,38 +260,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public override object GetPropertyByName(string propertyName)
         {
-            try
+            string value;
+
+            if (TryGetValueByProperty(this._sourceElement, propertyName, out value))
             {
-                if (String.IsNullOrEmpty(propertyName))
-                {
-                    throw new PropertyNotFoundException("Property name can not be empty.");
-                }
-
-                propertyName = propertyName.Trim();
-
-                while (propertyName.StartsWith("."))
-                {
-                    propertyName = propertyName.Replace(".", "");
-                }
-
-                if (this._sourceElement.getAttribute(propertyName, 0) == null || this._sourceElement.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
-                {
-                    throw new PropertyNotFoundException("Property " + propertyName + " not found.");
-                }
-                else
-                {
-                    return this._sourceElement.getAttribute(propertyName, 0);
-                }
-
+                return value;
             }
-            catch (TestException)
+            else
             {
-                throw;
+                throw new PropertyNotFoundException("Property " + propertyName + " not found.");
             }
-            catch (Exception ex)
-            {
-                throw new PropertyNotFoundException("Property " + propertyName + " not found: " + ex.Message);
-            }
+
         }
 
         /* bool SetPropertyByName(string propertyName, object value)
@@ -286,6 +278,105 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * return true if success.
          */
         public override bool SetPropertyByName(string propertyName, object value)
+        {
+            return TrySetValueByProperty(this._sourceElement, propertyName, value);
+        }
+        #endregion
+
+        #region private methods
+
+        /* bool IsVisible()
+         * return true if it is a visible object.
+         */
+        public override bool IsVisible()
+        {
+            string isVisible;
+
+            if (!TryGetValueByProperty(this._sourceElement, "visibility", out isVisible))
+            {
+                return true;
+            }
+            else
+            {
+                return String.Compare(isVisible, "HIDDEN", true) == 0;
+            }
+        }
+
+        /* bool IsEnable()
+         * return true if it is a enable object.
+         */
+        public virtual bool IsEnable()
+        {
+            string isEnable;
+
+            if (!TryGetValueByProperty(this._sourceElement, "enabled", out isEnable))
+            {
+                return true;
+            }
+            else
+            {
+                return String.Compare(isEnable, "FALSE", true) == 0;
+            }
+        }
+
+        /* bool IsReadOnly()
+         * return true if it is a readonly object.
+         */
+        public virtual bool IsReadOnly()
+        {
+            string isReadOnly;
+
+            if (!TryGetValueByProperty(this._sourceElement, "readonly", out isReadOnly))
+            {
+                return false;
+            }
+            else
+            {
+                return String.Compare(isReadOnly, "TRUE", true) == 0;
+            }
+        }
+
+        /* bool TryGetValueByProperty(IHTMLElement element, string propertyName, out object value)
+         * return true if the property exist.
+         */
+        public static bool TryGetValueByProperty(IHTMLElement element, string propertyName, out string value)
+        {
+            value = null;
+
+            if (element == null || string.IsNullOrEmpty(propertyName))
+            {
+                return false;
+            }
+
+            propertyName = propertyName.Trim();
+
+            while (propertyName.StartsWith("."))
+            {
+                propertyName = propertyName.Remove(0);
+            }
+
+            if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+            {
+                return false;
+            }
+
+            try
+            {
+                value = element.getAttribute(propertyName, 0).ToString().Trim();
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
+        /* bool TrySetValueByProperty(IHTMLElement element, string propertyName, object value)
+         * return true if we set the property value successfully.
+         */
+        public static bool TrySetValueByProperty(IHTMLElement element, string propertyName, object value)
         {
             if (String.IsNullOrEmpty(propertyName))
             {
@@ -302,7 +393,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                this._sourceElement.setAttribute(propertyName, value, 0);
+                element.setAttribute(propertyName, value, 0);
 
                 return true;
             }
@@ -311,61 +402,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return false;
             }
         }
-        #endregion
-
-        #region private methods
-
-        /* bool IsVisible()
-         * return true if it is a visible object.
-         */
-        public override bool IsVisible()
-        {
-            if (_sourceElement.getAttribute("visibility", 0) == null || _sourceElement.getAttribute("visibility", 0).GetType().ToString() == "System.DBNull")
-            {
-                return true;
-            }
-            else
-            {
-                string isVisiable = _sourceElement.getAttribute("visibility", 0).ToString().Trim();
-
-                return String.Compare(isVisiable, "HIDDEN", true) == 0;
-            }
-        }
-
-        /* bool IsEnable()
-         * return true if it is a enable object.
-         */
-        public virtual bool IsEnable()
-        {
-            if (_sourceElement.getAttribute("enabled", 0) == null || _sourceElement.getAttribute("enabled", 0).GetType().ToString() == "System.DBNull")
-            {
-                return true;
-            }
-            else
-            {
-                string isEnable = _sourceElement.getAttribute("enabled", 0).ToString().Trim();
-
-                return String.Compare(isEnable, "FALSE", true) == 0;
-            }
-        }
-
-        /* bool IsReadOnly()
-         * return true if it is a readonly object.
-         */
-        public virtual bool IsReadOnly()
-        {
-            if (_sourceElement.getAttribute("readonly", 0) == null || _sourceElement.getAttribute("readonly", 0).GetType().ToString() == "System.DBNull")
-            {
-                return false;
-            }
-            else
-            {
-                string isReadonly = _sourceElement.getAttribute("readonly", 0).ToString().Trim();
-
-                return String.Compare(isReadonly, "TRUE", true) == 0;
-            }
-        }
-
 
         #endregion
 

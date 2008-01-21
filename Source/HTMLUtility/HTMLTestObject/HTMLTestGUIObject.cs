@@ -247,8 +247,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
-
-
         #region private methods
 
         /* void ScrollIntoView(bool toTop)
