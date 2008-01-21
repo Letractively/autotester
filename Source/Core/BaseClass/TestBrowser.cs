@@ -902,6 +902,14 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        /* string GetHTML()
+         * return the HTML code of current page.
+         */
+        public virtual string GetHTML()
+        {
+            return _HTMLDom == null ? null : _HTMLDom.body.innerHTML;
+        }
+
         #endregion
 
         #region SYNC

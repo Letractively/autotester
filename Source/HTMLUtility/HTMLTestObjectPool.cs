@@ -22,6 +22,7 @@
 *          2008/01/12 wan,yu update, bug fix for GetObjectByName, origin version will just check the first one. 
 *          2008/01/15 wan,yu update, modify some static members to instance. 
 *          2008/01/21 wan,yu update, modify to use HTMLTestObject.TryGetValueByProperty to check something. 
+*          2008/01/21 wan,yu update, add CheckLabelObject.          
 *
 *********************************************************************/
 
@@ -425,8 +426,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                         //get element by index.
                         _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
-
-
 
                         //get property value
                         string propertyValue;
@@ -1097,6 +1096,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return CheckTableObject(element, value, simPercent);
             }
+            else if (type == HTMLTestObjectType.Label)
+            {
+                return CheckLabelObject(element, value, simPercent);
+            }
 
             string tag = element.tagName;
 
@@ -1137,6 +1140,62 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return false;
             }
 
+        }
+
+        /* bool CheckLabelObject(IHTMLElement element, string value, int simPercent)
+         * check label object.
+         * <label>,<td>,<div>,<span>
+         */
+        private static bool CheckLabelObject(IHTMLElement element, string value, int simPercent)
+        {
+            try
+            {
+                string propertyName = "innerHTML";
+
+                string innerHTML;
+
+                if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out innerHTML))
+                {
+                    return false;
+                }
+                else
+                {
+                    if (innerHTML.IndexOf("<") >= 0 && innerHTML.IndexOf(">") > 0)
+                    {
+
+                        MatchCollection mc = _tagReg.Matches(innerHTML);
+
+                        foreach (Match m in mc)
+                        {
+                            if (String.Compare(m.Value, "<SPAN", true) != 0
+                                && String.Compare(m.Value, "<FONT", true) != 0
+                                && String.Compare(m.Value, "<BR", true) != 0
+                                && String.Compare(m.Value, "<P", true) != 0)
+                            {
+                                return false;
+                            }
+                        }
+
+                    }
+
+                    string innerText;
+
+                    if (!HTMLTestObject.TryGetValueByProperty(element, "innerText", out innerText))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return Searcher.IsStringLike(value, innerText, simPercent);
+                    }
+
+                }
+
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /*  bool CheckSelectObject(IHTMLElement element, string value)
@@ -1548,7 +1607,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             switch (type)
             {
                 case HTMLTestObjectType.Label:
-                    return new string[] { "label", "span", "td" };
+                    return new string[] { "label", "span", "td", "div" };
                 case HTMLTestObjectType.Link:
                     return new string[] { "a" };
                 case HTMLTestObjectType.Button:
@@ -1599,7 +1658,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Label;
             }
-            else if (tag == "TD")
+            else if (tag == "TD" || tag == "DIV")
             {
                 string innerHTML;
 
@@ -1607,12 +1666,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     if (innerHTML.IndexOf("<") >= 0 && innerHTML.IndexOf(">") > 0)
                     {
+                        bool isLabel = true;
+
                         MatchCollection mc = _tagReg.Matches(innerHTML);
 
-                        bool isLabel = true;
                         foreach (Match m in mc)
                         {
-                            if (String.Compare(m.Value, "<SPAN", true) != 0 && String.Compare(m.Value, "<FONT", true) != 0)
+                            if (String.Compare(m.Value, "<SPAN", true) != 0
+                                && String.Compare(m.Value, "<FONT", true) != 0
+                                && String.Compare(m.Value, "<BR", true) != 0
+                                && String.Compare(m.Value, "<P", true) != 0)
                             {
                                 isLabel = false;
                                 break;
