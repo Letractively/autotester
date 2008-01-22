@@ -15,6 +15,7 @@
 *          2008/01/14 wan,yu update, modify class name to HTMLTestGUIObject.
 *          2008/01/15 wan,yu update, move GetRectOnScreen from creator to
 *                                    Browser proeprty.   
+*          2008/01/22 wan,yu update, add _labelText and GetAroundText() 
 * 
 *********************************************************************/
 
@@ -45,6 +46,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //sync event to ensure action is finished before next step.
         protected static AutoResetEvent _actionFinished = new AutoResetEvent(true);
 
+        //we may have some string around the control.
+        protected string _labelText;
 
         #endregion
 
@@ -76,6 +79,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public string LabelText
+        {
+            get { return _labelText; }
+        }
+
         #endregion
 
         #region methods
@@ -92,7 +100,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestGUIObject(IHTMLElement element)
             : base(element)
         {
-
+            this._labelText = GetAroundText();
             //GetRectOnScreen();
         }
 
@@ -347,6 +355,66 @@ namespace Shrinerain.AutoTester.HTMLUtility
             _centerPoint.Y = top + height / 2;
 
             return _centerPoint;
+        }
+
+
+
+        /* string GetTextAroundControl()
+         * return the text around this control.
+         */
+        protected virtual string GetAroundText()
+        {
+            try
+            {
+                IHTMLElement element = this._sourceElement;
+
+                if (element == null)
+                {
+                    return null;
+                }
+
+                IHTMLElement parent = element.parentElement;
+
+                if (parent != null)
+                {
+                    string tag = parent.tagName;
+
+                    if (tag == "SPAN" ||
+                        tag == "TD" ||
+                        tag == "DIV" ||
+                        tag == "LABEL")
+                    {
+                        string labelText;
+
+                        if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out labelText))
+                        {
+                            string selfText;
+
+                            if (element.tagName == "A" && HTMLTestGUIObject.TryGetValueByProperty(element, "innerText", out selfText))
+                            {
+                                //remove the link text.
+                                if (labelText.StartsWith(selfText))
+                                {
+                                    labelText = labelText.Substring(selfText.Length);
+                                }
+                                else if (labelText.EndsWith(selfText))
+                                {
+                                    labelText = labelText.Substring(0, labelText.Length - selfText.Length);
+                                }
+                            }
+
+                            return labelText;
+                        }
+                    }
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+
         }
 
         #endregion

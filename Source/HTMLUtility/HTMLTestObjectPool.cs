@@ -23,6 +23,7 @@
 *          2008/01/15 wan,yu update, modify some static members to instance. 
 *          2008/01/21 wan,yu update, modify to use HTMLTestObject.TryGetValueByProperty to check something. 
 *          2008/01/21 wan,yu update, add CheckLabelObject.          
+*          2008/01/22 wan,yu update, add CheckTextBoxObject.          
 *
 *********************************************************************/
 
@@ -84,6 +85,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //regex to match tag
         private static Regex _tagReg = new Regex("<[a-zA-Z]+ ", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+        //if this flag set to ture, we will ignore those tables whose "border" < 1.
+        private static bool _ignoreBorderlessTable = false;
+
         #endregion
 
         #region Properties
@@ -127,6 +131,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get { return _autoAdjustSimilarPercent; }
             set { _autoAdjustSimilarPercent = value; }
+        }
+
+
+        public bool IgnoreBorderlessTable
+        {
+            get { return _ignoreBorderlessTable; }
+            set { _ignoreBorderlessTable = value; }
         }
 
         #endregion
@@ -652,6 +663,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return _testObj;
             }
 
+
+            //some control, like Messagebox, File dialog, they are Windows control, we don't need to check HTML DOM.
+            bool isHTMLType = true;
+
             //convert the TYPE text to valid internal type.
             // eg: "button" to HTMLTestObjectType.Button
             HTMLTestObjectType typeValue = GetTypeByString(type);
@@ -660,7 +675,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
             }
-            else if (typeValue != HTMLTestObjectType.MsgBox && typeValue != HTMLTestObjectType.FileDialog) //special type, not HTML object.
+            else if (typeValue == HTMLTestObjectType.MsgBox ||
+                typeValue == HTMLTestObjectType.FileDialog)
+            {
+                isHTMLType = false;
+            }
+
+            if (isHTMLType)
             {
                 //not special type, then we need values to find the object.
                 if (String.IsNullOrEmpty(values))
@@ -673,14 +694,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
+            //convert the type to HTML tags.
+            //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
+            string[] tags = GetObjectTags(typeValue);
+
+            if (tags == null)
+            {
+                throw new CannotBuildObjectException("Tags can not be empty.");
+            }
+
             //if the expected value is number like, we think it is stand for the index of the object, not text on it.
             // eg: we can use type="textbox", values="1" to find the first textbox.
             bool isByIndex = false;
             int objIndex;
             if (int.TryParse(values, out objIndex))
             {
-                index = objIndex - 1;
-                isByIndex = true;
+                if (objIndex < 10)
+                {
+                    index = objIndex - 1;
+                    isByIndex = true;
+                }
             }
 
             //if we can find more than one test object, we need to consider about the index.
@@ -700,18 +733,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //windows handle of Message Box and File Dialog
             IntPtr handle = IntPtr.Zero;
 
-            //convert the type to HTML tags.
-            //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
-            string[] tags = GetObjectTags(typeValue);
-
             //we will try 30s to find a object.
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
                 //special type, we don't need to check HTML object.
-                if (typeValue == HTMLTestObjectType.FileDialog || typeValue == HTMLTestObjectType.MsgBox)
+                if (!isHTMLType)
                 {
-
                     try
                     {
                         //check object by type
@@ -747,12 +775,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-
-                    if (tags == null)
-                    {
-                        throw new CannotBuildObjectException("Tags can not be empty.");
-                    }
-
                     //normal HTML objects
 
                     IHTMLElementCollection tagElementCol;
@@ -1016,6 +1038,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return _allObjects;
         }
 
+        /* Object GetLastObject()
+         * return the last object we have got.
+         */
+        public Object GetLastObject()
+        {
+            return _testObj;
+        }
         #endregion
 
         #endregion
@@ -1100,6 +1129,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return CheckLabelObject(element, value, simPercent);
             }
+            else if (type == HTMLTestObjectType.TextBox)
+            {
+                return CheckTextBoxObject(element, value, simPercent);
+            }
 
             string tag = element.tagName;
 
@@ -1140,6 +1173,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return false;
             }
 
+        }
+
+        /* bool CheckTextBoxObject(IHTMLElement, string value, int simPercent)
+         * check text box object, we will check text around the text box.
+         */
+        private static bool CheckTextBoxObject(IHTMLElement element, string value, int simPercent)
+        {
+            try
+            {
+
+                string label = GetLabelForTextBox(element);
+
+                //for text around textbox, we may have ":", like "UserName:" , remove ":", make sure no writing mistake.
+                if (value.EndsWith(":") || value.EndsWith("£º"))
+                {
+                    value = value.Substring(0, value.Length - 1);
+                }
+
+                if (label.EndsWith(":") || label.EndsWith("£º"))
+                {
+                    label = label.Substring(0, label.Length - 1);
+                }
+
+                return Searcher.IsStringLike(value, label, simPercent);
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         /* bool CheckLabelObject(IHTMLElement element, string value, int simPercent)
@@ -1273,6 +1335,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                string labelText = GetAroundText(element);
+
+                if (Searcher.IsStringLike(labelText, value, simPercent))
+                {
+                    return true;
+                }
+
                 string propertyName = null;
                 if (element.tagName == "INPUT")
                 {
@@ -1302,6 +1371,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                string labelText = GetAroundText(element);
+
+                if (Searcher.IsStringLike(labelText, value, simPercent))
+                {
+                    return true;
+                }
+
                 string propertyName = null;
                 if (element.tagName == "INPUT")
                 {
@@ -1373,7 +1449,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         /* bool CheckTableObject(IHTMLElement element, string value, int simPercent)
          * check the test table <table>
-         * NEED UPDATE!!!
+         * we get the most left-top cell of the table, compare it's "innerText" with the expected value,
+         * if match, return true.
          */
         private static bool CheckTableObject(IHTMLElement element, string value, int simPercent)
         {
@@ -1384,11 +1461,46 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
+                //because in HTML page, we may use table to control layout, and these tables are not for displaying data.
+                //so I decide to just check those tables whose "borser" > 0, that means we can "see" this table directly.
+                //if the table doesn't have a "border" property, I think it is just for layout, not data.
+                if (_ignoreBorderlessTable)
+                {
+                    string border;
+
+                    if (!HTMLTestObject.TryGetValueByProperty(element, "border", out border))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        if (Convert.ToInt32(border) < 1)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                //get table.
                 IHTMLTable tableElement = (IHTMLTable)element;
 
-                //tableElement.
+                //get the first row.
+                IHTMLTableRow tableRowElement = (IHTMLTableRow)tableElement.rows.item((object)0, (object)0);
 
-                return false;
+                //get the first cell.
+                IHTMLElement cellElement = (IHTMLElement)tableRowElement.cells.item((object)0, (object)0);
+
+                string innerText;
+
+                if (HTMLTestObject.TryGetValueByProperty(cellElement, "innerText", out innerText))
+                {
+                    return Searcher.IsStringLike(innerText, value, simPercent);
+                }
+                else
+                {
+                    return false;
+                }
+
             }
             catch
             {
@@ -1627,9 +1739,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.Table:
                     return new string[] { "table" };
                 case HTMLTestObjectType.FileDialog:
-                    return new string[] { };
+                    return new string[] { "windows" };
                 case HTMLTestObjectType.MsgBox:
-                    return new string[] { };
+                    return new string[] { "windows" };
                 case HTMLTestObjectType.ActiveX:
                     return new string[] { "object" };
                 case HTMLTestObjectType.Unknow:
@@ -1654,46 +1766,46 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Link;
             }
-            else if (tag == "SPAN" || tag == "LABEL")
-            {
-                return HTMLTestObjectType.Label;
-            }
-            else if (tag == "TD" || tag == "DIV")
-            {
-                string innerHTML;
+            //else if (tag == "SPAN" || tag == "LABEL")
+            //{
+            //    return HTMLTestObjectType.Label;
+            //}
+            //else if (tag == "TD" || tag == "DIV")
+            //{
+            //    string innerHTML;
 
-                if (HTMLTestObject.TryGetValueByProperty(element, "innerHTML", out innerHTML))
-                {
-                    if (innerHTML.IndexOf("<") >= 0 && innerHTML.IndexOf(">") > 0)
-                    {
-                        bool isLabel = true;
+            //    if (HTMLTestObject.TryGetValueByProperty(element, "innerHTML", out innerHTML))
+            //    {
+            //        if (innerHTML.IndexOf("<") >= 0 && innerHTML.IndexOf(">") > 0)
+            //        {
+            //            bool isLabel = true;
 
-                        MatchCollection mc = _tagReg.Matches(innerHTML);
+            //            MatchCollection mc = _tagReg.Matches(innerHTML);
 
-                        foreach (Match m in mc)
-                        {
-                            if (String.Compare(m.Value, "<SPAN", true) != 0
-                                && String.Compare(m.Value, "<FONT", true) != 0
-                                && String.Compare(m.Value, "<BR", true) != 0
-                                && String.Compare(m.Value, "<P", true) != 0)
-                            {
-                                isLabel = false;
-                                break;
-                            }
-                        }
+            //            foreach (Match m in mc)
+            //            {
+            //                if (String.Compare(m.Value, "<SPAN", true) != 0
+            //                    && String.Compare(m.Value, "<FONT", true) != 0
+            //                    && String.Compare(m.Value, "<BR", true) != 0
+            //                    && String.Compare(m.Value, "<P", true) != 0)
+            //                {
+            //                    isLabel = false;
+            //                    break;
+            //                }
+            //            }
 
-                        if (isLabel)
-                        {
-                            return HTMLTestObjectType.Label;
-                        }
+            //            if (isLabel)
+            //            {
+            //                return HTMLTestObjectType.Label;
+            //            }
 
-                    }
-                    else
-                    {
-                        return HTMLTestObjectType.Label;
-                    }
-                }
-            }
+            //        }
+            //        else
+            //        {
+            //            return HTMLTestObjectType.Label;
+            //        }
+            //    }
+            //}
             else if (tag == "IMG")
             {
                 string value;
@@ -1836,6 +1948,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.CheckBox:
                     tmp = new HTMLTestCheckBox(element);
                     break;
+                case HTMLTestObjectType.Table:
+                    tmp = new HTMLTestTable(element);
+                    break;
                 default:
                     tmp = null;
                     break;
@@ -1844,6 +1959,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (tmp != null)
             {
                 tmp.Browser = _htmlTestBrowser;
+                tmp.HtmlObjPool = this;
                 return tmp;
             }
             else
@@ -1889,6 +2005,123 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        /* string GetLabelForTextBox(IHTMLElement element)
+         * return the text around textbox, firstly we will try current cell, then try left cell and up cell.
+         */
+        public static string GetLabelForTextBox(IHTMLElement element)
+        {
+            try
+            {
+                //firstly, try to get text in the same cell/span/div/label
+                string label = GetAroundText(element);
+
+                //if failed, try to get text from left cell or up cell.
+                if (String.IsNullOrEmpty(label))
+                {
+                    IHTMLElement cellParentElement = element.parentElement;
+
+                    if (cellParentElement != null && cellParentElement.tagName == "TD")
+                    {
+                        IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
+                        int cellId = parentCellElement.cellIndex;
+
+                        IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
+                        int rowId = parentRowElement.rowIndex;
+
+                        object index = (object)(cellId - 1);
+
+                        //if the current cell is not the most left cell, we will try the left cell to find the around text.
+                        if (cellId > 0)
+                        {
+                            //get the left cell.
+                            IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                            HTMLTestObject.TryGetValueByProperty(prevCellElement, "innerText", out label);
+
+                        }
+
+                        //if the current cell is the first cell OR we didn't find text in the left cell, we will try the up cell.
+                        //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
+                        if ((cellId == 0 || String.IsNullOrEmpty(label)) && rowId > 0)
+                        {
+                            //                                                     cell              row           table
+                            IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
+
+                            index = (object)(rowId - 1);
+                            IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                            index = (object)cellId;
+                            IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+
+                            HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label);
+                        }
+                    }
+                }
+
+                return label;
+            }
+            catch
+            {
+                return "";
+            }
+
+        }
+
+        /* string GetRroundText(IHTMLElement element)
+         * return the text around the control.
+         */
+        private static string GetAroundText(IHTMLElement element)
+        {
+            try
+            {
+
+                if (element == null)
+                {
+                    return null;
+                }
+
+                IHTMLElement parent = element.parentElement;
+
+                if (parent != null)
+                {
+                    string tag = parent.tagName;
+
+                    if (tag == "SPAN" ||
+                        tag == "TD" ||
+                        tag == "DIV" ||
+                        tag == "LABEL")
+                    {
+                        string labelText;
+
+                        if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out labelText))
+                        {
+                            string selfText;
+
+                            if (element.tagName == "A" && HTMLTestGUIObject.TryGetValueByProperty(element, "innerText", out selfText))
+                            {
+                                //remove the link text.
+                                if (labelText.StartsWith(selfText))
+                                {
+                                    labelText = labelText.Substring(selfText.Length);
+                                }
+                                else if (labelText.EndsWith(selfText))
+                                {
+                                    labelText = labelText.Substring(0, labelText.Length - selfText.Length);
+                                }
+                            }
+
+                            return labelText;
+                        }
+                    }
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
 
         #region object cache
 

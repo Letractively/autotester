@@ -9,7 +9,8 @@
 * Description: This interface defines the actions of an object which
  *             is Matirx_like, eg: table
 *
-* History:  2008/01/21 wan,yu Init version
+* History:  2008/01/21 wan,yu Init version.
+*           2008/01/22 wan,yu update, add GetTextByCell.
 *
 *********************************************************************/
 
@@ -24,5 +25,8 @@ namespace Shrinerain.AutoTester.Core
         int GetColCount(int row);
 
         Object[] GetObjectsByCell(int row, int col);
+
+        //return the text in the cell.
+        string GetTextByCell(int row, int col);
     }
 }
