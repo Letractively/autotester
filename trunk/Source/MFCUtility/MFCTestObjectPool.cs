@@ -121,6 +121,11 @@ namespace Shrinerain.AutoTester.MFCUtility
             throw new NotImplementedException();
         }
 
+        public object GetLastObject()
+        {
+            return null;
+        }
+
         public void SetTestBrowser(ITestBrowser testBrowser)
         {
             throw new NotImplementedException();

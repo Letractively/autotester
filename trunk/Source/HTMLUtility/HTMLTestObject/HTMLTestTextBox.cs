@@ -91,6 +91,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     this._textBoxType = GetTextBoxType();
                 }
+
+
+                //for some exception issue, I change the null to "".
+                if (_currentStr == null)
+                {
+                    _currentStr = "";
+                }
             }
             catch (Exception ex)
             {
@@ -326,6 +333,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not click above the text box: " + ex.Message);
             }
+        }
+
+        /* string GetAroundText()
+         * return the text around textbox.
+         */
+        protected override string GetAroundText()
+        {
+            return HTMLTestObjectPool.GetLabelForTextBox(this._sourceElement);
         }
 
         /* string[] ExtractSpecialKeys(string text)

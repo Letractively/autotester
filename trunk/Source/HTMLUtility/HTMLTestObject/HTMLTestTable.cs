@@ -73,8 +73,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
+                //get row count
                 _rowCount = _tableElement.rows.length;
-                _colCount = _tableElement.cols;
+
+                //get col count of the first row.
+                _tableRowElement = (IHTMLTableRow)_tableElement.rows.item((object)0, (object)0);
+                _colCount = _tableRowElement.cells.length;
             }
             catch (Exception ex)
             {
@@ -88,12 +92,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual int GetRowCount()
         {
-            return GetRowCount(0);
+            return _rowCount;
         }
 
         public virtual int GetColCount()
         {
-            return GetColCount(0);
+            return _colCount;
         }
 
         #region IMatrix Members
@@ -104,7 +108,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual int GetRowCount(int col)
         {
-            return _tableElement.rows.length;
+            try
+            {
+                return _tableElement.rows.length;
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get row count of column: " + ex.Message);
+            }
         }
 
         /* int GetColCount(int row)
@@ -112,7 +123,40 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual int GetColCount(int row)
         {
-            return _tableElement.cols;
+            try
+            {
+                _tableRowElement = (IHTMLTableRow)_tableElement.rows.item((object)row, (object)row);
+                return _tableRowElement.cells.length;
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get column count of row:" + row.ToString() + ": " + ex.Message);
+            }
+        }
+
+        public virtual string GetTextByCell(int row, int col)
+        {
+            try
+            {
+                IHTMLElement element = GetElementByCell(row, col);
+                string text;
+                if (HTMLTestObject.TryGetValueByProperty(element, "innerText", out text))
+                {
+                    return text;
+                }
+                else
+                {
+                    throw new PropertyNotFoundException("Can not get text of cell:[" + row.ToString() + "," + col.ToString() + "]");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get text of cell:[" + row.ToString() + "," + col.ToString() + "]: " + ex.Message);
+            }
         }
 
         /* HTMLTestGUIObject GetObjectByCell(int row, int col)
@@ -123,37 +167,36 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return (HTMLTestGUIObject)GetObjectsByCell(row, col)[0];
         }
 
+        /* object[] GetObjectsByCell(int row, int col)
+         * return the children elements of an expected cell.
+         */
         public virtual object[] GetObjectsByCell(int row, int col)
         {
-            // the index must in the range.
-            if (row < 0 || col < 0 || row >= _rowCount || col >= _colCount)
-            {
-                return null;
-            }
-
             try
             {
-                IHTMLElementCollection tmpCol = (IHTMLElementCollection)_tableElement.rows.item((object)row, (object)col);
 
-                HTMLTestGUIObject[] tmpObjects = null;
+                IHTMLElement cellChild = (IHTMLElement)GetElementByCell(row, col);
 
-                if (tmpCol.length > 0)
+                IHTMLElementCollection cellChildren = (IHTMLElementCollection)cellChild.all;
+
+
+                if (cellChildren.length > 0)
                 {
-                    tmpObjects = new HTMLTestGUIObject[tmpCol.length];
+                    HTMLTestGUIObject[] tmpObjects = new HTMLTestGUIObject[cellChildren.length];
 
                     object name;
                     object index;
 
                     IHTMLElement tmpElement;
 
-                    for (int i = 0; i < tmpCol.length; i++)
+                    for (int i = 0; i < cellChildren.length; i++)
                     {
                         name = (object)i;
                         index = (object)i;
 
                         try
                         {
-                            tmpElement = (IHTMLElement)tmpCol.item(name, index);
+                            tmpElement = (IHTMLElement)cellChildren.item(name, index);
 
                             tmpObjects[i] = _htmlObjPool.BuildObjectByType(tmpElement);
                         }
@@ -162,10 +205,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             continue;
                         }
                     }
+
+                    return tmpObjects;
+                }
+                else
+                {
+                    throw new ObjectNotFoundException("Can not get objects by cell[" + row.ToString() + "],[" + col.ToString() + "].");
                 }
 
-                return tmpObjects;
-
+            }
+            catch (ObjectNotFoundException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -199,7 +250,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual string GetText()
         {
-            throw new NotImplementedException();
+            return GetTextByCell(0, 0);
         }
 
         public virtual string GetFontStyle()
@@ -226,6 +277,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
+
+        /* IHTMLElement GetElementByCell(int row, int col)
+         * return the element at expected cell.
+         */
+        protected virtual IHTMLElement GetElementByCell(int row, int col)
+        {
+            // the index must in the range.
+            if (row < 0 || col < 0 || row >= _rowCount || col >= GetColCount(col))
+            {
+                throw new ObjectNotFoundException("Can not get element by cell[" + row.ToString() + "," + col.ToString() + "], index out of range.");
+            }
+
+            try
+            {
+                //get the expected row.
+                _tableRowElement = (IHTMLTableRow)_tableElement.rows.item((object)row, (object)row);
+
+                //return the expected cell.
+                return (IHTMLElement)_tableRowElement.cells.item((object)col, (object)col);
+            }
+            catch (Exception ex)
+            {
+                throw new ObjectNotFoundException("Can not get element by cell[" + row.ToString() + "," + col.ToString() + "]: " + ex.Message);
+            }
+
+        }
 
 
         #endregion

@@ -12,6 +12,7 @@
 *
 * History:  2007/09/04 wan,yu Init version
 *           2007/11/20 wan,yu update, add void SetTestApp() 
+*           2008/01/22 wan,yu update, add GetLastObject()           
 *
 *********************************************************************/
 
@@ -95,6 +96,11 @@ namespace Shrinerain.AutoTester.Interface
          * return all objects in the object pool.
          */
         Object[] GetAllObjects();
+
+        /* Object GetLastObject();
+         * return the last test object we have got.
+         */
+        Object GetLastObject();
 
         /* void SetTestBrowser(ITestBrowser testBrowser);
          * set the browser under test.

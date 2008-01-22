@@ -31,9 +31,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected IHTMLInputElement _radioElement;
 
-        //for radio button, we may have some text around it.
-        protected string _aroundText;
-
         #endregion
 
         #region properties
@@ -190,17 +187,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
 
         #region private methods
-
-        /*  string GetAroundText(int position)
-         *  return the human readable text around the control.
-         *  NOTE: NEED UPDATE!!!
-         */
-        protected virtual string GetAroundText(int position)
-        {
-            //position : 0 for right, 1 for up, 2 for left, 3 for down
-
-            return null;
-        }
 
 
         #endregion

@@ -105,19 +105,30 @@ namespace Shrinerain.AutoTester
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
+            string url = @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";// @"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
             myHost.Load(url);
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
+            pool.GetObjectByType("textbox", "µç×ÓÓÊ¼þ:", 0);
+
+            HTMLTestTextBox tb = (HTMLTestTextBox)pool.GetLastObject();
+            tb.Input("shrinerain@hotmail.com");
+
+            tb = (HTMLTestTextBox)pool.GetObjectByType("textbox", "ÃÜÂë", 0);
+            tb.Input("jyoicq");
+
+            HTMLTestButton login = (HTMLTestButton)pool.GetObjectByType("button", "µÇÂ¼", 0);
+            login.Click();
+
             //   HTMLTestLabel label1 = (HTMLTestLabel)pool.GetObjectByType("label", "Make iGoogle your homepage?", 0);
             // label1.Hover();
 
-            HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByProperty("name", "q"); //
-            obj1.Input("statestreetfayt");
+            //HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByProperty("name", "q"); //
+            //obj1.Input("statestreetfayt");
 
-            HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Searc", 0);
-            obj2.Click();
+            //HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Searc", 0);
+            //obj2.Click();
 
             //        myHost.WaitForNextPage();
 

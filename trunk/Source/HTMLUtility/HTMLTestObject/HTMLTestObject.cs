@@ -343,12 +343,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return TryGetValueByProperty(element, properyName, out value);
         }
 
+        public static bool TryGetValueByProperty(object element, string propertyName, out string value)
+        {
+            value = null;
+            IHTMLElement tmpElement;
+
+            try
+            {
+                tmpElement = (IHTMLElement)element;
+            }
+            catch
+            {
+                return false;
+            }
+
+            return TryGetValueByProperty(tmpElement, propertyName, out value);
+        }
+
+
         /* bool TryGetValueByProperty(IHTMLElement element, string propertyName, out object value)
          * return true if the property exist.
          */
         public static bool TryGetValueByProperty(IHTMLElement element, string propertyName, out string value)
         {
-            value = null;
+            value = "";
 
             if (element == null || string.IsNullOrEmpty(propertyName))
             {
