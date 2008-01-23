@@ -18,7 +18,9 @@
 *********************************************************************/
 
 using System;
+using System.IO;
 using System.Net;
+using System.Drawing;
 
 using mshtml;
 
@@ -109,6 +111,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not download image: " + ex.Message);
+            }
+        }
+
+        /*  Bitmap GetControlPrint()
+         *  for image, we don't need to "capture" it's screen print, just get it's source image.
+         */
+        public override Bitmap GetControlPrint()
+        {
+            try
+            {
+                WebClient webc = new WebClient();
+                Stream imgS = webc.OpenRead(this._src);
+                return new Bitmap(imgS);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotSaveControlPrintException("Can not get image print: " + ex.Message);
             }
         }
 

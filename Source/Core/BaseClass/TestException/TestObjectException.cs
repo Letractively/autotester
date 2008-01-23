@@ -169,6 +169,19 @@ namespace Shrinerain.AutoTester.Core
         }
     };
 
+    public class CannotSaveControlPrintException : TestObjectException
+    {
+        public CannotSaveControlPrintException()
+            : this("Can not save control print.")
+        {
+        }
+
+        public CannotSaveControlPrintException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class FuzzySearchException : TestObjectException
     {
         public FuzzySearchException()
