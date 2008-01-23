@@ -7,7 +7,7 @@
   * Component: HTMLTestTable.cs
   *
   * Description: This class defines the actions for <Table>.
-  *              NEED UPDATE!!! 
+  *              
   *
   * History: 2007/09/04 wan,yu Init version
   *
@@ -134,6 +134,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        /* string GetTextByCell(int row, int col)
+         * return the text in expected cell.
+         */
         public virtual string GetTextByCell(int row, int col)
         {
             try
@@ -162,9 +165,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* HTMLTestGUIObject GetObjectByCell(int row, int col)
          * return the first test object at expected cell.
          */
-        public virtual HTMLTestGUIObject GetObjectByCell(int row, int col)
+        public virtual HTMLTestGUIObject GetObjectByCell(int row, int col, HTMLTestObjectType objType)
         {
-            return (HTMLTestGUIObject)GetObjectsByCell(row, col)[0];
+            foreach (Object i in GetObjectsByCell(row, col))
+            {
+                //check each object, return the object of the expceted type.
+                if (i != null && i is HTMLTestGUIObject)
+                {
+                    if ((i as HTMLTestGUIObject).Type == objType)
+                    {
+                        return (HTMLTestGUIObject)i;
+                    }
+
+                }
+            }
+
+            throw new ObjectNotFoundException("Can not find " + objType.ToString() + " at [" + row.ToString() + "," + col.ToString() + "].");
         }
 
         /* object[] GetObjectsByCell(int row, int col)

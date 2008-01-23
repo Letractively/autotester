@@ -207,6 +207,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (!IsVisible() || !IsEnable())
+                {
+                    throw new CannotPerformActionException("Object is not visible/enable.");
+                }
+
                 //if the object is not visible, then move it.
                 ScrollIntoView(false);
 
@@ -373,6 +378,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return null;
                 }
 
+                string labelText = element.outerText;
+
+                if (!String.IsNullOrEmpty(labelText))
+                {
+                    return labelText;
+                }
+
                 IHTMLElement parent = element.parentElement;
 
                 if (parent != null)
@@ -384,8 +396,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         tag == "DIV" ||
                         tag == "LABEL")
                     {
-                        string labelText;
-
                         if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out labelText))
                         {
                             string selfText;

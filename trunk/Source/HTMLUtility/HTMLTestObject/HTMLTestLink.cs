@@ -127,6 +127,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Hover();
+
                 MouseOp.Click();
 
                 _actionFinished.Set();

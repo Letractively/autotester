@@ -51,6 +51,7 @@
     <Compile Include="BaseClass\TestException\TestFrameworkException.cs" />
     <Compile Include="BaseClass\TestException\TestLogException.cs" />
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
+    <Compile Include="Helper\ActionHelper.cs" />
     <Compile Include="Helper\Mail.cs" />
     <Compile Include="Interface\ICheckable.cs" />
     <Compile Include="Interface\IMatrix.cs" />
