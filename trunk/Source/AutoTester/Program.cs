@@ -101,6 +101,9 @@ namespace Shrinerain.AutoTester
 
             //return;
 
+
+            // ImageHelper.SaveScreenArea(0, 0, 200, 200, @"G:\1111.jpg");
+
             HTMLTestBrowser myHost = new HTMLTestBrowser();
             myHost.Start();
             myHost.MaxSize();
@@ -108,18 +111,20 @@ namespace Shrinerain.AutoTester
             string url = @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";// @"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
             myHost.Load(url);
 
+
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
+            ActionHelper ah = new ActionHelper();
+            ah.TestObjectPool = pool;
 
             pool.GetObjectByType("textbox", "µç×ÓÓÊ¼þ:", 0);
 
-            HTMLTestTextBox tb = (HTMLTestTextBox)pool.GetLastObject();
-            tb.Input("shrinerain@hotmail.com");
+            ah.PerformAction("shrinerain@gmail.com");
 
-            tb = (HTMLTestTextBox)pool.GetObjectByType("textbox", "ÃÜÂë", 0);
-            tb.Input("jyoicq");
+            pool.GetObjectByType("textbox", "ÃÜÂë", 0);
 
-            HTMLTestButton login = (HTMLTestButton)pool.GetObjectByType("button", "µÇÂ¼", 0);
-            login.Click();
+
+            pool.GetObjectByType("button", "µÇÂ¼", 0);
+            ah.PerformAction();
 
             //   HTMLTestLabel label1 = (HTMLTestLabel)pool.GetObjectByType("label", "Make iGoogle your homepage?", 0);
             // label1.Hover();

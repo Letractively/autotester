@@ -195,7 +195,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual Bitmap GetControlPrint()
         {
-            return null;
+            try
+            {
+                //we need to add 2, then we can get the "right" print, don't ask me why, ask Microsoft...
+                return new Bitmap(ImageHelper.CaptureScreenArea(_rect.Left + 2, _rect.Top + 2, _rect.Width, _rect.Height));
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotSaveControlPrintException("Can not get control print: " + ex.Message);
+            }
         }
 
         /* void Hover()

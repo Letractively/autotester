@@ -1225,50 +1225,59 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //firstly, try to get text in the same cell/span/div/label
                 string label = GetAroundText(element);
 
-                //if failed, try to get text from left cell or up cell.
-                if (String.IsNullOrEmpty(label))
+                if (!String.IsNullOrEmpty(label))
                 {
-                    IHTMLElement cellParentElement = element.parentElement;
+                    return label;
+                }
 
-                    if (cellParentElement != null && cellParentElement.tagName == "TD")
+
+                //if failed, try to get text from left cell or up cell.
+                IHTMLElement cellParentElement = element.parentElement;
+
+                if (cellParentElement != null && cellParentElement.tagName == "TD")
+                {
+                    IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
+                    int cellId = parentCellElement.cellIndex;
+
+                    IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
+                    int rowId = parentRowElement.rowIndex;
+
+                    object index = (object)(cellId - 1);
+
+                    //if the current cell is not the most left cell, we will try the left cell to find the around text.
+                    if (cellId > 0)
                     {
-                        IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
-                        int cellId = parentCellElement.cellIndex;
+                        //get the left cell.
+                        IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
 
-                        IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
-                        int rowId = parentRowElement.rowIndex;
-
-                        object index = (object)(cellId - 1);
-
-                        //if the current cell is not the most left cell, we will try the left cell to find the around text.
-                        if (cellId > 0)
+                        if (HTMLTestObject.TryGetValueByProperty(prevCellElement, "innerText", out label))
                         {
-                            //get the left cell.
-                            IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
-
-                            HTMLTestObject.TryGetValueByProperty(prevCellElement, "innerText", out label);
-
+                            return label;
                         }
 
-                        //if the current cell is the first cell OR we didn't find text in the left cell, we will try the up cell.
-                        //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
-                        if ((cellId == 0 || String.IsNullOrEmpty(label)) && rowId > 0)
+                    }
+
+                    //if the current cell is the first cell OR we didn't find text in the left cell, we will try the up cell.
+                    //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
+                    if (cellId == 0 && rowId > 0)
+                    {
+                        //                                                     cell              row           table
+                        IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
+
+                        index = (object)(rowId - 1);
+                        IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                        index = (object)cellId;
+                        IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+
+                        if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
                         {
-                            //                                                     cell              row           table
-                            IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
-
-                            index = (object)(rowId - 1);
-                            IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
-
-                            index = (object)cellId;
-                            IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
-
-                            HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label);
+                            return label;
                         }
                     }
                 }
 
-                return label;
+                return "";
             }
             catch
             {
@@ -1506,55 +1515,64 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //firstly, try to get text in the same cell/span/div/label
                 string label = GetAroundText(element);
 
-                //if failed, try to get text from left cell or up cell.
-                if (String.IsNullOrEmpty(label))
+                if (!String.IsNullOrEmpty(label))
                 {
-                    IHTMLElement cellParentElement = element.parentElement;
+                    return label;
+                }
 
-                    if (cellParentElement != null && cellParentElement.tagName == "TD")
+                //if failed, try to get text from left cell or up cell.
+
+                IHTMLElement cellParentElement = element.parentElement;
+
+                if (cellParentElement != null && cellParentElement.tagName == "TD")
+                {
+                    IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
+                    int cellId = parentCellElement.cellIndex;
+
+                    IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
+                    int rowId = parentRowElement.rowIndex;
+
+                    object index = (object)(cellId + 1);
+
+                    //get the right cell.
+                    IHTMLElement nextCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                    if (HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label))
                     {
-                        IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
-                        int cellId = parentCellElement.cellIndex;
+                        return label;
+                    }
 
-                        IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
-                        int rowId = parentRowElement.rowIndex;
+                    //not found, try the left cell.
+                    index = (object)(cellId - 1);
 
-                        object index = (object)(cellId + 1);
+                    IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
 
-                        //get the right cell.
-                        IHTMLElement nextCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+                    if (HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label))
+                    {
+                        return label;
+                    }
 
-                        HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label);
+                    //still not found, we will try the up cell.
+                    //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
+                    if (rowId > 0)
+                    {
+                        //                                                     cell              row           table
+                        IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
 
-                        //not found, try the left cell.
-                        if (String.IsNullOrEmpty(label))
+                        index = (object)(rowId - 1);
+                        IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                        index = (object)cellId;
+                        IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+
+                        if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
                         {
-                            index = (object)(cellId - 1);
-
-                            IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
-
-                            HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label);
-                        }
-
-                        //still not found, we will try the up cell.
-                        //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
-                        if (String.IsNullOrEmpty(label) && rowId > 0)
-                        {
-                            //                                                     cell              row           table
-                            IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
-
-                            index = (object)(rowId - 1);
-                            IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
-
-                            index = (object)cellId;
-                            IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
-
-                            HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label);
+                            return label;
                         }
                     }
                 }
 
-                return label;
+                return "";
             }
             catch
             {

@@ -13,6 +13,7 @@
 *              value, generate the log.
 *
 * History: 2007/09/04 wan,yu Init version
+*          2008/01/23 wan,yu update, move SaveScreenPrint code to ImageHelper. 
 *
 *********************************************************************/
 
@@ -442,49 +443,6 @@ namespace Shrinerain.AutoTester.Core
 
         }
 
-        #region save screen print
-
-        /* void SaveScreenPrint(string filePath, string fileName)
-         * Save current screen print to a local jpg file.
-         */
-        public void SaveScreenPrint(string filePath, string fileName)
-        {
-            if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(fileName))
-            {
-                throw new CannotSaveScreenPrintException("File path and file name can not be empty.");
-            }
-
-            if (!Directory.Exists(filePath))
-            {
-                throw new CannotSaveScreenPrintException("Folder not found: " + filePath);
-            }
-
-            string fullName = filePath + fileName;
-            fileName.Replace(@"\\\", @"\\");
-
-            SaveScreenPrint(fullName);
-
-        }
-
-        public void SaveScreenPrint(string fileFullName)
-        {
-            try
-            {
-                Image img = CaptureScreen();
-                img.Save(fileFullName, System.Drawing.Imaging.ImageFormat.Jpeg);
-            }
-            catch (CannotSaveScreenPrintException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotSaveScreenPrintException("Can not save screen print file: " + fileFullName + "," + ex.Message);
-            }
-        }
-
-        #endregion
-
         #endregion
 
         #region private methods
@@ -715,61 +673,6 @@ namespace Shrinerain.AutoTester.Core
             }
 
         }
-
-        #region save screen print
-
-        /* Image CaptureScreen()
-         * return an image of screen.
-         */
-        protected Image CaptureScreen()
-        {
-            return CaptureWindow(Win32API.GetDesktopWindow());
-        }
-
-        /* Image CaptureWindow(IntPtr handle)
-         * return an image of expected handle.
-         */
-        protected Image CaptureWindow(IntPtr handle)
-        {
-            try
-            {
-                // get te hDC of the target window
-                IntPtr hdcSrc = Win32API.GetWindowDC(handle);
-                // get the size
-                Win32API.Rect windowRect = new Win32API.Rect();
-                Win32API.GetWindowRect(handle, ref windowRect);
-                int width = windowRect.right - windowRect.left;
-                int height = windowRect.bottom - windowRect.top;
-                // create a device context we can copy to
-                IntPtr hdcDest = Win32API.CreateCompatibleDC(hdcSrc);
-                // create a bitmap we can copy it to,
-                // using GetDeviceCaps to get the width/height
-                IntPtr hBitmap = Win32API.CreateCompatibleBitmap(hdcSrc, width, height);
-                // select the bitmap object
-                IntPtr hOld = Win32API.SelectObject(hdcDest, hBitmap);
-                // bitblt over
-                Win32API.BitBlt(hdcDest, 0, 0, width, height, hdcSrc, 0, 0, Win32API.SRCCOPY);
-                // restore selection
-                Win32API.SelectObject(hdcDest, hOld);
-                // clean up 
-                Win32API.DeleteDC(hdcDest);
-                Win32API.ReleaseDC(handle, hdcSrc);
-
-                // get a .NET image object for it
-                Image img = Image.FromHbitmap(hBitmap);
-                // free up the Bitmap object
-                Win32API.DeleteObject(hBitmap);
-
-                return img;
-
-            }
-            catch (Exception ex)
-            {
-                throw new CannotSaveScreenPrintException(ex.Message);
-            }
-
-        }
-        #endregion
 
         #endregion
 
