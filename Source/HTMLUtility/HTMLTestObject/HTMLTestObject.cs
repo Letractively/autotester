@@ -309,13 +309,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             string isEnable;
 
-            if (!TryGetValueByProperty(this._sourceElement, "enabled", out isEnable))
+            if (!TryGetValueByProperty(this._sourceElement, "diabled", out isEnable))
             {
                 return true;
             }
             else
             {
-                return String.Compare(isEnable, "FALSE", true) == 0;
+                return !(String.Compare(isEnable, "true", true) == 0);
             }
         }
 
@@ -326,7 +326,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             string isReadOnly;
 
-            if (!TryGetValueByProperty(this._sourceElement, "readonly", out isReadOnly))
+            if (!TryGetValueByProperty(this._sourceElement, "readOnly", out isReadOnly))
             {
                 return false;
             }
@@ -366,6 +366,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public static bool TryGetValueByProperty(IHTMLElement element, string propertyName, out string value)
         {
+            return TryGetValueByProperty(element, propertyName, out value, false);
+        }
+
+        public static bool TryGetValueByProperty(IHTMLElement element, string propertyName, out string value, bool acceptEmpty)
+        {
             value = "";
 
             if (element == null || string.IsNullOrEmpty(propertyName))
@@ -389,7 +394,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 value = element.getAttribute(propertyName, 0).ToString().Trim();
 
-                return true;
+                return acceptEmpty || value != "";
+
             }
             catch
             {

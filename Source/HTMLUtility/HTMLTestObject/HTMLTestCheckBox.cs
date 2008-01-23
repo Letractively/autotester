@@ -184,6 +184,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
+        /* string GetAroundText()
+         * return the text around the check box.
+         */
+        protected override string GetAroundText()
+        {
+            return HTMLTestObjectPool.GetLabelForRadioBoxAndCheckBox(this._sourceElement);
+        }
 
         #endregion
 

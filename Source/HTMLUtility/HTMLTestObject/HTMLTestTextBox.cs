@@ -115,6 +115,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void Input(string value)
         {
+            if (IsReadOnly())
+            {
+                throw new CannotPerformActionException("Object is read only.");
+            }
+
             if (value == null)
             {
                 value = "";
@@ -183,9 +188,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.Set();
 
             }
-            catch
+            catch (TestException)
             {
-                throw new CannotPerformActionException("Can not perform Input action");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not perform Input action: " + ex.Message);
             }
         }
 
@@ -200,6 +209,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     Focus();
                     KeyboardOp.SendKey(keys);
+                }
+                catch (TestException)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
@@ -228,6 +241,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
+            catch (TestException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform clear action: " + ex.Message);
@@ -241,6 +258,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 Hover();
                 MouseOp.Click();
+            }
+            catch (TestException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -329,9 +350,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 MouseOp.MoveShift(0, -(this._rect.Height / 2 + 1));
                 MouseOp.Click();
             }
-            catch (Exception ex)
+            catch
             {
-                throw new CannotPerformActionException("Can not click above the text box: " + ex.Message);
+                //throw new CannotPerformActionException("Can not click above the text box: " + ex.Message);
             }
         }
 

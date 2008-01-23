@@ -105,16 +105,33 @@ namespace Shrinerain.AutoTester
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"http://passport.baidu.com/?login&tpl=mn&u=http%3A//www.baidu.com/";// @"D:\Program\CS\AutoTester2005\test.htm";//@"http://www.cnbeta.com";//  @"www.google.com"; // @"http://www.google.com/advanced_search?hl=en";// @"http://127.0.0.1/AutoTester/";// 
+            string url = @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";// @"http://passport.baidu.com/?login&tpl=mn&u=http%3A//www.baidu.com/";// @"D:\Program\CS\AutoTester2005\test.htm";//@"http://passport.baidu.com/?login&tpl=mn&u=http%3A//www.baidu.com/";// @"http://www.cnbeta.com";//  @"www.google.com"; // @"http://www.google.com/advanced_search?hl=en";// @"http://127.0.0.1/AutoTester/";// 
             myHost.Load(url);
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
-            HTMLTestCheckBox cb = (HTMLTestCheckBox)pool.GetObjectByType("checkbox", "记住我的登录状态", 0);
-            cb.Check();
+            //ActionHelper aHelper = new ActionHelper();
+            //aHelper.TestObjectPool = pool;
 
-            HTMLTestTextBox userName = (HTMLTestTextBox)pool.GetObjectByType("textbox", "用户名:", 0);
-            userName.Hover();
+            //HTMLTestTable table = (HTMLTestTable)pool.GetObjectByType("table", "111", 0);
+
+            //HTMLTestButton btn = (HTMLTestButton)table.GetObjectByCell(0, 0, HTMLTestObjectType.Button);
+            //btn.Click();
+            //pool.GetObjectByType("textbox", "用户名:", 0);
+
+            //aHelper.PerformAction("test");
+
+            //pool.GetObjectByType("button", "登录", 0);
+
+            //aHelper.PerformAction();
+
+            HTMLTestCheckBox cb = (HTMLTestCheckBox)pool.GetObjectByType("checkbox", "在此计算机上保存我的信息。", 0);
+
+            // HTMLTestCheckBox cb = (HTMLTestCheckBox)pool.GetObjectByType("checkbox", "记住我的登录状态", 0);
+            cb.UnCheck();
+
+            //HTMLTestTextBox userName = (HTMLTestTextBox)pool.GetObjectByType("textbox", "用户名:", 0);
+            //userName.Hover();
 
             //   HTMLTestLink link = (HTMLTestLink)pool.GetObjectByType("link", "ooo", 0);
 

@@ -1183,6 +1183,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
 
+                //firstly, check title.
+                string title;
+
+                if (HTMLTestObject.TryGetValueByProperty(element, "title", out title))
+                {
+                    if (!String.IsNullOrEmpty(title) && Searcher.IsStringLike(value, title, simPercent))
+                    {
+                        return true;
+                    }
+                }
+
                 string label = GetLabelForTextBox(element);
 
                 //for text around textbox, we may have ":", like "UserName:" , remove ":", make sure no writing mistake.
@@ -1202,6 +1213,68 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
+        }
+
+        /* string GetLabelForTextBox(IHTMLElement element)
+      * return the text around textbox, firstly we will try current cell, then try left cell and up cell.
+      */
+        public static string GetLabelForTextBox(IHTMLElement element)
+        {
+            try
+            {
+                //firstly, try to get text in the same cell/span/div/label
+                string label = GetAroundText(element);
+
+                //if failed, try to get text from left cell or up cell.
+                if (String.IsNullOrEmpty(label))
+                {
+                    IHTMLElement cellParentElement = element.parentElement;
+
+                    if (cellParentElement != null && cellParentElement.tagName == "TD")
+                    {
+                        IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
+                        int cellId = parentCellElement.cellIndex;
+
+                        IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
+                        int rowId = parentRowElement.rowIndex;
+
+                        object index = (object)(cellId - 1);
+
+                        //if the current cell is not the most left cell, we will try the left cell to find the around text.
+                        if (cellId > 0)
+                        {
+                            //get the left cell.
+                            IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                            HTMLTestObject.TryGetValueByProperty(prevCellElement, "innerText", out label);
+
+                        }
+
+                        //if the current cell is the first cell OR we didn't find text in the left cell, we will try the up cell.
+                        //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
+                        if ((cellId == 0 || String.IsNullOrEmpty(label)) && rowId > 0)
+                        {
+                            //                                                     cell              row           table
+                            IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
+
+                            index = (object)(rowId - 1);
+                            IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                            index = (object)cellId;
+                            IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+
+                            HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label);
+                        }
+                    }
+                }
+
+                return label;
+            }
+            catch
+            {
+                return "";
+            }
+
         }
 
         /* bool CheckLabelObject(IHTMLElement element, string value, int simPercent)
@@ -1335,11 +1408,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                string labelText = GetAroundText(element);
+                string labelText = GetLabelForRadioBoxAndCheckBox(element);
 
-                if (Searcher.IsStringLike(labelText, value, simPercent))
+                if (!String.IsNullOrEmpty(labelText))
                 {
-                    return true;
+                    if (value.EndsWith(".") || value.EndsWith("。"))
+                    {
+                        value = value.Substring(0, value.Length - 1);
+                    }
+
+                    if (labelText.EndsWith(".") || labelText.EndsWith("。"))
+                    {
+                        labelText = value.Substring(0, labelText.Length - 1);
+                    }
+
+                    if (Searcher.IsStringLike(labelText, value, simPercent))
+                    {
+                        return true;
+                    }
                 }
 
                 string propertyName = null;
@@ -1371,11 +1457,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                string labelText = GetAroundText(element);
+                string labelText = GetLabelForRadioBoxAndCheckBox(element);
 
-                if (Searcher.IsStringLike(labelText, value, simPercent))
+                if (!String.IsNullOrEmpty(labelText))
                 {
-                    return true;
+                    if (value.EndsWith(".") || value.EndsWith("。"))
+                    {
+                        value = value.Substring(0, value.Length - 1);
+                    }
+
+                    if (labelText.EndsWith(".") || labelText.EndsWith("。"))
+                    {
+                        labelText = value.Substring(0, labelText.Length - 1);
+                    }
+
+                    if (Searcher.IsStringLike(labelText, value, simPercent))
+                    {
+                        return true;
+                    }
                 }
 
                 string propertyName = null;
@@ -1395,6 +1494,73 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
+        }
+
+        /* string GetLabelForTextBox(IHTMLElement element)
+      * return the text around textbox, firstly we will try current cell, then try left cell and up cell.
+      */
+        public static string GetLabelForRadioBoxAndCheckBox(IHTMLElement element)
+        {
+            try
+            {
+                //firstly, try to get text in the same cell/span/div/label
+                string label = GetAroundText(element);
+
+                //if failed, try to get text from left cell or up cell.
+                if (String.IsNullOrEmpty(label))
+                {
+                    IHTMLElement cellParentElement = element.parentElement;
+
+                    if (cellParentElement != null && cellParentElement.tagName == "TD")
+                    {
+                        IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
+                        int cellId = parentCellElement.cellIndex;
+
+                        IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
+                        int rowId = parentRowElement.rowIndex;
+
+                        object index = (object)(cellId + 1);
+
+                        //get the right cell.
+                        IHTMLElement nextCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                        HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label);
+
+                        //not found, try the left cell.
+                        if (String.IsNullOrEmpty(label))
+                        {
+                            index = (object)(cellId - 1);
+
+                            IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                            HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label);
+                        }
+
+                        //still not found, we will try the up cell.
+                        //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
+                        if (String.IsNullOrEmpty(label) && rowId > 0)
+                        {
+                            //                                                     cell              row           table
+                            IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
+
+                            index = (object)(rowId - 1);
+                            IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                            index = (object)cellId;
+                            IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+
+                            HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label);
+                        }
+                    }
+                }
+
+                return label;
+            }
+            catch
+            {
+                return "";
+            }
+
         }
 
         /* bool CheckButtonObject(IHTMLElement element, string value, int simPercent)
@@ -1478,6 +1644,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             return false;
                         }
+                    }
+                }
+
+
+                //check caption of the table.
+                string caption;
+
+                if (HTMLTestObject.TryGetValueByProperty(element, "caption", out caption))
+                {
+                    if (!String.IsNullOrEmpty(caption) && Searcher.IsStringLike(caption, value, simPercent))
+                    {
+                        return true;
                     }
                 }
 
@@ -1622,14 +1800,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return String.Compare(value, "HIDDEN", true) != 0;
                 }
             }
-
-            if (HTMLTestObject.TryGetValueByProperty(element, "enable", out value))
-            {
-                //return false if it is not enabled.
-                return String.Compare(value, "FALSE", true) != 0;
-            }
-
-            if (HTMLTestObject.TryGetValueByProperty(element, "visibility", out value))
+            else if (HTMLTestObject.TryGetValueByProperty(element, "visibility", out value))
             {
                 //return false if it is hidden.
                 return String.Compare(value, "HIDDEN", true) != 0;
@@ -1766,10 +1937,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Link;
             }
-            //else if (tag == "SPAN" || tag == "LABEL")
-            //{
-            //    return HTMLTestObjectType.Label;
-            //}
+            else if (tag == "SPAN" || tag == "LABEL")
+            {
+                return HTMLTestObjectType.Label;
+            }
             //else if (tag == "TD" || tag == "DIV")
             //{
             //    string innerHTML;
@@ -2005,68 +2176,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        /* string GetLabelForTextBox(IHTMLElement element)
-         * return the text around textbox, firstly we will try current cell, then try left cell and up cell.
-         */
-        public static string GetLabelForTextBox(IHTMLElement element)
-        {
-            try
-            {
-                //firstly, try to get text in the same cell/span/div/label
-                string label = GetAroundText(element);
-
-                //if failed, try to get text from left cell or up cell.
-                if (String.IsNullOrEmpty(label))
-                {
-                    IHTMLElement cellParentElement = element.parentElement;
-
-                    if (cellParentElement != null && cellParentElement.tagName == "TD")
-                    {
-                        IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
-                        int cellId = parentCellElement.cellIndex;
-
-                        IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
-                        int rowId = parentRowElement.rowIndex;
-
-                        object index = (object)(cellId - 1);
-
-                        //if the current cell is not the most left cell, we will try the left cell to find the around text.
-                        if (cellId > 0)
-                        {
-                            //get the left cell.
-                            IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
-
-                            HTMLTestObject.TryGetValueByProperty(prevCellElement, "innerText", out label);
-
-                        }
-
-                        //if the current cell is the first cell OR we didn't find text in the left cell, we will try the up cell.
-                        //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
-                        if ((cellId == 0 || String.IsNullOrEmpty(label)) && rowId > 0)
-                        {
-                            //                                                     cell              row           table
-                            IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
-
-                            index = (object)(rowId - 1);
-                            IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
-
-                            index = (object)cellId;
-                            IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
-
-                            HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label);
-                        }
-                    }
-                }
-
-                return label;
-            }
-            catch
-            {
-                return "";
-            }
-
-        }
-
         /* string GetRroundText(IHTMLElement element)
          * return the text around the control.
          */
@@ -2080,6 +2189,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return null;
                 }
 
+                string labelText = element.outerText;
+
+                if (!String.IsNullOrEmpty(labelText))
+                {
+                    return labelText;
+                }
+
                 IHTMLElement parent = element.parentElement;
 
                 if (parent != null)
@@ -2091,8 +2207,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         tag == "DIV" ||
                         tag == "LABEL")
                     {
-                        string labelText;
-
                         if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out labelText))
                         {
                             string selfText;
