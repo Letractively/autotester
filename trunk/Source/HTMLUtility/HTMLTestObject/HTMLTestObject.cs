@@ -239,8 +239,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (this._stateChanged != null)
             {
-                this._stateChanged.Close();
-                this._stateChanged = null;
+                //this._stateChanged.Close();
+                //this._stateChanged = null;
             }
 
             GC.SuppressFinalize(this);
@@ -253,7 +253,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region action
 
         #endregion
-
 
         /* object GetPropertyByName(string propertyName)
          * return the property value by name.
@@ -281,6 +280,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             return TrySetValueByProperty(this._sourceElement, propertyName, value);
         }
+
         #endregion
 
         #region private methods
@@ -336,6 +336,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        /* bool TryGetValueByProperty(IHTMLElement element, string properyName)
+         * return true if the property value is not null or empty.
+         */
         public static bool TryGetValueByProperty(IHTMLElement element, string properyName)
         {
             string value;
@@ -394,8 +397,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 value = element.getAttribute(propertyName, 0).ToString().Trim();
 
+                //if acceptEmpty is true, we will return true.
+                //if acceptEnpty is false, then we will check the value, it it is empty, we will return false.
                 return acceptEmpty || value != "";
-
             }
             catch
             {

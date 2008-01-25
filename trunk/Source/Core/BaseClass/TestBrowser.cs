@@ -24,8 +24,10 @@ using System.Threading;
 
 using mshtml;
 using SHDocVw;
+
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Win32;
+using Shrinerain.AutoTester.Helper;
 
 namespace Shrinerain.AutoTester.Core
 {

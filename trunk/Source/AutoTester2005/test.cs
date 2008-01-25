@@ -105,30 +105,30 @@ namespace Shrinerain.AutoTester
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";// @"http://passport.baidu.com/?login&tpl=mn&u=http%3A//www.baidu.com/";// @"D:\Program\CS\AutoTester2005\test.htm";//@"http://passport.baidu.com/?login&tpl=mn&u=http%3A//www.baidu.com/";// @"http://www.cnbeta.com";//  @"www.google.com"; // @"http://www.google.com/advanced_search?hl=en";// @"http://127.0.0.1/AutoTester/";// 
+            string url = @"http://google.com";// @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";// @"http://passport.baidu.com/?login&tpl=mn&u=http%3A//www.baidu.com/";// @"D:\Program\CS\AutoTester2005\test.htm";//@"http://passport.baidu.com/?login&tpl=mn&u=http%3A//www.baidu.com/";// @"http://www.cnbeta.com";//  @"www.google.com"; // @"http://www.google.com/advanced_search?hl=en";// @"http://127.0.0.1/AutoTester/";// 
             myHost.Load(url);
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
-
-            //ActionHelper aHelper = new ActionHelper();
-            //aHelper.TestObjectPool = pool;
 
             //HTMLTestTable table = (HTMLTestTable)pool.GetObjectByType("table", "111", 0);
 
             //HTMLTestButton btn = (HTMLTestButton)table.GetObjectByCell(0, 0, HTMLTestObjectType.Button);
             //btn.Click();
-            //pool.GetObjectByType("textbox", "用户名:", 0);
+            //pool.GetObjectByType("textbox", "电子邮件:", 0);
 
             //aHelper.PerformAction("test");
 
-            //pool.GetObjectByType("button", "登录", 0);
+            HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByRect(432, 285, 365, 22, "textbox"); //pool.GetObjectByProperty("name", "q"); //pool.GetObjectByName("q");
+            obj1.Input("statestreet");
+
+            //HTMLTestCheckBox cb = (HTMLTestCheckBox)pool.GetObjectByType("checkbox", "在此计算机上保存我的信息。", 0);
+
+            //// HTMLTestCheckBox cb = (HTMLTestCheckBox)pool.GetObjectByType("checkbox", "记住我的登录状态", 0);
+            //cb.UnCheck();
+
+            //pool.GetObjectByType("button", "登陆", 0);
 
             //aHelper.PerformAction();
-
-            HTMLTestCheckBox cb = (HTMLTestCheckBox)pool.GetObjectByType("checkbox", "在此计算机上保存我的信息。", 0);
-
-            // HTMLTestCheckBox cb = (HTMLTestCheckBox)pool.GetObjectByType("checkbox", "记住我的登录状态", 0);
-            cb.UnCheck();
 
             //HTMLTestTextBox userName = (HTMLTestTextBox)pool.GetObjectByType("textbox", "用户名:", 0);
             //userName.Hover();
@@ -146,8 +146,7 @@ namespace Shrinerain.AutoTester
             //HTMLTestComboBox cbBox = (HTMLTestComboBox)pool.GetObjectByName("num");
             // cbBox.Select("20 results");
 
-            //HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByProperty("name", "q"); //pool.GetObjectByName("q");
-            //obj1.Input("statestreet");
+
 
             //HTMLTestButton obj2 = (HTMLTestButton)pool.GetObjectByType("button", "Google Sear", 0);
             //obj2.Click();
