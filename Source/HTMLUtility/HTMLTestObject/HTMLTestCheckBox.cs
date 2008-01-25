@@ -9,8 +9,8 @@
 * Description: This class defines the actions provide by CheckBox.
 *              The important actions include "Check","UnCheck".
 * 
-*
 * History: 2007/09/04 wan,yu Init version
+*          2008/01/24 wan,yu update, add GetLabelForCheckBox(); 
 *
 *********************************************************************/
 
@@ -25,7 +25,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestCheckBox : HTMLTestGUIObject, ICheckable
+    public class HTMLTestCheckBox : HTMLTestGUIObject, ICheckable, IShowInfo
     {
 
         #region fields
@@ -180,6 +180,100 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region IShowInfo Members
+
+        public string GetText()
+        {
+            return LabelText;
+        }
+
+        public string GetFontStyle()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontFamily()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        /* string GetLabelForCheckBox(IHTMLElement element)
+         * return the text around check box, firstly we will try current cell, then try right cell and up cell.
+         */
+        public static string GetLabelForCheckBox(IHTMLElement element)
+        {
+            try
+            {
+                //firstly, try to get text in the same cell/span/div/label
+                string label = GetAroundText(element);
+
+                if (!String.IsNullOrEmpty(label))
+                {
+                    return label;
+                }
+
+                //if failed, try to get text from left cell or up cell.
+
+                IHTMLElement cellParentElement = element.parentElement;
+
+                if (cellParentElement != null && cellParentElement.tagName == "TD")
+                {
+                    IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
+                    int cellId = parentCellElement.cellIndex;
+
+                    IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
+                    int rowId = parentRowElement.rowIndex;
+
+                    object index = (object)(cellId + 1);
+
+                    //get the right cell.
+                    IHTMLElement nextCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                    if (HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label))
+                    {
+                        return label;
+                    }
+
+                    //not found, try the left cell.
+                    index = (object)(cellId - 1);
+
+                    IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                    if (HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label))
+                    {
+                        return label;
+                    }
+
+                    //still not found, we will try the up cell.
+                    //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
+                    if (rowId > 0)
+                    {
+                        //                                                     cell              row           table
+                        IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
+
+                        index = (object)(rowId - 1);
+                        IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                        index = (object)cellId;
+                        IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+
+                        if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
+                        {
+                            return label;
+                        }
+                    }
+                }
+
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+
+        }
+        #endregion
+
         #endregion
 
         #region private methods
@@ -187,15 +281,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* string GetAroundText()
          * return the text around the check box.
          */
-        protected override string GetAroundText()
+        protected override string GetLabelText()
         {
-            return HTMLTestObjectPool.GetLabelForRadioBoxAndCheckBox(this._sourceElement);
+            return GetLabelForCheckBox(this._sourceElement);
         }
 
         #endregion
 
         #endregion
-
 
     }
 }

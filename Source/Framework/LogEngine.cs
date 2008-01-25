@@ -24,6 +24,7 @@ using System.IO;
 
 using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Helper;
 
 namespace Shrinerain.AutoTester.Framework
 {

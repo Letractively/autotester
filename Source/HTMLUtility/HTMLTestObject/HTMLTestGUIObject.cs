@@ -27,6 +27,7 @@ using System.Threading;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Helper;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
@@ -53,7 +54,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region properties
 
-        public Rectangle Rect
+        public virtual Rectangle Rect
         {
             get { return _rect; }
             set
@@ -79,9 +80,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public string LabelText
+        public virtual string LabelText
         {
-            get { return _labelText; }
+            get
+            {
+                //for performance issue, we won't get the label text at creator,
+                //we will get the label text on demand.
+                if (String.IsNullOrEmpty(_labelText))
+                {
+                    _labelText = GetLabelText();
+                }
+
+                return _labelText;
+            }
         }
 
         #endregion
@@ -100,7 +111,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestGUIObject(IHTMLElement element)
             : base(element)
         {
-            this._labelText = GetAroundText();
             //GetRectOnScreen();
         }
 
@@ -132,8 +142,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
 
             }
-
-
         }
 
         /* Point GetCenterPoint()
@@ -190,6 +198,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return _rect;
         }
 
+
         /* Bitmap GetControlPrint()
          * return the image of the object.
          */
@@ -208,6 +217,86 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotSaveControlPrintException("Can not get control print: " + ex.Message);
             }
+        }
+
+        /* GetControlPrint(string fileName)
+         * save control print to a jpg file.
+         */
+        public virtual void GetControlPrint(string fileName)
+        {
+            try
+            {
+                Bitmap img = GetControlPrint();
+                img.Save(fileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotSaveControlPrintException("Can not save control print to a jpg file: " + ex.Message);
+            }
+        }
+
+
+        /* GetAroundText(IHTMLElement element)
+       * return the text around the control.
+       */
+        public static string GetAroundText(IHTMLElement element)
+        {
+            try
+            {
+
+                if (element == null)
+                {
+                    return null;
+                }
+
+                string aroundText = element.outerText;
+
+                if (!String.IsNullOrEmpty(aroundText))
+                {
+                    return aroundText;
+                }
+
+                IHTMLElement parent = element.parentElement;
+
+                if (parent != null)
+                {
+                    string tag = parent.tagName;
+
+                    if (tag == "SPAN" || tag == "TD" || tag == "DIV" || tag == "LABEL")
+                    {
+                        if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out aroundText))
+                        {
+                            string selfText;
+
+                            if (element.tagName == "A" && HTMLTestGUIObject.TryGetValueByProperty(element, "innerText", out selfText))
+                            {
+                                //remove the link text.
+                                if (aroundText.StartsWith(selfText))
+                                {
+                                    aroundText = aroundText.Substring(selfText.Length);
+                                }
+                                else if (aroundText.EndsWith(selfText))
+                                {
+                                    aroundText = aroundText.Substring(0, aroundText.Length - selfText.Length);
+                                }
+                            }
+
+                            return aroundText;
+                        }
+                    }
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+
         }
 
         /* void Hover()
@@ -242,6 +331,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotPerformActionException("Can not perform Hover action:" + ex.Message);
             }
         }
+
 
         /*  void HighLight()
          *  Highlight the object, we will see a red rect around the object.
@@ -374,69 +464,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return _centerPoint;
         }
 
-
-
-        /* string GetTextAroundControl()
+        /* string GetLabelText()
          * return the text around this control.
          */
-        protected virtual string GetAroundText()
+        protected virtual string GetLabelText()
         {
-            try
-            {
-                IHTMLElement element = this._sourceElement;
-
-                if (element == null)
-                {
-                    return null;
-                }
-
-                string labelText = element.outerText;
-
-                if (!String.IsNullOrEmpty(labelText))
-                {
-                    return labelText;
-                }
-
-                IHTMLElement parent = element.parentElement;
-
-                if (parent != null)
-                {
-                    string tag = parent.tagName;
-
-                    if (tag == "SPAN" ||
-                        tag == "TD" ||
-                        tag == "DIV" ||
-                        tag == "LABEL")
-                    {
-                        if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out labelText))
-                        {
-                            string selfText;
-
-                            if (element.tagName == "A" && HTMLTestGUIObject.TryGetValueByProperty(element, "innerText", out selfText))
-                            {
-                                //remove the link text.
-                                if (labelText.StartsWith(selfText))
-                                {
-                                    labelText = labelText.Substring(selfText.Length);
-                                }
-                                else if (labelText.EndsWith(selfText))
-                                {
-                                    labelText = labelText.Substring(0, labelText.Length - selfText.Length);
-                                }
-                            }
-
-                            return labelText;
-                        }
-                    }
-                }
-
-                return null;
-            }
-            catch
-            {
-                return null;
-            }
-
+            return GetAroundText(this._sourceElement);
         }
 
         #endregion

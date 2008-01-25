@@ -13,6 +13,7 @@
 *          2008/01/12 wan,yu update, add HTMLTestTextBoxType.
 *          2008/01/14 wan,yu bug fix, sometimes Input may input incorrect string.
 *          2008/01/14 wan,yu update, add ClickAbove() method.          
+*          2008/01/24 wan,yu update, add GetLabelForTextBox(). 
 *
 *********************************************************************/
 
@@ -312,6 +313,77 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new PropertyNotFoundException("Can not get Font family");
         }
 
+        /* string GetLabelForTextBox(IHTMLElement element)
+         * return the text around textbox, firstly we will try current cell, then try left cell and up cell.
+         */
+        public static string GetLabelForTextBox(IHTMLElement element)
+        {
+            try
+            {
+                //firstly, try to get text in the same cell/span/div/label
+                string label = GetAroundText(element);
+
+                if (!String.IsNullOrEmpty(label))
+                {
+                    return label;
+                }
+
+
+                //if failed, try to get text from left cell or up cell.
+                IHTMLElement cellParentElement = element.parentElement;
+
+                if (cellParentElement != null && cellParentElement.tagName == "TD")
+                {
+                    IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
+                    int cellId = parentCellElement.cellIndex;
+
+                    IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
+                    int rowId = parentRowElement.rowIndex;
+
+                    object index = (object)(cellId - 1);
+
+                    //if the current cell is not the most left cell, we will try the left cell to find the around text.
+                    if (cellId > 0)
+                    {
+                        //get the left cell.
+                        IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                        if (HTMLTestObject.TryGetValueByProperty(prevCellElement, "innerText", out label))
+                        {
+                            return label;
+                        }
+
+                    }
+
+                    //if the current cell is the first cell OR we didn't find text in the left cell, we will try the up cell.
+                    //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
+                    if (cellId == 0 && rowId > 0)
+                    {
+                        //                                                     cell              row           table
+                        IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
+
+                        index = (object)(rowId - 1);
+                        IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                        index = (object)cellId;
+                        IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+
+                        if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
+                        {
+                            return label;
+                        }
+                    }
+                }
+
+                return "";
+            }
+            catch
+            {
+                return "";
+            }
+
+        }
+
         #endregion
 
         #endregion
@@ -359,9 +431,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* string GetAroundText()
          * return the text around textbox.
          */
-        protected override string GetAroundText()
+        protected override string GetLabelText()
         {
-            return HTMLTestObjectPool.GetLabelForTextBox(this._sourceElement);
+            return GetLabelForTextBox(this._sourceElement);
         }
 
         /* string[] ExtractSpecialKeys(string text)

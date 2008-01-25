@@ -37,6 +37,7 @@ using mshtml;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Interface;
+using Shrinerain.AutoTester.Helper;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
@@ -72,6 +73,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //current object used.
         private TestObject _testObj;
+        private Object _cacheObj;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
         private int _maxWaitSeconds = 30;
@@ -195,9 +197,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //first, we will try get object from cache --- a hash table.
             string key = GetKey(id);
 
-            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
             {
-                return _testObj;
+                return _testObj = (TestObject)_cacheObj;
             }
 
             //we will try 30 seconds to find an object.
@@ -257,9 +259,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             name = name.Trim();
 
             string key = GetKey(name);
-            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
             {
-                return _testObj;
+                return _testObj = (TestObject)_cacheObj;
             }
 
             //we will try 30s to find a object
@@ -284,7 +286,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         _tempElement = (IHTMLElement)nameObjectsCol.item(nameObj, indexObj);
 
 
-                        if (!IsInteractive(_tempElement))
+                        if (!IsVisible(_tempElement))
                         {
                             continue;
                         }
@@ -331,9 +333,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             string key = GetKey(index.ToString());
 
-            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
             {
-                return _testObj;
+                return _testObj = (TestObject)_cacheObj;
             }
 
             int times = 0;
@@ -347,7 +349,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     if (_tempElement != null)
                     {
-                        if (!IsInteractive(_tempElement))
+                        if (!IsVisible(_tempElement))
                         {
                             //this object is not interactive, we will try next object.
                             index++;
@@ -400,9 +402,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             value = value.Trim();
 
             string key = GetKey(property + value);
-            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
             {
-                return _testObj;
+                return _testObj = (TestObject)_cacheObj;
             }
 
             //the similar percent to find an object.
@@ -442,7 +444,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         string propertyValue;
 
                         //if not interactive object or the property is not found. 
-                        if (!HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue) || !IsInteractive(_tempElement))
+                        if (!HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue) || !IsVisible(_tempElement))
                         {
                             continue;
                         }
@@ -511,9 +513,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             string key = GetKey(properties.ToString() + values.ToString() + similarity.ToString() + useAll.ToString());
 
-            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
             {
-                return _testObj;
+                return _testObj = (TestObject)_cacheObj;
             }
 
             int times = 0;
@@ -537,7 +539,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //get element by index.
                         _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
 
-                        if (!IsInteractive(_tempElement))
+                        if (!IsVisible(_tempElement))
                         {
                             continue;
                         }
@@ -658,9 +660,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //try to get object from cache.
             string key = GetKey(type + values + index.ToString());
 
-            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
             {
-                return _testObj;
+                return _testObj = (TestObject)_cacheObj;
             }
 
 
@@ -801,7 +803,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 _tempElement = (IHTMLElement)tagElementCol.item(nameObj, indexObj);
 
                                 // check if it is a interactive object.
-                                if (!IsInteractive(_tempElement))
+                                if (!IsVisible(_tempElement))
                                 {
                                     continue;
                                 }
@@ -907,7 +909,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (tmpObj != null)
                 {
-                    return tmpObj;
+                    _testObj = tmpObj;
+
+                    return _testObj;
                 }
             }
 
@@ -927,9 +931,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             string key = GetKey(x.ToString() + " " + y.ToString());
-            if (ObjectCache.TryGetObjectFromCache(key, out _testObj))
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
             {
-                return _testObj;
+                return _testObj = (TestObject)_cacheObj;
             }
 
             int times = 0;
@@ -939,15 +943,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
 
-                    if (IsInteractive(_tempElement))
+                    if (IsVisible(_tempElement))
                     {
+                        _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x - this._htmlTestBrowser.ClientLeft, y - this._htmlTestBrowser.ClientTop);
+                    }
 
+                    if (IsVisible(_tempElement))
+                    {
                         _testObj = BuildObjectByType(_tempElement);
 
                         ObjectCache.InsertObjectToCache(key, _testObj);
 
                         return _testObj;
-
                     }
 
                 }
@@ -968,17 +975,82 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         /* Object GetObjectByRect(int top, int left, int width, int height)
          * return object from a expected rect.
-         * like QTP virtual object.
-         * NOTICE: need update!!!
          */
-        public Object GetObjectByRect(int top, int left, int width, int height, string type)
+        public Object GetObjectByRect(int left, int top, int width, int height, string typeStr)
         {
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
-            return null;
+            if (width < 1 || height < 1)
+            {
+                throw new ObjectNotFoundException("The width and height of rect can not be 0.");
+            }
+
+            HTMLTestObjectType type = GetTypeByString(typeStr);
+
+            if (type == HTMLTestObjectType.Unknow)
+            {
+                throw new ObjectNotFoundException("Unknow type.");
+            }
+
+
+            int x = left + width / 2;
+            int y = top + height / 2;
+
+            //try to get 5 objects from different area.
+            HTMLTestGUIObject[] tmpObj = new HTMLTestGUIObject[5];
+
+            int originMaxWaitTime = this._maxWaitSeconds;
+
+            //set the max time 
+            this._maxWaitSeconds = 3;
+
+            for (int i = 0; i < tmpObj.Length; i++)
+            {
+                try
+                {
+                    if (i == 0)
+                    {
+                        tmpObj[0] = (HTMLTestGUIObject)GetObjectByPoint(x, y);
+                    }
+                    else if (width > 3 && height > 3)
+                    {
+                        if (i == 1)
+                        {
+                            tmpObj[1] = (HTMLTestGUIObject)GetObjectByRect(left, top, width / 2, height / 2, typeStr);
+                        }
+                        else if (i == 2)
+                        {
+                            tmpObj[2] = (HTMLTestGUIObject)GetObjectByRect(x, y, width / 2, height / 2, typeStr);
+                        }
+                        else if (i == 3)
+                        {
+                            tmpObj[3] = (HTMLTestGUIObject)GetObjectByRect(x, top, width / 2, height / 2, typeStr);
+                        }
+                        else if (i == 4)
+                        {
+                            tmpObj[4] = (HTMLTestGUIObject)GetObjectByRect(left, y, width / 2, height / 2, typeStr);
+                        }
+                    }
+
+                    if (tmpObj[i] != null && tmpObj[i].Type == type)
+                    {
+                        _testObj = tmpObj[i];
+
+                        return _testObj;
+                    }
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+
+            this._maxWaitSeconds = originMaxWaitTime;
+
+            throw new ObjectNotFoundException("Can not get object by rect.");
         }
 
         /* Object GetObjectByColor(string color)
@@ -1194,7 +1266,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
-                string label = GetLabelForTextBox(element);
+                string label = HTMLTestTextBox.GetLabelForTextBox(element);
 
                 //for text around textbox, we may have ":", like "UserName:" , remove ":", make sure no writing mistake.
                 if (value.EndsWith(":") || value.EndsWith("£º"))
@@ -1213,77 +1285,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
-        }
-
-        /* string GetLabelForTextBox(IHTMLElement element)
-      * return the text around textbox, firstly we will try current cell, then try left cell and up cell.
-      */
-        public static string GetLabelForTextBox(IHTMLElement element)
-        {
-            try
-            {
-                //firstly, try to get text in the same cell/span/div/label
-                string label = GetAroundText(element);
-
-                if (!String.IsNullOrEmpty(label))
-                {
-                    return label;
-                }
-
-
-                //if failed, try to get text from left cell or up cell.
-                IHTMLElement cellParentElement = element.parentElement;
-
-                if (cellParentElement != null && cellParentElement.tagName == "TD")
-                {
-                    IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
-                    int cellId = parentCellElement.cellIndex;
-
-                    IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
-                    int rowId = parentRowElement.rowIndex;
-
-                    object index = (object)(cellId - 1);
-
-                    //if the current cell is not the most left cell, we will try the left cell to find the around text.
-                    if (cellId > 0)
-                    {
-                        //get the left cell.
-                        IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
-
-                        if (HTMLTestObject.TryGetValueByProperty(prevCellElement, "innerText", out label))
-                        {
-                            return label;
-                        }
-
-                    }
-
-                    //if the current cell is the first cell OR we didn't find text in the left cell, we will try the up cell.
-                    //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
-                    if (cellId == 0 && rowId > 0)
-                    {
-                        //                                                     cell              row           table
-                        IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
-
-                        index = (object)(rowId - 1);
-                        IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
-
-                        index = (object)cellId;
-                        IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
-
-                        if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
-                        {
-                            return label;
-                        }
-                    }
-                }
-
-                return "";
-            }
-            catch
-            {
-                return "";
-            }
-
         }
 
         /* bool CheckLabelObject(IHTMLElement element, string value, int simPercent)
@@ -1417,7 +1418,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                string labelText = GetLabelForRadioBoxAndCheckBox(element);
+                string labelText = HTMLTestRadioButton.GetLabelForRadioBox(element);
 
                 if (!String.IsNullOrEmpty(labelText))
                 {
@@ -1466,7 +1467,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                string labelText = GetLabelForRadioBoxAndCheckBox(element);
+                string labelText = HTMLTestCheckBox.GetLabelForCheckBox(element);
 
                 if (!String.IsNullOrEmpty(labelText))
                 {
@@ -1505,81 +1506,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        /* string GetLabelForTextBox(IHTMLElement element)
-      * return the text around textbox, firstly we will try current cell, then try left cell and up cell.
-      */
-        public static string GetLabelForRadioBoxAndCheckBox(IHTMLElement element)
-        {
-            try
-            {
-                //firstly, try to get text in the same cell/span/div/label
-                string label = GetAroundText(element);
-
-                if (!String.IsNullOrEmpty(label))
-                {
-                    return label;
-                }
-
-                //if failed, try to get text from left cell or up cell.
-
-                IHTMLElement cellParentElement = element.parentElement;
-
-                if (cellParentElement != null && cellParentElement.tagName == "TD")
-                {
-                    IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
-                    int cellId = parentCellElement.cellIndex;
-
-                    IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
-                    int rowId = parentRowElement.rowIndex;
-
-                    object index = (object)(cellId + 1);
-
-                    //get the right cell.
-                    IHTMLElement nextCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
-
-                    if (HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label))
-                    {
-                        return label;
-                    }
-
-                    //not found, try the left cell.
-                    index = (object)(cellId - 1);
-
-                    IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
-
-                    if (HTMLTestObject.TryGetValueByProperty(nextCellElement, "innerText", out label))
-                    {
-                        return label;
-                    }
-
-                    //still not found, we will try the up cell.
-                    //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
-                    if (rowId > 0)
-                    {
-                        //                                                     cell              row           table
-                        IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
-
-                        index = (object)(rowId - 1);
-                        IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
-
-                        index = (object)cellId;
-                        IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
-
-                        if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
-                        {
-                            return label;
-                        }
-                    }
-                }
-
-                return "";
-            }
-            catch
-            {
-                return "";
-            }
-
-        }
 
         /* bool CheckButtonObject(IHTMLElement element, string value, int simPercent)
          * check button object.
@@ -1784,7 +1710,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* bool IsInteractive(IHTMLElement element)
          * check the object if it is visible, and it can interactive with users.
          */
-        private static bool IsInteractive(IHTMLElement element)
+        private static bool IsVisible(IHTMLElement element)
         {
             if (element == null)
             {
@@ -2191,67 +2117,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else
             {
                 throw new CannotBuildObjectException();
-            }
-        }
-
-        /* string GetRroundText(IHTMLElement element)
-         * return the text around the control.
-         */
-        private static string GetAroundText(IHTMLElement element)
-        {
-            try
-            {
-
-                if (element == null)
-                {
-                    return null;
-                }
-
-                string labelText = element.outerText;
-
-                if (!String.IsNullOrEmpty(labelText))
-                {
-                    return labelText;
-                }
-
-                IHTMLElement parent = element.parentElement;
-
-                if (parent != null)
-                {
-                    string tag = parent.tagName;
-
-                    if (tag == "SPAN" ||
-                        tag == "TD" ||
-                        tag == "DIV" ||
-                        tag == "LABEL")
-                    {
-                        if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out labelText))
-                        {
-                            string selfText;
-
-                            if (element.tagName == "A" && HTMLTestGUIObject.TryGetValueByProperty(element, "innerText", out selfText))
-                            {
-                                //remove the link text.
-                                if (labelText.StartsWith(selfText))
-                                {
-                                    labelText = labelText.Substring(selfText.Length);
-                                }
-                                else if (labelText.EndsWith(selfText))
-                                {
-                                    labelText = labelText.Substring(0, labelText.Length - selfText.Length);
-                                }
-                            }
-
-                            return labelText;
-                        }
-                    }
-                }
-
-                return null;
-            }
-            catch
-            {
-                return null;
             }
         }
 
