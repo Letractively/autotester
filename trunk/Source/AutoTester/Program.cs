@@ -113,18 +113,18 @@ namespace Shrinerain.AutoTester
 
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
-            ActionHelper ah = new ActionHelper();
-            ah.TestObjectPool = pool;
+            //ActionHelper ah = new ActionHelper();
+            //ah.TestObjectPool = pool;
 
             pool.GetObjectByType("textbox", "µç×ÓÓÊ¼þ:", 0);
 
-            ah.PerformAction("shrinerain@gmail.com");
+           // ah.PerformAction("shrinerain@gmail.com");
 
             pool.GetObjectByType("textbox", "ÃÜÂë", 0);
 
 
             pool.GetObjectByType("button", "µÇÂ¼", 0);
-            ah.PerformAction();
+           // ah.PerformAction();
 
             //   HTMLTestLabel label1 = (HTMLTestLabel)pool.GetObjectByType("label", "Make iGoogle your homepage?", 0);
             // label1.Hover();
