@@ -101,7 +101,7 @@ namespace Shrinerain.AutoTester.MFCUtility
             throw new NotImplementedException();
         }
 
-        public object GetObjectByRect(int top, int left, int width, int height, string type)
+        public object GetObjectByRect(int top, int left, int width, int height, string typeStr, bool isPercent)
         {
             throw new NotImplementedException();
         }

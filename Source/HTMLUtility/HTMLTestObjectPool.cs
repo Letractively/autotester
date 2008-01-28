@@ -921,6 +921,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         /* Object GetObjectByPoint(int x, int y)
          * return object from a expected point
+         * x, y is the offset with browser, NOT screen.
          * 
          */
         public Object GetObjectByPoint(int x, int y)
@@ -942,11 +943,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
-
-                    if (IsVisible(_tempElement))
-                    {
-                        _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x - this._htmlTestBrowser.ClientLeft, y - this._htmlTestBrowser.ClientTop);
-                    }
 
                     if (IsVisible(_tempElement))
                     {
@@ -976,7 +972,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* Object GetObjectByRect(int top, int left, int width, int height)
          * return object from a expected rect.
          */
-        public Object GetObjectByRect(int left, int top, int width, int height, string typeStr)
+        public Object GetObjectByRect(int left, int top, int width, int height, string typeStr, bool isPercent)
         {
             if (_htmlTestBrowser == null)
             {
@@ -995,9 +991,28 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("Unknow type.");
             }
 
+            int x = 0;
+            int y = 0;
 
-            int x = left + width / 2;
-            int y = top + height / 2;
+            if (isPercent)
+            {
+                isPercent = false;
+
+                if ((left >= 1 && left <= 100) && (top >= 1 && top <= 100))
+                {
+                    x = _htmlTestBrowser.ClientWidth * left / 100;
+                    y = _htmlTestBrowser.ClientHeight * top / 100;
+                }
+                else
+                {
+                    throw new ObjectNotFoundException("Left and top percent must between 1 and 100.");
+                }
+            }
+            else
+            {
+                x = left + width / 2;
+                y = top + height / 2;
+            }
 
             //try to get 5 objects from different area.
             HTMLTestGUIObject[] tmpObj = new HTMLTestGUIObject[5];
@@ -1019,19 +1034,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         if (i == 1)
                         {
-                            tmpObj[1] = (HTMLTestGUIObject)GetObjectByRect(left, top, width / 2, height / 2, typeStr);
+                            tmpObj[1] = (HTMLTestGUIObject)GetObjectByRect(x, y, width / 2, height / 2, typeStr, isPercent);
                         }
                         else if (i == 2)
                         {
-                            tmpObj[2] = (HTMLTestGUIObject)GetObjectByRect(x, y, width / 2, height / 2, typeStr);
+                            tmpObj[2] = (HTMLTestGUIObject)GetObjectByRect(x + width / 2, y, width / 2, height / 2, typeStr, isPercent);
                         }
                         else if (i == 3)
                         {
-                            tmpObj[3] = (HTMLTestGUIObject)GetObjectByRect(x, top, width / 2, height / 2, typeStr);
+                            tmpObj[3] = (HTMLTestGUIObject)GetObjectByRect(x + width / 2, y + height / 2, width / 2, height / 2, typeStr, isPercent);
                         }
                         else if (i == 4)
                         {
-                            tmpObj[4] = (HTMLTestGUIObject)GetObjectByRect(left, y, width / 2, height / 2, typeStr);
+                            tmpObj[4] = (HTMLTestGUIObject)GetObjectByRect(x, y + height / 2, width / 2, height / 2, typeStr, isPercent);
                         }
                     }
 
@@ -1524,7 +1539,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     if (HTMLTestObject.TryGetValueByProperty(element, buttonTypeProperty, out buttonTypeValue))
                     {
-                        if (String.Compare(buttonTypeValue, "text", true) == 0 || String.Compare(buttonTypeValue, "password", true) == 0)
+                        if (String.Compare(buttonTypeValue, "text", true) == 0 || String.Compare(buttonTypeValue, "password", true) == 0
+                            || String.Compare(buttonTypeValue, "checkbox", true) == 0 || String.Compare(buttonTypeValue, "radio", true) == 0)
                         {
                             return false;
                         }

@@ -16,6 +16,7 @@
 *          2008/01/15 wan,yu update, move GetRectOnScreen from creator to
 *                                    Browser proeprty.   
 *          2008/01/22 wan,yu update, add _labelText and GetAroundText() 
+*          2008/01/28 wan,yu update, modify GetAroundText, return left and right string.          
 * 
 *********************************************************************/
 
@@ -23,6 +24,7 @@
 using System;
 using System.Drawing;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 using mshtml;
 
@@ -49,6 +51,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //we may have some string around the control.
         protected string _labelText;
+
+        //reg to match <>, html tag.
+        protected static Regex _regHtml = new Regex("<[^>]+>", RegexOptions.Compiled);
 
         #endregion
 
@@ -270,18 +275,123 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out aroundText))
                         {
-                            string selfText;
 
-                            if (element.tagName == "A" && HTMLTestGUIObject.TryGetValueByProperty(element, "innerText", out selfText))
+                            IHTMLElementCollection brotherElements = (IHTMLElementCollection)parent.children;
+
+                            if (brotherElements.length > 1)
                             {
-                                //remove the link text.
-                                if (aroundText.StartsWith(selfText))
+                                int currentObjIndex = 0;
+
+                                object name;
+                                object index;
+
+                                string myHTML = element.outerHTML;
+                                string parentHTML = parent.innerHTML;
+
+                                //we guess the position of the control by checking it's HTML code index.
+                                int curPos = parentHTML.IndexOf(myHTML);
+                                if (curPos > parentHTML.Length / 2)
                                 {
-                                    aroundText = aroundText.Substring(selfText.Length);
+                                    for (int i = brotherElements.length - 1; i >= 0; i--)
+                                    {
+                                        name = (object)i;
+                                        index = (object)i;
+
+                                        if (element == brotherElements.item(name, index))
+                                        {
+                                            currentObjIndex = i;
+                                            break;
+                                        }
+                                    }
                                 }
-                                else if (aroundText.EndsWith(selfText))
+                                else
                                 {
-                                    aroundText = aroundText.Substring(0, aroundText.Length - selfText.Length);
+                                    for (int i = 0; i < brotherElements.length; i++)
+                                    {
+                                        name = (object)i;
+                                        index = (object)i;
+
+                                        if (element == brotherElements.item(name, index))
+                                        {
+                                            currentObjIndex = i;
+                                            break;
+                                        }
+                                    }
+                                }
+
+
+                                //try to get the left element.
+                                IHTMLElement prevElement = null;
+                                if (currentObjIndex > 0)
+                                {
+                                    int prevIndex = currentObjIndex;
+                                    while (true)
+                                    {
+                                        prevIndex--;
+
+                                        prevElement = (IHTMLElement)brotherElements.item((object)prevIndex, (object)prevIndex);
+                                        if (prevElement == null || prevElement.tagName == "A" || !HTMLTestObject.TryGetValueByProperty(prevElement, "innerText"))
+                                        {
+                                            break;
+                                        }
+
+                                    }
+
+                                }
+
+
+                                //try to get the right element.
+                                IHTMLElement nextElement = null;
+                                if (brotherElements.length - 1 > currentObjIndex)
+                                {
+                                    int nextIndex = currentObjIndex;
+                                    while (true)
+                                    {
+                                        nextIndex++;
+
+                                        nextElement = (IHTMLElement)brotherElements.item((object)nextIndex, (object)nextIndex);
+                                        if (nextElement == null || nextElement.tagName == "A" || !HTMLTestObject.TryGetValueByProperty(nextElement, "innerText"))
+                                        {
+                                            break;
+                                        }
+
+                                    }
+                                }
+
+                                string leftStr = "";
+                                int posLeft = 0;
+                                if (prevElement != null)
+                                {
+                                    string prevHTML = prevElement.outerHTML;
+                                    posLeft = parentHTML.IndexOf(prevHTML) + prevHTML.Length;
+                                }
+
+                                string leftHTML = parentHTML.Substring(posLeft, curPos - posLeft);
+                                //remove html tag.
+                                leftStr = _regHtml.Replace(leftHTML, "");
+
+
+                                string rightStr = "";
+                                int posRight = parentHTML.Length;
+                                if (nextElement != null)
+                                {
+                                    string nextHTML = nextElement.outerHTML;
+                                    posRight = parentHTML.IndexOf(nextHTML);
+                                }
+
+                                string rightHTML = parentHTML.Substring(curPos + myHTML.Length, posRight - curPos - myHTML.Length);
+                                //remove html tag.
+                                rightStr = _regHtml.Replace(rightHTML, "");
+
+                                aroundText = leftStr.Trim() + "\t" + rightStr.Trim();
+
+                            }
+                            else
+                            {
+                                string selfText;
+                                if (HTMLTestObject.TryGetValueByProperty(element, "innerText", out selfText))
+                                {
+                                    aroundText = aroundText.Replace(selfText, "");
                                 }
                             }
 

@@ -87,6 +87,10 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+            Google();
+            // qidian();
+
+            return;
 
             //TestLog myLog = new TestLog();
             //myLog.TestlogTemplate = @"E:\program\cs\AutoTester\Document\log.template";
@@ -108,23 +112,27 @@ namespace Shrinerain.AutoTester
             myHost.Start();
             myHost.MaxSize();
 
-            string url = @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";// @"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
+            string url = @"www.google.com"; // @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";// @"http://127.0.0.1/AutoTester/";// 
             myHost.Load(url);
 
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
+
+
+
+
             //ActionHelper ah = new ActionHelper();
             //ah.TestObjectPool = pool;
 
-            pool.GetObjectByType("textbox", "电子邮件:", 0);
+            //pool.GetObjectByType("textbox", "电子邮件:", 0);
 
-           // ah.PerformAction("shrinerain@gmail.com");
+            // ah.PerformAction("shrinerain@gmail.com");
 
-            pool.GetObjectByType("textbox", "密码", 0);
+            // pool.GetObjectByType("textbox", "密码", 0);
 
 
-            pool.GetObjectByType("button", "登录", 0);
-           // ah.PerformAction();
+            // pool.GetObjectByType("button", "登录", 0);
+            // ah.PerformAction();
 
             //   HTMLTestLabel label1 = (HTMLTestLabel)pool.GetObjectByType("label", "Make iGoogle your homepage?", 0);
             // label1.Hover();
@@ -156,6 +164,64 @@ namespace Shrinerain.AutoTester
 
             //  HTMLTestListBox listBox = (HTMLTestListBox)pool.GetObjectByID("ListBox1");
             // listBox.SelectByIndex(5);
+        }
+
+        public static void Google()
+        {
+            HTMLTestBrowser myHost = new HTMLTestBrowser();
+            myHost.Start();
+            myHost.MaxSize();
+
+            string url = @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";//@"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
+            myHost.Load(url);
+
+
+            HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
+
+
+
+            pool.GetObjectByType("textbox", "电子邮件:", 0);
+
+            HTMLTestTextBox tb = (HTMLTestTextBox)pool.GetLastObject();
+            tb.Input("shrinerain@hotmail.com");
+
+            pool.GetObjectByType("textbox", "密码", 0);
+            tb = (HTMLTestTextBox)pool.GetLastObject();
+            tb.Input("xxx");
+
+            pool.GetObjectByType("button", "登录", 0);
+            HTMLTestButton btn = (HTMLTestButton)pool.GetLastObject();
+
+            btn.Click();
+        }
+
+        public static void qidian()
+        {
+            HTMLTestBrowser myHost = new HTMLTestBrowser();
+            myHost.Start();
+            myHost.MaxSize();
+
+            string url = @"www.qidian.com";
+            myHost.Load(url);
+
+            HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
+
+            HTMLTestTextBox tb = (HTMLTestTextBox)pool.GetObjectByType("textbox", "用户名", 0);
+
+            tb.Input("shrinerain");
+
+            // Console.WriteLine(tb.LabelText);
+
+            tb = (HTMLTestTextBox)pool.GetObjectByType("textbox", "密码", 0);
+            tb.Input("jyoicq");
+
+            HTMLTestButton loginBtn = (HTMLTestButton)pool.GetObjectByType("button", "登陆", 0);
+            loginBtn.Click();
+
+            myHost.WaitForNextPage();
+
+            HTMLTestLink favLink = (HTMLTestLink)pool.GetObjectByType("link", "藏书架", 0);
+            favLink.Click();
         }
     }
 }

@@ -1594,6 +1594,13 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
+                string locationName = _ie.LocationName;
+
+                if (locationName.IndexOf("HTTP 404") >= 0 || locationName.IndexOf("can not") > 0)
+                {
+                    throw new CannotNavigateException("Can not load url: " + _ie.LocationURL);
+                }
+
                 _endTime = _downloadTime.Milliseconds;
                 _responseTime = _endTime - _startTime;
 
@@ -1604,6 +1611,9 @@ namespace Shrinerain.AutoTester.Core
                 _HTMLDom = (HTMLDocument)_ie.Document;
 
                 GetSize();
+
+                //sleep for 1s.
+                Thread.Sleep(1000 * 1);
 
                 _documentLoadComplete.Set();
 

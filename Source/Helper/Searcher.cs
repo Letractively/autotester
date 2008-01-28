@@ -109,7 +109,7 @@ namespace Shrinerain.AutoTester.Helper
                 {
                     if (_autoAdjustLowerBound)
                     {
-                        int lowerBound = Convert.ToInt32((float)(str1.Length - 1 + str2.Length - 1) / (float)(str1.Length + str2.Length));
+                        int lowerBound = Convert.ToInt32((float)(str1.Length - 1 + str2.Length - 1) * 100 / (float)(str1.Length + str2.Length));
 
                         //if percent is larger than lowerBound, we will use lowerBound to adjust percent.
                         percent = percent > lowerBound ? lowerBound : percent;

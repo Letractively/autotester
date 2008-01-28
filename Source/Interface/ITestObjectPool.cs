@@ -12,7 +12,8 @@
 *
 * History:  2007/09/04 wan,yu Init version
 *           2007/11/20 wan,yu update, add void SetTestApp() 
-*           2008/01/22 wan,yu update, add GetLastObject()           
+*           2008/01/22 wan,yu update, add GetLastObject()   
+*           2008/01/26 wan,yu update, update GetObjectByRect()     
 *
 *********************************************************************/
 
@@ -77,10 +78,11 @@ namespace Shrinerain.AutoTester.Interface
          */
         Object GetObjectByPoint(int x, int y);
 
-        /* Object GetObjectByRect(int top, int left, int width, int height, string type);
+        /* Object GetObjectByRect(int top, int left, int width, int height, string typeStr, bool isPercent);
          * find object by specfic rect, type means what type of the object you want return, eg: button
+         * 2008/01/26 wan,yu add isPercent parameter. if isPercent is true, we think top,left is the percent of whole page.
          */
-        Object GetObjectByRect(int top, int left, int width, int height, string type);
+        Object GetObjectByRect(int top, int left, int width, int height, string typeStr, bool isPercent);
 
         /* Object GetObjectByColor(string color);  
          * color in 6 oct number, like FF0000
