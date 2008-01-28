@@ -323,11 +323,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //firstly, try to get text in the same cell/span/div/label
                 string label = GetAroundText(element);
 
-                if (!String.IsNullOrEmpty(label))
+                //for textbox, we think the text on the left is it's label.
+                if (!String.IsNullOrEmpty(label) && !String.IsNullOrEmpty(label.Split('\t')[0]))
                 {
-                    return label;
+                    return label.Split('\t')[0];
                 }
-
 
                 //if failed, try to get text from left cell or up cell.
                 IHTMLElement cellParentElement = element.parentElement;
