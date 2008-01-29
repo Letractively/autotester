@@ -118,7 +118,7 @@ namespace Shrinerain.AutoTester
 
             //aHelper.PerformAction("test");
 
-            HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByRect(432, 285, 365, 22, "textbox"); //pool.GetObjectByProperty("name", "q"); //pool.GetObjectByName("q");
+            HTMLTestTextBox obj1 = (HTMLTestTextBox)pool.GetObjectByRect(432, 285, 365, 22, "textbox", false); //pool.GetObjectByProperty("name", "q"); //pool.GetObjectByName("q");
             obj1.Input("statestreet");
 
             //HTMLTestCheckBox cb = (HTMLTestCheckBox)pool.GetObjectByType("checkbox", "在此计算机上保存我的信息。", 0);

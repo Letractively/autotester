@@ -354,13 +354,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 tmpElement = (IHTMLElement)element;
+
+                return TryGetValueByProperty(tmpElement, propertyName, out value);
             }
             catch
             {
                 return false;
             }
 
-            return TryGetValueByProperty(tmpElement, propertyName, out value);
         }
 
 
@@ -381,21 +382,52 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return false;
             }
 
-            propertyName = propertyName.Trim();
+            //property name not null
+            propertyName = propertyName.Trim().Replace(".", "");
 
-            while (propertyName.StartsWith("."))
-            {
-                propertyName = propertyName.Remove(0);
-            }
-
-            if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+            if (propertyName == "")
             {
                 return false;
             }
 
             try
             {
-                value = element.getAttribute(propertyName, 0).ToString().Trim();
+                //check some common properties, to improve performance.
+                if (String.Compare(propertyName, "innerText", true) == 0)
+                {
+                    value = element.innerText;
+                }
+                else if (String.Compare(propertyName, "innerHTML", true) == 0)
+                {
+                    value = element.innerHTML;
+                }
+                else if (String.Compare(propertyName, "outerHTML", true) == 0)
+                {
+                    value = element.outerHTML;
+                }
+                else if (String.Compare(propertyName, "outerText", true) == 0)
+                {
+                    value = element.outerText;
+                }
+                else if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+                {
+                    return false;
+                }
+                else
+                {
+                    //not common properties
+                    value = element.getAttribute(propertyName, 0).ToString();
+                }
+
+                if (value == null)
+                {
+                    value = "";
+                    return false;
+                }
+                else
+                {
+                    value = value.Trim();
+                }
 
                 //if acceptEmpty is true, we will return true.
                 //if acceptEnpty is false, then we will check the value, it it is empty, we will return false.
@@ -418,13 +450,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return false;
             }
 
-            propertyName = propertyName.Trim();
-
-            //if the propertyName is start with ".", we will remove it.
-            while (propertyName.StartsWith("."))
-            {
-                propertyName = propertyName.Replace(".", "");
-            }
+            propertyName = propertyName.Trim().Replace(".", "");
 
             try
             {

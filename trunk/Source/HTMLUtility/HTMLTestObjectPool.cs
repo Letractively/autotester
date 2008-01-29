@@ -1269,6 +1269,28 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                //fristly, check type.
+                if (element == null || (element.tagName != "INPUT" && element.tagName != "TEXTAREA"))
+                {
+                    return false;
+                }
+
+                if (element.tagName == "INPUT")
+                {
+                    string type;
+                    if (HTMLTestObject.TryGetValueByProperty(element, "type", out type))
+                    {
+                        if (String.Compare(type, "TEXT", true) != 0 && String.Compare(type, "PASSWORD", true) != 0)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
 
                 //firstly, check title.
                 string title;
@@ -1367,6 +1389,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
+                if (element == null || element.tagName != "SELECT")
+                {
+                    return false;
+                }
+
                 string propertyName = "innerHTML";
 
                 string items;
@@ -1401,6 +1428,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (element == null || element.tagName != "IMG")
+                {
+                    return false;
+                }
+
                 //check the .src property.
                 string propertyName = "src";
 
@@ -1433,6 +1465,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (element == null || element.tagName != "INPUT")
+                {
+                    return false;
+                }
+
+                if (element.tagName == "INPUT")
+                {
+                    string type;
+                    if (HTMLTestObject.TryGetValueByProperty(element, "type", out type))
+                    {
+                        if (String.Compare(type, "radio", true) != 0)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
                 string labelText = HTMLTestRadioButton.GetLabelForRadioBox(element);
 
                 if (!String.IsNullOrEmpty(labelText))
@@ -1482,6 +1535,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (element == null || element.tagName != "INPUT")
+                {
+                    return false;
+                }
+
+                if (element.tagName == "INPUT")
+                {
+                    string type;
+                    if (HTMLTestObject.TryGetValueByProperty(element, "type", out type))
+                    {
+                        if (String.Compare(type, "checkbox", true) != 0)
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
                 string labelText = HTMLTestCheckBox.GetLabelForCheckBox(element);
 
                 if (!String.IsNullOrEmpty(labelText))
@@ -1529,6 +1602,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (element == null || (element.tagName != "INPUT" && element.tagName != "BUTTON"))
+                {
+                    return false;
+                }
+
                 string buttonTypeProperty = null;
                 string propertyName = null;
                 string buttonTypeValue;

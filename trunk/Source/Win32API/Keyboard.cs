@@ -34,7 +34,6 @@ namespace Shrinerain.AutoTester.Win32
 
         #endregion
 
-
         #region public methods
 
         /* void SendChars(string str)
