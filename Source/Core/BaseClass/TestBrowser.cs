@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Net;
 
 using mshtml;
 using SHDocVw;
@@ -1596,7 +1597,10 @@ namespace Shrinerain.AutoTester.Core
             {
                 string locationName = _ie.LocationName;
 
-                if (locationName.IndexOf("HTTP 404") >= 0 || locationName.IndexOf("can not") > 0)
+                if (locationName.IndexOf("HTTP 404") >= 0
+                    || locationName.IndexOf("can not") > 0
+                    || locationName.IndexOf("counld not") > 0
+                    || locationName.IndexOf("ERROR") == 0)
                 {
                     throw new CannotNavigateException("Can not load url: " + _ie.LocationURL);
                 }
@@ -1647,6 +1651,33 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotAttachTestBrowserException("Error OnRectChanged: " + ex.Message);
             }
+        }
+
+        /* bool IsConnected(string url)
+         * return true if the url is online.
+         */
+        protected virtual bool IsOnline(string url)
+        {
+            if (String.IsNullOrEmpty(url))
+            {
+                return false;
+            }
+
+            try
+            {
+                HttpWebRequest wReq = (HttpWebRequest)WebRequest.Create(url);
+                wReq.AllowAutoRedirect = true;
+                wReq.Timeout = this._maxWaitSeconds;
+
+                HttpWebResponse wResp = (HttpWebResponse)wReq.GetResponse();
+
+                return wReq.HaveResponse;
+            }
+            catch
+            {
+                return false;
+            }
+
         }
 
         #endregion

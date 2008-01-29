@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HTMLTestAction.cs" />
+    <Compile Include="HTMLTestObjectMap.cs" />
     <Compile Include="HTMLTestObject\HTMLTestGUIObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestButton.cs" />
     <Compile Include="HTMLTestObject\HTMLTestCheckBox.cs" />

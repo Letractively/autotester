@@ -208,9 +208,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 string label = GetAroundText(element);
 
                 //for checkbox, we think the text on the right is it's label.
-                if (!String.IsNullOrEmpty(label) && !String.IsNullOrEmpty(label.Split('\t')[1]))
+                if (!String.IsNullOrEmpty(label))
                 {
-                    return label.Split('\t')[1];
+                    if (!String.IsNullOrEmpty(label.Split('\t')[1]))
+                    {
+                        return label.Split('\t')[1];
+                    }
+                    else if (!String.IsNullOrEmpty(label.Split('\t')[0]))
+                    {
+                        return label.Split('\t')[0];
+                    }
                 }
 
                 //if failed, try to get text from left cell or up cell.

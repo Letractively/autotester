@@ -17,6 +17,7 @@
 *                            improve performance.          
 *          2008/01/21 wan,yu update, add ignoreCase parameter.   
 *          2008/01/24 wan,yu update, add _autoAdjustLowerBound field.
+*          2008/01/29 wan,yu update, bug fix for IsStringLike          
 *
 *********************************************************************/
 
@@ -109,10 +110,22 @@ namespace Shrinerain.AutoTester.Helper
                 {
                     if (_autoAdjustLowerBound)
                     {
-                        int lowerBound = Convert.ToInt32((float)(str1.Length - 1 + str2.Length - 1) * 100 / (float)(str1.Length + str2.Length));
+                        //2008/01/29  wan,yu  bug fix, we need to check the two strings shoule be longer than 2 characters. 
+                        if (!String.IsNullOrEmpty(str1) && !String.IsNullOrEmpty(str2))
+                        {
+                            str1 = str1.Trim();
+                            str2 = str2.Trim();
 
-                        //if percent is larger than lowerBound, we will use lowerBound to adjust percent.
-                        percent = percent > lowerBound ? lowerBound : percent;
+                            if (str1.Length > 1 && str2.Length > 1)
+                            {
+                                int lowerBound = Convert.ToInt32((float)(str1.Length - 1 + str2.Length - 1) * 100 / (float)(str1.Length + str2.Length));
+
+                                //if percent is larger than lowerBound, we will use lowerBound to adjust percent.
+                                percent = percent > lowerBound ? lowerBound : percent;
+                            }
+
+                        }
+
                     }
 
                     return GetSimilarPercent(str1, str2, ignoreCase) >= percent;

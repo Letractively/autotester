@@ -11,9 +11,11 @@
 *              Left click and right click. 
 *
 * History: 2007/09/04 wan,yu Init version
+*          2008/01/29 wan,yu update, add _sendMessage, if this flag set to true, 
+*                            we will send mouse message to the control directly, 
+*                            not move mouse. 
 *
 *********************************************************************/
-
 
 using System;
 using System.Drawing;
@@ -24,6 +26,17 @@ namespace Shrinerain.AutoTester.Win32
     public sealed class MouseOp
     {
 
+        #region fields
+
+        private static bool _sendMessage = false;
+
+        public static bool SendMessage
+        {
+            get { return MouseOp._sendMessage; }
+            set { MouseOp._sendMessage = value; }
+        }
+
+        #endregion
         #region ctor
 
         //not allow to create instance
@@ -64,7 +77,21 @@ namespace Shrinerain.AutoTester.Win32
 
         public static void Click()
         {
-            NClick(-99, -99, 1);
+            Click(IntPtr.Zero);
+        }
+
+        public static void Click(IntPtr handle)
+        {
+            //if the handle is not 0 and _sendMessage is true, we will send mouse message directly.
+            if (handle != IntPtr.Zero && _sendMessage)
+            {
+                Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONDOWN, 0, 0);
+                Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONUP, 0, 0);
+            }
+            else
+            {
+                NClick(-99, -99, 1);
+            }
         }
 
         public static void Click(int x, int y)
@@ -79,8 +106,25 @@ namespace Shrinerain.AutoTester.Win32
 
         public static void DoubleClick()
         {
-            NClick(-99, -99, 2);
+            DoubleClick(IntPtr.Zero);
         }
+
+        public static void DoubleClick(IntPtr handle)
+        {
+            if (handle != IntPtr.Zero && _sendMessage)
+            {
+                Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONDOWN, 0, 0);
+                Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONUP, 0, 0);
+
+                Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONDOWN, 0, 0);
+                Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONUP, 0, 0);
+            }
+            else
+            {
+                NClick(-99, -99, 2);
+            }
+        }
+
         public static void DoubleClick(int x, int y)
         {
             NClick(x, y, 2);
@@ -88,8 +132,22 @@ namespace Shrinerain.AutoTester.Win32
 
         public static void RightClick()
         {
-            NRightClick(-99, -99, 1);
+            RightClick(IntPtr.Zero);
         }
+
+        public static void RightClick(IntPtr handle)
+        {
+            if (handle != IntPtr.Zero && _sendMessage)
+            {
+                Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_RBUTTONDOWN, 0, 0);
+                Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_RBUTTONUP, 0, 0);
+            }
+            else
+            {
+                NRightClick(-99, -99, 1);
+            }
+        }
+
         public static void RightClick(int x, int y)
         {
             NRightClick(x, y, 1);

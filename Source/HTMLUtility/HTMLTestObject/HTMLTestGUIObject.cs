@@ -262,7 +262,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (!String.IsNullOrEmpty(aroundText))
                 {
-                    return aroundText;
+                    return aroundText.Trim();
                 }
 
                 IHTMLElement parent = element.parentElement;
@@ -330,7 +330,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                         prevIndex--;
 
                                         prevElement = (IHTMLElement)brotherElements.item((object)prevIndex, (object)prevIndex);
-                                        if (prevElement == null || prevElement.tagName == "A" || !HTMLTestObject.TryGetValueByProperty(prevElement, "innerText"))
+                                        if (prevElement == null
+                                            || prevElement.tagName == "A"
+                                            || prevElement.tagName == "INPUT"
+                                            || prevElement.tagName == "BUTTON"
+                                            || !HTMLTestObject.TryGetValueByProperty(prevElement, "innerText"))
                                         {
                                             break;
                                         }
@@ -350,7 +354,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                         nextIndex++;
 
                                         nextElement = (IHTMLElement)brotherElements.item((object)nextIndex, (object)nextIndex);
-                                        if (nextElement == null || nextElement.tagName == "A" || !HTMLTestObject.TryGetValueByProperty(nextElement, "innerText"))
+                                        if (nextElement == null
+                                            || nextElement.tagName == "A"
+                                            || nextElement.tagName == "INPUT"
+                                            || nextElement.tagName == "BUTTON"
+                                            || !HTMLTestObject.TryGetValueByProperty(nextElement, "innerText"))
                                         {
                                             break;
                                         }
@@ -400,11 +408,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
-                return null;
+                return "";
             }
             catch
             {
-                return null;
+                return "";
             }
 
         }

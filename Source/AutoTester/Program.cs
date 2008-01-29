@@ -178,21 +178,21 @@ namespace Shrinerain.AutoTester
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
+            HTMLTestObjectMap map = new HTMLTestObjectMap(pool);
+
 
 
             pool.GetObjectByType("textbox", "µç×ÓÓÊ¼þ:", 0);
 
-            HTMLTestTextBox tb = (HTMLTestTextBox)pool.GetLastObject();
+            HTMLTestTextBox tb = map.TextBox();
             tb.Input("shrinerain@hotmail.com");
 
             pool.GetObjectByType("textbox", "ÃÜÂë", 0);
-            tb = (HTMLTestTextBox)pool.GetLastObject();
+            tb = map.TextBox();
             tb.Input("xxx");
 
             pool.GetObjectByType("button", "µÇÂ¼", 0);
-            HTMLTestButton btn = (HTMLTestButton)pool.GetLastObject();
-
-            btn.Click();
+            map.Button().Click();
         }
 
         public static void qidian()
