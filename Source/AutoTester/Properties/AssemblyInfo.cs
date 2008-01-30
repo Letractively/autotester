@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // 有关程序集的常规信息通过下列属性集
 // 控制。更改这些属性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("RandomTester")]
+[assembly: AssemblyTitle("AutoTester")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("tc")]
-[assembly: AssemblyProduct("RandomTester")]
-[assembly: AssemblyCopyright("版权所有 (C) tc 2007")]
+[assembly: AssemblyCompany("Shrinerain")]
+[assembly: AssemblyProduct("AutoTester")]
+[assembly: AssemblyCopyright("版权所有 (C) Shrinerain 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
