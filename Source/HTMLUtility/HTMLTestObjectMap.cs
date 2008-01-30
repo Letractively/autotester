@@ -41,9 +41,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private HTMLTestMsgBox _msgBox;
         private HTMLTestTable _table;
         private HTMLTestTextBox _textBox;
+        private HTMLTestActiveXObject _activeXObj;
 
         //object pool for this map.
         private HTMLTestObjectPool _objPool;
+
+        //key for cache.
+        private const string _keySplitter = "__htmlmap__";
 
 
         #endregion
@@ -71,6 +75,45 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
+        /* void Add(String name)
+         * Add the last object to map, then we can use name to access it.
+         * 
+         */
+        public void Add(string name)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new CannotAddMapObjectException("Name can not be empty.");
+            }
+
+            try
+            {
+                HTMLTestGUIObject obj = (HTMLTestGUIObject)this._objPool.GetLastObject();
+
+                if (obj != null)
+                {
+                    string key = null;
+
+                    if (obj.Type != HTMLTestObjectType.Unknow)
+                    {
+                        key = obj.Type.ToString() + _keySplitter + name;
+
+                        ObjectCache.InsertObjectToCache(key, obj);
+                    }
+                }
+
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotAddMapObjectException("Can not add object[" + name + "] to map: " + ex.Message);
+            }
+        }
+
+        #region html test object
         public HTMLTestButton Button()
         {
             try
@@ -87,7 +130,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestButton Button(string name)
         {
-            return _button;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.Button);
+
+                return _button;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestCheckBox CheckBox()
@@ -106,7 +158,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestCheckBox CheckBox(string name)
         {
-            return _checkBox;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.CheckBox);
+
+                return _checkBox;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestComboBox ComboBox()
@@ -124,7 +185,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestComboBox ComboBox(string name)
         {
-            return _combobox;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.ComboBox);
+
+                return _combobox;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestFileDialog FileDialog()
@@ -132,6 +202,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _fileDialog = (HTMLTestFileDialog)this._objPool.GetLastObject();
+
                 return _fileDialog;
             }
             catch
@@ -142,7 +213,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestFileDialog FileDialog(string name)
         {
-            return _fileDialog;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.FileDialog);
+
+                return _fileDialog;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestImage Image()
@@ -160,7 +240,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestImage Image(string name)
         {
-            return _img;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.Image);
+
+                return _img; ;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestLabel Label()
@@ -178,7 +267,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestLabel Label(string name)
         {
-            return _label;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.Label);
+
+                return _label;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestLink Link()
@@ -197,7 +295,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestLink Link(string name)
         {
-            return _link;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.Link);
+
+                return _link;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestListBox ListBox()
@@ -215,7 +322,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestListBox ListBox(string name)
         {
-            return _listbox;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.ListBox);
+
+                return _listbox;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestMsgBox MsgBox()
@@ -233,7 +349,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestMsgBox MsgBox(string name)
         {
-            return _msgBox;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.MsgBox);
+
+                return _msgBox;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestRadioButton RadioBtn()
@@ -251,7 +376,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestRadioButton RadioBtn(string name)
         {
-            return _radioBtn;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.RadioButton);
+
+                return _radioBtn;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestTable Table()
@@ -269,7 +403,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestTable Table(String name)
         {
-            return _table;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.Table);
+
+                return _table;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public HTMLTestTextBox TextBox()
@@ -287,13 +430,133 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestTextBox TextBox(string name)
         {
-            return _textBox;
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.TextBox);
+
+                return _textBox;
+            }
+            catch
+            {
+                return null;
+            }
         }
+
+        public HTMLTestActiveXObject ActiveXObject()
+        {
+            try
+            {
+                _activeXObj = (HTMLTestActiveXObject)this._objPool.GetLastObject();
+                return _activeXObj;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public HTMLTestActiveXObject ActiveXObject(string name)
+        {
+            try
+            {
+                GetMapObject(name, HTMLTestObjectType.ActiveX);
+
+                return _activeXObj;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        #endregion
 
         #endregion
 
         #region private methods
 
+        /* void GetMapObject(string name, HTMLTestObjectType type)
+         * Get the html test object from cache, convert to expected type.
+         */
+        private void GetMapObject(string name, HTMLTestObjectType type)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                throw new CannotGetMapObjectException("Name can not be empty.");
+            }
+
+            try
+            {
+                if (type != HTMLTestObjectType.Unknow)
+                {
+                    string key = type.ToString() + _keySplitter + name;
+
+                    object tmp = null;
+
+                    if (ObjectCache.TryGetObjectFromCache(key, out tmp))
+                    {
+                        //build objects.
+                        switch (type)
+                        {
+                            case HTMLTestObjectType.Button:
+                                _button = (HTMLTestButton)tmp;
+                                break;
+                            case HTMLTestObjectType.CheckBox:
+                                _checkBox = (HTMLTestCheckBox)tmp;
+                                break;
+                            case HTMLTestObjectType.ComboBox:
+                                _combobox = (HTMLTestComboBox)tmp;
+                                break;
+                            case HTMLTestObjectType.FileDialog:
+                                _fileDialog = (HTMLTestFileDialog)tmp;
+                                break;
+                            case HTMLTestObjectType.Image:
+                                _img = (HTMLTestImage)tmp;
+                                break;
+                            case HTMLTestObjectType.Label:
+                                _label = (HTMLTestLabel)tmp;
+                                break;
+                            case HTMLTestObjectType.Link:
+                                _link = (HTMLTestLink)tmp;
+                                break;
+                            case HTMLTestObjectType.ListBox:
+                                _listbox = (HTMLTestListBox)tmp;
+                                break;
+                            case HTMLTestObjectType.MsgBox:
+                                _msgBox = (HTMLTestMsgBox)tmp;
+                                break;
+                            case HTMLTestObjectType.RadioButton:
+                                _radioBtn = (HTMLTestRadioButton)tmp;
+                                break;
+                            case HTMLTestObjectType.Table:
+                                _table = (HTMLTestTable)tmp;
+                                break;
+                            case HTMLTestObjectType.TextBox:
+                                _textBox = (HTMLTestTextBox)tmp;
+                                break;
+                            case HTMLTestObjectType.ActiveX:
+                                _activeXObj = (HTMLTestActiveXObject)tmp;
+                                break;
+                            default:
+                                break;
+                        }
+
+                    }
+                    else
+                    {
+                        throw new CannotGetMapObjectException("Can not get map object by: " + name);
+                    }
+                }
+
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotGetMapObjectException("Can not get map object by: " + name);
+            }
+        }
 
         #endregion
 

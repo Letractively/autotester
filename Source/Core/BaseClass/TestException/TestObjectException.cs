@@ -194,4 +194,30 @@ namespace Shrinerain.AutoTester.Core
         {
         }
     }
+
+    public class CannotAddMapObjectException : TestObjectException
+    {
+        public CannotAddMapObjectException()
+            : this("Can not add test object to map.")
+        {
+        }
+
+        public CannotAddMapObjectException(String message)
+            : base(message)
+        {
+        }
+    }
+
+    public class CannotGetMapObjectException : TestObjectException
+    {
+        public CannotGetMapObjectException()
+            : this("Can not get test object from map.")
+        {
+        }
+
+        public CannotGetMapObjectException(string message)
+            : base(message)
+        {
+        }
+    }
 }

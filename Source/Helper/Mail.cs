@@ -52,8 +52,15 @@ namespace Shrinerain.AutoTester.Helper
         //for smtp mail
         private MailMessage _netMail;
         private SmtpClient _smtpServer;
+
         //default smtp server address
         private string _smtpServerAddr = "localhost";
+
+        //username and password to login the smtp server;
+        private string _userName = "";
+        private string _password = "";
+
+
 
 #if OUTLOOK
 
@@ -130,6 +137,7 @@ namespace Shrinerain.AutoTester.Helper
                     try
                     {
                         _smtpServer = new SmtpClient(value);
+                        _smtpServer.Credentials = new NetworkCredential(_userName, _password);
                     }
                     catch
                     {
@@ -140,6 +148,35 @@ namespace Shrinerain.AutoTester.Helper
         }
 
 
+        public string UserName
+        {
+            get { return _userName; }
+            set
+            {
+                _userName = value;
+
+                if (_smtpServer != null)
+                {
+                    _smtpServer.Credentials = new NetworkCredential(_userName, _password);
+                }
+
+            }
+        }
+
+        public string Password
+        {
+            get { return _password; }
+            set
+            {
+                _password = value;
+
+                if (_smtpServer != null)
+                {
+                    _smtpServer.Credentials = new NetworkCredential(_userName, _password);
+                }
+
+            }
+        }
 
         #endregion
 

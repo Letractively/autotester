@@ -33,7 +33,7 @@ namespace Shrinerain.AutoTester
             //FrameworkEXE(args);
             FunctionTest();
             //FrameworkTest();
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
 
@@ -87,8 +87,8 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
-            Google();
-            // qidian();
+            // Google();
+            qidian();
 
             return;
 
@@ -206,22 +206,23 @@ namespace Shrinerain.AutoTester
 
             HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
 
-            HTMLTestTextBox tb = (HTMLTestTextBox)pool.GetObjectByType("textbox", "用户名", 0);
+            HTMLTestObjectMap map = new HTMLTestObjectMap(pool);
 
-            tb.Input("shrinerain");
+            map.HTMLTestObjectPool.GetObjectByType("textbox", "用户名", 0);
+            map.Add("username");
 
-            // Console.WriteLine(tb.LabelText);
+            map.HTMLTestObjectPool.GetObjectByType("textbox", "密码", 0);
+            map.Add("password");
 
-            tb = (HTMLTestTextBox)pool.GetObjectByType("textbox", "密码", 0);
-            tb.Input("jyoicq");
+            map.HTMLTestObjectPool.GetObjectByType("button", "登陆", 0);
+            map.Add("login");
 
-            HTMLTestButton loginBtn = (HTMLTestButton)pool.GetObjectByType("button", "登陆", 0);
-            loginBtn.Click();
+            map.TextBox("username").Input("shrinerain");
+            map.TextBox("password").Input("jyoicq");
+            map.Button("login").Click();
 
-            myHost.WaitForNextPage();
-
-            HTMLTestLink favLink = (HTMLTestLink)pool.GetObjectByType("link", "藏书架", 0);
-            favLink.Click();
+            map.HTMLTestObjectPool.GetObjectByType("link", "我的书架", 0);
+            map.Link().Click();
         }
     }
 }
