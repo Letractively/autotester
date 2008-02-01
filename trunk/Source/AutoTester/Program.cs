@@ -195,34 +195,30 @@ namespace Shrinerain.AutoTester
             map.Button().Click();
         }
 
+
         public static void qidian()
         {
-            HTMLTestBrowser myHost = new HTMLTestBrowser();
-            myHost.Start();
-            myHost.MaxSize();
-
             string url = @"www.qidian.com";
-            myHost.Load(url);
+            HTMLTest test = new HTMLTest();
+            test.Browser.Load(url);
 
-            HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
+            //test.Pool.GetObjectByType("textbox", "用户名", 0);
+            //test.Map.TextBox().Input("shrinerain");
 
-            HTMLTestObjectMap map = new HTMLTestObjectMap(pool);
+            //test.Pool.GetObjectByType("textbox", "密码", 0);
+            //test.Map.TextBox().Input("jyoicq");
 
-            map.HTMLTestObjectPool.GetObjectByType("textbox", "用户名", 0);
-            map.Add("username");
+            //test.Pool.GetObjectByType("button", "登陆", 0);
+            //test.Map.Button().Click();
 
-            map.HTMLTestObjectPool.GetObjectByType("textbox", "密码", 0);
-            map.Add("password");
+            test.Browser.Wait(10);
+            Console.WriteLine("Date: {0:o}", DateTime.Now);
+            test.Pool.GetObjectByType("link", "职业升级", 0);
+            Console.WriteLine("Date: {0:o}", DateTime.Now);
+            test.Map.Link().Click();
 
-            map.HTMLTestObjectPool.GetObjectByType("button", "登陆", 0);
-            map.Add("login");
 
-            map.TextBox("username").Input("shrinerain");
-            map.TextBox("password").Input("jyoicq");
-            map.Button("login").Click();
-
-            map.HTMLTestObjectPool.GetObjectByType("link", "我的书架", 0);
-            map.Link().Click();
+            Console.ReadLine();
         }
     }
 }

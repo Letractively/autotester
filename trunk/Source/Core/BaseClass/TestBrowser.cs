@@ -421,14 +421,12 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void Close()
         {
-            if (_ie == null)
-            {
-                throw new TestBrowserNotFoundException();
-            }
-
             try
             {
-                _ie.Quit();
+                if (_ie != null)
+                {
+                    _ie.Quit();
+                }
             }
             catch (Exception ex)
             {
@@ -450,7 +448,7 @@ namespace Shrinerain.AutoTester.Core
             // if ie is not started, wait for 120s.
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                Start();
             }
 
             object tmp = new object();
@@ -910,7 +908,7 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual string GetHTML()
         {
-            return _HTMLDom == null ? null : _HTMLDom.body.innerHTML;
+            return _HTMLDom == null ? "" : _HTMLDom.body.innerHTML;
         }
 
         #endregion
@@ -1616,8 +1614,8 @@ namespace Shrinerain.AutoTester.Core
 
                 GetSize();
 
-                //sleep for 1s.
-                Thread.Sleep(1000 * 1);
+                //sleep for 3s.
+                Thread.Sleep(1000 * 3);
 
                 _documentLoadComplete.Set();
 
