@@ -66,6 +66,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
+        public HTMLTestObjectMap()
+        {
+
+        }
+
         public HTMLTestObjectMap(HTMLTestObjectPool pool)
         {
             this._objPool = pool;

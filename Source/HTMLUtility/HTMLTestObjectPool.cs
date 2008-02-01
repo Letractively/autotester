@@ -24,11 +24,15 @@
 *          2008/01/21 wan,yu update, modify to use HTMLTestObject.TryGetValueByProperty to check something. 
 *          2008/01/21 wan,yu update, add CheckLabelObject.          
 *          2008/01/22 wan,yu update, add CheckTextBoxObject.          
+*          2008/02/01 wan,yu update, modify GetObjectByType to improve performance, in some situations, will be 
+*                                    10 times faster than before.
+*                                       
 *
 *********************************************************************/
 
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -86,6 +90,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //regex to match tag
         private static Regex _tagReg = new Regex("<[a-zA-Z]+ ", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static Regex _scriptReg = new Regex("<script.*?</script>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static Dictionary<string, Regex> _regCache = new Dictionary<string, Regex>(17);
 
         //if this flag set to ture, we will ignore those tables whose "border" < 1.
         private static bool _ignoreBorderlessTable = false;
@@ -791,44 +797,116 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //find the object by tag.
                         tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
 
-                        //check object one by one
-                        for (int i = 0; i < tagElementCol.length; i++)
+                        int possibleStartIndex = 0;
+
+                        //each percent is a "group"
+                        int percent = 10;
+
+                        try
+                        {
+                            //if we have too many objects, we will try to find it's possible position to improve performance.
+                            if (tagElementCol.length > 99)
+                            {
+
+                                if (tagElementCol.length > 999)
+                                {
+                                    percent = tagElementCol.length / 100;
+                                }
+                                else
+                                {
+                                    percent = tagElementCol.length / 10;
+                                }
+
+                                Regex tagReg;
+
+                                if (!_regCache.TryGetValue(tag, out tagReg))
+                                {
+                                    //create new regex to match objects from HTML code.
+                                    tagReg = new Regex("<" + tag + ".*?(</" + tag + ">)|(/>)", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                                    _regCache.Add(tag, tagReg);
+                                }
+
+                                //get HTML code of current page, remove blank.
+                                string currentHTMLCode = _htmlTestBrowser.GetHTML().Trim();
+
+                                // try to find the text position in HTML code.
+                                if (currentHTMLCode.IndexOf(values, StringComparison.CurrentCultureIgnoreCase) > 0)
+                                {
+                                    //use regex to extract objects.
+                                    MatchCollection mc = tagReg.Matches(currentHTMLCode);
+
+                                    if (mc.Count > 0)
+                                    {
+                                        for (int i = 0; i < mc.Count; i++)
+                                        {
+                                            if (mc[i].Value.IndexOf(values, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                                            {
+                                                possibleStartIndex = i;
+                                                break;
+                                            }
+
+                                        }
+
+                                        //there are some differences between regex and HTML Dom, so we minus 10.
+                                        if (possibleStartIndex > tagElementCol.length)
+                                        {
+                                            possibleStartIndex = tagElementCol.length;
+                                        }
+
+                                        if (possibleStartIndex > percent)
+                                        {
+                                            possibleStartIndex -= percent;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        catch
                         {
 
-                            nameObj = (object)i;
-                            indexObj = (object)i;
+                        }
+
+                        //search direction, 1 means from low to high, while -1 means from high to low.
+                        int lowToHigh = 1;
+
+                        int currentObjIndex = possibleStartIndex;
+                        int highIndex = possibleStartIndex;
+                        int lowIndex = possibleStartIndex - 1;
+
+                        //check object one by one, start from the possible position.
+                        for (currentObjIndex = possibleStartIndex; currentObjIndex >= 0 && currentObjIndex < tagElementCol.length; currentObjIndex += lowToHigh)
+                        {
+
+                            nameObj = (object)currentObjIndex;
+                            indexObj = (object)currentObjIndex;
 
                             try
                             {
                                 _tempElement = (IHTMLElement)tagElementCol.item(nameObj, indexObj);
 
                                 // check if it is a interactive object.
-                                if (!IsVisible(_tempElement))
+                                if (IsVisible(_tempElement))
                                 {
-                                    continue;
+                                    //if multi object, check if it is the object at expectd index
+                                    if (isByIndex)
+                                    {
+                                        leftIndex--;
+                                    }
+                                    else if (CheckObjectByType(_tempElement, typeValue, values, simPercent)) //check object by type
+                                    {
+                                        leftIndex--;
+                                    }
+
+                                    //if index is 0 , that means we found the object.
+                                    if (leftIndex < 0)
+                                    {
+                                        _testObj = BuildObjectByType(_tempElement, typeValue);
+
+                                        ObjectCache.InsertObjectToCache(key, _testObj);
+
+                                        return _testObj;
+                                    }
                                 }
-
-                                //if multi object, check if it is the object at expectd index
-                                if (isByIndex)
-                                {
-                                    leftIndex--;
-                                }
-                                else if (CheckObjectByType(_tempElement, typeValue, values, simPercent)) //check object by type
-                                {
-                                    leftIndex--;
-                                }
-
-                                //if index is 0 , that means we found the object.
-                                if (leftIndex < 0)
-                                {
-                                    _testObj = BuildObjectByType(_tempElement, typeValue);
-
-                                    ObjectCache.InsertObjectToCache(key, _testObj);
-
-                                    return _testObj;
-                                }
-
-
                             }
                             catch (CannotBuildObjectException)
                             {
@@ -837,6 +915,41 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             catch
                             {
 
+                            }
+
+                            if (lowToHigh == 1 && currentObjIndex > possibleStartIndex + percent)
+                            {
+                                highIndex = currentObjIndex + 1;
+
+                                //if we still need to check from high to low.
+                                if (lowIndex > 0)
+                                {
+                                    //change direction
+                                    lowToHigh = -1;
+                                    possibleStartIndex = lowIndex;
+                                }
+                                else
+                                {
+                                    possibleStartIndex = highIndex;
+                                }
+
+                                currentObjIndex = possibleStartIndex;
+                            }
+                            else if (lowToHigh == -1 && currentObjIndex < possibleStartIndex - percent)
+                            {
+                                lowIndex = currentObjIndex - 1;
+
+                                if (highIndex < tagElementCol.length)
+                                {
+                                    lowToHigh = 1;
+                                    possibleStartIndex = highIndex;
+                                }
+                                else
+                                {
+                                    possibleStartIndex = lowIndex;
+                                }
+
+                                currentObjIndex = possibleStartIndex;
                             }
                         }
                     }
@@ -1186,6 +1299,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private static bool CheckObjectByType(IHTMLElement element, HTMLTestObjectType type, string value, int simPercent)
         {
+            if (element == null)
+            {
+                return false;
+            }
 
             //check special types
             if (type == HTMLTestObjectType.ListBox || type == HTMLTestObjectType.ComboBox)
@@ -1238,7 +1355,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             //not special type, just need to check some property.
-            return IsPropertyLike(element, propertyName, value, simPercent);
+            return Searcher.IsStringLike(propertyValue, value, simPercent);
         }
 
         /* bool CheckObjectByType(ref IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
