@@ -16,7 +16,8 @@
 *          2008/01/15 wan,yu update, move GetRectOnScreen from creator to
 *                                    Browser proeprty.   
 *          2008/01/22 wan,yu update, add _labelText and GetAroundText() 
-*          2008/01/28 wan,yu update, modify GetAroundText, return left and right string.          
+*          2008/01/28 wan,yu update, modify GetAroundText, return left and right string.  
+*          2008/02/02 wan,yu update, add X,Y,Width,Height properties. 
 * 
 *********************************************************************/
 
@@ -70,6 +71,39 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
         }
+
+        public virtual int X
+        {
+            get
+            {
+                return _rect.X;
+            }
+        }
+
+        public virtual int Y
+        {
+            get
+            {
+                return _rect.Y;
+            }
+        }
+
+        public virtual int Width
+        {
+            get
+            {
+                return _rect.Width;
+            }
+        }
+
+        public virtual int Height
+        {
+            get
+            {
+                return _rect.Height;
+            }
+        }
+
 
         //when set the html browser, we can start to calculate the position
         public override HTMLTestBrowser Browser

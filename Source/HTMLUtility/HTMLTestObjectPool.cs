@@ -24,7 +24,7 @@
 *          2008/01/21 wan,yu update, modify to use HTMLTestObject.TryGetValueByProperty to check something. 
 *          2008/01/21 wan,yu update, add CheckLabelObject.          
 *          2008/01/22 wan,yu update, add CheckTextBoxObject.          
-*          2008/02/01 wan,yu update, modify GetObjectByType to improve performance, in some situations, will be 
+*          2008/02/01 wan,yu update, modify GetObjectByType use RotateSearch to improve performance, in some situation, will be 
 *                                    10 times faster than before.
 *                                       
 *
@@ -628,14 +628,93 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* Object GetObjectByRegex(string property, string regex)
          * return the test object by property, the value match the regular expression
          */
-        public Object GetObjectByRegex(string property, string regex)
+        public Object GetObjectByRegex(string property, string regexStr)
         {
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
-            return null;
+            if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(regexStr))
+            {
+                throw new PropertyNotFoundException("Property and regex can not be empty.");
+            }
+
+            Regex reg;
+
+            try
+            {
+                reg = new Regex(regexStr.Trim());
+            }
+            catch (Exception ex)
+            {
+                throw new ObjectNotFoundException("Can not get object by regular expression: " + ex.Message);
+            }
+
+            string key = GetKey(property + regexStr);
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
+            {
+                return _testObj = (TestObject)_cacheObj;
+            }
+
+            //we will try 30s to find an object.
+            int times = 0;
+            while (times <= _maxWaitSeconds)
+            {
+
+                //get all HTML objects.
+                GetAllElements();
+
+                object nameObj = null;
+                object indexObj = null;
+
+                //go through all element, check it's property value.
+                for (int i = 0; i < _allElements.length; i++)
+                {
+                    try
+                    {
+                        nameObj = (object)i;
+                        indexObj = (object)i;
+
+                        //get element by index.
+                        _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
+
+                        //get property value
+                        string propertyValue;
+
+                        //if not interactive object or the property is not found. 
+                        if (!HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue) || !IsVisible(_tempElement))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            //if match, means we found it.
+                            if (reg.IsMatch(propertyValue))
+                            {
+                                _testObj = BuildObjectByType(_tempElement);
+
+                                ObjectCache.InsertObjectToCache(key, _testObj);
+
+                                return _testObj;
+                            }
+                        }
+                    }
+                    catch (CannotBuildObjectException)
+                    {
+                        throw;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+
+                times += _interval;
+                Thread.Sleep(_interval * 1000);
+            }
+
+            throw new ObjectNotFoundException("Can not find object by property[" + property + "] with regular expresson[" + regexStr + "].");
         }
 
         /*  Object GetObjectByType(string type, string values, int index)
@@ -797,32 +876,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //find the object by tag.
                         tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
 
-                        int possibleStartIndex = 0;
-
-                        //each percent is a "group"
+                        //each percent is a group.
                         int percent = 10;
+
+                        //if we have too many objects, we will try to find it's possible position to improve performance.
+                        int possibleStartIndex = 0;
 
                         try
                         {
-                            //if we have too many objects, we will try to find it's possible position to improve performance.
+                            //if we have more than 99 objects, we will try to find the position by text search.
                             if (tagElementCol.length > 99)
                             {
-
-                                if (tagElementCol.length > 999)
-                                {
-                                    percent = tagElementCol.length / 100;
-                                }
-                                else
-                                {
-                                    percent = tagElementCol.length / 10;
-                                }
 
                                 Regex tagReg;
 
                                 if (!_regCache.TryGetValue(tag, out tagReg))
                                 {
                                     //create new regex to match objects from HTML code.
-                                    tagReg = new Regex("<" + tag + ".*?(</" + tag + ">)|(/>)", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                                    tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
                                     _regCache.Add(tag, tagReg);
                                 }
 
@@ -830,32 +901,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 string currentHTMLCode = _htmlTestBrowser.GetHTML().Trim();
 
                                 // try to find the text position in HTML code.
-                                if (currentHTMLCode.IndexOf(values, StringComparison.CurrentCultureIgnoreCase) > 0)
+                                int startPos = currentHTMLCode.IndexOf(values, StringComparison.CurrentCultureIgnoreCase);
+
+                                if (startPos > 0)
                                 {
                                     //use regex to extract objects.
-                                    MatchCollection mc = tagReg.Matches(currentHTMLCode);
+                                    MatchCollection mc = tagReg.Matches(currentHTMLCode.Substring(0, startPos));
 
-                                    if (mc.Count > 0)
+                                    if (mc.Count > percent)
                                     {
-                                        for (int i = 0; i < mc.Count; i++)
+                                        if (mc.Count >= tagElementCol.length)
                                         {
-                                            if (mc[i].Value.IndexOf(values, StringComparison.CurrentCultureIgnoreCase) >= 0)
-                                            {
-                                                possibleStartIndex = i;
-                                                break;
-                                            }
-
+                                            possibleStartIndex = tagElementCol.length - 1;
                                         }
-
-                                        //there are some differences between regex and HTML Dom, so we minus 10.
-                                        if (possibleStartIndex > tagElementCol.length)
+                                        else
                                         {
-                                            possibleStartIndex = tagElementCol.length;
-                                        }
-
-                                        if (possibleStartIndex > percent)
-                                        {
-                                            possibleStartIndex -= percent;
+                                            possibleStartIndex = mc.Count - 1;
                                         }
                                     }
                                 }
@@ -866,15 +927,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                         }
 
-                        //search direction, 1 means from low to high, while -1 means from high to low.
-                        int lowToHigh = 1;
+                        int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, tagElementCol.length - 1, percent);
 
-                        int currentObjIndex = possibleStartIndex;
-                        int highIndex = possibleStartIndex;
-                        int lowIndex = possibleStartIndex - 1;
-
-                        //check object one by one, start from the possible position.
-                        for (currentObjIndex = possibleStartIndex; currentObjIndex >= 0 && currentObjIndex < tagElementCol.length; currentObjIndex += lowToHigh)
+                        // check object one by one, start from the possible position.
+                        // the "|" means the start position, the "--->" means the search direction.            
+                        //  -----------------------------------------------------------------------
+                        //  step 1:                          |--->
+                        //  step 2:                      <---|
+                        //  step 3:                          |    --->
+                        //  ...                      <---    |
+                        foreach (int currentObjIndex in searchOrder)
                         {
 
                             nameObj = (object)currentObjIndex;
@@ -916,46 +978,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             {
 
                             }
-
-                            if (lowToHigh == 1 && currentObjIndex > possibleStartIndex + percent)
-                            {
-                                highIndex = currentObjIndex + 1;
-
-                                //if we still need to check from high to low.
-                                if (lowIndex > 0)
-                                {
-                                    //change direction
-                                    lowToHigh = -1;
-                                    possibleStartIndex = lowIndex;
-                                }
-                                else
-                                {
-                                    possibleStartIndex = highIndex;
-                                }
-
-                                currentObjIndex = possibleStartIndex;
-                            }
-                            else if (lowToHigh == -1 && currentObjIndex < possibleStartIndex - percent)
-                            {
-                                lowIndex = currentObjIndex - 1;
-
-                                if (highIndex < tagElementCol.length)
-                                {
-                                    lowToHigh = 1;
-                                    possibleStartIndex = highIndex;
-                                }
-                                else
-                                {
-                                    possibleStartIndex = lowIndex;
-                                }
-
-                                currentObjIndex = possibleStartIndex;
-                            }
                         }
                     }
                 }
 
-                //not found, sleep 3 seconds, then try again.
+                //not found, sleep for 3 seconds, then try again.
                 times += _interval;
                 Thread.Sleep(_interval * 1000);
 
@@ -975,6 +1002,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             throw new ObjectNotFoundException("Can not find object by type [" + type.ToString() + "] with value [" + values.ToString() + "]");
         }
+
 
         /* Object GetObjectByAI(string value)
          * return object by value, we will use some common property to find the control.
@@ -1274,18 +1302,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
-            if (_needRefresh || _allElements == null)
+            try
             {
-                _needRefresh = false;
+                this._allElements = _htmlTestBrowser.GetAllObjects();
+            }
+            catch
+            {
 
-                try
-                {
-                    this._allElements = _htmlTestBrowser.GetAllObjects();
-                }
-                catch
-                {
-                    _needRefresh = true;
-                }
             }
         }
 

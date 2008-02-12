@@ -213,7 +213,7 @@ namespace Shrinerain.AutoTester
 
             test.Browser.Wait(10);
             Console.WriteLine("Date: {0:o}", DateTime.Now);
-            test.Pool.GetObjectByType("link", "职业升级", 0);
+            test.Pool.GetObjectByType("link", "提交建议", 0);
             Console.WriteLine("Date: {0:o}", DateTime.Now);
             test.Map.Link().Click();
 
