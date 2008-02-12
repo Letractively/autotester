@@ -119,6 +119,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #region html test object
+
+        /* HTMLTestButton Button()
+         * return a button object.
+         * will get the last object from pool, and convert it to a button.
+         */
         public HTMLTestButton Button()
         {
             try
@@ -133,6 +138,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        /* HTMLTestButton Button(string name)
+         * return a button by expected name.
+         * Try to get a button from the cache, so firstly we need to use Add() function to add a button to the cache.
+         */
         public HTMLTestButton Button(string name)
         {
             try
@@ -559,7 +568,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotGetMapObjectException("Can not get map object by: " + name);
+                throw new CannotGetMapObjectException("Can not get map object [" + name + "]: " + ex.Message);
             }
         }
 

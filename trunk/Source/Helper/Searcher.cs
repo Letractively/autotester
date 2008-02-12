@@ -18,7 +18,8 @@
 *          2008/01/21 wan,yu update, add ignoreCase parameter.   
 *          2008/01/24 wan,yu update, add _autoAdjustLowerBound field.
 *          2008/01/29 wan,yu update, bug fix for IsStringLike          
-*
+*          2008/02/03 wan,yu update, add VibrationSearch() method.
+* 
 *********************************************************************/
 
 
@@ -128,7 +129,7 @@ namespace Shrinerain.AutoTester.Helper
 
                     }
 
-                    return GetSimilarPercent(str1, str2, ignoreCase) >= percent;
+                    return CalSimilarPercent(str1, str2, ignoreCase) >= percent;
                 }
                 catch
                 {
@@ -148,12 +149,12 @@ namespace Shrinerain.AutoTester.Helper
         * for performance issue, use unsafe code to access the dynamic array. 
         */
 
-        private static int GetSimilarPercent(string str1, string str2)
+        private static int CalSimilarPercent(string str1, string str2)
         {
-            return GetSimilarPercent(str1, str2, true);
+            return CalSimilarPercent(str1, str2, true);
         }
 
-        private unsafe static int GetSimilarPercent(string str1, string str2, bool ignoreCase)
+        private unsafe static int CalSimilarPercent(string str1, string str2, bool ignoreCase)
         {
             //check if they are equal
             if (String.Compare(str1, str2, ignoreCase) == 0)
@@ -194,7 +195,7 @@ namespace Shrinerain.AutoTester.Helper
                         for (int i = 0; i < str1Arr.Length; i++)
                         {
                             weight = (float)(str1Arr[i].Length + str2Arr[i].Length) / (float)(str1.Length + str2.Length);
-                            totalSimPercent += Convert.ToInt32(GetSimilarPercent(str1Arr[i], str2Arr[i]) * weight);
+                            totalSimPercent += Convert.ToInt32(CalSimilarPercent(str1Arr[i], str2Arr[i]) * weight);
                         }
 
                         return totalSimPercent;
@@ -306,6 +307,145 @@ namespace Shrinerain.AutoTester.Helper
                 return Convert.ToInt32(percent * 100);
             }
 
+        }
+
+        /* int[] VibrationSearch(int startIndex, int lowerBound, int highBound, int percent)
+         * generate "VibrationSearch" path for other methods.
+         * the return array contains the index order to search an object.
+         */
+        public static int[] VibrationSearch(int startIndex, int lowerBound, int highBound, int percent)
+        {
+
+            if (lowerBound > highBound)
+            {
+                int tmp = lowerBound;
+                lowerBound = highBound;
+                highBound = tmp;
+            }
+            else if (lowerBound == highBound)
+            {
+                return new int[] { lowerBound };
+            }
+
+            int[] order = new int[highBound - lowerBound + 1];
+
+            if (startIndex <= lowerBound)
+            {
+                for (int i = lowerBound; i <= highBound; i++)
+                {
+                    order[i] = i;
+                }
+
+                return order;
+            }
+            else if (startIndex >= highBound)
+            {
+                for (int i = highBound; i >= lowerBound; i--)
+                {
+                    order[highBound - i] = i;
+                }
+
+                return order;
+            }
+
+            if (percent < 0 || percent > highBound - lowerBound)
+            {
+                percent = (highBound - lowerBound) / 10;
+            }
+
+            int direction = 1;
+
+            int currentIndex = startIndex;
+            int highIndex = startIndex;
+            int lowIndex = startIndex - 1;
+
+            int orderIndex = 0;
+
+            for (currentIndex = startIndex; currentIndex >= lowerBound && currentIndex <= highBound; currentIndex += direction)
+            {
+                order[orderIndex] = currentIndex;
+                orderIndex++;
+
+                if (direction == 1)
+                {
+                    //reach the bound.
+                    if (currentIndex == highBound)
+                    {
+                        highIndex = highBound + 1;
+
+                        //still some objects left, change direction, search again.
+                        if (lowIndex >= lowerBound)
+                        {
+                            //change direction
+                            direction = -1;
+                            startIndex = lowIndex;
+                        }
+                        else
+                        {
+                            //all searched, brea;
+                            break;
+                        }
+
+                        currentIndex = startIndex;
+                    }
+                    else if (currentIndex >= startIndex + percent)
+                    {
+                        highIndex = currentIndex;
+
+                        //if we still need to check from high to low.
+                        if (lowIndex >= lowerBound)
+                        {
+                            //change direction
+                            direction = -1;
+                            startIndex = lowIndex;
+                        }
+                        else
+                        {
+                            startIndex = highIndex;
+                        }
+
+                        currentIndex = startIndex;
+                    }
+
+                }
+                else if (direction == -1)
+                {
+                    if (currentIndex == 0)
+                    {
+                        lowIndex = -1;
+
+                        if (highIndex <= highBound)
+                        {
+                            direction = 1;
+                            startIndex = highIndex;
+                        }
+                        else
+                        {
+                            break;
+                        }
+
+                        currentIndex = startIndex;
+                    }
+                    else if (currentIndex <= startIndex - percent)
+                    {
+                        lowIndex = currentIndex;
+
+                        if (highIndex <= highBound)
+                        {
+                            direction = 1;
+                            startIndex = highIndex;
+                        }
+                        else
+                        {
+                            startIndex = lowIndex;
+                        }
+
+                        currentIndex = startIndex;
+                    }
+                }
+            }
+
+            return order;
         }
 
         #endregion
