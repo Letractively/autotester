@@ -87,7 +87,10 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
-            // Google();
+             Google();
+
+             return;
+
             qidian();
 
             return;
@@ -168,31 +171,17 @@ namespace Shrinerain.AutoTester
 
         public static void Google()
         {
-            HTMLTestBrowser myHost = new HTMLTestBrowser();
-            myHost.Start();
-            myHost.MaxSize();
 
             string url = @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";//@"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
-            myHost.Load(url);
 
+            HTMLTest test = new HTMLTest();
+            test.Browser.Load(url);
+            test.Browser.Wait(5);
 
-            HTMLTestObjectPool pool = new HTMLTestObjectPool(myHost);
-
-            HTMLTestObjectMap map = new HTMLTestObjectMap(pool);
-
-
-
-            pool.GetObjectByType("textbox", "电子邮件:", 0);
-
-            HTMLTestTextBox tb = map.TextBox();
-            tb.Input("shrinerain@hotmail.com");
-
-            pool.GetObjectByType("textbox", "密码", 0);
-            tb = map.TextBox();
-            tb.Input("xxx");
-
-            pool.GetObjectByType("button", "登录", 0);
-            map.Button().Click();
+            Console.WriteLine("Date: {0:o}", DateTime.Now);
+            test.Pool.GetObjectByType("textbox", "电子邮件:");
+            Console.WriteLine("Date: {0:o}", DateTime.Now);
+            Console.ReadLine();
         }
 
 
@@ -211,11 +200,11 @@ namespace Shrinerain.AutoTester
             //test.Pool.GetObjectByType("button", "登陆", 0);
             //test.Map.Button().Click();
 
-            test.Browser.Wait(10);
+            test.Browser.Wait(5);
             Console.WriteLine("Date: {0:o}", DateTime.Now);
-            test.Pool.GetObjectByType("link", "提交建议", 0);
+            test.Pool.GetObjectByType("link", "提交建议");
             Console.WriteLine("Date: {0:o}", DateTime.Now);
-            test.Map.Link().Click();
+            //test.Map.Link().Click();
 
 
             Console.ReadLine();

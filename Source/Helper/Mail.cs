@@ -417,7 +417,7 @@ namespace Shrinerain.AutoTester.Helper
         }
 
         /* string GetHTML(string url)
-         * return the string of expected url.
+         * return the html code of expected url.
          */
         private static string GetHTML(string url)
         {
@@ -446,7 +446,8 @@ namespace Shrinerain.AutoTester.Helper
             }
             catch
             {
-                return url;
+                //can not download the html page, send the link directly.
+                return "<a href=\"" + url + "\">" + url + "</a>";
             }
 
         }

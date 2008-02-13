@@ -377,18 +377,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             value = "";
 
-            if (element == null || string.IsNullOrEmpty(propertyName))
+            if (element == null || string.IsNullOrEmpty(propertyName.Trim()))
             {
                 return false;
             }
 
             //property name not null
             propertyName = propertyName.Trim().Replace(".", "");
-
-            if (propertyName == "")
-            {
-                return false;
-            }
 
             try
             {

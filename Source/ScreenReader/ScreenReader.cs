@@ -4,32 +4,32 @@ using System.Text;
 
 using XDICTGRB;
 
-namespace KingWordsTest
+namespace Shrinerain.AutoTester.ScreenReader
 {
     class Program
     {
-        //static void Main(string[] args)
-        //{
+        static void Main(string[] args)
+        {
 
-        //    KingTest kt = new KingTest();
+            KingTest kt = new KingTest();
 
-        //    string lastWord = null;
+            string lastWord = null;
 
-        //    while (true)
-        //    {
-        //        //System.Threading.Thread.Sleep(1000 * 1);
+            while (true)
+            {
+                //System.Threading.Thread.Sleep(1000 * 1);
 
-        //        if (!String.IsNullOrEmpty(lastWord) && lastWord == kt.WordString)
-        //        {
-        //            Console.WriteLine(kt.WordString);
+                if (!String.IsNullOrEmpty(lastWord) && lastWord == kt.WordString)
+                {
+                    Console.WriteLine(kt.WordString);
 
-        //            lastWord = null;
-        //        }
+                    lastWord = null;
+                }
 
-        //        lastWord = kt.WordString;
+                lastWord = kt.WordString;
 
-        //    }
-        //}
+            }
+        }
 
     }
 
@@ -48,6 +48,8 @@ namespace KingWordsTest
         public KingTest()
         {
             gp = new GrabProxy();
+
+            gp.GrabWord(10, 10);
 
             gp.GrabInterval = 1;//指抓取时间间隔
             gp.GrabMode = XDictGrabModeEnum.XDictGrabMouse;//设定取词的属性

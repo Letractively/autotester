@@ -26,6 +26,7 @@
 *          2008/01/22 wan,yu update, add CheckTextBoxObject.          
 *          2008/02/01 wan,yu update, modify GetObjectByType use RotateSearch to improve performance, in some situation, will be 
 *                                    10 times faster than before.
+*          2008/02/13 wan,yu update, add event OnNewObjectFound to report new object. 
 *                                       
 *
 *********************************************************************/
@@ -48,6 +49,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public sealed class HTMLTestObjectPool : ITestObjectPool
     {
+        #region event
+
+        public delegate void _newObjectDelegate(string methodName, string[] paras, TestObject newObj);
+        public event _newObjectDelegate OnNewObjectFound;
+
+        #endregion
+
         #region fields
 
         private HTMLTestBrowser _htmlTestBrowser;
@@ -89,6 +97,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private static StringBuilder _keySB = new StringBuilder(128);
 
         //regex to match tag
+        private static Regex _htmlReg = new Regex("<[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Regex _tagReg = new Regex("<[a-zA-Z]+ ", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static Regex _scriptReg = new Regex("<script.*?</script>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static Dictionary<string, Regex> _regCache = new Dictionary<string, Regex>(17);
@@ -282,15 +291,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //we will check each object.
                     IHTMLElementCollection nameObjectsCol = _htmlTestBrowser.GetObjectsByName(name);
 
+                    object nameObj = null;
+                    object indexObj = null;
+
                     for (int i = 0; i < nameObjectsCol.length; i++)
                     {
-                        object nameObj = (object)i;
-                        object indexObj = (object)i;
+                        nameObj = (object)i;
+                        indexObj = (object)i;
 
                         //get the object collection with the same name.
                         // in HTML, .id is unique, but .name is not, so we may get a collection.
                         _tempElement = (IHTMLElement)nameObjectsCol.item(nameObj, indexObj);
-
 
                         if (!IsVisible(_tempElement))
                         {
@@ -353,14 +364,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     _tempElement = (IHTMLElement)_allElements.item((object)index, (object)index);
 
-                    if (_tempElement != null)
+                    if (IsVisible(_tempElement))
                     {
-                        if (!IsVisible(_tempElement))
-                        {
-                            //this object is not interactive, we will try next object.
-                            index++;
-                            continue;
-                        }
 
                         _testObj = BuildObjectByType(_tempElement);
 
@@ -432,16 +437,67 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get all HTML objects.
                 GetAllElements();
 
+                //each percent is a group.
+                int percent = 10;
+
+                //if we have too many objects, we will try to find it's possible position to improve performance.
+                int possibleStartIndex = 0;
+
+                try
+                {
+                    //if we have more than 99 objects, we will try to find the position by text search.
+                    if (this._allElements.length > 99)
+                    {
+                        //get HTML code of current page, remove blank.
+                        string currentHTMLCode = _htmlTestBrowser.GetHTML().Trim();
+
+                        // try to find the text position in HTML code.
+                        int startPos = currentHTMLCode.IndexOf(value, StringComparison.CurrentCultureIgnoreCase);
+
+                        if (startPos > 0)
+                        {
+                            //use regex to extract objects.
+                            MatchCollection mc = _htmlReg.Matches(currentHTMLCode.Substring(0, startPos));
+
+                            if (mc.Count > percent)
+                            {
+                                if (mc.Count >= _allElements.length)
+                                {
+                                    possibleStartIndex = _allElements.length - 1;
+                                }
+                                else
+                                {
+                                    possibleStartIndex = mc.Count - 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+
+                }
+
+
+                int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, this._allElements.length - 1, percent);
+
                 object nameObj = null;
                 object indexObj = null;
 
-                //go through all element, check it's property value.
-                for (int i = 0; i < _allElements.length; i++)
+                // check object one by one, start from the possible position.
+                // the "|" means the start position, the "--->" means the search direction.            
+                //  -----------------------------------------------------------------------
+                //  step 1:                          |--->
+                //  step 2:                      <---|
+                //  step 3:                          |    --->
+                //  ...                      <---    |
+                foreach (int currentObjIndex in searchOrder)
                 {
                     try
                     {
-                        nameObj = (object)i;
-                        indexObj = (object)i;
+                        //go through all element, check it's property value.
+                        nameObj = (object)currentObjIndex;
+                        indexObj = (object)currentObjIndex;
 
                         //get element by index.
                         _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
@@ -449,8 +505,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //get property value
                         string propertyValue;
 
-                        //if not interactive object or the property is not found. 
-                        if (!HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue) || !IsVisible(_tempElement))
+                        //if it is not an interactive object or the property is not found. 
+                        if (!IsVisible(_tempElement) || !HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue))
                         {
                             continue;
                         }
@@ -683,7 +739,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         string propertyValue;
 
                         //if not interactive object or the property is not found. 
-                        if (!HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue) || !IsVisible(_tempElement))
+                        if (!IsVisible(_tempElement) || !HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue))
                         {
                             continue;
                         }
@@ -723,6 +779,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          *  index means if we have more than one object, return which one, normally, it should be 0, return the first one.
          *  we will use "Fuzzy Search" in this method
          */
+        public Object GetObjectByType(string type, string values)
+        {
+            return GetObjectByType(type, values, 0);
+        }
+
         public Object GetObjectByType(string type, string values, int index)
         {
             if (_htmlTestBrowser == null)
@@ -730,12 +791,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
-            if (String.IsNullOrEmpty(type))
+            if (type == null || type.Trim() == "")
             {
                 throw new ObjectNotFoundException("Can not get object by type: type can not be empty.");
             }
+            else
+            {
+                type = type.Trim();
+            }
 
-            type = type.Trim();
+            if (values == null)
+            {
+                values = "";
+            }
 
             if (index < 0)
             {
@@ -762,8 +830,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
             }
-            else if (typeValue == HTMLTestObjectType.MsgBox ||
-                typeValue == HTMLTestObjectType.FileDialog)
+            else if (typeValue == HTMLTestObjectType.MsgBox || typeValue == HTMLTestObjectType.FileDialog)
             {
                 isHTMLType = false;
             }
@@ -787,7 +854,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (tags == null)
             {
-                throw new CannotBuildObjectException("Tags can not be empty.");
+                throw new ObjectNotFoundException("Tags can not be empty.");
             }
 
             //if the expected value is number like, we think it is stand for the index of the object, not text on it.
@@ -845,6 +912,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                                 ObjectCache.InsertObjectToCache(key, _testObj);
 
+                                OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
+
                                 return _testObj;
                             }
 
@@ -877,15 +946,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
 
                         //each percent is a group.
-                        int percent = 10;
+                        //为什么是8? 因为"发"嘛.
+                        const int percent = 8;
 
                         //if we have too many objects, we will try to find it's possible position to improve performance.
                         int possibleStartIndex = 0;
 
                         try
                         {
-                            //if we have more than 99 objects, we will try to find the position by text search.
-                            if (tagElementCol.length > 99)
+                            //if we have more than 2*percent objects, we will try to find the position by searching the text.
+                            if (tagElementCol.length > percent * 2)
                             {
 
                                 Regex tagReg;
@@ -927,6 +997,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                         }
 
+
                         int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, tagElementCol.length - 1, percent);
 
                         // check object one by one, start from the possible position.
@@ -965,6 +1036,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                         _testObj = BuildObjectByType(_tempElement, typeValue);
 
                                         ObjectCache.InsertObjectToCache(key, _testObj);
+
+                                        OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
 
                                         return _testObj;
                                     }

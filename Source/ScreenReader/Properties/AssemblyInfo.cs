@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ScreenReader")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("shrine")]
+[assembly: AssemblyCompany("Shrinerain")]
 [assembly: AssemblyProduct("ScreenReader")]
-[assembly: AssemblyCopyright("Copyright © shrine 2008")]
+[assembly: AssemblyCopyright("Copyright © Shrinerain 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -57,7 +57,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestObjectPool HTMLTestObjectPool
         {
             get { return _objPool; }
-            set { _objPool = value; }
+            set
+            {
+                if (value != null)
+                {
+                    _objPool = value;
+                    _objPool.OnNewObjectFound += new HTMLTestObjectPool._newObjectDelegate(AddTypeObjectToMap);
+                }
+
+            }
         }
 
         #endregion
@@ -74,6 +82,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestObjectMap(HTMLTestObjectPool pool)
         {
             this._objPool = pool;
+
+            //when a new object is found, we will add it to the map.
+            pool.OnNewObjectFound += new HTMLTestObjectPool._newObjectDelegate(AddTypeObjectToMap);
         }
 
         #endregion
@@ -91,10 +102,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotAddMapObjectException("Name can not be empty.");
             }
 
+            HTMLTestGUIObject obj = (HTMLTestGUIObject)this._objPool.GetLastObject();
+
+            Add(name, obj);
+        }
+
+        public void Add(string name, HTMLTestGUIObject obj)
+        {
             try
             {
-                HTMLTestGUIObject obj = (HTMLTestGUIObject)this._objPool.GetLastObject();
-
                 if (obj != null)
                 {
                     string key = null;
@@ -106,7 +122,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         ObjectCache.InsertObjectToCache(key, obj);
                     }
                 }
-
             }
             catch (TestException)
             {
@@ -126,16 +141,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public HTMLTestButton Button()
         {
-            try
-            {
-                _button = (HTMLTestButton)this._objPool.GetLastObject();
+            _button = (HTMLTestButton)this._objPool.GetLastObject();
 
-                return _button;
-            }
-            catch
-            {
-                return null;
-            }
+            return _button;
         }
 
         /* HTMLTestButton Button(string name)
@@ -144,343 +152,177 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public HTMLTestButton Button(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.Button);
+            GetMapObject(name, HTMLTestObjectType.Button);
 
-                return _button;
-            }
-            catch
-            {
-                return null;
-            }
+            return _button;
         }
 
         public HTMLTestCheckBox CheckBox()
         {
-            try
-            {
-                _checkBox = (HTMLTestCheckBox)this._objPool.GetLastObject();
-                return _checkBox;
-            }
-            catch
-            {
-                return null;
-            }
+            _checkBox = (HTMLTestCheckBox)this._objPool.GetLastObject();
 
+            return _checkBox;
         }
 
         public HTMLTestCheckBox CheckBox(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.CheckBox);
+            GetMapObject(name, HTMLTestObjectType.CheckBox);
 
-                return _checkBox;
-            }
-            catch
-            {
-                return null;
-            }
+            return _checkBox;
         }
 
         public HTMLTestComboBox ComboBox()
         {
-            try
-            {
-                _combobox = (HTMLTestComboBox)this._objPool.GetLastObject();
-                return _combobox;
-            }
-            catch
-            {
-                return null;
-            }
+            _combobox = (HTMLTestComboBox)this._objPool.GetLastObject();
+
+            return _combobox;
         }
 
         public HTMLTestComboBox ComboBox(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.ComboBox);
+            GetMapObject(name, HTMLTestObjectType.ComboBox);
 
-                return _combobox;
-            }
-            catch
-            {
-                return null;
-            }
+            return _combobox;
         }
 
         public HTMLTestFileDialog FileDialog()
         {
-            try
-            {
-                _fileDialog = (HTMLTestFileDialog)this._objPool.GetLastObject();
+            _fileDialog = (HTMLTestFileDialog)this._objPool.GetLastObject();
 
-                return _fileDialog;
-            }
-            catch
-            {
-                return null;
-            }
+            return _fileDialog;
         }
 
         public HTMLTestFileDialog FileDialog(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.FileDialog);
+            GetMapObject(name, HTMLTestObjectType.FileDialog);
 
-                return _fileDialog;
-            }
-            catch
-            {
-                return null;
-            }
+            return _fileDialog;
         }
 
         public HTMLTestImage Image()
         {
-            try
-            {
-                _img = (HTMLTestImage)this._objPool.GetLastObject();
-                return _img;
-            }
-            catch
-            {
-                return null;
-            }
+            _img = (HTMLTestImage)this._objPool.GetLastObject();
+
+            return _img;
         }
 
         public HTMLTestImage Image(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.Image);
+            GetMapObject(name, HTMLTestObjectType.Image);
 
-                return _img; ;
-            }
-            catch
-            {
-                return null;
-            }
+            return _img; ;
         }
 
         public HTMLTestLabel Label()
         {
-            try
-            {
-                _label = (HTMLTestLabel)this._objPool.GetLastObject();
-                return _label;
-            }
-            catch
-            {
-                return null;
-            }
+            _label = (HTMLTestLabel)this._objPool.GetLastObject();
+
+            return _label;
         }
 
         public HTMLTestLabel Label(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.Label);
+            GetMapObject(name, HTMLTestObjectType.Label);
 
-                return _label;
-            }
-            catch
-            {
-                return null;
-            }
+            return _label;
         }
 
         public HTMLTestLink Link()
         {
-            try
-            {
-                _link = (HTMLTestLink)this._objPool.GetLastObject();
-                return _link;
-            }
-            catch
-            {
-                return null;
-            }
+            _link = (HTMLTestLink)this._objPool.GetLastObject();
 
+            return _link;
         }
 
         public HTMLTestLink Link(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.Link);
+            GetMapObject(name, HTMLTestObjectType.Link);
 
-                return _link;
-            }
-            catch
-            {
-                return null;
-            }
+            return _link;
         }
 
         public HTMLTestListBox ListBox()
         {
-            try
-            {
-                _listbox = (HTMLTestListBox)this._objPool.GetLastObject();
-                return _listbox;
-            }
-            catch
-            {
-                return null;
-            }
+            _listbox = (HTMLTestListBox)this._objPool.GetLastObject();
+
+            return _listbox;
         }
 
         public HTMLTestListBox ListBox(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.ListBox);
+            GetMapObject(name, HTMLTestObjectType.ListBox);
 
-                return _listbox;
-            }
-            catch
-            {
-                return null;
-            }
+            return _listbox;
         }
 
         public HTMLTestMsgBox MsgBox()
         {
-            try
-            {
-                _msgBox = (HTMLTestMsgBox)this._objPool.GetLastObject();
-                return _msgBox;
-            }
-            catch
-            {
-                return null;
-            }
+            _msgBox = (HTMLTestMsgBox)this._objPool.GetLastObject();
+
+            return _msgBox;
         }
 
         public HTMLTestMsgBox MsgBox(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.MsgBox);
+            GetMapObject(name, HTMLTestObjectType.MsgBox);
 
-                return _msgBox;
-            }
-            catch
-            {
-                return null;
-            }
+            return _msgBox;
         }
 
         public HTMLTestRadioButton RadioBtn()
         {
-            try
-            {
-                _radioBtn = (HTMLTestRadioButton)this._objPool.GetLastObject();
-                return _radioBtn;
-            }
-            catch
-            {
-                return null;
-            }
+            _radioBtn = (HTMLTestRadioButton)this._objPool.GetLastObject();
+
+            return _radioBtn;
         }
 
         public HTMLTestRadioButton RadioBtn(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.RadioButton);
+            GetMapObject(name, HTMLTestObjectType.RadioButton);
 
-                return _radioBtn;
-            }
-            catch
-            {
-                return null;
-            }
+            return _radioBtn;
         }
 
         public HTMLTestTable Table()
         {
-            try
-            {
-                _table = (HTMLTestTable)this._objPool.GetLastObject();
-                return _table;
-            }
-            catch
-            {
-                return null;
-            }
+            _table = (HTMLTestTable)this._objPool.GetLastObject();
+
+            return _table;
         }
 
         public HTMLTestTable Table(String name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.Table);
+            GetMapObject(name, HTMLTestObjectType.Table);
 
-                return _table;
-            }
-            catch
-            {
-                return null;
-            }
+            return _table;
         }
 
         public HTMLTestTextBox TextBox()
         {
-            try
-            {
-                _textBox = (HTMLTestTextBox)this._objPool.GetLastObject();
-                return _textBox;
-            }
-            catch
-            {
-                return null;
-            }
+            _textBox = (HTMLTestTextBox)this._objPool.GetLastObject();
+
+            return _textBox;
         }
 
         public HTMLTestTextBox TextBox(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.TextBox);
+            GetMapObject(name, HTMLTestObjectType.TextBox);
 
-                return _textBox;
-            }
-            catch
-            {
-                return null;
-            }
+            return _textBox;
         }
 
         public HTMLTestActiveXObject ActiveXObject()
         {
-            try
-            {
-                _activeXObj = (HTMLTestActiveXObject)this._objPool.GetLastObject();
-                return _activeXObj;
-            }
-            catch
-            {
-                return null;
-            }
+            _activeXObj = (HTMLTestActiveXObject)this._objPool.GetLastObject();
+
+            return _activeXObj;
         }
 
         public HTMLTestActiveXObject ActiveXObject(string name)
         {
-            try
-            {
-                GetMapObject(name, HTMLTestObjectType.ActiveX);
+            GetMapObject(name, HTMLTestObjectType.ActiveX);
 
-                return _activeXObj;
-            }
-            catch
-            {
-                return null;
-            }
+            return _activeXObj;
         }
         #endregion
 
@@ -569,6 +411,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotGetMapObjectException("Can not get map object [" + name + "]: " + ex.Message);
+            }
+        }
+
+        /* void AddTypeObjectToMap(string methodName, string[] paras, TestObject obj)
+         * add object to map automatically.
+         */
+        private void AddTypeObjectToMap(string methodName, string[] paras, TestObject obj)
+        {
+            if (!String.IsNullOrEmpty(methodName) && paras != null && obj != null)
+            {
+                if (paras.Length == 2)
+                {
+                    string name = paras[1];
+
+                    if (!String.IsNullOrEmpty(name))
+                    {
+                        Add(name, (HTMLTestGUIObject)obj);
+                    }
+                }
             }
         }
 
