@@ -123,6 +123,23 @@ namespace Shrinerain.AutoTester.Helper
             return _testObjectCache.Count;
         }
 
+        /* string[] GetKeys()
+         * return all keys in cache.
+         */
+        public static string[] GetKeys()
+        {
+            string[] res = new string[_testObjectCache.Keys.Count];
+
+            int i = 0;
+
+            foreach (string k in _testObjectCache.Keys)
+            {
+                res[i++] = k;
+            }
+
+            return res;
+        }
+
         #endregion
 
         #region private methods

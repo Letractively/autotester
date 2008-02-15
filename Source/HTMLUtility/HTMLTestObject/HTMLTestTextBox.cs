@@ -51,8 +51,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected HTMLTestTextBoxType _textBoxType = HTMLTestTextBoxType.Unknow;
 
-        protected static Regex _specialKeysReg = new Regex(@"{[a-zA-Z]+}", RegexOptions.Compiled);
-
         #endregion
 
         #region properties
@@ -130,53 +128,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.WaitOne();
 
-                string lastStr = GetText();
+                Focus();
 
-                int tryTimes = 0;
-
-                //we need to make sure the text is inputted correctly.
-                while (true)
-                {
-                    Focus();
-
-                    //if we tried more than 1 times, we need also input the origin string.
-                    if (tryTimes > 0)
-                    {
-                        KeyboardOp.SendChars(lastStr + value);
-                    }
-                    else
-                    {
-                        KeyboardOp.SendChars(value);
-                    }
-
-                    if (String.Compare(GetText(), lastStr + value, 0) == 0)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        // incorrect, retry.
-                        tryTimes++;
-
-                        //if we already tried 3 times, break.
-                        if (tryTimes > 3)
-                        {
-                            throw new CannotPerformActionException("Can not input string: " + value);
-                        }
-
-                        //clear old text
-                        if (this._tag == "INPUT")
-                        {
-                            this._textInputElement.value = "";
-                        }
-                        else
-                        {
-                            this._textAreaElement.value = "";
-                        }
-
-
-                    }
-                }
+                KeyboardOp.SendChars(value);
 
                 System.Threading.Thread.Sleep(200 * 1);
 
@@ -184,7 +138,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
                 //and we can not click this button, so we need to elimate it. 
                 //click just above the text box, to elimate it.
-                ClickAbove();
+                //ClickAbove();
 
                 _actionFinished.Set();
 
@@ -434,52 +388,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected override string GetLabelText()
         {
             return GetLabelForTextBox(this._sourceElement);
-        }
-
-        /* string[] ExtractSpecialKeys(string text)
-         * Return array of special keys.
-         * NEED UPDATE!!!
-         */
-        protected virtual string[] ExtractSpecialKeys(string text)
-        {
-            if (!String.IsNullOrEmpty(text))
-            {
-                MatchCollection mc = _specialKeysReg.Matches(text);
-
-                if (mc.Count > 0)
-                {
-                    string[] specialKeys = new string[mc.Count];
-
-                    string currentKey;
-                    for (int i = 0; i < mc.Count; i++)
-                    {
-                        currentKey = mc[i].Value.ToUpper();
-                        if (currentKey == "{TAB}" ||
-                            currentKey == "{CTRL}" ||
-                            currentKey == "{ALT}" ||
-                            currentKey == "{SHIFT}")
-                        {
-                            specialKeys[i] = currentKey;
-                        }
-
-                    }
-
-                    return specialKeys;
-
-                }
-            }
-
-            return null;
-        }
-
-        /* string[] ExtractNormalCharacters(string text)
-         * return array of normal characters.
-         */
-        protected virtual string[] ExtractNormalCharacters(string text)
-        {
-
-
-            return null;
         }
 
         #endregion

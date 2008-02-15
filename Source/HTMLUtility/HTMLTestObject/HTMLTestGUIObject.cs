@@ -292,12 +292,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return null;
                 }
 
-                string aroundText = element.outerText;
-
-                if (!String.IsNullOrEmpty(aroundText))
-                {
-                    return aroundText.Trim();
-                }
+                string aroundText = null;
 
                 IHTMLElement parent = element.parentElement;
 
@@ -305,7 +300,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     string tag = parent.tagName;
 
-                    if (tag == "SPAN" || tag == "TD" || tag == "DIV" || tag == "LABEL")
+                    if (tag == "SPAN" || tag == "TD" || tag == "DIV" || tag == "LABEL" || tag == "FONT")
                     {
                         if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out aroundText))
                         {
@@ -507,10 +502,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
         }
-
-        #region gui actions
-
-        #endregion
 
         #endregion
 
