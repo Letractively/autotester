@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-using XDICTGRB;
+//using XDICTGRB;
 
 namespace Shrinerain.AutoTester.ScreenReader
 {
@@ -11,64 +11,64 @@ namespace Shrinerain.AutoTester.ScreenReader
         static void Main(string[] args)
         {
 
-            KingTest kt = new KingTest();
+            //KingTest kt = new KingTest();
 
-            string lastWord = null;
+            //string lastWord = null;
 
-            while (true)
-            {
-                //System.Threading.Thread.Sleep(1000 * 1);
+            //while (true)
+            //{
+            //    //System.Threading.Thread.Sleep(1000 * 1);
 
-                if (!String.IsNullOrEmpty(lastWord) && lastWord == kt.WordString)
-                {
-                    Console.WriteLine(kt.WordString);
+            //    if (!String.IsNullOrEmpty(lastWord) && lastWord == kt.WordString)
+            //    {
+            //        Console.WriteLine(kt.WordString);
 
-                    lastWord = null;
-                }
+            //        lastWord = null;
+            //    }
 
-                lastWord = kt.WordString;
+            //    lastWord = kt.WordString;
 
-            }
+            //}
         }
 
     }
 
-    class KingTest : IXDictGrabSink
-    {
-        string wordString;
+    //class KingTest : IXDictGrabSink
+    //{
+    //    string wordString;
 
-        public string WordString
-        {
-            get { return wordString; }
-            set { wordString = value; }
-        }
+    //    public string WordString
+    //    {
+    //        get { return wordString; }
+    //        set { wordString = value; }
+    //    }
 
-        GrabProxy gp;
+    //    GrabProxy gp;
 
-        public KingTest()
-        {
-            gp = new GrabProxy();
+    //    public KingTest()
+    //    {
+    //        gp = new GrabProxy();
 
-            gp.GrabWord(10, 10);
+    //        gp.GrabWord(10, 10);
 
-            gp.GrabInterval = 1;//指抓取时间间隔
-            gp.GrabMode = XDictGrabModeEnum.XDictGrabMouse;//设定取词的属性
-            gp.GrabEnabled = true;//是否取词的属性
-            gp.GrabFlag = XDictGrabFlagEnum.XDictGrabOnlyEnglish;
-            gp.AdviseGrab(this);
+    //        gp.GrabInterval = 1;//指抓取时间间隔
+    //        gp.GrabMode = XDictGrabModeEnum.XDictGrabMouse;//设定取词的属性
+    //        gp.GrabEnabled = true;//是否取词的属性
+    //        gp.GrabFlag = XDictGrabFlagEnum.XDictGrabOnlyEnglish;
+    //        gp.AdviseGrab(this);
 
-        }
+    //    }
 
 
-        #region IXDictGrabSink Members
+    //    #region IXDictGrabSink Members
 
-        public int QueryWord(string WordString, int lCursorX, int lCursorY, string SentenceString, ref int lLoc, ref int lStart)
-        {
-            wordString = SentenceString;
+    //    public int QueryWord(string WordString, int lCursorX, int lCursorY, string SentenceString, ref int lLoc, ref int lStart)
+    //    {
+    //        wordString = SentenceString;
 
-            return 1;
-        }
+    //        return 1;
+    //    }
 
-        #endregion
-    }
+    //    #endregion
+    //}
 }

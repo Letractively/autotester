@@ -133,6 +133,33 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        /* void Delete(string name)
+         * delete an object from map.
+         */
+        public void Delete(string name)
+        {
+            if (!String.IsNullOrEmpty(name))
+            {
+                try
+                {
+                    //check all keys.
+                    string[] allKeys = ObjectCache.GetKeys();
+                    foreach (string k in allKeys)
+                    {
+                        if (k.IndexOf(_keySplitter) > 0 && k.IndexOf(name) > 0)
+                        {
+                            //remove the object.
+                            ObjectCache.Remove(k);
+                            return;
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            }
+        }
+
         #region html test object
 
         /* HTMLTestButton Button()
@@ -330,18 +357,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        /* void GetMapObject(string name, HTMLTestObjectType type)
+        /* bool GetMapObject(string name, HTMLTestObjectType type)
          * Get the html test object from cache, convert to expected type.
          */
         private void GetMapObject(string name, HTMLTestObjectType type)
         {
             if (String.IsNullOrEmpty(name))
             {
-                throw new CannotGetMapObjectException("Name can not be empty.");
+                throw new CannotGetMapObjectException("name can not be empty.");
             }
 
             try
             {
+                bool found = false;
+
                 if (type != HTMLTestObjectType.Unknow)
                 {
                     string key = type.ToString() + _keySplitter + name;
@@ -349,6 +378,36 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     object tmp = null;
 
                     if (ObjectCache.TryGetObjectFromCache(key, out tmp))
+                    {
+                        found = true;
+                    }
+                    else
+                    {
+                        string[] properties = null;
+                        string[] values = null;
+
+                        //parse the description text.
+                        //if the format is like "id=1", we think it is a property=value pair. 
+                        if (PropertiesParser.GetProperties(name, out properties, out values))
+                        {
+                            if (GetObjectFromPool(properties, values, out tmp))
+                            {
+                                if (((HTMLTestGUIObject)tmp).Type == type)
+                                {
+                                    found = true;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (GetObjectFromPool(name, type.ToString(), out tmp))
+                            {
+                                found = true;
+                            }
+                        }
+                    }
+
+                    if (found)
                     {
                         //build objects.
                         switch (type)
@@ -393,14 +452,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 _activeXObj = (HTMLTestActiveXObject)tmp;
                                 break;
                             default:
-                                break;
+                                throw new CannotGetMapObjectException("Unknow object type.");
                         }
-
                     }
                     else
                     {
-                        throw new CannotGetMapObjectException("Can not get map object by: " + name);
+                        throw new ObjectNotFoundException("Can not get object by: " + name);
                     }
+                }
+                else
+                {
+                    throw new CannotGetMapObjectException("Unkown object type.");
                 }
 
             }
@@ -410,14 +472,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotGetMapObjectException("Can not get map object [" + name + "]: " + ex.Message);
+                throw new CannotGetMapObjectException("Can not get object from map: " + ex.Message);
             }
         }
 
-        /* void AddTypeObjectToMap(string methodName, string[] paras, TestObject obj)
+        /* void AddTypeObjectToMap(string methodName, string[] paras, object obj)
          * add object to map automatically.
          */
-        private void AddTypeObjectToMap(string methodName, string[] paras, TestObject obj)
+        private void AddTypeObjectToMap(string methodName, string[] paras, object obj)
         {
             if (!String.IsNullOrEmpty(methodName) && paras != null && obj != null)
             {
@@ -431,6 +493,63 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
             }
+        }
+
+        /* bool GetObjectFromPool(string[] properties, string[] values, out object obj)
+         * return HTMLTestGuiObject by a string description.
+         */
+        private bool GetObjectFromPool(string[] properties, string[] values, out object obj)
+        {
+
+            obj = null;
+
+            if (properties != null && values != null && properties.Length == values.Length)
+            {
+
+                int[] sim = new int[1] { 100 };
+
+                try
+                {
+                    if (properties.Length == 1)
+                    {
+                        obj = this._objPool.GetObjectByProperty(properties[0], values[0]);
+                    }
+                    else
+                    {
+                        obj = this._objPool.GetObjectBySimilarProperties(properties, values, sim, true);
+                    }
+
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+
+            }
+
+            return false;
+        }
+
+        private bool GetObjectFromPool(string text, string type, out object obj)
+        {
+            obj = null;
+
+            if (!String.IsNullOrEmpty(text) && !String.IsNullOrEmpty(type))
+            {
+                try
+                {
+                    obj = this._objPool.GetObjectByType(type, text);
+
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
 
         #endregion

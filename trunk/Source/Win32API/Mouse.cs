@@ -11,7 +11,7 @@
 *              Left click and right click. 
 *
 * History: 2007/09/04 wan,yu Init version
-*          2008/01/29 wan,yu update, add _sendMessage, if this flag set to true, 
+*          2008/01/29 wan,yu update, add _sendMessageOnly, if this flag set to true, 
 *                            we will send mouse message to the control directly, 
 *                            not move mouse. 
 *
@@ -28,12 +28,12 @@ namespace Shrinerain.AutoTester.Win32
 
         #region fields
 
-        private static bool _sendMessage = false;
+        private static bool _sendMessageOnly = false;
 
-        public static bool SendMessage
+        public static bool SendMessageOnly
         {
-            get { return MouseOp._sendMessage; }
-            set { MouseOp._sendMessage = value; }
+            get { return MouseOp._sendMessageOnly; }
+            set { MouseOp._sendMessageOnly = value; }
         }
 
         #endregion
@@ -83,7 +83,7 @@ namespace Shrinerain.AutoTester.Win32
         public static void Click(IntPtr handle)
         {
             //if the handle is not 0 and _sendMessage is true, we will send mouse message directly.
-            if (handle != IntPtr.Zero && _sendMessage)
+            if (handle != IntPtr.Zero && _sendMessageOnly)
             {
                 Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONDOWN, 0, 0);
                 Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONUP, 0, 0);
@@ -111,7 +111,7 @@ namespace Shrinerain.AutoTester.Win32
 
         public static void DoubleClick(IntPtr handle)
         {
-            if (handle != IntPtr.Zero && _sendMessage)
+            if (handle != IntPtr.Zero && _sendMessageOnly)
             {
                 Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONDOWN, 0, 0);
                 Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_LBUTTONUP, 0, 0);
@@ -137,7 +137,7 @@ namespace Shrinerain.AutoTester.Win32
 
         public static void RightClick(IntPtr handle)
         {
-            if (handle != IntPtr.Zero && _sendMessage)
+            if (handle != IntPtr.Zero && _sendMessageOnly)
             {
                 Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_RBUTTONDOWN, 0, 0);
                 Win32API.SendMessage(handle, (int)Win32API.WM_MOUSE.WM_RBUTTONUP, 0, 0);

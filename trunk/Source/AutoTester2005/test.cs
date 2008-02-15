@@ -23,6 +23,7 @@ using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Framework;
 using Shrinerain.AutoTester.Win32;
+using Shrinerain.AutoTester.Helper;
 
 namespace Shrinerain.AutoTester
 {
@@ -88,7 +89,15 @@ namespace Shrinerain.AutoTester
         static void FunctionTest()
         {
 
+            // KeyboardOp.SendChars("shrinerain");
+            Google();
+            return;
+
             qidian();
+            return;
+
+
+
             //TestLog myLog = new TestLog();
             //myLog.TestlogTemplate = @"E:\program\cs\AutoTester\Document\log.template";
             //myLog.LogFile = @"G:\testlog.html";
@@ -180,13 +189,13 @@ namespace Shrinerain.AutoTester
             string url = @"www.qidian.com";
             HTMLTest test = new HTMLTest();
             test.Browser.Load(url);
+            test.Map.TextBox("用户名").Input("fsfdsgdg");
+            test.Map.TextBox("密码").Input("fdsgd");
+            test.Map.Button("登陆").Click();
+            //test.Pool.GetObjectByType("textbox", "密码");
+            //test.Map.TextBox().Input("jyoicq");
 
-            test.Pool.GetObjectByType("textbox", "用户名");
-
-            test.Pool.GetObjectByType("textbox", "密码");
-            test.Map.TextBox().Input("jyoicq");
-
-            test.Map.TextBox("用户名").Input("shrinerain");
+            // test.Map.TextBox("用户名").Input("fgdagdklasdgh;eiruytnkl;fsdjgfkdlgjn{tab}");
 
             //test.Pool.GetObjectByType("button", "登陆");
             //test.Map.Button().Click();
@@ -195,6 +204,21 @@ namespace Shrinerain.AutoTester
 
             //test.Pool.GetObjectByProperty(".innerText", "提交建议"); //Pool.GetObjectByType("link", "提交建议");
             //test.Map.Link().Click();
+        }
+
+        public static void Google()
+        {
+            string url = @"http://www.google.com";
+            HTMLTest test = new HTMLTest();
+            test.Browser.Load(url);
+
+            //test.Pool.GetObjectByRect(50, 20, 100, 100, "textbox", true);
+            test.Map.TextBox("name=q;size=55").Input("fasgdgeryhtgjgh fjhgjwe89675349064");
+            test.Map.Add("搜索框");
+            test.Map.TextBox("搜索框").Clear();
+            //test.Map.TextBox("搜索框").Input("testatest12456");
+            // test.Map.Button("Google 搜索").Click();
+
         }
     }
 }

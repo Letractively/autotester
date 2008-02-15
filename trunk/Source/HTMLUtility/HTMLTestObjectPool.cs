@@ -102,8 +102,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private static Regex _scriptReg = new Regex("<script.*?</script>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static Dictionary<string, Regex> _regCache = new Dictionary<string, Regex>(17);
 
-        //if this flag set to ture, we will ignore those tables whose "border" < 1.
+        //if this flag set to ture, we will ignore the table whose "border" < 1.
         private static bool _ignoreBorderlessTable = false;
+
+        //each percent is a group, for vibration search.
+        //为什么是8? 因为"发"嘛, 还有, 从高中到大学,我的球衣号码一直是8号~~~
+        private const int _vibrationPercent = 8;
 
         #endregion
 
@@ -437,16 +441,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //get all HTML objects.
                 GetAllElements();
 
-                //each percent is a group.
-                int percent = 10;
-
                 //if we have too many objects, we will try to find it's possible position to improve performance.
                 int possibleStartIndex = 0;
 
                 try
                 {
                     //if we have more than 99 objects, we will try to find the position by text search.
-                    if (this._allElements.length > 99)
+                    if (this._allElements.length > 2 * _vibrationPercent)
                     {
                         //get HTML code of current page, remove blank.
                         string currentHTMLCode = _htmlTestBrowser.GetHTML().Trim();
@@ -459,7 +460,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             //use regex to extract objects.
                             MatchCollection mc = _htmlReg.Matches(currentHTMLCode.Substring(0, startPos));
 
-                            if (mc.Count > percent)
+                            if (mc.Count > _vibrationPercent)
                             {
                                 if (mc.Count >= _allElements.length)
                                 {
@@ -479,7 +480,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
 
-                int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, this._allElements.length - 1, percent);
+                int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, this._allElements.length - 1, _vibrationPercent);
 
                 object nameObj = null;
                 object indexObj = null;
@@ -887,7 +888,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //windows handle of Message Box and File Dialog
             IntPtr handle = IntPtr.Zero;
 
-            //we will try 30s to find a object.
+            //we will try 30s to find an object.
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
@@ -945,17 +946,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //find the object by tag.
                         tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
 
-                        //each percent is a group.
-                        //为什么是8? 因为"发"嘛.
-                        const int percent = 8;
-
                         //if we have too many objects, we will try to find it's possible position to improve performance.
                         int possibleStartIndex = 0;
 
                         try
                         {
                             //if we have more than 2*percent objects, we will try to find the position by searching the text.
-                            if (tagElementCol.length > percent * 2)
+                            if (tagElementCol.length > _vibrationPercent * 2)
                             {
 
                                 Regex tagReg;
@@ -978,7 +975,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                     //use regex to extract objects.
                                     MatchCollection mc = tagReg.Matches(currentHTMLCode.Substring(0, startPos));
 
-                                    if (mc.Count > percent)
+                                    if (mc.Count > _vibrationPercent)
                                     {
                                         if (mc.Count >= tagElementCol.length)
                                         {
@@ -998,7 +995,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         }
 
 
-                        int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, tagElementCol.length - 1, percent);
+                        int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, tagElementCol.length - 1, _vibrationPercent);
 
                         // check object one by one, start from the possible position.
                         // the "|" means the start position, the "--->" means the search direction.            
@@ -1519,14 +1516,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 string label = HTMLTestTextBox.GetLabelForTextBox(element);
 
                 //for text around textbox, we may have ":", like "UserName:" , remove ":", make sure no writing mistake.
-                if (value.EndsWith(":") || value.EndsWith("："))
+                if (value.Length > 1)
                 {
-                    value = value.Substring(0, value.Length - 1);
-                }
+                    if (value.EndsWith(":") || value.EndsWith("："))
+                    {
+                        value = value.Substring(0, value.Length - 1);
+                    }
 
-                if (label.EndsWith(":") || label.EndsWith("："))
-                {
-                    label = label.Substring(0, label.Length - 1);
+                    if (label.EndsWith(":") || label.EndsWith("："))
+                    {
+                        label = label.Substring(0, label.Length - 1);
+                    }
                 }
 
                 return Searcher.IsStringLike(value, label, simPercent);
@@ -1701,7 +1701,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 string labelText = HTMLTestRadioButton.GetLabelForRadioBox(element);
 
-                if (!String.IsNullOrEmpty(labelText))
+                if (!String.IsNullOrEmpty(labelText) && value.Length > 1)
                 {
                     if (value.EndsWith(".") || value.EndsWith("。"))
                     {
@@ -1770,7 +1770,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 string labelText = HTMLTestCheckBox.GetLabelForCheckBox(element);
 
-                if (!String.IsNullOrEmpty(labelText))
+                if (!String.IsNullOrEmpty(labelText) && value.Length > 1)
                 {
                     if (value.EndsWith(".") || value.EndsWith("。"))
                     {
