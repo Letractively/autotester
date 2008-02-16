@@ -233,7 +233,7 @@ namespace Shrinerain.AutoTester.MFCUtility
             return this._className;
         }
 
-        public override bool IsVisible()
+        public virtual bool Visible()
         {
             if (this._handle == IntPtr.Zero)
             {

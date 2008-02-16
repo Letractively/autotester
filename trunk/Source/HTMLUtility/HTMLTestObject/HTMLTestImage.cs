@@ -152,6 +152,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
+            catch (TestException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not click an image: " + ex.Message);

@@ -138,6 +138,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.Set();
 
             }
+            catch (TestException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform click action: " + ex.Message);
@@ -159,6 +163,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
+            catch (TestException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform double click action: " + ex.Message);
@@ -179,6 +187,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 MouseOp.RightClick();
 
                 _actionFinished.Set();
+            }
+            catch (TestException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -276,6 +288,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "";
         }
 
+        public override void Hover()
+        {
+            if (!_isEnable || !_isVisible)
+            {
+                throw new CannotPerformActionException("Button is not enabled.");
+            }
+
+            base.Hover();
+        }
         #endregion
 
         #endregion

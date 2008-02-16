@@ -114,10 +114,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void Input(string value)
         {
-            if (IsReadOnly())
-            {
-                throw new CannotPerformActionException("Object is read only.");
-            }
 
             if (value == null)
             {
@@ -156,6 +152,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     ClickAbove();
                 }
 
+                //sleep for 0.5 seconds.
+                System.Threading.Thread.Sleep(500 * 1);
+
                 _actionFinished.Set();
 
             }
@@ -178,8 +177,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
+                    _actionFinished.WaitOne();
+
                     Focus();
                     KeyboardOp.SendKey(keys);
+
+                    System.Threading.Thread.Sleep(500 * 1);
+
+                    _actionFinished.Set();
                 }
                 catch (TestException)
                 {
@@ -199,6 +204,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (!_isEnable || !_isVisible || _isReadOnly)
+                {
+                    throw new CannotPerformActionException("Textbox is not enabled.");
+                }
+
                 _actionFinished.WaitOne();
 
                 if (this._tag == "INPUT")
@@ -227,6 +237,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (!_isEnable || !_isVisible || _isReadOnly)
+                {
+                    throw new CannotPerformActionException("Textbox is not enabled.");
+                }
+
                 Hover();
                 MouseOp.Click();
 

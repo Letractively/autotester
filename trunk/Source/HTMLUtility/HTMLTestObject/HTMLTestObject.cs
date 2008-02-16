@@ -51,13 +51,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         #region fields
 
+        //id and name for a HTML object, they are the most important property.
         protected string _id;
         protected string _name;
 
+        //tag for this object, like "A" ,"INPUT"...
         protected string _tag;
 
-        protected bool _enable;
-        protected bool _readOnly;
+        protected bool _isVisible;
+        protected bool _isEnable;
+        protected bool _isReadOnly;
 
         protected HTMLTestObjectType _type;
         protected IHTMLElement _sourceElement;
@@ -101,19 +104,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return this._tag; }
         }
 
-        public bool Enable
+        public bool IsEnable
         {
-            get { return _enable; }
+            get { return _isEnable; }
         }
 
-        public bool Visible
+        public bool IsVisible
         {
-            get { return _visible; }
+            get { return _isVisible; }
         }
 
-        public bool ReadOnly
+        public bool IsReadOnly
         {
-            get { return _readOnly; }
+            get { return _isReadOnly; }
         }
 
         public virtual HTMLTestBrowser Browser
@@ -200,32 +203,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 //check the "visibility" property.
-                this._visible = IsVisible();
+                this._isVisible = Visible();
             }
             catch
             {
-                this._visible = true;
+                this._isVisible = true;
             }
 
             try
             {
                 //check the "enable" property
-                this._enable = IsEnable();
+                this._isEnable = Enable();
 
             }
             catch
             {
-                this._enable = true;
+                this._isEnable = true;
             }
 
             try
             {
                 //check the "readonly" property
-                this._readOnly = IsReadOnly();
+                this._isReadOnly = ReadOnly();
             }
             catch
             {
-                this._readOnly = false;
+                this._isReadOnly = false;
             }
 
         }
@@ -249,6 +252,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region public methods
+
+
 
         #region action
 
@@ -279,66 +284,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public override bool SetPropertyByName(string propertyName, object value)
         {
             return TrySetValueByProperty(this._sourceElement, propertyName, value);
-        }
-
-        #endregion
-
-        #region private methods
-
-        /* bool IsVisible()
-         * return true if it is a visible object.
-         */
-        public override bool IsVisible()
-        {
-            string isVisible;
-
-            if (!TryGetValueByProperty(this._sourceElement, "visibility", out isVisible))
-            {
-                return true;
-            }
-            else
-            {
-                return String.Compare(isVisible, "HIDDEN", true) == 0;
-            }
-        }
-
-        /* bool IsEnable()
-         * return true if it is a enable object.
-         */
-        public virtual bool IsEnable()
-        {
-            string isEnable;
-
-            if (!TryGetValueByProperty(this._sourceElement, "diabled", out isEnable))
-            {
-                return true;
-            }
-            else
-            {
-                return !(String.Compare(isEnable, "true", true) == 0);
-            }
-        }
-
-        /* bool IsReadOnly()
-         * return true if it is a readonly object.
-         */
-        public virtual bool IsReadOnly()
-        {
-            if (!IsEnable())
-            {
-                return true;
-            }
-
-            string isReadOnly;
-
-            if (!TryGetValueByProperty(this._sourceElement, "readOnly", out isReadOnly))
-            {
-                return false;
-            }
-            else
-            {
-                return String.Compare(isReadOnly, "TRUE", true) == 0;
-            }
         }
 
         /* bool TryGetValueByProperty(IHTMLElement element, string properyName)
@@ -462,6 +407,104 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
+        }
+
+        #endregion
+
+        #region private methods
+
+        /* bool IsVisible()
+         * return true if it is a visible object.
+         */
+        protected virtual bool Visible()
+        {
+            string isVisible;
+
+            if (this._sourceElement.offsetWidth < 1 || this._sourceElement.offsetHeight < 1)
+            {
+                return false;
+            }
+
+            if (!TryGetValueByProperty(this._sourceElement, "visibility", out isVisible))
+            {
+                return true && IsDisplayed(this._sourceElement);
+            }
+            else
+            {
+                return String.Compare(isVisible, "HIDDEN", true) == 0;
+            }
+        }
+
+        /* bool IsEnable()
+         * return true if it is a enable object.
+         */
+        protected virtual bool Enable()
+        {
+            string isEnable;
+
+            if (!TryGetValueByProperty(this._sourceElement, "diabled", out isEnable))
+            {
+                return true;
+            }
+            else
+            {
+                return !(String.Compare(isEnable, "true", true) == 0);
+            }
+        }
+
+        /* bool IsReadOnly()
+         * return true if it is a readonly object.
+         */
+        protected virtual bool ReadOnly()
+        {
+            if (!Enable())
+            {
+                return true;
+            }
+
+            string isReadOnly;
+
+            if (!TryGetValueByProperty(this._sourceElement, "readOnly", out isReadOnly))
+            {
+                return false;
+            }
+            else
+            {
+                return String.Compare(isReadOnly, "TRUE", true) == 0;
+            }
+        }
+
+        /* bool IsDisplay(IHTMLElement element)
+        * Check the style
+        */
+        protected virtual bool IsDisplayed(IHTMLElement element)
+        {
+            if (element == null)
+            {
+                return false;
+            }
+
+            string isDisabled;
+            if (HTMLTestObject.TryGetValueByProperty(element, "disabled", out isDisabled))
+            {
+                if (String.Compare("true", isDisabled, true) == 0)
+                {
+                    return false;
+                }
+            }
+
+            string isDisplayed;
+            if (HTMLTestObject.TryGetValueByProperty(element, "style", out isDisplayed))
+            {
+                isDisplayed = isDisplayed.Replace(" ", "");
+                if (isDisplayed.IndexOf("display:none", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+
         }
 
         #endregion

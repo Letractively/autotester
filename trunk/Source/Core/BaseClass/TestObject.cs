@@ -29,8 +29,6 @@ namespace Shrinerain.AutoTester.Core
         //domain means the object type, eg: HTML
         protected string _domain;
 
-        protected bool _visible;
-
         // this hashtable is used to store properties for a test object.
         // key is the property name.
         protected Dictionary<string, object> _properties;
@@ -91,11 +89,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 return false;
             }
-        }
-
-        public virtual bool IsVisible()
-        {
-            return this._visible;
         }
 
         /* void HightLight()

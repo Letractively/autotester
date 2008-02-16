@@ -194,10 +194,12 @@ namespace Shrinerain.AutoTester
             test.Browser.Load(url);
             test.Map.TextBox("用户名").Input("shrinerain");
             test.Map.TextBox("密码").Input("jyoicq");
-            test.Map.Button("确定").Click();
+            test.Map.Button("登录").Click();
 
             //test.Browser.WaitForNextPage();
-            //test.Map.Link("我的书架").Click();
+            test.Map.Link("我的书架").Click();
+            test.Browser.Wait(3);
+            test.Map.Button("退出").Click();
 
             //test.Pool.GetObjectByType("textbox", "用户名", 0);
             //test.Map.TextBox().Input("shrinerain");

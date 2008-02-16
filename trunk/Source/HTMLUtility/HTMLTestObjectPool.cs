@@ -1065,6 +1065,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                         return _testObj;
                                     }
                                 }
+                                else
+                                {
+
+                                }
                             }
                             catch (CannotBuildObjectException)
                             {
@@ -2050,20 +2054,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
+            else if (element.offsetWidth < 1 || element.offsetHeight < 1)
+            {
+                return false;
+            }
 
             string tag = element.tagName;
 
             if (String.IsNullOrEmpty(tag))
-            {
-                return false;
-            }
-            else if (tag == "BR"
-                  || tag == "TR"
-                  || tag == "P"
-                  || tag == "TH"
-                  || tag == "SCRIPT"
-                  || tag == "FORM"
-                    )
             {
                 return false;
             }
@@ -2407,9 +2405,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (tmp != null)
             {
-                tmp.Browser = _htmlTestBrowser;
-                tmp.HtmlObjPool = this;
-                return tmp;
+                try
+                {
+                    tmp.Browser = _htmlTestBrowser;
+                    tmp.HtmlObjPool = this;
+                    return tmp;
+                }
+                catch (CannotGetObjectPositionException ex)
+                {
+                    throw new CannotBuildObjectException("Can not get object position: " + ex.Message);
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotBuildObjectException(ex.Message);
+                }
             }
             else
             {
