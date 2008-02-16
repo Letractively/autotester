@@ -54,7 +54,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _labelText;
 
         //reg to match <>, html tag.
-        protected static Regex _regHtml = new Regex("<[^>]+>", RegexOptions.Compiled);
+        protected static Regex _regHtml = new Regex("<[^>]+?>", RegexOptions.Compiled);
+
+        //label splitter
+        protected const string _labelSplitter = "__shrinerain__";
 
         #endregion
 
@@ -358,7 +361,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                     {
                                         prevIndex--;
 
+                                        if (prevIndex < 0)
+                                        {
+                                            prevElement = null;
+                                            break;
+                                        }
+
                                         prevElement = (IHTMLElement)brotherElements.item((object)prevIndex, (object)prevIndex);
+
+                                        if (prevElement.tagName == "FONT" || prevElement.tagName == "SPAN")
+                                        {
+                                            continue;
+                                        }
+
                                         if (prevElement == null
                                             || prevElement.tagName == "A"
                                             || prevElement.tagName == "INPUT"
@@ -382,7 +397,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                     {
                                         nextIndex++;
 
+                                        if (nextIndex >= brotherElements.length)
+                                        {
+                                            nextElement = null;
+                                            break;
+                                        }
+
                                         nextElement = (IHTMLElement)brotherElements.item((object)nextIndex, (object)nextIndex);
+
+                                        if (nextElement.tagName == "FONT" || nextElement.tagName == "SPAN")
+                                        {
+                                            continue;
+                                        }
+
                                         if (nextElement == null
                                             || nextElement.tagName == "A"
                                             || nextElement.tagName == "INPUT"
@@ -405,8 +432,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                                 string leftHTML = parentHTML.Substring(posLeft, curPos - posLeft);
                                 //remove html tag.
-                                leftStr = _regHtml.Replace(leftHTML, "");
-
+                                leftStr = System.Web.HttpUtility.HtmlDecode(_regHtml.Replace(leftHTML, ""));
 
                                 string rightStr = "";
                                 int posRight = parentHTML.Length;
@@ -418,9 +444,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                                 string rightHTML = parentHTML.Substring(curPos + myHTML.Length, posRight - curPos - myHTML.Length);
                                 //remove html tag.
-                                rightStr = _regHtml.Replace(rightHTML, "");
+                                rightStr = System.Web.HttpUtility.HtmlDecode(_regHtml.Replace(rightHTML, ""));
 
-                                aroundText = leftStr.Trim() + "\t" + rightStr.Trim();
+                                aroundText = leftStr.Trim() + _labelSplitter + rightStr.Trim();
 
                             }
                             else

@@ -24,6 +24,7 @@
 
 
 using System;
+using System.Text.RegularExpressions;
 
 namespace Shrinerain.AutoTester.Helper
 {
@@ -38,6 +39,10 @@ namespace Shrinerain.AutoTester.Helper
         //if the flag set to TRUE.
         //when the percent is too large, we will adjust it.
         private static bool _autoAdjustLowerBound = true;
+
+        //regex to remove blank
+        //we have to remove english blank " ", chinese blank " ", and tab "\t".
+        private static Regex _blankReg = new Regex("[  \t]+", RegexOptions.Compiled);
 
         #endregion
 
@@ -91,14 +96,20 @@ namespace Shrinerain.AutoTester.Helper
          */
         public static bool IsStringLike(string str1, string str2, int percent)
         {
-            return IsStringLike(str1, str2, percent, true);
+            return IsStringLike(str1, str2, percent, true, true);
         }
 
-        public static bool IsStringLike(string str1, string str2, int percent, bool ignoreCase)
+        public static bool IsStringLike(string str1, string str2, int percent, bool ignoreCase, bool compressBlank)
         {
             if (percent > 100 || percent < 1)
             {
                 return false;
+            }
+
+            if (compressBlank)
+            {
+                str1 = _blankReg.Replace(str1, "");
+                str2 = _blankReg.Replace(str2, "");
             }
 
             if (String.Compare(str1, str2, ignoreCase) == 0)
@@ -133,7 +144,7 @@ namespace Shrinerain.AutoTester.Helper
                             }
                         }
 
-                        return CalSimilarPercent(str1, str2, ignoreCase) >= percent;
+                        return CalSimilarPercent(str1, str2, ignoreCase, compressBlank) >= percent;
 
                     }
                     else
@@ -321,10 +332,10 @@ namespace Shrinerain.AutoTester.Helper
 
         private static int CalSimilarPercent(string str1, string str2)
         {
-            return CalSimilarPercent(str1, str2, true);
+            return CalSimilarPercent(str1, str2, true, true);
         }
 
-        private unsafe static int CalSimilarPercent(string str1, string str2, bool ignoreCase)
+        private unsafe static int CalSimilarPercent(string str1, string str2, bool ignoreCase, bool compressBlank)
         {
             //check if they are equal
             if (String.Compare(str1, str2, ignoreCase) == 0)
@@ -340,8 +351,13 @@ namespace Shrinerain.AutoTester.Helper
             {
 
                 //both two strings are not empty, then we can start to check the similar percent.
-                str1 = str1.Trim();
-                str2 = str2.Trim();
+
+                //remove blank
+                if (compressBlank)
+                {
+                    str1 = _blankReg.Replace(str1, "");
+                    str2 = _blankReg.Replace(str2, "");
+                }
 
                 //if ignore case, convert to upper case.
                 if (ignoreCase)
@@ -351,7 +367,7 @@ namespace Shrinerain.AutoTester.Helper
                 }
 
                 //if the two strings is a sentence(contains blank) not a single word, then split the sentence to words, check each word.
-                if (str1.IndexOf(" ") > 0 && str2.IndexOf(" ") > 0)
+                if (!compressBlank && str1.IndexOf(" ") > 0 && str2.IndexOf(" ") > 0)
                 {
                     string[] str1Arr = str1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     string[] str2Arr = str2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);

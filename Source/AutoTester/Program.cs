@@ -87,13 +87,15 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
-             Google();
-
-             return;
 
             qidian();
 
             return;
+
+            Google();
+
+            return;
+
 
             //TestLog myLog = new TestLog();
             //myLog.TestlogTemplate = @"E:\program\cs\AutoTester\Document\log.template";
@@ -187,9 +189,15 @@ namespace Shrinerain.AutoTester
 
         public static void qidian()
         {
-            string url = @"www.qidian.com";
+            string url = @"www.qidian.com";// @"http://mm.cmfu.com/vip/ebook_subscibe_forbuy.asp?ebookid=367736&bl_id=149430";//
             HTMLTest test = new HTMLTest();
             test.Browser.Load(url);
+            test.Map.TextBox("用户名").Input("shrinerain");
+            test.Map.TextBox("密码").Input("jyoicq");
+            test.Map.Button("确定").Click();
+
+            //test.Browser.WaitForNextPage();
+            //test.Map.Link("我的书架").Click();
 
             //test.Pool.GetObjectByType("textbox", "用户名", 0);
             //test.Map.TextBox().Input("shrinerain");
@@ -200,11 +208,6 @@ namespace Shrinerain.AutoTester
             //test.Pool.GetObjectByType("button", "登陆", 0);
             //test.Map.Button().Click();
 
-            test.Browser.Wait(5);
-            Console.WriteLine("Date: {0:o}", DateTime.Now);
-            test.Pool.GetObjectByType("link", "提交建议");
-            Console.WriteLine("Date: {0:o}", DateTime.Now);
-            //test.Map.Link().Click();
 
 
             Console.ReadLine();

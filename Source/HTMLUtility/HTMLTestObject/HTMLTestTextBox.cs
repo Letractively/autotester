@@ -130,15 +130,31 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 Focus();
 
-                KeyboardOp.SendChars(value);
+                try
+                {
+                    //set the text directly.
+                    if (this._tag == "INPUT")
+                    {
+                        this._textInputElement.value = value;
+                    }
+                    else
+                    {
+                        this._textAreaElement.value = value;
+                    }
 
-                System.Threading.Thread.Sleep(200 * 1);
 
-                //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
-                //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
-                //and we can not click this button, so we need to elimate it. 
-                //click just above the text box, to elimate it.
-                //ClickAbove();
+                }
+                catch
+                {
+                    //or send the chars by keyboard
+                    KeyboardOp.SendChars(value);
+
+                    //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
+                    //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
+                    //and we can not click this button, so we need to elimate it. 
+                    //click just above the text box, to elimate it.
+                    ClickAbove();
+                }
 
                 _actionFinished.Set();
 
@@ -213,6 +229,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 Hover();
                 MouseOp.Click();
+
+                System.Threading.Thread.Sleep(500 * 1);
             }
             catch (TestException)
             {
@@ -278,9 +296,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 string label = GetAroundText(element);
 
                 //for textbox, we think the text on the left is it's label.
-                if (!String.IsNullOrEmpty(label) && !String.IsNullOrEmpty(label.Split('\t')[0]))
+                if (!String.IsNullOrEmpty(label) && !String.IsNullOrEmpty(label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0]))
                 {
-                    return label.Split('\t')[0];
+                    return label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0];
                 }
 
                 //if failed, try to get text from left cell or up cell.
