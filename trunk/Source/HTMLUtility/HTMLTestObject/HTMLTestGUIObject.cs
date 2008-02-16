@@ -447,7 +447,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 }
 
                                 string leftHTML = parentHTML.Substring(posLeft, curPos - posLeft);
-                                //remove html tag.
+                                //remove html tag and decode html code, eg: &nbsp; to a blank.
                                 leftStr = System.Web.HttpUtility.HtmlDecode(_regHtml.Replace(leftHTML, ""));
 
                                 string rightStr = "";
