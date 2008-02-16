@@ -202,42 +202,58 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual Rectangle GetRectOnScreen()
         {
-            // get it's position offset to it's parent object.
-            int top = _sourceElement.offsetTop;
-            int left = _sourceElement.offsetLeft;
-            int width = _sourceElement.offsetWidth;
-            int height = _sourceElement.offsetHeight;
-
-            //if width or height is 0, error.
-            if (width <= 0 || height <= 0)
+            try
             {
-                throw new CannotGetObjectPositionException("width and height of object can not be 0.");
-            }
+                // get it's position offset to it's parent object.
+                int top = _sourceElement.offsetTop;
+                int left = _sourceElement.offsetLeft;
+                int width = _sourceElement.offsetWidth;
+                int height = _sourceElement.offsetHeight;
 
-            //find parent object, calculate 
-            //the offsetTop/offsetLeft... is the distance between current object and it's parent object.
-            //so we need a loop to get the actual position on the screen.
-            IHTMLElement parent = _sourceElement.offsetParent;
-            while (parent != null)
+                //if width or height is 0, error.
+                if (width <= 0 || height <= 0)
+                {
+                    throw new CannotGetObjectPositionException("width and height of object can not be 0.");
+                }
+
+                //find parent object, calculate 
+                //the offsetTop/offsetLeft... is the distance between current object and it's parent object.
+                //so we need a loop to get the actual position on the screen.
+                IHTMLElement parent = _sourceElement.offsetParent;
+                while (parent != null)
+                {
+                    if (this._isVisible && !this.IsDisplayed(parent))
+                    {
+                        this._isVisible = false;
+                    }
+
+                    top += parent.offsetTop;
+                    left += parent.offsetLeft;
+                    parent = parent.offsetParent;
+                }
+
+                //get the browser information, get the real position on screen.
+                top += _browser.ClientTop;
+                left += _browser.ClientLeft;
+
+                top -= _browser.ScrollTop;
+                left -= _browser.ScrollLeft;
+
+                // we will calculate the center point of this object.
+                CalCenterPoint(left, top, width, height);
+
+                this._rect = new Rectangle(left, top, width, height);
+
+                return _rect;
+            }
+            catch (TestException)
             {
-                top += parent.offsetTop;
-                left += parent.offsetLeft;
-                parent = parent.offsetParent;
+                throw;
             }
-
-            //get the browser information, get the real position on screen.
-            top += _browser.ClientTop;
-            left += _browser.ClientLeft;
-
-            top -= _browser.ScrollTop;
-            left -= _browser.ScrollLeft;
-
-            // we will calculate the center point of this object.
-            CalCenterPoint(left, top, width, height);
-
-            this._rect = new Rectangle(left, top, width, height);
-
-            return _rect;
+            catch (Exception ex)
+            {
+                throw new CannotGetObjectPositionException("Can not get object position: " + ex.Message);
+            }
         }
 
 
@@ -481,9 +497,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!IsVisible() || !IsEnable())
+                if (!this._isVisible)
                 {
-                    throw new CannotPerformActionException("Object is not visible/enable.");
+                    throw new CannotPerformActionException("Object is not visible.");
                 }
 
                 //if the object is not visible, then move it.

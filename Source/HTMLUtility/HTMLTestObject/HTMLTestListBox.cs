@@ -183,6 +183,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
+        public override void Hover()
+        {
+            if (!_isEnable || !_isVisible || _isReadOnly)
+            {
+                throw new CannotPerformActionException("Listbox is not enabled.");
+            }
+
+            base.Hover();
+        }
+
         /* void Select(string value)
         *  Select an item by text.
         *  This method will get the index by text, and call SelectByIndex method to perform action.
@@ -244,7 +254,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.Set();
 
             }
-            catch (ItemNotFoundException)
+            catch (TestException)
             {
                 throw;
             }
@@ -296,6 +306,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
 
+            }
+            catch (TestException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

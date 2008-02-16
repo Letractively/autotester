@@ -71,12 +71,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+
                 if (!IsChecked())
                 {
                     Click();
                 }
             }
-            catch (CannotPerformActionException)
+            catch (TestException)
             {
                 throw;
             }
@@ -96,7 +97,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     Click();
                 }
             }
-            catch (CannotPerformActionException)
+            catch (TestException)
             {
                 throw;
             }
@@ -126,6 +127,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (!_isEnable || !_isVisible || _isReadOnly)
+                {
+                    throw new CannotPerformActionException("Checkbox is not enabled.");
+                }
+
                 _actionFinished.WaitOne();
 
                 Hover();
@@ -134,7 +140,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.Set();
             }
-            catch (CannotPerformActionException)
+            catch (TestException)
             {
                 throw;
             }

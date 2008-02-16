@@ -449,6 +449,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual void Click()
         {
+            if (!_isEnable || !_isVisible || _isReadOnly)
+            {
+                throw new CannotPerformActionException("ComboBox is not enabled.");
+            }
+
             _actionFinished.WaitOne();
 
             Hover();
