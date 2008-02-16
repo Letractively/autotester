@@ -210,13 +210,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //for checkbox, we think the text on the right is it's label.
                 if (!String.IsNullOrEmpty(label))
                 {
-                    if (!String.IsNullOrEmpty(label.Split('\t')[1]))
+                    if (!String.IsNullOrEmpty(label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[1]))
                     {
-                        return label.Split('\t')[1];
+                        return label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[1];
                     }
-                    else if (!String.IsNullOrEmpty(label.Split('\t')[0]))
+                    else if (!String.IsNullOrEmpty(label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0]))
                     {
-                        return label.Split('\t')[0];
+                        return label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0];
                     }
                 }
 

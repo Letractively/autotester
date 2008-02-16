@@ -324,6 +324,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual bool IsReadOnly()
         {
+            if (!IsEnable())
+            {
+                return true;
+            }
+
             string isReadOnly;
 
             if (!TryGetValueByProperty(this._sourceElement, "readOnly", out isReadOnly))

@@ -69,11 +69,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private const string _keySplitter = "__shrinerain__";
 
         //the default similar pencent to  find an object, if 100, that means we should make sure 100% match. 
+        private bool _useFuzzySearch = false;
         private bool _autoAdjustSimilarPercent = true;
+        private const int _defaultPercent = 100;
         private int _similarPercentUpBound = 100;
         private int _similarPercentLowBound = 70;
         private int _similarPercentStep = 10;
-        private int _customSimilarPercent = 100;
+        private int _customSimilarPercent = _defaultPercent;
 
         //IHTMLElement is the interface for mshtml html object. We build actual test object on IHTMLElement.
         private IHTMLElement _tempElement;
@@ -136,12 +138,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             set { _maxWaitSeconds = value; }
         }
 
+        public bool UseFuzzySearch
+        {
+            get { return _useFuzzySearch; }
+            set { _useFuzzySearch = value; }
+        }
+
         //set the custom similary percent.
         public int SimilarPercent
         {
             get { return _customSimilarPercent; }
             set
             {
+                _useFuzzySearch = true;
                 _autoAdjustSimilarPercent = false;
                 _customSimilarPercent = value;
                 Searcher.DefaultPercent = value;
@@ -151,7 +160,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public bool AutoAdjustSimilarPercent
         {
             get { return _autoAdjustSimilarPercent; }
-            set { _autoAdjustSimilarPercent = value; }
+            set
+            {
+                if (value)
+                {
+                    _useFuzzySearch = true;
+                }
+                _autoAdjustSimilarPercent = value;
+            }
         }
 
 
@@ -195,6 +211,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
 
         #region ITestObjectPool
+
         /* Object GetObjectByID(string id)
          * return the test object by .id property.
          *
@@ -423,14 +440,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             //the similar percent to find an object.
-            int simPercent;
-            if (_autoAdjustSimilarPercent)
+            int simPercent = _defaultPercent;
+
+            if (_useFuzzySearch)
             {
-                simPercent = _similarPercentUpBound;
-            }
-            else
-            {
-                simPercent = _customSimilarPercent;
+                if (_autoAdjustSimilarPercent)
+                {
+                    simPercent = _similarPercentUpBound;
+                }
+                else
+                {
+                    simPercent = _customSimilarPercent;
+                }
             }
 
             //we will try 30s to find an object.
@@ -537,7 +558,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Thread.Sleep(_interval * 1000);
 
                 //while current simpercent is bigger than the low bound,we can still try lower similarity
-                if (_autoAdjustSimilarPercent)
+                if (_useFuzzySearch && _autoAdjustSimilarPercent)
                 {
                     if (simPercent > _similarPercentLowBound)
                     {
@@ -875,15 +896,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int leftIndex = index;
 
             //the similar percent to find an object.
-            int simPercent;
-            if (_autoAdjustSimilarPercent)
+            int simPercent = _defaultPercent;
+
+            if (_useFuzzySearch)
             {
-                simPercent = _similarPercentUpBound;
+                if (_autoAdjustSimilarPercent)
+                {
+                    simPercent = _similarPercentUpBound;
+                }
+                else
+                {
+                    simPercent = _customSimilarPercent;
+                }
             }
-            else
-            {
-                simPercent = _customSimilarPercent;
-            }
+
 
             //windows handle of Message Box and File Dialog
             IntPtr handle = IntPtr.Zero;
@@ -1057,7 +1083,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Thread.Sleep(_interval * 1000);
 
                 //not found, we will try lower similarity
-                if (_autoAdjustSimilarPercent)
+                if (_useFuzzySearch && _autoAdjustSimilarPercent)
                 {
                     if (simPercent > _similarPercentLowBound)
                     {
@@ -1502,15 +1528,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
 
-                //firstly, check title.
-                string title;
-
-                if (HTMLTestObject.TryGetValueByProperty(element, "title", out title))
+                //firstly, check value.
+                if (IsPropertyLike(element, "innerText", value, simPercent))
                 {
-                    if (!String.IsNullOrEmpty(title) && Searcher.IsStringLike(value, title, simPercent))
-                    {
-                        return true;
-                    }
+                    return true;
+                }
+
+                //then check title
+                if (IsPropertyLike(element, "title", value, simPercent))
+                {
+                    return true;
                 }
 
                 string label = HTMLTestTextBox.GetLabelForTextBox(element);
