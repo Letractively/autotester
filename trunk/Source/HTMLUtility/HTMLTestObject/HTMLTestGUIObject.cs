@@ -493,7 +493,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 }
                             }
 
-                            return aroundText;
+                            return aroundText.Trim();
                         }
                     }
                 }
@@ -505,6 +505,127 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return "";
             }
 
+        }
+
+        /* string GetAroundCellText(int direction)
+         * if the element is in a cell"<td></td>", check the cell text around it.
+         * direction:
+         * 0 means up, 1 means right, 2 means down, 3 means left.
+         */
+        public static string GetAroundCellText(IHTMLElement element, int direction)
+        {
+            return GetAroundCellText(element, direction, 1);
+        }
+
+        //deepth: the deepth between current cell and search cell.
+        public static string GetAroundCellText(IHTMLElement element, int direction, int deepth)
+        {
+            //default, we will get the left cell text.
+            if (direction < 0 || direction > 3)
+            {
+                direction = 3;
+            }
+
+            if (deepth < 1)
+            {
+                deepth = 1;
+            }
+
+            try
+            {
+                string label = null;
+
+                IHTMLElement parentElement = element.parentElement;
+
+                if (parentElement != null && parentElement.tagName == "TD")
+                {
+                    //current cell, <td>
+                    IHTMLTableCell parentCellElement = (IHTMLTableCell)parentElement;
+                    int cellId = parentCellElement.cellIndex;
+
+                    //current row, <tr>
+                    IHTMLTableRow parentRowElement = (IHTMLTableRow)parentElement.parentElement;
+                    int rowId = parentRowElement.rowIndex;
+
+                    //current table <table>
+                    IHTMLTableSection tableSecElement = (IHTMLTableSection)parentElement.parentElement.parentElement;
+
+                    object index = null;
+
+                    if (direction == 0)
+                    {
+                        if (rowId - deepth >= 0)
+                        {
+                            //get the up cell.
+                            index = (object)(rowId - deepth);
+                            IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                            index = (object)cellId;
+                            IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+
+                            if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
+                            {
+                                return label;
+                            }
+                        }
+                    }
+                    else if (direction == 1)
+                    {
+                        if (cellId + deepth < parentRowElement.cells.length)
+                        {
+                            index = (object)(cellId + deepth);
+
+                            //get the right cell.
+                            IHTMLElement rightElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                            if (HTMLTestObject.TryGetValueByProperty(rightElement, "innerText", out label))
+                            {
+                                return label;
+                            }
+                        }
+                    }
+                    else if (direction == 2)
+                    {
+                        if (rowId + deepth < tableSecElement.rows.length)
+                        {
+                            //get the down cell.
+                            index = (object)(rowId + deepth);
+                            IHTMLTableRow downRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+
+                            index = (object)cellId;
+                            IHTMLElement downCellElement = (IHTMLElement)downRowElement.cells.item(index, index);
+
+                            if (HTMLTestObject.TryGetValueByProperty(downCellElement, "innerText", out label))
+                            {
+                                return label;
+                            }
+                        }
+                    }
+                    else if (direction == 3)
+                    {
+
+                        if (cellId - deepth >= 0)
+                        {
+                            index = (object)(cellId - deepth);
+
+                            //get the left cell.
+                            IHTMLElement leftElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+
+                            if (HTMLTestObject.TryGetValueByProperty(leftElement, "innerText", out label))
+                            {
+                                return label;
+                            }
+
+                        }
+                    }
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /* void Hover()

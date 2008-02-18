@@ -281,7 +281,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 if (_ie != null)
                 {
-                    return _isDownloading && _ie.Busy;
+                    return _ie.Busy; //_isDownloading;// || 
                 }
                 else
                 {
