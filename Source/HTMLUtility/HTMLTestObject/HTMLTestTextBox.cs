@@ -126,10 +126,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.WaitOne();
 
+                string originText = GetText();
+
+                bool ok = false;
+
                 Focus();
 
-                try
+                string curStr = originText + value;
+                //set the text directly.
+                if (this._tag == "INPUT")
                 {
+                    this._textInputElement.value = curStr;
+                }
+                else
+                {
+                    this._textAreaElement.value = curStr;
+                }
+
+                //check if the text was inputed.
+                if (GetText().IndexOf(value, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    ok = true;
+                }
+
+                if (!ok)
+                {
+
                     //or send the chars by keyboard
                     KeyboardOp.SendChars(value);
 
@@ -138,20 +160,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //and we can not click this button, so we need to elimate it. 
                     //click just above the text box, to elimate it.
                     ClickAbove();
-
-                }
-                catch
-                {
-                    string curStr = this.GetText() + value;
-                    //set the text directly.
-                    if (this._tag == "INPUT")
-                    {
-                        this._textInputElement.value = curStr;
-                    }
-                    else
-                    {
-                        this._textAreaElement.value = curStr;
-                    }
                 }
 
                 if (_isDelayAfterAction)
@@ -328,57 +336,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0];
                 }
 
-                //if failed, try to get text from left cell or up cell.
-                IHTMLElement cellParentElement = element.parentElement;
-
-                if (cellParentElement != null && cellParentElement.tagName == "TD")
+                //we will search left cell and up cell.
+                int[] searchDirs = new int[] { 3, 0 };
+                foreach (int currentDir in searchDirs)
                 {
-                    IHTMLTableCell parentCellElement = (IHTMLTableCell)cellParentElement;
-                    int cellId = parentCellElement.cellIndex;
-
-                    IHTMLTableRow parentRowElement = (IHTMLTableRow)cellParentElement.parentElement;
-                    int rowId = parentRowElement.rowIndex;
-
-                    object index = (object)(cellId - 1);
-
-                    //if the current cell is not the most left cell, we will try the left cell to find the around text.
-                    if (cellId > 0)
+                    for (int deepth = 1; deepth < 4; deepth++)
                     {
-                        //get the left cell.
-                        IHTMLElement prevCellElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+                        label = GetAroundCellText(element, currentDir, deepth);
 
-                        if (HTMLTestObject.TryGetValueByProperty(prevCellElement, "innerText", out label))
+                        if (!String.IsNullOrEmpty(label.Trim()))
                         {
-                            return label;
-                        }
-
-                    }
-
-                    //if the current cell is the first cell OR we didn't find text in the left cell, we will try the up cell.
-                    //of coz, if we want to try up row, current row can NOT be the first row, that means the row id should >0
-                    if (cellId == 0 && rowId > 0)
-                    {
-                        //                                                     cell              row           table
-                        IHTMLTableSection tableSecElement = (IHTMLTableSection)cellParentElement.parentElement.parentElement;
-
-                        index = (object)(rowId - 1);
-                        IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
-
-                        index = (object)cellId;
-                        IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
-
-                        if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
-                        {
-                            return label;
+                            return label;//.Split(' ')[0];
                         }
                     }
                 }
 
-                return "";
+                return null;
             }
             catch
             {
-                return "";
+                return null;
             }
 
         }

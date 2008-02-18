@@ -371,6 +371,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 bool found = false;
 
+                TestException exception = null;
+
                 if (type != HTMLTestObjectType.Unknow)
                 {
                     string key = type.ToString() + _keySplitter + name;
@@ -390,7 +392,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //if the format is like "id=1", we think it is a property=value pair. 
                         if (PropertiesParser.GetProperties(name, out properties, out values))
                         {
-                            if (GetObjectFromPool(properties, values, out tmp))
+                            if (GetObjectFromPool(properties, values, out tmp, out exception))
                             {
                                 if (((HTMLTestGUIObject)tmp).Type == type)
                                 {
@@ -400,7 +402,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         }
                         else
                         {
-                            if (GetObjectFromPool(name, type.ToString(), out tmp))
+                            if (GetObjectFromPool(name, type.ToString(), out tmp, out exception))
                             {
                                 found = true;
                             }
@@ -457,7 +459,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else
                     {
-                        throw new ObjectNotFoundException("Can not get object by: " + name);
+                        throw new ObjectNotFoundException(exception.Message);
                     }
                 }
                 else
@@ -498,10 +500,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* bool GetObjectFromPool(string[] properties, string[] values, out object obj)
          * return HTMLTestGuiObject by a string description.
          */
-        private bool GetObjectFromPool(string[] properties, string[] values, out object obj)
+        private bool GetObjectFromPool(string[] properties, string[] values, out object obj, out TestException exception)
         {
 
             obj = null;
+            exception = null;
 
             if (properties != null && values != null && properties.Length == values.Length)
             {
@@ -521,8 +524,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     return true;
                 }
-                catch
+                catch (TestException ex)
                 {
+                    exception = ex;
                     return false;
                 }
 
@@ -531,9 +535,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return false;
         }
 
-        private bool GetObjectFromPool(string text, string type, out object obj)
+        private bool GetObjectFromPool(string text, string type, out object obj, out TestException exception)
         {
             obj = null;
+            exception = null;
 
             if (!String.IsNullOrEmpty(text) && !String.IsNullOrEmpty(type))
             {
@@ -543,8 +548,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     return true;
                 }
-                catch
+                catch (TestException ex)
                 {
+                    exception = ex;
                     return false;
                 }
             }

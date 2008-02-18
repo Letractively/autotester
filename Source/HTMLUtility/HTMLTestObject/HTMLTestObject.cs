@@ -371,7 +371,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    value = value.Trim();
+                    //if not blank string, trim.
+                    if (!String.IsNullOrEmpty(value.Trim()))
+                    {
+                        value = value.Trim();
+                    }
                 }
 
                 //if acceptEmpty is true, we will return true.
