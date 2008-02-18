@@ -26,7 +26,8 @@
 *          2008/01/22 wan,yu update, add CheckTextBoxObject.          
 *          2008/02/01 wan,yu update, modify GetObjectByType use RotateSearch to improve performance, in some situation, will be 
 *                                    10 times faster than before.
-*          2008/02/13 wan,yu update, add event OnNewObjectFound to report new object. 
+*          2008/02/13 wan,yu update, add event OnNewObjectFound. 
+*          2008/02/18 wan,yu udpate, add event OnBeforeNewObjectFound.
 *                                       
 *
 *********************************************************************/
@@ -49,12 +50,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public sealed class HTMLTestObjectPool : ITestObjectPool
     {
-        #region event
-
-        public delegate void _newObjectDelegate(string methodName, string[] paras, TestObject newObj);
-        public event _newObjectDelegate OnNewObjectFound;
-
-        #endregion
 
         #region fields
 
@@ -179,18 +174,36 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region event
+
+        //when a new object is found.
+        public delegate void _afterNewObjectFoundDelegate(string methodName, string[] paras, TestObject newObj);
+        public event _afterNewObjectFoundDelegate OnNewObjectFound;
+
+        //when try to find a new object.
+        public delegate void _beforeNewObjectFoundDelegate(string methodName, string[] parars);
+        public event _beforeNewObjectFoundDelegate OnBeforeNewObjectFound;
+
+        #endregion
+
         #region public methods
 
         #region ctor
 
         public HTMLTestObjectPool()
         {
-
+            RegEvent();
         }
 
         public HTMLTestObjectPool(ITestBrowser brower)
         {
             _htmlTestBrowser = (HTMLTestBrowser)brower;
+            RegEvent();
+        }
+
+        private void RegEvent()
+        {
+            OnBeforeNewObjectFound += new _beforeNewObjectFoundDelegate(BeforeSearch);
         }
 
         #endregion
@@ -218,6 +231,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByID(string id)
         {
+            OnBeforeNewObjectFound("GetObjectByID", new string[] { id });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -282,6 +297,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByName(string name)
         {
+            OnBeforeNewObjectFound("GetObjectByName", new string[] { name });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -359,6 +376,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByIndex(int index)
         {
+            OnBeforeNewObjectFound("GetObjectByIndex", new string[] { index.ToString() });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -421,6 +440,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByProperty(string property, string value)
         {
+            OnBeforeNewObjectFound("GetObjectByProperty", new string[] { property, value });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -581,6 +602,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectBySimilarProperties(string[] properties, string[] values, int[] similarity, bool useAll)
         {
+            string[] arg = new string[100];
+            Array.Copy(properties, arg, properties.Length);
+            Array.Copy(values, 0, arg, arg.Length, values.Length);
+
+            OnBeforeNewObjectFound("GetObjectBySimilarProperties", arg);
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -708,6 +735,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByRegex(string property, string regexStr)
         {
+            OnBeforeNewObjectFound("GetObjectByRegex", new string[] { property, regexStr });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -808,6 +837,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public Object GetObjectByType(string type, string values, int index)
         {
+            OnBeforeNewObjectFound("GetObjectByType", new string[] { type, values, index.ToString() });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -1110,6 +1141,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByAI(string value)
         {
+            OnBeforeNewObjectFound("GetObjectByAI", new string[] { value });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -1167,6 +1200,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByPoint(int x, int y)
         {
+            OnBeforeNewObjectFound("GetObjectByPoint", new string[] { x.ToString(), y.ToString() });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -1215,6 +1250,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByRect(int left, int top, int width, int height, string typeStr, bool isPercent)
         {
+            OnBeforeNewObjectFound("GetObjectByRect", new string[] { left.ToString(), top.ToString(), width.ToString(), height.ToString(), typeStr });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -1315,6 +1352,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByColor(string color)
         {
+            OnBeforeNewObjectFound("GetObjectByColor", new string[] { color });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -1328,6 +1367,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByCustomer(object value)
         {
+            OnBeforeNewObjectFound("GetObjectByCustomer", new string[] { value.ToString() });
+
             if (_htmlTestBrowser == null)
             {
                 throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -2496,6 +2537,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #endregion
+
+        /* void BeforeSearch(string method, string[] paras)
+         * callback method when we want to search an object.
+         */
+        private void BeforeSearch(string method, string[] paras)
+        {
+            if (_htmlTestBrowser != null)
+            {
+                int times = 0;
+                while (times <= _htmlTestBrowser.MaxWaitSeconds && _htmlTestBrowser.IsBusy)
+                {
+                    //browser is busy, sleep for 1 second.
+                    System.Threading.Thread.Sleep(1 * 1000);
+                    times += 1;
+                }
+
+            }
+        }
 
         #endregion
 

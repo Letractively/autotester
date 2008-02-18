@@ -90,11 +90,12 @@ namespace Shrinerain.AutoTester
         {
 
             // KeyboardOp.SendChars("shrinerain");
+            qidian();
+            return;
+            
             Google();
             return;
 
-            qidian();
-            return;
 
 
 
@@ -189,9 +190,15 @@ namespace Shrinerain.AutoTester
             string url = @"www.qidian.com";
             HTMLTest test = new HTMLTest();
             test.Browser.Load(url);
-            test.Map.TextBox("ÓÃ»§Ãû").Input("fsfdsgdg");
-            test.Map.TextBox("ÃÜÂë").Input("fdsgd");
-            test.Map.Button("µÇÂ½").Click();
+
+            test.Pool.GetObjectByType("textbox", "ÓÃ»§Ãû");
+
+            test.Map.TextBox("ÓÃ»§Ãû").Input("shrinerain");
+            test.Map.TextBox("ÃÜÂë").Input("jyoicq");
+            test.Map.Button("µÇÂ¼").Click();
+
+            test.Map.Link("ÎÒµÄÊé¼Ü").Click();
+
             //test.Pool.GetObjectByType("textbox", "ÃÜÂë");
             //test.Map.TextBox().Input("jyoicq");
 
@@ -212,12 +219,13 @@ namespace Shrinerain.AutoTester
             HTMLTest test = new HTMLTest();
             test.Browser.Load(url);
 
-            //test.Pool.GetObjectByRect(50, 20, 100, 100, "textbox", true);
-            test.Map.TextBox("name=q;size=55").Input("fasgdgeryhtgjgh fjhgjwe89675349064");
+            test.Map.TextBox("name=q").Input("shrinerain");
             test.Map.Add("ËÑË÷¿ò");
-            test.Map.TextBox("ËÑË÷¿ò").Clear();
+            //test.Map.TextBox("ËÑË÷¿ò").Clear();
             //test.Map.TextBox("ËÑË÷¿ò").Input("testatest12456");
-            // test.Map.Button("Google ËÑË÷").Click();
+            test.Map.Button("Google Search").Click();
+            //test.Browser.WaitForNextPage();
+            test.Map.TextBox("name=q").Input("niuniu");
 
         }
     }

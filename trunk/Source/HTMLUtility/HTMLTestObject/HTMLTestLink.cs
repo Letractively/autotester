@@ -135,6 +135,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 MouseOp.Click();
 
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                }
+
                 _actionFinished.Set();
 
             }

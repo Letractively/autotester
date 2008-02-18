@@ -72,6 +72,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             this._type = HTMLTestObjectType.TextBox;
 
+            this._isDelayAfterAction = false;
+
             try
             {
                 if (this.Tag == "TEXTAERA")
@@ -128,20 +130,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 try
                 {
-                    //set the text directly.
-                    if (this._tag == "INPUT")
-                    {
-                        this._textInputElement.value = value;
-                    }
-                    else
-                    {
-                        this._textAreaElement.value = value;
-                    }
-
-
-                }
-                catch
-                {
                     //or send the chars by keyboard
                     KeyboardOp.SendChars(value);
 
@@ -150,10 +138,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //and we can not click this button, so we need to elimate it. 
                     //click just above the text box, to elimate it.
                     ClickAbove();
+
+                }
+                catch
+                {
+                    string curStr = this.GetText() + value;
+                    //set the text directly.
+                    if (this._tag == "INPUT")
+                    {
+                        this._textInputElement.value = curStr;
+                    }
+                    else
+                    {
+                        this._textAreaElement.value = curStr;
+                    }
                 }
 
-                //sleep for 0.5 seconds.
-                System.Threading.Thread.Sleep(500 * 1);
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                }
 
                 _actionFinished.Set();
 
@@ -182,7 +186,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     Focus();
                     KeyboardOp.SendKey(keys);
 
-                    System.Threading.Thread.Sleep(500 * 1);
+                    if (_isDelayAfterAction)
+                    {
+                        System.Threading.Thread.Sleep(_delayTime * 1000);
+                    }
 
                     _actionFinished.Set();
                 }
@@ -218,6 +225,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 else
                 {
                     this._textAreaElement.value = "";
+                }
+
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
                 }
 
                 _actionFinished.Set();

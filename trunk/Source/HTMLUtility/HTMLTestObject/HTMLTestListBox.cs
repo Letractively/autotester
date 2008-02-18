@@ -83,6 +83,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             this._type = HTMLTestObjectType.ListBox;
 
+            this._isDelayAfterAction = false;
+
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
@@ -251,6 +253,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //refresh the selected value.
                 this._selectedValue = this._allValues[index];
 
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                }
+
                 _actionFinished.Set();
 
             }
@@ -302,6 +309,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     //refresh the selected value.
                     this._selectedValue = this._allValues[itemIndex];
+                }
+
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
                 }
 
                 _actionFinished.Set();

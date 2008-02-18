@@ -62,7 +62,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (value != null)
                 {
                     _objPool = value;
-                    _objPool.OnNewObjectFound += new HTMLTestObjectPool._newObjectDelegate(AddTypeObjectToMap);
+                    _objPool.OnNewObjectFound += new HTMLTestObjectPool._afterNewObjectFoundDelegate(AddTypeObjectToMap);
                 }
 
             }
@@ -84,7 +84,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             this._objPool = pool;
 
             //when a new object is found, we will add it to the map.
-            pool.OnNewObjectFound += new HTMLTestObjectPool._newObjectDelegate(AddTypeObjectToMap);
+            pool.OnNewObjectFound += new HTMLTestObjectPool._afterNewObjectFoundDelegate(AddTypeObjectToMap);
         }
 
         #endregion
