@@ -134,6 +134,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 MouseOp.Click();
 
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                }
+
                 //action is finished, signal.
                 _actionFinished.Set();
 
@@ -161,6 +166,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 MouseOp.DoubleClick();
 
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                }
+
                 _actionFinished.Set();
             }
             catch (TestException)
@@ -185,6 +195,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Hover();
 
                 MouseOp.RightClick();
+
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                }
 
                 _actionFinished.Set();
             }

@@ -18,6 +18,7 @@
 *          2008/01/22 wan,yu update, add _labelText and GetAroundText() 
 *          2008/01/28 wan,yu update, modify GetAroundText, return left and right string.  
 *          2008/02/02 wan,yu update, add X,Y,Width,Height properties. 
+*          2008/02/18 wan,yu update, add _isDelayAfterAction and _delayTime.
 * 
 *********************************************************************/
 
@@ -58,6 +59,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //label splitter
         protected const string _labelSplitter = "__shrinerain__";
+
+        //when finish action, sleep for a moment.
+        protected bool _isDelayAfterAction = true;
+        protected const int _delayTime = 1;
+        protected bool _isUnderAction = false;
 
         #endregion
 
@@ -107,6 +113,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public bool IsUnderAction
+        {
+            get
+            {
+                return _isUnderAction;
+            }
+        }
+
+        public bool IsDelayAfterAction
+        {
+            get { return _isDelayAfterAction; }
+            set { _isDelayAfterAction = value; }
+        }
 
         //when set the html browser, we can start to calculate the position
         public override HTMLTestBrowser Browser
@@ -502,6 +521,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     throw new CannotPerformActionException("Object is not visible.");
                 }
 
+                this._browser.Active();
+
                 //if the object is not visible, then move it.
                 ScrollIntoView(false);
 
@@ -568,7 +589,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._sourceElement.scrollIntoView(toTop);
 
-                Thread.Sleep(500 * 1);
+                Thread.Sleep(1000 * 1);
 
                 //re-calculate the position, because we had move it.
                 this.Rect = GetRectOnScreen();

@@ -75,7 +75,7 @@ namespace Shrinerain.AutoTester.Win32
                 Win32API.SendInput(2, structInput, Marshal.SizeOf(*structInput));
 
                 //sleep for 0.05 second, make it looks like human actions
-                //System.Threading.Thread.Sleep(50 * 1);
+                System.Threading.Thread.Sleep(50 * 1);
             }
 
         }

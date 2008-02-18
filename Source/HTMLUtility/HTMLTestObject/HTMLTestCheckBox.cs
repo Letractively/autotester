@@ -50,6 +50,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             this._type = HTMLTestObjectType.CheckBox;
 
+            this._isDelayAfterAction = false;
+
             try
             {
                 this._checkBoxElement = (IHTMLInputElement)element;
@@ -137,6 +139,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Hover();
 
                 MouseOp.Click();
+
+                if (_isDelayAfterAction)
+                {
+                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                }
 
                 _actionFinished.Set();
             }

@@ -123,6 +123,8 @@ namespace Shrinerain.AutoTester.Core
         protected int _scrollWidth;
         protected int _scrollHeight;
 
+        //flag to show wether the browser is downloading sth.
+        protected bool _isDownloading = false;
 
         #endregion
 
@@ -272,6 +274,22 @@ namespace Shrinerain.AutoTester.Core
             set { _responseTime = value; }
         }
 
+        //property to show if the browser is downloading sth.
+        public bool IsBusy
+        {
+            get
+            {
+                if (_ie != null)
+                {
+                    return _isDownloading && _ie.Busy;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         #endregion
 
         #region Methods
@@ -283,6 +301,7 @@ namespace Shrinerain.AutoTester.Core
             // default version number is 6.0
             _browserName = "Internet Explorer";
             _version = "6.0";
+
         }
 
         ~TestBrowser()
@@ -936,7 +955,7 @@ namespace Shrinerain.AutoTester.Core
             //_startDownload.Reset();
             //_startDownload.WaitOne(seconds * 1000, true);
 
-            _documentLoadComplete.Reset();
+            //_documentLoadComplete.Reset();
             _documentLoadComplete.WaitOne(seconds * 1000, true);
 
         }
@@ -1201,8 +1220,15 @@ namespace Shrinerain.AutoTester.Core
             if (warnBar != IntPtr.Zero)
             {
                 Win32API.Rect warnRect = new Win32API.Rect();
-                Win32API.GetClientRect(warnBar, ref warnRect);
-                addHeight = warnRect.Height;
+                if (Win32API.GetWindowRect(warnBar, ref warnRect))
+                {
+                    addHeight = warnRect.Height;
+                }
+                else
+                {
+                    throw new CannotAttachTestBrowserException("Can not get warn bar size.");
+                }
+
             }
 
             //Get the actual client area rect, which shows web page to the end user.
@@ -1216,12 +1242,22 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 Win32API.Rect tmpRect = new Win32API.Rect();
-                Win32API.GetWindowRect(_ieServerHandle, ref tmpRect);
+                if (Win32API.GetWindowRect(_ieServerHandle, ref tmpRect))
+                {
+                    _clientLeft = tmpRect.left;
+                    _clientTop = tmpRect.top + addHeight;
+                    _clientWidth = tmpRect.Width;
+                    _clientHeight = tmpRect.Height;
+                }
+                else
+                {
+                    throw new CannotAttachTestBrowserException("Can not get client size of test browser.");
+                }
 
-                _clientLeft = tmpRect.left;
-                _clientTop = tmpRect.top + addHeight;
-                _clientWidth = tmpRect.Width;
-                _clientHeight = tmpRect.Height;
+            }
+            catch (TestException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
@@ -1438,7 +1474,7 @@ namespace Shrinerain.AutoTester.Core
         {
             RegStartDownloadEvent();
             RegDocumentLoadCompleteEvent();
-            RegNavigateFailedEvent();
+            RegNavigateEvent();
             RegRectChangeEvent();
             RegScrollEvent();
             RegOnNewWindowEvent();
@@ -1523,19 +1559,31 @@ namespace Shrinerain.AutoTester.Core
         /* void RegNavigateFailedEvent()
          * register event when the browser failed to load a url.
          */
-        protected virtual void RegNavigateFailedEvent()
+        protected virtual void RegNavigateEvent()
         {
             try
             {
+                _ie.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(OnBeforeNavigate2);
                 _ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
+                _ie.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(OnNavigateComplete2);
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not register load error event: " + ex.Message);
+                throw new CannotAttachTestBrowserException("Can not register navigate event: " + ex.Message);
             }
         }
 
+
         #region callback functions for each event
+
+        /* void OnBeforeNavigate
+         * Before start downloading.
+         */
+        protected virtual void OnBeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
+        {
+            this._isDownloading = true;
+        }
+
         /* void OnNavigateError
          * the callback function to handle navigate error.
          */
@@ -1544,6 +1592,13 @@ namespace Shrinerain.AutoTester.Core
             throw new CannotLoadUrlException("Can not navigate to URL: " + URL.ToString());
         }
 
+        /* void OnNavigateComplete2(object pDisp, ref object URL)
+         * after navigate complete.
+         */
+        protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
+        {
+            //this._isDownloading = false;
+        }
 
         /* void OnNewWindow2(ref object ppDisp, ref bool Cancel)
          * the callback function to handle new "tab", it is not like IE 7 tab.
@@ -1569,6 +1624,7 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
+                _isDownloading = true;
 
                 //get the start time, used to cal response time.
                 _startTime = _downloadTime.Milliseconds;
@@ -1593,6 +1649,7 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
+
                 string locationName = _ie.LocationName;
 
                 if (locationName.IndexOf("HTTP 404") >= 0
@@ -1614,10 +1671,10 @@ namespace Shrinerain.AutoTester.Core
 
                 GetSize();
 
-                //sleep for 3s.
-                Thread.Sleep(1000 * 3);
+                _isDownloading = false;
 
                 _documentLoadComplete.Set();
+
 
             }
             catch (TestException)
