@@ -192,14 +192,19 @@ namespace Shrinerain.AutoTester
             string url = @"www.qidian.com";// @"http://mm.cmfu.com/vip/ebook_subscibe_forbuy.asp?ebookid=367736&bl_id=149430";//
             HTMLTest test = new HTMLTest();
             test.Browser.Load(url);
-            test.Map.TextBox("用户名").Input("shrinerain");
-            test.Map.TextBox("密码").Input("jyoicq");
-            test.Map.Button("登录").Click();
+           // test.Map.TextBox("用户名").Input("shrinerain");
+           // test.Map.TextBox("密码").Input("jyoicq");
+           // test.Map.Button("登录").Click();
 
             //test.Browser.WaitForNextPage();
-            test.Map.Link("我的书架").Click();
-            test.Map.TextBox("关键字").Input("test");
-            test.Map.RadioBtn("好友可见").Check();
+            //test.Map.Link("我的书架").Click();
+
+            test.Map.Link("搜书").Click();
+
+            //test.Browser.Load("www.google.com");
+
+           // test.Map.TextBox("关键字").Input("test");
+            //test.Map.RadioBtn("好友可见").Check();
             //test.Map.CheckBox("[历史]").Check();
             //test.Map.Button("退出").Click();
 

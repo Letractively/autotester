@@ -228,7 +228,7 @@ namespace Shrinerain.AutoTester.Helper
 
                 int currentIndex = startIndex;
                 int highIndex = startIndex;
-                int lowIndex = startIndex - 1;
+                int lowIndex = startIndex;
 
                 int orderIndex = 0;
 
@@ -393,7 +393,7 @@ namespace Shrinerain.AutoTester.Helper
                 int len2 = str2.Length;
 
                 //dynamic programming array.
-                //to improve performance, we use 1 dim stack arrary and unsafe code.
+                //to improve performance, we use 1 dim stack arrary.
                 int* dpArr = stackalloc int[(len1 + 1) * (len2 + 1)];
 
                 //init array

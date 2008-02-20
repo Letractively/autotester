@@ -241,11 +241,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 IHTMLElement parent = _sourceElement.offsetParent;
                 while (parent != null)
                 {
-                    if (this._isVisible && !this.IsDisplayed(parent))
-                    {
-                        this._isVisible = false;
-                    }
-
                     top += parent.offsetTop;
                     left += parent.offsetLeft;
                     parent = parent.offsetParent;
@@ -517,7 +512,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return GetAroundCellText(element, direction, 1);
         }
 
-        //deepth: the deepth between current cell and search cell.
+        //deepth: the deepth between current cell and searched cell.
         public static string GetAroundCellText(IHTMLElement element, int direction, int deepth)
         {
             //default, we will get the left cell text.
@@ -550,6 +545,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //current table <table>
                     IHTMLTableSection tableSecElement = (IHTMLTableSection)parentElement.parentElement.parentElement;
 
+                    IHTMLElement searchedElement = null;
+
                     object index = null;
 
                     if (direction == 0)
@@ -563,10 +560,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             index = (object)cellId;
                             IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
 
-                            if (HTMLTestObject.TryGetValueByProperty(upCellElement, "innerText", out label))
-                            {
-                                return label;
-                            }
+                            searchedElement = upCellElement;
+
                         }
                     }
                     else if (direction == 1)
@@ -578,10 +573,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             //get the right cell.
                             IHTMLElement rightElement = (IHTMLElement)parentRowElement.cells.item(index, index);
 
-                            if (HTMLTestObject.TryGetValueByProperty(rightElement, "innerText", out label))
-                            {
-                                return label;
-                            }
+                            searchedElement = rightElement;
                         }
                     }
                     else if (direction == 2)
@@ -595,10 +587,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             index = (object)cellId;
                             IHTMLElement downCellElement = (IHTMLElement)downRowElement.cells.item(index, index);
 
-                            if (HTMLTestObject.TryGetValueByProperty(downCellElement, "innerText", out label))
-                            {
-                                return label;
-                            }
+                            searchedElement = downCellElement;
                         }
                     }
                     else if (direction == 3)
@@ -611,13 +600,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             //get the left cell.
                             IHTMLElement leftElement = (IHTMLElement)parentRowElement.cells.item(index, index);
 
-                            if (HTMLTestObject.TryGetValueByProperty(leftElement, "innerText", out label))
-                            {
-                                return label;
-                            }
-
+                            searchedElement = leftElement;
                         }
                     }
+
+                    //try get the "innerText" property, it is the text in the cell.
+                    if (HTMLTestObject.TryGetValueByProperty(searchedElement, "innerText", out label))
+                    {
+                        return label;
+                    }
+
                 }
 
                 return null;
