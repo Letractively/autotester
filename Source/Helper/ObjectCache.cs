@@ -24,7 +24,7 @@ namespace Shrinerain.AutoTester.Helper
 
         #region fields
 
-        //flag to specify if we should use cache.
+        //flag to specify if we will use cache.
         private static bool _useCache = true;
 
         //we use a hashtable to store our test objects.

@@ -33,14 +33,14 @@ namespace Shrinerain.AutoTester.Helper
     //we have two types, normal TEXT and HTML.
     public enum MailType : int
     {
-        Text = 0,
+        Text,
         HTML
     }
 
     //use smtp or outlook to send a mail.
     public enum MailServerType : int
     {
-        SMTP = 0,
+        SMTP,
         Outlook
     }
 

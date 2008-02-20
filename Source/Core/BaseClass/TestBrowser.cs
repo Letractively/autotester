@@ -281,7 +281,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 if (_ie != null)
                 {
-                    return _ie.Busy; //_isDownloading;// || 
+                    return _ie.Busy;
                 }
                 else
                 {
@@ -664,6 +664,8 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new TestBrowserNotFoundException();
             }
+
+
         }
 
         /* void WaitForNextPage()
@@ -1001,6 +1003,7 @@ namespace Shrinerain.AutoTester.Core
 
                         try
                         {
+
                             tempIE = (InternetExplorer)allBrowsers.Item(i);
 
                             if (tempIE == null)
@@ -1201,6 +1204,7 @@ namespace Shrinerain.AutoTester.Core
         {
 
             _mainHandle = GetIEMainHandle();
+
             if (_mainHandle == IntPtr.Zero)
             {
                 throw new TestBrowserNotFoundException("Can not get main handle of test browser.");
@@ -1356,6 +1360,13 @@ namespace Shrinerain.AutoTester.Core
                 {
                     //tab handle found, means IE 7
                     _version = "7.0";
+
+                    //get the active tab.
+                    while (!Win32API.IsWindowVisible(tabWindow))
+                    {
+                        tabWindow = Win32API.FindWindowEx(mainHandle, tabWindow, "TabWindowClass", null);
+                    }
+
                     return Win32API.FindWindowEx(tabWindow, IntPtr.Zero, "Shell DocObject View", null);
                 }
             }
@@ -1461,6 +1472,32 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        protected virtual InternetExplorer GetInternetExplorerFromHandle(IntPtr ieServerHandle)
+        {
+            if (ieServerHandle == IntPtr.Zero)
+            {
+                ieServerHandle = GetIEServerHandle(IntPtr.Zero);
+            }
+
+            if (ieServerHandle != IntPtr.Zero)
+            {
+                int nMsg = Win32API.RegisterWindowMessage("WM_HTML_GETOBJECT");
+
+                UIntPtr lRes;
+
+                if (Win32API.SendMessageTimeout(ieServerHandle, nMsg, 0, 0, Win32API.SMTO_ABORTIFHUNG, 1000, out lRes) == 0)
+                {
+                    return null;
+                }
+
+                return (InternetExplorer)Win32API.ObjectFromLresult(lRes, typeof(InternetExplorer).GUID, IntPtr.Zero);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         #endregion
 
         #endregion
@@ -1472,7 +1509,7 @@ namespace Shrinerain.AutoTester.Core
         */
         protected virtual void RegBrowserEvent()
         {
-            RegStartDownloadEvent();
+            RegDownloadEvent();
             RegDocumentLoadCompleteEvent();
             RegNavigateEvent();
             RegRectChangeEvent();
@@ -1480,11 +1517,11 @@ namespace Shrinerain.AutoTester.Core
             RegOnNewWindowEvent();
         }
 
-        /*  void RegStartDownloadEvent()
+        /*  void RegDownloadEvent()
          *  Register event when the browser is starting to download a web page.
          * 
          */
-        protected virtual void RegStartDownloadEvent()
+        protected virtual void RegDownloadEvent()
         {
             try
             {
@@ -1520,7 +1557,7 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void RegScrollEvent()
         {
-
+            
         }
 
         /* void RegDocumentLoadCompleteEvent()
@@ -1606,7 +1643,18 @@ namespace Shrinerain.AutoTester.Core
          */
         protected void OnNewWindow2(ref object ppDisp, ref bool Cancel)
         {
-            GetSize();
+            try
+            {
+                _ie = GetInternetExplorerFromHandle(_ieServerHandle);
+                // _ie = (InternetExplorer)ppDisp;
+
+                //GetSize();
+            }
+            catch
+            {
+
+            }
+
         }
 
         /* void void OnNewWindow3(ref object ppDisp, ref bool Cancel, uint dwFlags, string bstrUrlContext, string bstrUrl)
@@ -1614,7 +1662,16 @@ namespace Shrinerain.AutoTester.Core
          */
         protected void OnNewWindow3(ref object ppDisp, ref bool Cancel, uint dwFlags, string bstrUrlContext, string bstrUrl)
         {
-            GetSize();
+            try
+            {
+                // ppDisp = newIE;
+
+                GetSize();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotAttachTestBrowserException(ex.Message);
+            }
         }
 
         /* void OnDownloadBegin()

@@ -299,11 +299,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public static bool TryGetValueByProperty(object element, string propertyName, out string value)
         {
             value = null;
-            IHTMLElement tmpElement;
+
+            if (element == null)
+            {
+                return false;
+            }
 
             try
             {
-                tmpElement = (IHTMLElement)element;
+                IHTMLElement tmpElement = (IHTMLElement)element;
 
                 return TryGetValueByProperty(tmpElement, propertyName, out value);
             }
