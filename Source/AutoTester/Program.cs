@@ -191,6 +191,8 @@ namespace Shrinerain.AutoTester
         {
             string url = @"www.qidian.com";// @"http://mm.cmfu.com/vip/ebook_subscibe_forbuy.asp?ebookid=367736&bl_id=149430";//
             HTMLTest test = new HTMLTest();
+            test.Browser.Start();
+
             test.Browser.Load(url);
            // test.Map.TextBox("用户名").Input("shrinerain");
            // test.Map.TextBox("密码").Input("jyoicq");
@@ -200,6 +202,7 @@ namespace Shrinerain.AutoTester
             //test.Map.Link("我的书架").Click();
 
             test.Map.Link("搜书").Click();
+            test.Map.Link("小亨传说").Click();
 
             //test.Browser.Load("www.google.com");
 

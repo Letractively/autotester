@@ -15,6 +15,7 @@
 *          2007/12/26 wan,yu add void Find(object) method. 
 *          2007/12/27 wan,yu rename WaitForIEExist to WaitForBrowser.     
 *          2008/01/15 wan,yu update, modify some static members to instance, elimate singleton
+*          2008/02/24 wan,yu update, add GetAllBrowsers() , GetActiveBrowser() and RefreshBrowser().          
 *
 *********************************************************************/
 using System;
@@ -353,11 +354,7 @@ namespace Shrinerain.AutoTester.Core
 
                 if (_ie != null)
                 {
-                    //max size of browser
-                    MaxSize();
-
-                    //if we attached Internet Explorer successfully, register event
-                    RegBrowserEvent();
+                    RefreshBrowser(_ie);
                 }
                 else
                 {
@@ -409,11 +406,8 @@ namespace Shrinerain.AutoTester.Core
 
                 if (_ie != null)
                 {
-                    //max size of browser
-                    MaxSize();
 
-                    //if we attached Internet Explorer successfully, register event
-                    RegBrowserEvent();
+                    RefreshBrowser(_ie);
 
                     // get size information.
                     GetSize();
@@ -981,52 +975,32 @@ namespace Shrinerain.AutoTester.Core
                 throw new CannotAttachTestBrowserException("IE handle can not be 0.");
             }
 
-            SHDocVw.ShellWindows allBrowsers = null;
-
             //try until timeout, the default is 120s.
             int times = 0;
             while (times < this._maxWaitSeconds)
             {
                 //get all shell browser.
-                allBrowsers = new ShellWindows();
+                InternetExplorer[] allBrowsers = GetAllBrowsers();
 
-                if (allBrowsers.Count > 0)
+                if (allBrowsers != null)
                 {
                     InternetExplorer tempIE = null;
 
-                    int currentHandle = 0;
-
-                    //if we start a new browser, it will be the last ShellWindow,
-                    //so we try from the last ShellWindow to the first.
-                    for (int i = allBrowsers.Count - 1; i >= 0; i--)
+                    for (int i = 0; i < allBrowsers.Length; i++)
                     {
-
                         try
                         {
+                            tempIE = (InternetExplorer)allBrowsers[i];
 
-                            tempIE = (InternetExplorer)allBrowsers.Item(i);
-
-                            if (tempIE == null)
+                            if (tempIE != null && (int)ieHandle == tempIE.HWND)
                             {
-                                continue;
+                                return tempIE;
                             }
-                            else
-                            {
-                                currentHandle = tempIE.HWND;
-                            }
-
                         }
                         catch
                         {
                             continue;
                         }
-
-                        //found.
-                        if (currentHandle == (int)ieHandle) // if the browser handle equal to the browser handle we started, return it.
-                        {
-                            return tempIE;
-                        }
-
                     }
                 }
 
@@ -1035,6 +1009,78 @@ namespace Shrinerain.AutoTester.Core
             }
 
             throw new CannotAttachTestBrowserException();
+        }
+
+        /* InternetExplorer GetActiveBrowser()
+         * get the current active browser.
+         */
+        protected virtual InternetExplorer GetActiveBrowser()
+        {
+            InternetExplorer[] currentBrowsers = GetAllBrowsers();
+
+            if (currentBrowsers != null && currentBrowsers[0] != null)
+            {
+                return currentBrowsers[0];
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        /* InternetExplorer[] GetAllBrowsers()
+         * get all the browsers currently.
+         */
+        protected virtual InternetExplorer[] GetAllBrowsers()
+        {
+            InternetExplorer[] ieCol = null;
+
+            //get all shell browser.
+            SHDocVw.ShellWindows allBrowsers = new ShellWindows();
+
+            if (allBrowsers.Count > 0)
+            {
+                List<InternetExplorer> ieList = new List<InternetExplorer>(allBrowsers.Count);
+
+                InternetExplorer curIE = null;
+
+                for (int i = allBrowsers.Count - 1; i >= 0; i--)
+                {
+                    try
+                    {
+                        curIE = (InternetExplorer)allBrowsers.Item(i);
+
+                        if (curIE != null && curIE.Document is IHTMLDocument)
+                        {
+                            ieList.Add(curIE);
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+
+                ieCol = ieList.ToArray();
+            }
+
+            return ieCol;
+        }
+
+        /* void RefreshBrowser(InternetExplorer ie)
+         * use the new ie to replace old instance.
+         */
+        protected virtual void RefreshBrowser(InternetExplorer ie)
+        {
+            if (ie != null)
+            {
+                this._mainHandle = (IntPtr)ie.HWND;
+
+                this._ie = ie;
+
+                RegBrowserEvent(ie);
+            }
         }
 
         /* void WaitForBrowser(int seconds.)
@@ -1168,6 +1214,8 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void GetSize()
         {
+            MaxSize();
+
             GetBrowserRect();
             GetClientRect();
             GetScrollRect();
@@ -1341,38 +1389,31 @@ namespace Shrinerain.AutoTester.Core
          */
         protected IntPtr GetShellDocHandle(IntPtr mainHandle)
         {
-            if (_shellDocHandle == IntPtr.Zero)
+            if (mainHandle == IntPtr.Zero)
             {
-                if (mainHandle == IntPtr.Zero)
-                {
-                    mainHandle = GetIEMainHandle();
-                }
-                //update for Internet Explorer 7
-                //Internet Explorer 7 is a tab browser, we need to find "TabWindowClass" before we get the "Sheel DocObject View"
+                mainHandle = GetIEMainHandle();
+            }
+            //update for Internet Explorer 7
+            //Internet Explorer 7 is a tab browser, we need to find "TabWindowClass" before we get the "Sheel DocObject View"
 
-                IntPtr tabWindow = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "TabWindowClass", null);
+            IntPtr tabWindow = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "TabWindowClass", null);
 
-                if (tabWindow == IntPtr.Zero) //No tab, means IE 6.0 or lower
-                {
-                    return Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "Shell DocObject View", null);
-                }
-                else
-                {
-                    //tab handle found, means IE 7
-                    _version = "7.0";
-
-                    //get the active tab.
-                    while (!Win32API.IsWindowVisible(tabWindow))
-                    {
-                        tabWindow = Win32API.FindWindowEx(mainHandle, tabWindow, "TabWindowClass", null);
-                    }
-
-                    return Win32API.FindWindowEx(tabWindow, IntPtr.Zero, "Shell DocObject View", null);
-                }
+            if (tabWindow == IntPtr.Zero) //No tab, means IE 6.0 or lower
+            {
+                return Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "Shell DocObject View", null);
             }
             else
             {
-                return _shellDocHandle;
+                //tab handle found, means IE 7
+                _version = "7.0";
+
+                //get the active tab.
+                while (!Win32API.IsWindowVisible(tabWindow))
+                {
+                    tabWindow = Win32API.FindWindowEx(mainHandle, tabWindow, "TabWindowClass", null);
+                }
+
+                return Win32API.FindWindowEx(tabWindow, IntPtr.Zero, "Shell DocObject View", null);
             }
 
 
@@ -1388,6 +1429,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 shellHandle = GetShellDocHandle(IntPtr.Zero);
             }
+
             return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, "#32770 (Dialog)", null);
         }
 
@@ -1397,20 +1439,12 @@ namespace Shrinerain.AutoTester.Core
          */
         protected IntPtr GetIEServerHandle(IntPtr shellHandle)
         {
-            if (_ieServerHandle == IntPtr.Zero)
+            if (shellHandle == IntPtr.Zero)
             {
-                if (shellHandle == IntPtr.Zero)
-                {
-                    shellHandle = GetShellDocHandle(IntPtr.Zero);
-                }
-
-                return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, "Internet Explorer_Server", null);
-            }
-            else
-            {
-                return _ieServerHandle;
+                shellHandle = GetShellDocHandle(IntPtr.Zero);
             }
 
+            return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, "Internet Explorer_Server", null);
         }
 
         /* IntPtr GetDialogHandle(IntPtr mainHandle)
@@ -1423,18 +1457,15 @@ namespace Shrinerain.AutoTester.Core
             {
                 mainHandle = GetIEMainHandle();
             }
+            IntPtr popHandle = Win32API.FindWindow("Internet Explorer_TridentDlgFrame", null);
 
-            if (mainHandle != IntPtr.Zero)
+            if (popHandle != IntPtr.Zero)
             {
-                IntPtr popHandle = Win32API.FindWindow("Internet Explorer_TridentDlgFrame", null);
-                if (popHandle != IntPtr.Zero)
-                {
-                    IntPtr parentHandle = Win32API.GetParent(popHandle);
+                IntPtr parentHandle = Win32API.GetParent(popHandle);
 
-                    if (parentHandle == mainHandle)
-                    {
-                        return popHandle;
-                    }
+                if (parentHandle == mainHandle)
+                {
+                    return popHandle;
                 }
             }
 
@@ -1472,31 +1503,6 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        protected virtual InternetExplorer GetInternetExplorerFromHandle(IntPtr ieServerHandle)
-        {
-            if (ieServerHandle == IntPtr.Zero)
-            {
-                ieServerHandle = GetIEServerHandle(IntPtr.Zero);
-            }
-
-            if (ieServerHandle != IntPtr.Zero)
-            {
-                int nMsg = Win32API.RegisterWindowMessage("WM_HTML_GETOBJECT");
-
-                UIntPtr lRes;
-
-                if (Win32API.SendMessageTimeout(ieServerHandle, nMsg, 0, 0, Win32API.SMTO_ABORTIFHUNG, 1000, out lRes) == 0)
-                {
-                    return null;
-                }
-
-                return (InternetExplorer)Win32API.ObjectFromLresult(lRes, typeof(InternetExplorer).GUID, IntPtr.Zero);
-            }
-            else
-            {
-                return null;
-            }
-        }
 
         #endregion
 
@@ -1507,25 +1513,25 @@ namespace Shrinerain.AutoTester.Core
         /*  void RegBrowserEvent()
         *  register IE event.
         */
-        protected virtual void RegBrowserEvent()
+        protected virtual void RegBrowserEvent(InternetExplorer ie)
         {
-            RegDownloadEvent();
-            RegDocumentLoadCompleteEvent();
-            RegNavigateEvent();
-            RegRectChangeEvent();
-            RegScrollEvent();
-            RegOnNewWindowEvent();
+            RegDownloadEvent(ie);
+            RegDocumentLoadCompleteEvent(ie);
+            RegNavigateEvent(ie);
+            RegRectChangeEvent(ie);
+            RegScrollEvent(ie);
+            RegOnNewWindowEvent(ie);
         }
 
         /*  void RegDownloadEvent()
          *  Register event when the browser is starting to download a web page.
          * 
          */
-        protected virtual void RegDownloadEvent()
+        protected virtual void RegDownloadEvent(InternetExplorer ie)
         {
             try
             {
-                _ie.DownloadBegin += new DWebBrowserEvents2_DownloadBeginEventHandler(OnDownloadBegin);
+                ie.DownloadBegin += new DWebBrowserEvents2_DownloadBeginEventHandler(OnDownloadBegin);
             }
             catch (Exception ex)
             {
@@ -1537,12 +1543,12 @@ namespace Shrinerain.AutoTester.Core
          * register event when a new window pops up.
          * Notice: need update!
          */
-        protected virtual void RegOnNewWindowEvent()
+        protected virtual void RegOnNewWindowEvent(InternetExplorer ie)
         {
             try
             {
-                _ie.NewWindow3 += new DWebBrowserEvents2_NewWindow3EventHandler(OnNewWindow3);
-                _ie.NewWindow2 += new DWebBrowserEvents2_NewWindow2EventHandler(OnNewWindow2);
+                ie.NewWindow3 += new DWebBrowserEvents2_NewWindow3EventHandler(OnNewWindow3);
+                ie.NewWindow2 += new DWebBrowserEvents2_NewWindow2EventHandler(OnNewWindow2);
             }
             catch (Exception ex)
             {
@@ -1555,19 +1561,19 @@ namespace Shrinerain.AutoTester.Core
          * register event when scroll bar scroll.
          * Notice: current we don't need this event.
          */
-        protected virtual void RegScrollEvent()
+        protected virtual void RegScrollEvent(InternetExplorer ie)
         {
-            
+
         }
 
         /* void RegDocumentLoadCompleteEvent()
          * register event when the browser load a web page succesfully.
          */
-        protected virtual void RegDocumentLoadCompleteEvent()
+        protected virtual void RegDocumentLoadCompleteEvent(InternetExplorer ie)
         {
             try
             {
-                _ie.DocumentComplete += new DWebBrowserEvents2_DocumentCompleteEventHandler(OnDocumentLoadComplete);
+                ie.DocumentComplete += new DWebBrowserEvents2_DocumentCompleteEventHandler(OnDocumentLoadComplete);
             }
             catch (Exception ex)
             {
@@ -1578,14 +1584,14 @@ namespace Shrinerain.AutoTester.Core
         /*  void RegRectChangeEvent()
          *  register event when the size of the browser changed.
          */
-        protected virtual void RegRectChangeEvent()
+        protected virtual void RegRectChangeEvent(InternetExplorer ie)
         {
             try
             {
-                _ie.WindowSetTop += new DWebBrowserEvents2_WindowSetTopEventHandler(OnRectChanged);
-                _ie.WindowSetLeft += new DWebBrowserEvents2_WindowSetLeftEventHandler(OnRectChanged);
-                _ie.WindowSetWidth += new DWebBrowserEvents2_WindowSetWidthEventHandler(OnRectChanged);
-                _ie.WindowSetHeight += new DWebBrowserEvents2_WindowSetHeightEventHandler(OnRectChanged);
+                ie.WindowSetTop += new DWebBrowserEvents2_WindowSetTopEventHandler(OnRectChanged);
+                ie.WindowSetLeft += new DWebBrowserEvents2_WindowSetLeftEventHandler(OnRectChanged);
+                ie.WindowSetWidth += new DWebBrowserEvents2_WindowSetWidthEventHandler(OnRectChanged);
+                ie.WindowSetHeight += new DWebBrowserEvents2_WindowSetHeightEventHandler(OnRectChanged);
             }
             catch (Exception ex)
             {
@@ -1596,13 +1602,13 @@ namespace Shrinerain.AutoTester.Core
         /* void RegNavigateFailedEvent()
          * register event when the browser failed to load a url.
          */
-        protected virtual void RegNavigateEvent()
+        protected virtual void RegNavigateEvent(InternetExplorer ie)
         {
             try
             {
-                _ie.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(OnBeforeNavigate2);
-                _ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
-                _ie.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(OnNavigateComplete2);
+                ie.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(OnBeforeNavigate2);
+                ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
+                ie.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(OnNavigateComplete2);
             }
             catch (Exception ex)
             {
@@ -1645,10 +1651,14 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-                _ie = GetInternetExplorerFromHandle(_ieServerHandle);
-                // _ie = (InternetExplorer)ppDisp;
+                InternetExplorerClass ie = new InternetExplorerClass();
 
-                //GetSize();
+                if (ie != null)
+                {
+                    ppDisp = ie;
+
+                    RefreshBrowser(ie);
+                }
             }
             catch
             {
@@ -1664,9 +1674,7 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-                // ppDisp = newIE;
-
-                GetSize();
+                OnNewWindow2(ref ppDisp, ref Cancel);
             }
             catch (Exception ex)
             {
