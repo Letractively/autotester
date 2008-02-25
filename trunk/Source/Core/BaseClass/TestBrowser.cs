@@ -1104,7 +1104,7 @@ namespace Shrinerain.AutoTester.Core
                         InternetExplorer[] allBrowsers = GetAllBrowsers();
                         foreach (InternetExplorer i in allBrowsers)
                         {
-                            if (i.HWND == tmp.HWND)
+                            if (i == tmp)
                             {
                                 _ieStack.Push(tmp);
                                 break;
