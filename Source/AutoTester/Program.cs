@@ -194,9 +194,9 @@ namespace Shrinerain.AutoTester
             test.Browser.Start();
 
             test.Browser.Load(url);
-           // test.Map.TextBox("用户名").Input("shrinerain");
-           // test.Map.TextBox("密码").Input("jyoicq");
-           // test.Map.Button("登录").Click();
+            // test.Map.TextBox("用户名").Input("shrinerain");
+            // test.Map.TextBox("密码").Input("jyoicq");
+            // test.Map.Button("登录").Click();
 
             //test.Browser.WaitForNextPage();
             //test.Map.Link("我的书架").Click();
@@ -206,7 +206,7 @@ namespace Shrinerain.AutoTester
 
             //test.Browser.Load("www.google.com");
 
-           // test.Map.TextBox("关键字").Input("test");
+            // test.Map.TextBox("关键字").Input("test");
             //test.Map.RadioBtn("好友可见").Check();
             //test.Map.CheckBox("[历史]").Check();
             //test.Map.Button("退出").Click();
