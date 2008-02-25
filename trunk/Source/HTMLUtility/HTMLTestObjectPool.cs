@@ -2552,7 +2552,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     System.Threading.Thread.Sleep(1 * 1000);
                     times += 1;
                 }
-
             }
         }
 
