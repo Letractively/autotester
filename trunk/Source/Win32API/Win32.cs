@@ -776,7 +776,7 @@ namespace Shrinerain.AutoTester.Win32
             WM_PAINT = 0x000F
         }
 
-        public enum WindowMessages
+        public enum WindowMessages : int
         {
             WM_NULL = 0x0000,
             WM_CREATE = 0x0001,

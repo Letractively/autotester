@@ -832,7 +832,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public Object GetObjectByType(string type, string values)
         {
+            int objIndex;
+
+            if (int.TryParse(values, out objIndex))
+            {
+                if (objIndex < 10)
+                {
+                    return GetObjectByType(type, null, objIndex - 1);
+                }
+            }
+
             return GetObjectByType(type, values, 0);
+
         }
 
         public Object GetObjectByType(string type, string values, int index)
@@ -853,9 +864,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 type = type.Trim();
             }
 
-            if (values == null)
+            if (!String.IsNullOrEmpty(values))
             {
-                values = "";
+                values = values.Trim();
             }
 
             if (index < 0)
@@ -877,7 +888,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //convert the TYPE text to valid internal type.
             // eg: "button" to HTMLTestObjectType.Button
-            HTMLTestObjectType typeValue = GetTypeByString(type);
+            HTMLTestObjectType typeValue = ConvertStrToHTMLType(type);
 
             if (typeValue == HTMLTestObjectType.Unknow)
             {
@@ -886,19 +897,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else if (typeValue == HTMLTestObjectType.MsgBox || typeValue == HTMLTestObjectType.FileDialog)
             {
                 isHTMLType = false;
-            }
-
-            if (isHTMLType)
-            {
-                //not special type, then we need values to find the object.
-                if (String.IsNullOrEmpty(values))
-                {
-                    throw new ObjectNotFoundException("Can not get object by type: values can not be empty.");
-                }
-                else
-                {
-                    values = values.Trim();
-                }
             }
 
             //convert the type to HTML tags.
@@ -912,16 +910,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //if the expected value is number like, we think it is stand for the index of the object, not text on it.
             // eg: we can use type="textbox", values="1" to find the first textbox.
-            bool isByIndex = false;
-            int objIndex;
-            if (int.TryParse(values, out objIndex))
-            {
-                if (objIndex < 10)
-                {
-                    index = objIndex - 1;
-                    isByIndex = true;
-                }
-            }
+
 
             //if we can find more than one test object, we need to consider about the index.
             int leftIndex = index;
@@ -941,10 +930,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
-
-            //windows handle of Message Box and File Dialog
-            IntPtr handle = IntPtr.Zero;
-
             //we will try 30s to find an object.
             int times = 0;
             while (times <= _maxWaitSeconds)
@@ -954,6 +939,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     try
                     {
+                        //windows handle of Message Box and File Dialog
+                        IntPtr handle = IntPtr.Zero;
+
                         //check object by type
                         if (CheckObjectByType(ref handle, typeValue, values, simPercent))
                         {
@@ -1009,7 +997,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         try
                         {
                             //if we have more than 2*percent objects, we will try to find the position by searching the text.
-                            if (tagElementCol.length > _vibrationPercent * 2)
+                            if (!String.IsNullOrEmpty(values) && tagElementCol.length > _vibrationPercent * 2)
                             {
 
                                 Regex tagReg;
@@ -1074,12 +1062,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 // check if it is a interactive object.
                                 if (IsVisible(_tempElement))
                                 {
-                                    //if multi object, check if it is the object at expectd index
-                                    if (isByIndex)
-                                    {
-                                        leftIndex--;
-                                    }
-                                    else if (CheckObjectByType(_tempElement, typeValue, values, simPercent)) //check object by type
+                                    //check object by type
+                                    if (CheckObjectByType(_tempElement, typeValue, values, simPercent))
                                     {
                                         leftIndex--;
                                     }
@@ -1262,7 +1246,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("The width and height of rect can not be 0.");
             }
 
-            HTMLTestObjectType type = GetTypeByString(typeStr);
+            HTMLTestObjectType type = ConvertStrToHTMLType(typeStr);
 
             if (type == HTMLTestObjectType.Unknow)
             {
@@ -1501,6 +1485,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return CheckTextBoxObject(element, value, simPercent);
             }
+            else if (type == HTMLTestObjectType.Link)
+            {
+                return CheckLinkObject(element, value, simPercent);
+            }
 
             string tag = element.tagName;
 
@@ -1572,6 +1560,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
+                if (value == null)
+                {
+                    return true;
+                }
 
                 //firstly, check value.
                 if (IsPropertyLike(element, "innerText", value, simPercent))
@@ -1688,6 +1680,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return false;
                 }
 
+                if (value == null)
+                {
+                    return true;
+                }
+
                 //get the position of ">"
                 int pos1 = items.IndexOf(">");
 
@@ -1718,11 +1715,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return false;
                 }
 
-                //check the .src property.
-                string propertyName = "src";
+                if (value == null)
+                {
+                    return true;
+                }
 
+                //fisrtly, check the .alt property.
+                string propertyName = "alt";
+                string actualValue;
+
+                if (HTMLTestObject.TryGetValueByProperty(element, propertyName, out actualValue))
+                {
+                    if (Searcher.IsStringLike(actualValue, value, simPercent))
+                    {
+                        return true;
+                    }
+                }
+
+                //then check the .src property.
+                propertyName = "src";
                 string imgSrc;
-
                 if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out imgSrc))
                 {
                     return false;
@@ -1769,6 +1781,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         return false;
                     }
+                }
+
+                if (value == null)
+                {
+                    return true;
                 }
 
                 string labelText = HTMLTestRadioButton.GetLabelForRadioBox(element);
@@ -1840,6 +1857,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         return false;
                     }
                 }
+
+                if (value == null)
+                {
+                    return true;
+                }
+
                 string labelText = HTMLTestCheckBox.GetLabelForCheckBox(element);
 
                 if (!String.IsNullOrEmpty(labelText) && value.Length > 1)
@@ -1928,7 +1951,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     propertyName = "src";
                 }
 
+                if (value == null)
+                {
+                    return true;
+                }
+
                 return IsPropertyLike(element, propertyName, value, simPercent);
+
             }
             catch
             {
@@ -1970,6 +1999,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
+                if (value == null)
+                {
+                    return true;
+                }
+
 
                 //check caption of the table.
                 string caption;
@@ -2007,6 +2041,33 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
+        }
+
+        /* bool CheckLinkObject(IHTMLElement element, string value, int simPercent)
+         * check link object, <a href...>
+         */
+        private static bool CheckLinkObject(IHTMLElement element, string value, int simPercent)
+        {
+            if (element.tagName != "A")
+            {
+                return false;
+            }
+
+            if (value == null && String.IsNullOrEmpty(element.innerText))
+            {
+                return true;
+            }
+
+            //check innerText property.
+            string propertyName = "innerText";
+            string propertyValue;
+
+            if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out propertyValue))
+            {
+                return false;
+            }
+
+            return Searcher.IsStringLike(propertyValue, value, simPercent);
         }
 
         /* bool CheckMsgBoxObject(string value, int simPercent)
@@ -2126,11 +2187,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return true;
         }
 
-        /* HTMLTestObjectType GetTypeByString(string type)
+        /* HTMLTestObjectType ConvertStrToHTMLType(string type)
          * convert the type text to html type enum. 
          * eg: button to HTMLTestObjectType.Button
          */
-        private static HTMLTestObjectType GetTypeByString(string type)
+        public static HTMLTestObjectType ConvertStrToHTMLType(string type)
         {
             if (String.IsNullOrEmpty(type))
             {

@@ -23,7 +23,7 @@ using System.Runtime.Serialization;
 namespace Shrinerain.AutoTester.Core
 {
     [Serializable]
-    public class TestException : Exception
+    public class TestException : ApplicationException
     {
         #region fields
 

@@ -87,14 +87,14 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+            Google();
 
+            return;
             qidian();
 
             return;
 
-            Google();
 
-            return;
 
 
             //TestLog myLog = new TestLog();
@@ -174,15 +174,20 @@ namespace Shrinerain.AutoTester
         public static void Google()
         {
 
-            string url = @"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";//@"www.google.com"; //  @"http://127.0.0.1/AutoTester/";// 
+            string url = @"www.google.com"; //@"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";//  @"http://127.0.0.1/AutoTester/";// 
 
             HTMLTest test = new HTMLTest();
             test.Browser.Load(url);
-            test.Browser.Wait(5);
+            //test.Browser.Wait(5);
 
-            Console.WriteLine("Date: {0:o}", DateTime.Now);
-            test.Pool.GetObjectByType("textbox", "电子邮件:");
-            Console.WriteLine("Date: {0:o}", DateTime.Now);
+            //Console.WriteLine("Date: {0:o}", DateTime.Now);
+            //test.Pool.GetObjectByType("textbox", "电子邮件:");
+            //Console.WriteLine("Date: {0:o}", DateTime.Now);
+
+            test.Map.TextBox().Input("shrinerain");
+            test.Map.Button("Google Search").Click();
+
+            Console.WriteLine(test.Browser.GetLoadSeconds());
             Console.ReadLine();
         }
 
@@ -203,6 +208,7 @@ namespace Shrinerain.AutoTester
 
             test.Map.Link("搜书").Click();
             test.Map.Link("小亨传说").Click();
+            Console.WriteLine(test.Browser.GetLoadSeconds());
 
             //test.Browser.Load("www.google.com");
 
