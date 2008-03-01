@@ -151,16 +151,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (!ok)
                 {
-
                     //or send the chars by keyboard
                     KeyboardOp.SendChars(value);
-
-                    //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
-                    //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
-                    //and we can not click this button, so we need to elimate it. 
-                    //click just above the text box, to elimate it.
-                    ClickAbove();
                 }
+
+                //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
+                //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
+                //and we can not click this button, so we need to elimate it. 
+                //click just above the text box, to elimate it.
+                ClickAbove();
 
                 if (_isDelayAfterAction)
                 {

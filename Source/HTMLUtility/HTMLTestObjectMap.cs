@@ -10,7 +10,8 @@
 *              Like other automation tools, we have a map to store objects.
 *              We can get/insert an object to this map. 
 *
-* History: 2008/01/29 wan,yu Init version 
+* History: 2008/01/29 wan,yu Init version.
+*          2008/03/01 wan,yu add GetNamelessObject(). 
 *
 *********************************************************************/
 
@@ -168,7 +169,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public HTMLTestButton Button()
         {
-            _button = (HTMLTestButton)this._objPool.GetLastObject();
+            _button = (HTMLTestButton)GetNamelessObject("button");
 
             return _button;
         }
@@ -186,7 +187,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestCheckBox CheckBox()
         {
-            _checkBox = (HTMLTestCheckBox)this._objPool.GetLastObject();
+            _checkBox = (HTMLTestCheckBox)GetNamelessObject("checkbox");
 
             return _checkBox;
         }
@@ -200,7 +201,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestComboBox ComboBox()
         {
-            _combobox = (HTMLTestComboBox)this._objPool.GetLastObject();
+            _combobox = (HTMLTestComboBox)GetNamelessObject("combobox");
 
             return _combobox;
         }
@@ -214,7 +215,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestFileDialog FileDialog()
         {
-            _fileDialog = (HTMLTestFileDialog)this._objPool.GetLastObject();
+            _fileDialog = (HTMLTestFileDialog)GetNamelessObject("filedialog");
 
             return _fileDialog;
         }
@@ -228,7 +229,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestImage Image()
         {
-            _img = (HTMLTestImage)this._objPool.GetLastObject();
+            _img = (HTMLTestImage)GetNamelessObject("image");
 
             return _img;
         }
@@ -242,7 +243,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestLabel Label()
         {
-            _label = (HTMLTestLabel)this._objPool.GetLastObject();
+            _label = (HTMLTestLabel)GetNamelessObject("label");
 
             return _label;
         }
@@ -256,7 +257,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestLink Link()
         {
-            _link = (HTMLTestLink)this._objPool.GetLastObject();
+            _link = (HTMLTestLink)GetNamelessObject("link");
 
             return _link;
         }
@@ -270,7 +271,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestListBox ListBox()
         {
-            _listbox = (HTMLTestListBox)this._objPool.GetLastObject();
+            _listbox = (HTMLTestListBox)GetNamelessObject("listbox");
 
             return _listbox;
         }
@@ -284,7 +285,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestMsgBox MsgBox()
         {
-            _msgBox = (HTMLTestMsgBox)this._objPool.GetLastObject();
+            _msgBox = (HTMLTestMsgBox)GetNamelessObject("msgbox");
 
             return _msgBox;
         }
@@ -298,7 +299,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestRadioButton RadioBtn()
         {
-            _radioBtn = (HTMLTestRadioButton)this._objPool.GetLastObject();
+            _radioBtn = (HTMLTestRadioButton)GetNamelessObject("radio");
 
             return _radioBtn;
         }
@@ -312,7 +313,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestTable Table()
         {
-            _table = (HTMLTestTable)this._objPool.GetLastObject();
+            _table = (HTMLTestTable)GetNamelessObject("table");
 
             return _table;
         }
@@ -326,7 +327,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestTextBox TextBox()
         {
-            _textBox = (HTMLTestTextBox)this._objPool.GetLastObject();
+            _textBox = (HTMLTestTextBox)GetNamelessObject("textbox");
 
             return _textBox;
         }
@@ -340,7 +341,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestActiveXObject ActiveXObject()
         {
-            _activeXObj = (HTMLTestActiveXObject)this._objPool.GetLastObject();
+            _activeXObj = (HTMLTestActiveXObject)GetNamelessObject("activex");
 
             return _activeXObj;
         }
@@ -556,6 +557,31 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return false;
+        }
+
+        /* Object GetNamelessObject(string type)
+         * return the object with no name specific.
+         * firstly, try to get the last object, if failed, search object from pool.
+         */
+        private HTMLTestGUIObject GetNamelessObject(string type)
+        {
+            if (!String.IsNullOrEmpty(type))
+            {
+                HTMLTestObjectType htmlType = HTMLTestObjectPool.ConvertStrToHTMLType(type);
+
+                HTMLTestGUIObject lastObj = (HTMLTestGUIObject)this._objPool.GetLastObject();
+
+                if (lastObj != null && lastObj.Type == htmlType)
+                {
+                    return lastObj;
+                }
+                else
+                {
+                    return (HTMLTestGUIObject)this._objPool.GetObjectByType(type, null);
+                }
+            }
+
+            return null;
         }
 
         #endregion
