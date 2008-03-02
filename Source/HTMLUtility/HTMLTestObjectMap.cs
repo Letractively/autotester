@@ -581,7 +581,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
-            return null;
+            throw new ObjectNotFoundException("Type can not be empty.");
+
         }
 
         #endregion
