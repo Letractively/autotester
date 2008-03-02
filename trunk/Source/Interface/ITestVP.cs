@@ -10,6 +10,7 @@
 *              by AutoTester, we can perform these kind of check point.  
 *
 * History:  2007/09/04 wan,yu Init version
+*           2008/03/02 wan,yu update, add PerformTestObjectTest() and PerformArrayTest().
 *
 *********************************************************************/
 
@@ -20,7 +21,9 @@ namespace Shrinerain.AutoTester.Interface
     [CLSCompliant(true)]
     public interface ITestVP
     {
-        bool PerformStringTest(Object testObj, String vpProperty, String expectResult, VPCheckType type, out object actualString);
+        bool PerformStringTest(String actualString, String expectResult, VPCheckType type);
+
+        bool PerformArrayTest(Object[] expectArray, Object[] actualArray, VPCheckType type);
 
         bool PerformRegexTest(Object testObj, String vpProperty, String expectReg, VPCheckType type, out object actualResult);
 
@@ -28,11 +31,7 @@ namespace Shrinerain.AutoTester.Interface
 
         bool PerformDataTableTest(Object testObj, Object expectedDataTable, VPCheckType type, out object actualTable);
 
-        bool PerformListBoxTest(Object testObj, Object expectedListBox, VPCheckType type, out object actualListBox);
-
-        bool PerformComboBoxTest(Object testObj, Object expectedComboBox, VPCheckType type, out object actualComboBox);
-
-        bool PerformTreeTest(Object testObj, Object expectedTree, VPCheckType type, out object actualTree);
+        bool PerformTestObjectTest(Object testObj, Object expectedListBox, VPCheckType type);
 
         bool PerformPropertyTest(Object testObj, String vpProperty, Object expectResult, VPCheckType type, out object actualProperty);
 
@@ -44,18 +43,18 @@ namespace Shrinerain.AutoTester.Interface
     [CLSCompliant(true)]
     public enum VPCheckType
     {
-        Small,         //<
-        SmallOrEqual,  //<=
-        Equal,         //==
-        Larger,        //>
-        LargerOrEqual, //>=
-        Contain,       // some container object, like ListBox, one listbox may contains all the elements of another listbox
-        Exclude,       // two container have NO same element.
-        Cross,         // two container contain some same elements, but NOT ALL.
-        Existed,       // check something whether it is exist.
-        Text,          // check if the file/field is text.
-        Binary,        // check if the file/field is binary.
-        Connected,     // check network/software status.
-        Disconnected    
+        Small,         //actual < expected
+        SmallOrEqual,  //actual <= expected
+        Equal,         //actual == expected
+        NotEqual,      //actual != expected
+        Larger,        //actual > expected
+        LargerOrEqual, //actual >= expected
+        Contain,       //actual is a super set of expected
+        Cross,         //two set contain some same elements, but NOT ALL.
+        Existed,       //expected is existed.
+        Text,          //actual file/database is text.
+        Binary,        //actual file/database is binary.
+        Connected,     //actual network status.
+        Disconnected
     }
 }

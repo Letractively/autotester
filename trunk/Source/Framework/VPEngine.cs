@@ -66,7 +66,7 @@ namespace Shrinerain.AutoTester.Framework
             try
             {
                 //currently, just support string test.
-                result = _testVP.PerformStringTest(obj, vpProperty, expectResult.ToString(), VPCheckType.Equal, out actualResult);
+                result = _testVP.PerformPropertyTest(obj, vpProperty, expectResult.ToString(), VPCheckType.Equal, out actualResult);
             }
             catch
             {
