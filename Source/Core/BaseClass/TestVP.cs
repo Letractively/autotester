@@ -16,6 +16,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.IO;
 
 using Shrinerain.AutoTester.Interface;
 
@@ -74,13 +76,13 @@ namespace Shrinerain.AutoTester.Core
                     {
                         return (String.Compare(actualResult, expectResult, false) == 0) || (actualResult.CompareTo(expectResult) > 0);
                     }
-                    else if (type == VPCheckType.Contain)
+                    else if (type == VPCheckType.Included)
                     {
                         return actualResult != "" && actualResult.IndexOf(expectResult) >= 0;
                     }
                     else if (type == VPCheckType.Cross)
                     {
-                        return PerformArrayTest(actualResult.Split(' '), expectResult.Split(' '), VPCheckType.Cross);
+                        return PerformArrayTest(expectResult.Split(' '), actualResult.Split(' '), VPCheckType.Cross);
                     }
                 }
                 catch
@@ -92,7 +94,7 @@ namespace Shrinerain.AutoTester.Core
             return false;
         }
 
-        public virtual bool PerformArrayTest(Object[] actualArray, Object[] expectArray, VPCheckType type)
+        public virtual bool PerformArrayTest(Object[] expectArray, Object[] actualArray, VPCheckType type)
         {
             if (expectArray != null && actualArray != null)
             {
@@ -130,7 +132,7 @@ namespace Shrinerain.AutoTester.Core
                             }
                         }
                     }
-                    else if (type == VPCheckType.Contain)
+                    else if (type == VPCheckType.Included)
                     {
                         if (actualArray.Length >= expectArray.Length)
                         {
@@ -181,29 +183,59 @@ namespace Shrinerain.AutoTester.Core
             return false;
         }
 
-        public virtual bool PerformRegexTest(object testObj, string vpProperty, string expectReg, VPCheckType type, out object actualResult)
+        public virtual bool PerformRegexTest(object testObj, string vpProperty, string expectReg, VPCheckType type, out String actualResult)
+        {
+            actualResult = null;
+
+            if (testObj != null && !String.IsNullOrEmpty(vpProperty) && !String.IsNullOrEmpty(expectReg))
+            {
+                try
+                {
+                    TestObject obj = (TestObject)testObj;
+
+                    actualResult = obj.GetPropertyByName(vpProperty).ToString();
+
+                    if (actualResult != null)
+                    {
+                        Regex reg = new Regex(expectReg);
+
+                        //we treat "Equal" as "Match" here.
+                        if (type == VPCheckType.Equal)
+                        {
+                            return reg.IsMatch(actualResult);
+                        }
+                        else if (type == VPCheckType.NotEqual)
+                        {
+                            return !reg.IsMatch(actualResult);
+                        }
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        public virtual bool PerformImageTest(String actualImgPath, String expectImgPath, VPCheckType type, out object actualImg)
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool PerformImageTest(object testObj, string expectImgPath, VPCheckType type, out object actualImg)
+        public virtual bool PerformDataTableTest(Object actualDataTable, Object expectedDataTable, VPCheckType type)
         {
             throw new NotImplementedException();
         }
 
-        public virtual bool PerformDataTableTest(Object testObj, Object expectedDataTable, VPCheckType type, out object actualTable)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual bool PerformTestObjectTest(Object testObj, Object expectedListBox, VPCheckType type)
+        public virtual bool PerformTestObjectTest(Object testObj, Object expectedObject, VPCheckType type)
         {
             throw new NotImplementedException();
         }
 
         public virtual bool PerformPropertyTest(object testObj, string vpProperty, object expectResult, VPCheckType type, out object actualResult)
         {
-            bool result = false;
             actualResult = null;
 
             try
@@ -215,24 +247,164 @@ namespace Shrinerain.AutoTester.Core
 
                 if (actualResult != null && expectResult != null)
                 {
-                    if (actualResult is String && expectResult is String)
+                    if (expectResult is String)
                     {
-                        result = PerformStringTest(actualResult.ToString(), expectResult.ToString(), type);
+                        return PerformStringTest(actualResult.ToString(), expectResult.ToString(), type);
                     }
-
+                    else if (expectResult is Array)
+                    {
+                        return PerformArrayTest((object[])expectResult, (object[])actualResult, type);
+                    }
+                    else if (type == VPCheckType.Equal)
+                    {
+                        return actualResult.Equals(expectResult);
+                    }
+                    else if (type == VPCheckType.NotEqual)
+                    {
+                        return !actualResult.Equals(expectResult);
+                    }
                 }
 
             }
             catch
             {
+                return false;
             }
 
-            return result;
+            return false;
         }
 
-        public virtual bool PerformFileTest(object testObj, string expectedFile, VPCheckType type, out object actualFile)
+        public virtual bool PerformFileTest(String actualFile, String expectedFile, VPCheckType type)
         {
-            throw new NotImplementedException();
+            if (type == VPCheckType.Existent)
+            {
+                return File.Exists(expectedFile);
+            }
+            else if (type == VPCheckType.NotExistent)
+            {
+                return !File.Exists(expectedFile);
+            }
+            else
+            {
+                try
+                {
+                    if (File.Exists(actualFile) && File.Exists(expectedFile))
+                    {
+                        FileInfo actualInfo = new FileInfo(actualFile);
+                        FileInfo expectedInfo = new FileInfo(expectedFile);
+
+                        if (type == VPCheckType.Equal)
+                        {
+                            //different size, can not be the same.
+                            if (actualInfo.Length != expectedInfo.Length)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                TextReader actualReader = File.OpenText(actualFile);
+                                TextReader expectedReader = File.OpenText(expectedFile);
+
+                                String actualLine;
+                                String expectedLine;
+
+                                bool result = true; ;
+
+                                //compare line by line.
+                                while (true)
+                                {
+                                    actualLine = actualReader.ReadLine();
+                                    expectedLine = expectedReader.ReadLine();
+
+                                    if (actualLine == null || expectedLine == null)
+                                    {
+                                        break;
+                                    }
+
+                                    //current line is not the same, return false.
+                                    if (String.Compare(actualLine, expectedLine) != 0)
+                                    {
+                                        result = false;
+                                        break;
+                                    }
+                                }
+
+                                actualReader.Close();
+                                expectedReader.Close();
+
+                                return result;
+                            }
+                        }
+                        else if (type == VPCheckType.NotEqual)
+                        {
+                            TextReader actualReader = File.OpenText(actualFile);
+                            TextReader expectedReader = File.OpenText(expectedFile);
+
+                            String actualLine;
+                            String expectedLine;
+
+                            bool result = false;
+
+                            while (true)
+                            {
+                                actualLine = actualReader.ReadLine();
+                                expectedLine = expectedReader.ReadLine();
+
+                                if (actualLine == null || expectedLine == null)
+                                {
+                                    break;
+                                }
+
+                                //current line is not the same, return true.
+                                if (String.Compare(actualLine, expectedLine) != 0)
+                                {
+                                    result = true;
+                                    break;
+                                }
+                            }
+
+                            actualReader.Close();
+                            expectedReader.Close();
+
+                            return result;
+                        }
+                        else if (type == VPCheckType.Included)
+                        {
+                            //actual file is smaller than expected file, so actual can not include expected.
+                            if (actualInfo.Length < expectedFile.Length)
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                TextReader actualReader = File.OpenText(actualFile);
+                                TextReader expectedReader = File.OpenText(expectedFile);
+
+                                String actualContent = actualReader.ReadToEnd();
+                                String expectedContent = actualReader.ReadToEnd();
+
+                                bool result = true;
+
+                                if (actualContent.IndexOf(expectedContent) < 0)
+                                {
+                                    result = false;
+                                }
+
+                                actualReader.Close();
+                                expectedReader.Close();
+
+                                return result;
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
 
         public virtual bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type, out object actualNetwork)
