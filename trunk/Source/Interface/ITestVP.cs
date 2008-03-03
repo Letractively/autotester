@@ -23,19 +23,19 @@ namespace Shrinerain.AutoTester.Interface
     {
         bool PerformStringTest(String actualString, String expectResult, VPCheckType type);
 
-        bool PerformArrayTest(Object[] expectArray, Object[] actualArray, VPCheckType type);
+        bool PerformArrayTest(Object[] actualArray, Object[] expectArray, VPCheckType type);
 
-        bool PerformRegexTest(Object testObj, String vpProperty, String expectReg, VPCheckType type, out object actualResult);
+        bool PerformRegexTest(Object testObj, String vpProperty, String expectReg, VPCheckType type, out String actualResult);
 
-        bool PerformImageTest(Object testObj, String expectImgPath, VPCheckType type, out object actualImg);
+        bool PerformImageTest(String actualImgPath, String expectImgPath, VPCheckType type, out object actualImg);
 
-        bool PerformDataTableTest(Object testObj, Object expectedDataTable, VPCheckType type, out object actualTable);
+        bool PerformDataTableTest(Object actualDataTable, Object expectedDataTable, VPCheckType type);
 
         bool PerformTestObjectTest(Object testObj, Object expectedListBox, VPCheckType type);
 
         bool PerformPropertyTest(Object testObj, String vpProperty, Object expectResult, VPCheckType type, out object actualProperty);
 
-        bool PerformFileTest(Object testObj, String expectedFile, VPCheckType type, out object actualFile);
+        bool PerformFileTest(String actualFile, String expectedFile, VPCheckType type);
 
         bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type, out object actualNetwork);
     }
@@ -49,9 +49,10 @@ namespace Shrinerain.AutoTester.Interface
         NotEqual,      //actual != expected
         Larger,        //actual > expected
         LargerOrEqual, //actual >= expected
-        Contain,       //actual is a super set of expected
+        Included,      //actual is a super set of expected
         Cross,         //two set contain some same elements, but NOT ALL.
-        Existed,       //expected is existed.
+        Existent,       //expected is existed.
+        NotExistent,
         Text,          //actual file/database is text.
         Binary,        //actual file/database is binary.
         Connected,     //actual network status.
