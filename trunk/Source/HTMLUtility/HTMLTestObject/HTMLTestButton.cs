@@ -34,7 +34,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Unknow = 4
     }
 
-    public class HTMLTestButton : HTMLTestGUIObject, IClickable, IShowInfo
+    public class HTMLTestButton : HTMLTestGUIObject, IClickable, IShowInfo, IStatus
     {
 
         #region fields
@@ -54,6 +54,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //if the button type is not "submit" or "reset", we can get method name of "onclick" property.
         protected string _customMethodName;
 
+        protected string _state;
 
         #endregion
 
@@ -132,7 +133,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 // see the definition in HTMLGUiTestObject.cs
                 Hover();
 
-                MouseOp.Click();
+                if (this._sendMsgOnly)
+                {
+                    this._sourceElement.click();
+                }
+                else
+                {
+                    MouseOp.Click();
+                }
 
                 if (_isDelayAfterAction)
                 {
@@ -227,7 +235,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void Focus()
         {
-            Click();
+            //try
+            //{
+            //    if (this._inputElement != null)
+            //    {
+
+            //    }
+            //}
         }
 
         public virtual object GetDefaultAction()
@@ -242,6 +256,67 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region IStatus Members
+
+        /* object GetCurrentStatus()
+         * get the readystate of input element. 
+         */
+        public virtual object GetCurrentStatus()
+        {
+            try
+            {
+                if (_inputElement != null)
+                {
+                    return _inputElement.readyState;
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get status: " + ex.Message);
+            }
+        }
+
+        /* bool IsReady()
+         * return true if the object is ready.
+         */
+        public virtual bool IsReady()
+        {
+            try
+            {
+                if (_inputElement != null)
+                {
+                    return _inputElement.readyState == null ||
+                        _inputElement.readyState == "interactive" ||
+                        _inputElement.readyState == "complete";
+                }
+                else if (_buttonElement != null)
+                {
+                    return true;
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
+            }
+        }
+
+        #endregion
 
         #region IShowInfo methods
 
@@ -250,14 +325,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return this._currentStr;
         }
 
-        public virtual string GetFontStyle()
-        {
-            throw new PropertyNotFoundException();
-        }
-
         public virtual string GetFontFamily()
         {
             throw new PropertyNotFoundException();
+        }
+        
+        public string GetFontSize()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion
@@ -305,17 +385,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public override void Hover()
         {
-            if (!_isEnable || !_isVisible)
+            if (!IsReady() || !_isEnable || !_isVisible)
             {
                 throw new CannotPerformActionException("Button is not enabled.");
             }
 
-            base.Hover();
+            if (!_sendMsgOnly)
+            {
+                base.Hover();
+            }
+
         }
         #endregion
 
         #endregion
-
 
     }
 }

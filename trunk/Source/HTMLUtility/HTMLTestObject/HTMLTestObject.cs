@@ -73,7 +73,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected AutoResetEvent _stateChanged = new AutoResetEvent(false);
 
-
         #endregion
 
         #region Properties
@@ -262,11 +261,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* object GetPropertyByName(string propertyName)
          * return the property value by name.
          */
-        public override object GetPropertyByName(string propertyName)
+        public override object GetProperty(string propertyName)
         {
             string value;
 
-            if (TryGetValueByProperty(this._sourceElement, propertyName, out value))
+            if (TryGetProperty(this._sourceElement, propertyName, out value))
             {
                 return value;
             }
@@ -281,22 +280,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * set the property value.
          * return true if success.
          */
-        public override bool SetPropertyByName(string propertyName, object value)
+        public override bool SetProperty(string propertyName, object value)
         {
-            return TrySetValueByProperty(this._sourceElement, propertyName, value);
+            return TrySetProperty(this._sourceElement, propertyName, value);
         }
 
         /* bool TryGetValueByProperty(IHTMLElement element, string properyName)
          * return true if the property value is not null or empty.
          */
-        public static bool TryGetValueByProperty(IHTMLElement element, string properyName)
+        public static bool TryGetProperty(IHTMLElement element, string properyName)
         {
             string value;
 
-            return TryGetValueByProperty(element, properyName, out value);
+            return TryGetProperty(element, properyName, out value);
         }
 
-        public static bool TryGetValueByProperty(object element, string propertyName, out string value)
+        public static bool TryGetProperty(object element, string propertyName, out string value)
         {
             value = null;
 
@@ -309,7 +308,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 IHTMLElement tmpElement = (IHTMLElement)element;
 
-                return TryGetValueByProperty(tmpElement, propertyName, out value);
+                return TryGetProperty(tmpElement, propertyName, out value);
             }
             catch
             {
@@ -322,12 +321,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* bool TryGetValueByProperty(IHTMLElement element, string propertyName, out object value)
          * return true if the property exist.
          */
-        public static bool TryGetValueByProperty(IHTMLElement element, string propertyName, out string value)
+        public static bool TryGetProperty(IHTMLElement element, string propertyName, out string value)
         {
-            return TryGetValueByProperty(element, propertyName, out value, false);
+            return TryGetProperty(element, propertyName, out value, false);
         }
 
-        public static bool TryGetValueByProperty(IHTMLElement element, string propertyName, out string value, bool acceptEmpty)
+        public static bool TryGetProperty(IHTMLElement element, string propertyName, out string value, bool acceptEmpty)
         {
             value = "";
 
@@ -396,7 +395,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* bool TrySetValueByProperty(IHTMLElement element, string propertyName, object value)
          * return true if we set the property value successfully.
          */
-        public static bool TrySetValueByProperty(IHTMLElement element, string propertyName, object value)
+        public static bool TrySetProperty(IHTMLElement element, string propertyName, object value)
         {
             if (String.IsNullOrEmpty(propertyName))
             {
@@ -433,7 +432,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return false;
             }
 
-            if (!TryGetValueByProperty(this._sourceElement, "visibility", out isVisible))
+            if (!TryGetProperty(this._sourceElement, "visibility", out isVisible))
             {
                 return true && IsDisplayed(this._sourceElement);
             }
@@ -450,7 +449,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             string isEnable;
 
-            if (!TryGetValueByProperty(this._sourceElement, "diabled", out isEnable))
+            if (!TryGetProperty(this._sourceElement, "diabled", out isEnable))
             {
                 return true;
             }
@@ -472,7 +471,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             string isReadOnly;
 
-            if (!TryGetValueByProperty(this._sourceElement, "readOnly", out isReadOnly))
+            if (!TryGetProperty(this._sourceElement, "readOnly", out isReadOnly))
             {
                 return false;
             }
@@ -493,7 +492,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             string isDisabled;
-            if (HTMLTestObject.TryGetValueByProperty(element, "disabled", out isDisabled))
+            if (HTMLTestObject.TryGetProperty(element, "disabled", out isDisabled))
             {
                 if (String.Compare("true", isDisabled, true) == 0)
                 {
@@ -502,7 +501,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             string isDisplayed;
-            if (HTMLTestObject.TryGetValueByProperty(element, "style", out isDisplayed))
+            if (HTMLTestObject.TryGetProperty(element, "style", out isDisplayed))
             {
                 isDisplayed = isDisplayed.Replace(" ", "");
                 if (isDisplayed.IndexOf("display:none", StringComparison.CurrentCultureIgnoreCase) >= 0)
@@ -512,7 +511,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return true;
-
         }
 
         #endregion

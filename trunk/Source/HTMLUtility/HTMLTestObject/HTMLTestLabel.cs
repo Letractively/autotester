@@ -8,8 +8,7 @@
 *
 * Description: This class defines the actions provide by label.
 *              Actually, there isn't a "Label" control in html, I treat              
-*              <label>text</label>,<span>text</span> and <td>text</td> 
-*              <DIV>text</DIV> as the Label.
+*              <label>text</label>,<span>text</span> and <font></font>
 *               
 * History: 2008/01/21 wan,yu Init version.       
 *
@@ -36,18 +35,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //<span>
         protected IHTMLSpanElement _spanElement;
 
-        //<td>
-        protected IHTMLTableCell _cellElement;
+        //<font>
+        protected IHTMLFontElement _fontElement;
 
-        //<div>
-        protected IHTMLDivElement _divElement;
 
-        protected string _text;
-
+        protected string _styleStr;
         #endregion
 
         #region properties
-
 
         #endregion
 
@@ -56,6 +51,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestLabel(IHTMLElement element)
+            : base(element)
         {
             this._type = HTMLTestObjectType.Label;
 
@@ -69,13 +65,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     _spanElement = (IHTMLSpanElement)element;
                 }
-                else if (element.tagName == "TD")
+                else if (element.tagName == "FONT")
                 {
-                    _cellElement = (IHTMLTableCell)element;
-                }
-                else if (element.tagName == "DIV")
-                {
-                    _divElement = (IHTMLDivElement)element;
+                    _fontElement = (IHTMLFontElement)element;
                 }
 
             }
@@ -85,10 +77,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             //get text of the label.
-            if (!HTMLTestObject.TryGetValueByProperty(element, "innerText", out _text))
+            if (!HTMLTestObject.TryGetProperty(element, "innerText", out _labelText))
             {
                 throw new CannotBuildObjectException("Can not get text of label.");
             }
+
         }
 
         #endregion
@@ -99,17 +92,85 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public string GetText()
         {
-            return _text;
-        }
-
-        public string GetFontStyle()
-        {
-            throw new Exception("The method or operation is not implemented.");
+            return _labelText;
         }
 
         public string GetFontFamily()
         {
-            throw new Exception("The method or operation is not implemented.");
+            try
+            {
+                string fontFamily = GetStyleProperty("font-family");
+
+                if (String.IsNullOrEmpty(fontFamily) && _fontElement != null)
+                {
+                    if (!HTMLTestObject.TryGetProperty(this._sourceElement, "face", out fontFamily))
+                    {
+                        throw new PropertyNotFoundException("Can not get font family");
+                    }
+                }
+
+                return fontFamily;
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get font family: " + ex.Message);
+            }
+        }
+
+        public string GetFontSize()
+        {
+            try
+            {
+                string fontSize = GetStyleProperty("font-size");
+
+                if (String.IsNullOrEmpty(fontSize) && _fontElement != null)
+                {
+                    if (!HTMLTestObject.TryGetProperty(this._sourceElement, "size", out fontSize))
+                    {
+                        throw new PropertyNotFoundException("Can not get font size");
+                    }
+                }
+
+                return fontSize;
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get font size: " + ex.Message);
+            }
+        }
+
+        public string GetFontColor()
+        {
+            try
+            {
+                string fontColor = GetStyleProperty("font-color");
+
+                if (String.IsNullOrEmpty(fontColor) && _fontElement != null)
+                {
+                    if (!HTMLTestObject.TryGetProperty(this._sourceElement, "color", out fontColor))
+                    {
+                        throw new PropertyNotFoundException("Can not get font color");
+                    }
+                }
+
+                return fontColor;
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get font color: " + ex.Message);
+            }
         }
 
         #endregion
@@ -118,6 +179,60 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
+        /* String GetStyle()
+         * return the "style" property.
+         */
+        protected virtual String GetStyle()
+        {
+            if (String.IsNullOrEmpty(_styleStr))
+            {
+                if (HTMLTestObject.TryGetProperty(this._sourceElement, "style", out _styleStr))
+                {
+                    if (String.Compare(_styleStr, "System.__ComObject", true) != 0)
+                    {
+                        return _styleStr;
+                    }
+                }
+
+                return null;
+            }
+            else
+            {
+                return _styleStr;
+            }
+        }
+
+        protected virtual String GetStyleProperty(string property)
+        {
+            if (String.IsNullOrEmpty(property))
+            {
+                throw new PropertyNotFoundException("Property name can not be empty.");
+            }
+
+            string style = GetStyle();
+
+            if (!String.IsNullOrEmpty(style))
+            {
+                int startPos = style.IndexOf(property, StringComparison.CurrentCultureIgnoreCase);
+                if (startPos >= 0)
+                {
+                    int endPos = style.IndexOf(';', startPos);
+
+                    if (endPos <= 0)
+                    {
+                        endPos = style.Length;
+                    }
+
+                    if (endPos > startPos)
+                    {
+                        return style.Substring(startPos, endPos - startPos).Split(':')[1];
+                    }
+                }
+            }
+
+            return null;
+
+        }
 
         #endregion
 

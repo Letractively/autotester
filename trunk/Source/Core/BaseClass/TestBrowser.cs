@@ -121,6 +121,8 @@ namespace Shrinerain.AutoTester.Core
         //flag to show wether the browser is downloading sth.
         protected bool _isDownloading = false;
 
+        protected bool _sendMsgOnly = false;
+
         #endregion
 
         #region Sync Event
@@ -291,6 +293,12 @@ namespace Shrinerain.AutoTester.Core
             {
                 return GetAllBrowsers();
             }
+        }
+
+        public bool SendMsgOnly
+        {
+            get { return _sendMsgOnly; }
+            set { _sendMsgOnly = value; }
         }
 
 
@@ -777,7 +785,10 @@ namespace Shrinerain.AutoTester.Core
 
             try
             {
-                Win32API.SetForegroundWindow(_mainHandle);
+                if (!_sendMsgOnly)
+                {
+                    Win32API.SetForegroundWindow(_mainHandle);
+                }
             }
             catch (Exception ex)
             {

@@ -88,13 +88,14 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+            Google();
+            return;
 
             // KeyboardOp.SendChars("shrinerain");
             qidian();
             return;
 
-            Google();
-            return;
+
 
 
 
@@ -193,11 +194,11 @@ namespace Shrinerain.AutoTester
 
             //test.Pool.GetObjectByType("textbox", "用户名");
 
-            //test.Map.TextBox("用户名").Input("shrinerain");
-            //test.Map.TextBox("密码").Input("jyoicq");
-            //test.Map.Button("登录").Click();
+            test.Map.TextBox("用户名").Input("shrinerain");
+            test.Map.TextBox("密码").Input("jyoicq");
+            test.Map.Button("登录").Click();
             test.Map.Link("搜书").Click();
-            test.Map.Link("个人空间").Click();
+            //test.Map.Link("个人空间").Click();
             //test.Map.TextBox("关键字").Input("变身");
             //test.Map.Button("搜索").Click();
 
@@ -223,7 +224,10 @@ namespace Shrinerain.AutoTester
         {
             string url = @"http://www.google.com";
             HTMLTest test = new HTMLTest();
+            test.SendMsgOnly = true;
             test.Browser.Load(url);
+
+            Console.WriteLine(test.Map.Label("地图").GetFontSize());
 
             test.Map.TextBox("name=q").Input("shrinerain");
             test.Map.Add("搜索框");

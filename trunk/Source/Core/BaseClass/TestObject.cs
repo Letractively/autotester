@@ -51,7 +51,7 @@ namespace Shrinerain.AutoTester.Core
         /*  object GetPropertyByName(string propertyName)
          *  get the expected property value.
          */
-        public virtual object GetPropertyByName(string propertyName)
+        public virtual object GetProperty(string propertyName)
         {
             if (String.IsNullOrEmpty(propertyName))
             {
@@ -68,7 +68,7 @@ namespace Shrinerain.AutoTester.Core
         /* SetPropertyByName(string propertyName, object value)
          * set the expected property, return true if successful.
          */
-        public virtual bool SetPropertyByName(string propertyName, object value)
+        public virtual bool SetProperty(string propertyName, object value)
         {
             if (String.IsNullOrEmpty(propertyName))
             {

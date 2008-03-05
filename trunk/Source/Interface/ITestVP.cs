@@ -49,9 +49,10 @@ namespace Shrinerain.AutoTester.Interface
         NotEqual,      //actual != expected
         Larger,        //actual > expected
         LargerOrEqual, //actual >= expected
-        Included,      //actual is a super set of expected
+        Included,      //actual should contain expected
+        Excluded,      //actual should not contain expected
         Cross,         //two set contain some same elements, but NOT ALL.
-        Existent,       //expected is existed.
+        Existent,      //expected is existed.
         NotExistent,
         Text,          //actual file/database is text.
         Binary,        //actual file/database is binary.

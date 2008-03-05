@@ -128,38 +128,33 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 string originText = GetText();
 
-                bool ok = false;
-
                 Focus();
 
-                string curStr = originText + value;
-                //set the text directly.
-                if (this._tag == "INPUT")
+                if (_sendMsgOnly)
                 {
-                    this._textInputElement.value = curStr;
+                    string curStr = originText + value;
+                    //set the text directly.
+                    if (this._tag == "INPUT")
+                    {
+                        this._textInputElement.value = curStr;
+                    }
+                    else
+                    {
+                        this._textAreaElement.value = curStr;
+                    }
                 }
                 else
                 {
-                    this._textAreaElement.value = curStr;
-                }
 
-                //check if the text was inputed.
-                if (GetText().IndexOf(value, StringComparison.CurrentCultureIgnoreCase) >= 0)
-                {
-                    ok = true;
-                }
-
-                if (!ok)
-                {
                     //or send the chars by keyboard
                     KeyboardOp.SendChars(value);
-                }
 
-                //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
-                //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
-                //and we can not click this button, so we need to elimate it. 
-                //click just above the text box, to elimate it.
-                ClickAbove();
+                    //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
+                    //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
+                    //and we can not click this button, so we need to elimate it. 
+                    //click just above the text box, to elimate it.
+                    ClickAbove();
+                }
 
                 if (_isDelayAfterAction)
                 {
@@ -261,10 +256,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     throw new CannotPerformActionException("Textbox is not enabled.");
                 }
 
-                Hover();
-                MouseOp.Click();
+                if (!_sendMsgOnly)
+                {
+                    Hover();
+                    MouseOp.Click();
 
-                System.Threading.Thread.Sleep(500 * 1);
+                    System.Threading.Thread.Sleep(500 * 1);
+                }
             }
             catch (TestException)
             {
@@ -309,14 +307,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public virtual string GetFontStyle()
-        {
-            throw new PropertyNotFoundException("Can not get Font style.");
-        }
-
         public virtual string GetFontFamily()
         {
             throw new PropertyNotFoundException("Can not get Font family");
+        }
+
+        public string GetFontSize()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         /* string GetLabelForTextBox(IHTMLElement element)

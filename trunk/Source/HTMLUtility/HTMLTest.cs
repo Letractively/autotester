@@ -53,10 +53,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _action; }
         }
 
-
         public HTMLTestVP Vp
         {
             get { return _vp; }
+        }
+
+        public bool SendMsgOnly
+        {
+            get
+            {
+                return this.Browser.SendMsgOnly || this.Pool.SendMsgOnly;
+            }
+            set
+            {
+                this.Pool.SendMsgOnly = this.Browser.SendMsgOnly = value;
+            }
         }
 
         #endregion

@@ -192,18 +192,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-
                 //click the object.
                 Click();
 
                 _actionFinished.WaitOne();
 
+                if (_sendMsgOnly)
+                {
+                    this._htmlSelectElement.selectedIndex = index;
+                }
+                else
+                {
+                    //get the position on the screen 
+                    Point itemPosition = GetItemPosition(index);
 
-                //get the position on the screen 
-                Point itemPosition = GetItemPosition(index);
-
-                //click on the actual item.
-                MouseOp.Click(itemPosition.X, itemPosition.Y);
+                    //click on the actual item.
+                    MouseOp.Click(itemPosition.X, itemPosition.Y);
+                }
 
                 //refresh the selected value.
                 this._selectedValue = _allValues[index];
@@ -267,14 +272,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return this._selectedValue;
         }
 
-        public virtual string GetFontStyle()
+        public virtual string GetFontFamily()
         {
             return null;
         }
 
-        public virtual string GetFontFamily()
+        public string GetFontSize()
         {
-            return null;
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion
@@ -463,20 +473,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             _actionFinished.WaitOne();
 
-            Hover();
+            if (!_sendMsgOnly)
+            {
+                Hover();
 
-            //get the right point
-            int right = this._rect.Left + this._rect.Width;
-            int height = this._rect.Height;
+                //get the right point
+                int right = this._rect.Left + this._rect.Width;
+                int height = this._rect.Height;
 
-            int x = right - height / 2;
-            int y = this.Rect.Top + height / 2;
+                int x = right - height / 2;
+                int y = this.Rect.Top + height / 2;
 
-            MouseOp.Click(x, y);
+                MouseOp.Click(x, y);
 
-            //sleep for 0.2 second, make sure the user can see this action.
-            //if no sleep, the the action may too fast.
-            System.Threading.Thread.Sleep(200 * 1);
+                //sleep for 0.2 second, make sure the user can see this action.
+                //if no sleep, the the action may too fast.
+                System.Threading.Thread.Sleep(200 * 1);
+            }
 
             _actionFinished.Set();
         }
