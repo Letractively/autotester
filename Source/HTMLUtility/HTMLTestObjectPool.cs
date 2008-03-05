@@ -106,6 +106,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //为什么是8? 因为"发"嘛, 还有, 从高中到大学,我的球衣号码一直是8号~~~
         private const int _vibrationPercent = 8;
 
+        private bool _sendMsgOnly = false;
+
         #endregion
 
         #region Properties
@@ -170,6 +172,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get { return _ignoreBorderlessTable; }
             set { _ignoreBorderlessTable = value; }
+        }
+
+        public bool SendMsgOnly
+        {
+            get { return _sendMsgOnly; }
+            set { _sendMsgOnly = value; }
         }
 
         #endregion
@@ -549,7 +557,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         string propertyValue;
 
                         //if it is not an interactive object or the property is not found. 
-                        if (!IsVisible(_tempElement) || !HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue))
+                        if (!IsVisible(_tempElement) || !HTMLTestObject.TryGetProperty(_tempElement, property, out propertyValue))
                         {
                             continue;
                         }
@@ -663,7 +671,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             string propertyValue;
                             //if not interactive object or the property is not found. 
                             if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value)
-                                || !HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue))
+                                || !HTMLTestObject.TryGetProperty(_tempElement, property, out propertyValue))
                             {
                                 if (useAll)
                                 {
@@ -790,7 +798,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         string propertyValue;
 
                         //if not interactive object or the property is not found. 
-                        if (!IsVisible(_tempElement) || !HTMLTestObject.TryGetValueByProperty(_tempElement, property, out propertyValue))
+                        if (!IsVisible(_tempElement) || !HTMLTestObject.TryGetProperty(_tempElement, property, out propertyValue))
                         {
                             continue;
                         }
@@ -1501,7 +1509,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
-            else if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out propertyValue))
+            else if (!HTMLTestObject.TryGetProperty(element, propertyName, out propertyValue))
             {
                 return false;
             }
@@ -1547,7 +1555,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (element.tagName == "INPUT")
                 {
                     string type;
-                    if (HTMLTestObject.TryGetValueByProperty(element, "type", out type))
+                    if (HTMLTestObject.TryGetProperty(element, "type", out type))
                     {
                         if (String.Compare(type, "TEXT", true) != 0 && String.Compare(type, "PASSWORD", true) != 0)
                         {
@@ -1613,7 +1621,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 string innerHTML;
 
-                if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out innerHTML))
+                if (!HTMLTestObject.TryGetProperty(element, propertyName, out innerHTML))
                 {
                     return false;
                 }
@@ -1639,7 +1647,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     string innerText;
 
-                    if (!HTMLTestObject.TryGetValueByProperty(element, "innerText", out innerText))
+                    if (!HTMLTestObject.TryGetProperty(element, "innerText", out innerText))
                     {
                         return false;
                     }
@@ -1675,7 +1683,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 string items;
 
-                if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out items))
+                if (!HTMLTestObject.TryGetProperty(element, propertyName, out items))
                 {
                     return false;
                 }
@@ -1724,7 +1732,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 string propertyName = "alt";
                 string actualValue;
 
-                if (HTMLTestObject.TryGetValueByProperty(element, propertyName, out actualValue))
+                if (HTMLTestObject.TryGetProperty(element, propertyName, out actualValue))
                 {
                     if (Searcher.IsStringLike(actualValue, value, simPercent))
                     {
@@ -1735,7 +1743,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //then check the .src property.
                 propertyName = "src";
                 string imgSrc;
-                if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out imgSrc))
+                if (!HTMLTestObject.TryGetProperty(element, propertyName, out imgSrc))
                 {
                     return false;
                 }
@@ -1770,7 +1778,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (element.tagName == "INPUT")
                 {
                     string type;
-                    if (HTMLTestObject.TryGetValueByProperty(element, "type", out type))
+                    if (HTMLTestObject.TryGetProperty(element, "type", out type))
                     {
                         if (String.Compare(type, "radio", true) != 0)
                         {
@@ -1845,7 +1853,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (element.tagName == "INPUT")
                 {
                     string type;
-                    if (HTMLTestObject.TryGetValueByProperty(element, "type", out type))
+                    if (HTMLTestObject.TryGetProperty(element, "type", out type))
                     {
                         if (String.Compare(type, "checkbox", true) != 0)
                         {
@@ -1923,7 +1931,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     buttonTypeProperty = "type";
 
-                    if (HTMLTestObject.TryGetValueByProperty(element, buttonTypeProperty, out buttonTypeValue))
+                    if (HTMLTestObject.TryGetProperty(element, buttonTypeProperty, out buttonTypeValue))
                     {
                         if (String.Compare(buttonTypeValue, "text", true) == 0 || String.Compare(buttonTypeValue, "password", true) == 0
                             || String.Compare(buttonTypeValue, "checkbox", true) == 0 || String.Compare(buttonTypeValue, "radio", true) == 0)
@@ -1943,7 +1951,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     buttonTypeProperty = "onclick";
 
                     //if "onclick" is not found, we think it is a normal img.
-                    if (!HTMLTestObject.TryGetValueByProperty(element, buttonTypeProperty, out buttonTypeValue))
+                    if (!HTMLTestObject.TryGetProperty(element, buttonTypeProperty, out buttonTypeValue))
                     {
                         return false;
                     }
@@ -1986,7 +1994,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     string border;
 
-                    if (!HTMLTestObject.TryGetValueByProperty(element, "border", out border))
+                    if (!HTMLTestObject.TryGetProperty(element, "border", out border))
                     {
                         return false;
                     }
@@ -2008,7 +2016,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //check caption of the table.
                 string caption;
 
-                if (HTMLTestObject.TryGetValueByProperty(element, "caption", out caption))
+                if (HTMLTestObject.TryGetProperty(element, "caption", out caption))
                 {
                     if (!String.IsNullOrEmpty(caption) && Searcher.IsStringLike(caption, value, simPercent))
                     {
@@ -2027,7 +2035,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 string innerText;
 
-                if (HTMLTestObject.TryGetValueByProperty(cellElement, "innerText", out innerText))
+                if (HTMLTestObject.TryGetProperty(cellElement, "innerText", out innerText))
                 {
                     return Searcher.IsStringLike(innerText, value, simPercent);
                 }
@@ -2062,7 +2070,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             string propertyName = "innerText";
             string propertyValue;
 
-            if (!HTMLTestObject.TryGetValueByProperty(element, propertyName, out propertyValue))
+            if (!HTMLTestObject.TryGetProperty(element, propertyName, out propertyValue))
             {
                 return false;
             }
@@ -2103,7 +2111,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             string actualValue;
 
-            if (HTMLTestObject.TryGetValueByProperty(element, propertyName, out actualValue))
+            if (HTMLTestObject.TryGetProperty(element, propertyName, out actualValue))
             {
                 return Searcher.IsStringLike(actualValue, value, simPercent);
             }
@@ -2173,12 +2181,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (tag == "INPUT")
             {
                 //return false, if the it is a hidden object.
-                if (HTMLTestObject.TryGetValueByProperty(element, "type", out value))
+                if (HTMLTestObject.TryGetProperty(element, "type", out value))
                 {
                     return String.Compare(value, "HIDDEN", true) != 0;
                 }
             }
-            else if (HTMLTestObject.TryGetValueByProperty(element, "visibility", out value))
+            else if (HTMLTestObject.TryGetProperty(element, "visibility", out value))
             {
                 //return false if it is hidden.
                 return String.Compare(value, "HIDDEN", true) != 0;
@@ -2268,7 +2276,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             switch (type)
             {
                 case HTMLTestObjectType.Label:
-                    return new string[] { "label", "span", "td", "div" };
+                    return new string[] { "label", "span", "font" };
                 case HTMLTestObjectType.Link:
                     return new string[] { "a" };
                 case HTMLTestObjectType.Button:
@@ -2315,51 +2323,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Link;
             }
-            else if (tag == "SPAN" || tag == "LABEL")
+            else if (tag == "SPAN" || tag == "LABEL" || tag == "FONT")
             {
                 return HTMLTestObjectType.Label;
             }
-            //else if (tag == "TD" || tag == "DIV")
-            //{
-            //    string innerHTML;
-
-            //    if (HTMLTestObject.TryGetValueByProperty(element, "innerHTML", out innerHTML))
-            //    {
-            //        if (innerHTML.IndexOf("<") >= 0 && innerHTML.IndexOf(">") > 0)
-            //        {
-            //            bool isLabel = true;
-
-            //            MatchCollection mc = _tagReg.Matches(innerHTML);
-
-            //            foreach (Match m in mc)
-            //            {
-            //                if (String.Compare(m.Value, "<SPAN", true) != 0
-            //                    && String.Compare(m.Value, "<FONT", true) != 0
-            //                    && String.Compare(m.Value, "<BR", true) != 0
-            //                    && String.Compare(m.Value, "<P", true) != 0)
-            //                {
-            //                    isLabel = false;
-            //                    break;
-            //                }
-            //            }
-
-            //            if (isLabel)
-            //            {
-            //                return HTMLTestObjectType.Label;
-            //            }
-
-            //        }
-            //        else
-            //        {
-            //            return HTMLTestObjectType.Label;
-            //        }
-            //    }
-            //}
             else if (tag == "IMG")
             {
                 string value;
 
-                if (HTMLTestObject.TryGetValueByProperty(element, "onclick", out value))
+                if (HTMLTestObject.TryGetProperty(element, "onclick", out value))
                 {
                     return HTMLTestObjectType.Button;
                 }
@@ -2377,7 +2349,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 string inputType;
 
-                if (!HTMLTestObject.TryGetValueByProperty(element, "type", out inputType))
+                if (!HTMLTestObject.TryGetProperty(element, "type", out inputType))
                 {
                     return HTMLTestObjectType.Unknow;
                 }
@@ -2415,7 +2387,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 string selectValue;
 
-                if (!HTMLTestObject.TryGetValueByProperty(element, "size", out selectValue))
+                if (!HTMLTestObject.TryGetProperty(element, "size", out selectValue))
                 {
                     return HTMLTestObjectType.ComboBox;
                 }
@@ -2511,6 +2483,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     tmp.Browser = _htmlTestBrowser;
                     tmp.HtmlObjPool = this;
+                    tmp.SendMsgOnly = _sendMsgOnly;
                     return tmp;
                 }
                 catch (CannotGetObjectPositionException ex)
@@ -2561,6 +2534,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (tmp != null)
             {
                 tmp.Browser = _htmlTestBrowser;
+                tmp.SendMsgOnly = _sendMsgOnly;
                 return tmp;
             }
             else

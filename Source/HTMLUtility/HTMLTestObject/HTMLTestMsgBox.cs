@@ -219,12 +219,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return this._message;
         }
 
-        public string GetFontStyle()
+        public string GetFontFamily()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public string GetFontFamily()
+        public string GetFontSize()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
         {
             throw new Exception("The method or operation is not implemented.");
         }

@@ -55,7 +55,7 @@
     <Compile Include="Interface\ICheckable.cs" />
     <Compile Include="Interface\IMatrix.cs" />
     <Compile Include="Interface\IPath.cs" />
-    <Compile Include="Interface\IStateChangeable.cs" />
+    <Compile Include="Interface\IStatus.cs" />
     <Compile Include="Interface\IClickable.cs" />
     <Compile Include="Interface\IContainer.cs" />
     <Compile Include="Interface\IDragable.cs" />

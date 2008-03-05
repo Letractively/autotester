@@ -10,7 +10,8 @@
 *              will show some information to the end-users.
 *              Like TextBox etc.
 *
-* History:  2007/09/04 wan,yu Init version
+* History:  2007/09/04 wan,yu Init version.
+*           2008/03/05 wan,yu update, add GetFontSize() and GetFontColor()
 *
 *********************************************************************/
 
@@ -22,10 +23,13 @@ namespace Shrinerain.AutoTester.Core
         //get the text on the object
         string GetText();
 
-        //get the font style, like color=red, size=28
-        string GetFontStyle();
-
         //get the font family, like comic font.
         string GetFontFamily();
+
+        //get the font size.
+        string GetFontSize();
+
+        //get the font color.
+        string GetFontColor();
     }
 }

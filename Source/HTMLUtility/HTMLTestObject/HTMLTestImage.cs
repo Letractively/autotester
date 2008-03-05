@@ -29,7 +29,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestImage : HTMLTestGUIObject, IClickable
+    public class HTMLTestImage : HTMLTestGUIObject, IClickable, IStatus
     {
 
         #region fields
@@ -54,7 +54,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestImage(IHTMLElement element)
             : base(element)
         {
-
             this._type = HTMLTestObjectType.Image;
 
             try
@@ -144,11 +143,33 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                if (!IsReady())
+                {
+                    throw new CannotPerformActionException("Element is not ready.");
+                }
+
                 _actionFinished.WaitOne();
 
-                Hover();
+                if (_sendMsgOnly)
+                {
+                    //we can not click on an image without mouse action.
+                    //so click the link if have.
+                    HTMLAnchorElement linkElement = (HTMLAnchorElement)this._sourceElement.parentElement;
 
-                MouseOp.Click();
+                    if (linkElement != null)
+                    {
+                        linkElement.click();
+                    }
+                    else
+                    {
+                        throw new CannotPerformActionException("Can not click image.");
+                    }
+                }
+                else
+                {
+                    Hover();
+                    MouseOp.Click();
+                }
 
                 if (_isDelayAfterAction)
                 {
@@ -203,6 +224,95 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region IStatus Members
+
+        /* object GetCurrentStatus()
+         * get the readystate of element. 
+         */
+        public virtual object GetCurrentStatus()
+        {
+            try
+            {
+                if (_imgElement != null)
+                {
+                    return _imgElement.readyState;
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get status: " + ex.Message);
+            }
+        }
+
+        /* bool IsReady()
+         * return true if the object is ready.
+         */
+        public virtual bool IsReady()
+        {
+            try
+            {
+                if (_imgElement != null)
+                {
+                    return _imgElement.readyState == null ||
+                        _imgElement.readyState == "interactive" ||
+                        _imgElement.readyState == "complete";
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
+            }
+        }
+
+        #endregion
+
+        public override void Hover()
+        {
+            try
+            {
+                if (!this._isVisible)
+                {
+                    throw new CannotPerformActionException("Object is not visible.");
+                }
+
+                this._browser.Active();
+
+                //if the object is not visible, then move it.
+                ScrollIntoView(false);
+
+                //get the center point of the object, and move mouse to it.
+                MouseOp.MoveTo(_centerPoint);
+
+                //after move mouse to the control, wait for 0.2s, make it looks like human action.
+                System.Threading.Thread.Sleep(200 * 1);
+
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not perform Hover action:" + ex.Message);
+            }
+        }
+
         #endregion
 
         #region private methods
@@ -231,6 +341,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             _actionFinished.Set();
         }
+
+
 
         #endregion
 

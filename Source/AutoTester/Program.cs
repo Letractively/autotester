@@ -87,12 +87,15 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
-            Google();
 
-            return;
             qidian();
 
             return;
+
+            Google();
+
+            return;
+
 
 
 
@@ -174,12 +177,13 @@ namespace Shrinerain.AutoTester
         public static void Google()
         {
 
-            string url = @"www.google.com"; //@"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";//  @"http://127.0.0.1/AutoTester/";// 
+            string url = @"www.google.cn"; //@"https://www.google.com/accounts/Login?continue=http://www.google.cn/&hl=zh-CN";//  @"http://127.0.0.1/AutoTester/";// 
 
             HTMLTest test = new HTMLTest();
             test.Browser.Load(url);
             //test.Browser.Wait(5);
 
+            //Console.WriteLine(test.Map.Label("中文网页"));
             //Console.WriteLine("Date: {0:o}", DateTime.Now);
             //test.Pool.GetObjectByType("textbox", "电子邮件:");
             //Console.WriteLine("Date: {0:o}", DateTime.Now);
@@ -196,6 +200,7 @@ namespace Shrinerain.AutoTester
         {
             string url = @"www.qidian.com";// @"http://mm.cmfu.com/vip/ebook_subscibe_forbuy.asp?ebookid=367736&bl_id=149430";//
             HTMLTest test = new HTMLTest();
+            test.SendMsgOnly = true;
             test.Browser.Start();
 
             test.Browser.Load(url);
@@ -206,6 +211,7 @@ namespace Shrinerain.AutoTester
             //test.Browser.WaitForNextPage();
             //test.Map.Link("我的书架").Click();
 
+            test.Map.Label("关于如何在新站操作书评加精华和置顶").GetFontColor();
             test.Map.Link("搜书").Click();
             test.Map.Link("小亨传说").Click();
             Console.WriteLine(test.Browser.GetLoadSeconds());

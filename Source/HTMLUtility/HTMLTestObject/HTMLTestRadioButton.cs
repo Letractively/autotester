@@ -26,7 +26,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestRadioButton : HTMLTestGUIObject, ICheckable, IShowInfo
+    public class HTMLTestRadioButton : HTMLTestGUIObject, ICheckable, IShowInfo, IStatus
     {
         #region fields
 
@@ -126,7 +126,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!_isEnable || !_isVisible || _isReadOnly)
+                if (!IsReady() || !_isEnable || !_isVisible || _isReadOnly)
                 {
                     throw new CannotPerformActionException("Radiobutton is not enabled.");
                 }
@@ -135,7 +135,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 Hover();
 
-                MouseOp.Click();
+                if (_sendMsgOnly)
+                {
+                    this._radioElement.@checked = true;
+                }
+                else
+                {
+                    MouseOp.Click();
+                }
 
                 if (_isDelayAfterAction)
                 {
@@ -198,6 +205,65 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+
+        #region IStatus Members
+
+        /* object GetCurrentStatus()
+         * get the readystate of element. 
+         */
+        public virtual object GetCurrentStatus()
+        {
+            try
+            {
+                if (_radioElement != null)
+                {
+                    return _radioElement.readyState;
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get status: " + ex.Message);
+            }
+        }
+
+        /* bool IsReady()
+         * return true if the object is ready.
+         */
+        public virtual bool IsReady()
+        {
+            try
+            {
+                if (_radioElement != null)
+                {
+                    return _radioElement.readyState == null ||
+                        _radioElement.readyState == "interactive" ||
+                        _radioElement.readyState == "complete";
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
+            }
+        }
+
+        #endregion
+
         #region IShowInfo Members
 
         public string GetText()
@@ -205,15 +271,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return LabelText;
         }
 
-        public string GetFontStyle()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         public string GetFontFamily()
         {
             throw new Exception("The method or operation is not implemented.");
         }
+
+        public string GetFontSize()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
 
         /* string GetLabelForRadioBox(IHTMLElement element)
          * return the text around radio button, firstly we will try current cell, then try right cell and up cell.

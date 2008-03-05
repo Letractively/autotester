@@ -25,7 +25,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestCheckBox : HTMLTestGUIObject, ICheckable, IShowInfo
+    public class HTMLTestCheckBox : HTMLTestGUIObject, ICheckable, IShowInfo, IStatus
     {
 
         #region fields
@@ -129,16 +129,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!_isEnable || !_isVisible || _isReadOnly)
+                if (!IsReady() || !_isEnable || !_isVisible || _isReadOnly)
                 {
                     throw new CannotPerformActionException("Checkbox is not enabled.");
                 }
 
                 _actionFinished.WaitOne();
 
-                Hover();
-
-                MouseOp.Click();
+                if (_sendMsgOnly)
+                {
+                    this._checkBoxElement.@checked = !this._checkBoxElement.@checked;
+                }
+                else
+                {
+                    Hover();
+                    MouseOp.Click();
+                }
 
                 if (_isDelayAfterAction)
                 {
@@ -200,12 +206,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return LabelText;
         }
 
-        public string GetFontStyle()
+        public string GetFontFamily()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public string GetFontFamily()
+        public string GetFontSize()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -255,6 +266,63 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return null;
             }
 
+        }
+        #endregion
+
+        #region IStatus Members
+
+        /* object GetCurrentStatus()
+         * get the readystate of element. 
+         */
+        public virtual object GetCurrentStatus()
+        {
+            try
+            {
+                if (_checkBoxElement != null)
+                {
+                    return _checkBoxElement.readyState;
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get status: " + ex.Message);
+            }
+        }
+
+        /* bool IsReady()
+         * return true if the object is ready.
+         */
+        public virtual bool IsReady()
+        {
+            try
+            {
+                if (_checkBoxElement != null)
+                {
+                    return _checkBoxElement.readyState == null ||
+                        _checkBoxElement.readyState == "interactive" ||
+                        _checkBoxElement.readyState == "complete";
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
+            }
         }
         #endregion
 

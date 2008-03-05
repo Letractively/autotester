@@ -65,6 +65,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected const int _delayTime = 1;
         protected bool _isUnderAction = false;
 
+        //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
+        //then we will not see the mouse move.
+        protected bool _sendMsgOnly = false;
+
         #endregion
 
         #region properties
@@ -154,6 +158,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 return _labelText;
             }
+        }
+
+        public bool SendMsgOnly
+        {
+            get { return _sendMsgOnly; }
+            set { _sendMsgOnly = value; }
         }
 
         #endregion
@@ -335,7 +345,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     if (tag == "SPAN" || tag == "TD" || tag == "DIV" || tag == "LABEL" || tag == "FONT")
                     {
-                        if (HTMLTestObject.TryGetValueByProperty(parent, "innerText", out aroundText))
+                        if (HTMLTestObject.TryGetProperty(parent, "innerText", out aroundText))
                         {
 
                             IHTMLElementCollection brotherElements = (IHTMLElementCollection)parent.children;
@@ -408,7 +418,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                             || prevElement.tagName == "A"
                                             || prevElement.tagName == "INPUT"
                                             || prevElement.tagName == "BUTTON"
-                                            || !HTMLTestObject.TryGetValueByProperty(prevElement, "innerText"))
+                                            || !HTMLTestObject.TryGetProperty(prevElement, "innerText"))
                                         {
                                             break;
                                         }
@@ -444,7 +454,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                             || nextElement.tagName == "A"
                                             || nextElement.tagName == "INPUT"
                                             || nextElement.tagName == "BUTTON"
-                                            || !HTMLTestObject.TryGetValueByProperty(nextElement, "innerText"))
+                                            || !HTMLTestObject.TryGetProperty(nextElement, "innerText"))
                                         {
                                             break;
                                         }
@@ -482,7 +492,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             else
                             {
                                 string selfText;
-                                if (HTMLTestObject.TryGetValueByProperty(element, "innerText", out selfText))
+                                if (HTMLTestObject.TryGetProperty(element, "innerText", out selfText))
                                 {
                                     aroundText = aroundText.Replace(selfText, "");
                                 }
@@ -605,7 +615,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
 
                     //try get the "innerText" property, it is the text in the cell.
-                    if (HTMLTestObject.TryGetValueByProperty(searchedElement, "innerText", out label))
+                    if (HTMLTestObject.TryGetProperty(searchedElement, "innerText", out label))
                     {
                         return label;
                     }
@@ -634,16 +644,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     throw new CannotPerformActionException("Object is not visible.");
                 }
 
-                this._browser.Active();
+                if (!_sendMsgOnly)
+                {
+                    this._browser.Active();
 
-                //if the object is not visible, then move it.
-                ScrollIntoView(false);
+                    //if the object is not visible, then move it.
+                    ScrollIntoView(false);
 
-                //get the center point of the object, and move mouse to it.
-                MouseOp.MoveTo(_centerPoint);
+                    //get the center point of the object, and move mouse to it.
+                    MouseOp.MoveTo(_centerPoint);
 
-                //after move mouse to the control, wait for 0.2s, make it looks like human action.
-                Thread.Sleep(200 * 1);
+                    //after move mouse to the control, wait for 0.2s, make it looks like human action.
+                    Thread.Sleep(200 * 1);
+                }
+
             }
             catch (TestException)
             {

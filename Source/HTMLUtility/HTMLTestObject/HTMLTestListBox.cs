@@ -49,6 +49,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected IHTMLSelectElement _htmlSelectElement;
         //protected HTMLSelectElementClass _htmlSelectClass;
 
+        //if the flag is true, means the listbox can select more than 1 item.
+        protected bool _isMultiple = false;
+
+
         #endregion
 
         #region properties
@@ -70,6 +74,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _itemHeight; }
         }
 
+        public bool IsMultiple
+        {
+            get { return _isMultiple; }
+        }
 
         #endregion
 
@@ -88,6 +96,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
+
+                _isMultiple = _htmlSelectElement.multiple;
             }
             catch (Exception ex)
             {
@@ -245,10 +255,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 Hover();
 
-                //get the actual position on the screen.
-                Point itemPosition = GetItemPosition(index);
+                if (_sendMsgOnly)
+                {
+                    this._htmlSelectElement.selectedIndex = index;
+                }
+                else
+                {
+                    //get the actual position on the screen.
+                    Point itemPosition = GetItemPosition(index);
 
-                MouseOp.Click(itemPosition);
+                    MouseOp.Click(itemPosition);
+                }
 
                 //refresh the selected value.
                 this._selectedValue = this._allValues[index];
@@ -277,6 +294,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void SelectMulti(string[] values)
         {
+            if (!_isMultiple)
+            {
+                throw new CannotPerformActionException("Can not select multi items.");
+            }
 
             if (values == null)
             {
@@ -405,14 +426,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return this._selectedValue;
         }
 
-        public virtual string GetFontStyle()
+        public virtual string GetFontFamily()
         {
             return null;
         }
 
-        public virtual string GetFontFamily()
+        public string GetFontSize()
         {
-            return null;
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion

@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestLink : HTMLTestGUIObject, IClickable, IContainer, IShowInfo
+    public class HTMLTestLink : HTMLTestGUIObject, IClickable, IContainer, IShowInfo, IStatus
     {
 
         #region fields
@@ -124,7 +124,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!_isEnable || !_isVisible)
+                if (!IsReady() || !_isEnable || !_isVisible)
                 {
                     throw new CannotPerformActionException("Link is not enabled.");
                 }
@@ -133,7 +133,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 Hover();
 
-                MouseOp.Click();
+                if (_sendMsgOnly)
+                {
+                    _acnchorElement.click();
+                }
+                else
+                {
+                    MouseOp.Click();
+                }
 
                 if (_isDelayAfterAction)
                 {
@@ -170,6 +177,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void Focus()
         {
+            try
+            {
+                if (this._acnchorElement != null)
+                {
+                    this._acnchorElement.focus();
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not focus: Element can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not focus: " + ex.Message);
+            }
 
         }
 
@@ -200,18 +226,80 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return this._linkText;
         }
 
-        public string GetFontStyle()
-        {
-            throw new NotImplementedException();
-        }
 
         public string GetFontFamily()
         {
             throw new NotImplementedException();
         }
 
+        public string GetFontSize()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
         #endregion
 
+        #region IStatus Members
+
+        /* object GetCurrentStatus()
+         * get the readystate of element. 
+         */
+        public virtual object GetCurrentStatus()
+        {
+            try
+            {
+                if (_acnchorElement != null)
+                {
+                    return _acnchorElement.readyState;
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get status: " + ex.Message);
+            }
+        }
+
+        /* bool IsReady()
+         * return true if the object is ready.
+         */
+        public virtual bool IsReady()
+        {
+            try
+            {
+                if (_acnchorElement != null)
+                {
+                    return _acnchorElement.readyState == null ||
+                        _acnchorElement.readyState.ToString() == "interactive" ||
+                        _acnchorElement.readyState.ToString() == "complete";
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
+            }
+        }
+        #endregion
 
         #endregion
 

@@ -27,6 +27,14 @@ namespace Shrinerain.AutoTester.Win32
     {
         #region fields
 
+        private static bool _sendMessageOnly = false;
+
+        public static bool SendMessageOnly
+        {
+            get { return KeyboardOp._sendMessageOnly; }
+            set { KeyboardOp._sendMessageOnly = value; }
+        }
+
         // private static Regex _specialKeysReg = new Regex(@"{[a-zA-Z]+}", RegexOptions.Compiled);
 
         #endregion

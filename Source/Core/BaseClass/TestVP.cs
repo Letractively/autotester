@@ -28,6 +28,15 @@ namespace Shrinerain.AutoTester.Core
 
         #region fields
 
+        #endregion
+
+        #region event
+
+        public delegate void _beforeCheckDelegate(String methodName, object[] paras, VPCheckType type);
+        public event _beforeCheckDelegate OnBeforeTestVP;
+
+        public delegate void _afterCheckDelegate(bool checkResult, object actualValue, String methodName, object[] paras, VPCheckType type);
+        public event _afterCheckDelegate OnAfterTestVP;
 
         #endregion
 
@@ -46,80 +55,106 @@ namespace Shrinerain.AutoTester.Core
 
         #region ITestVP Members
 
+        /* bool PerformStringTest(string actualResult, string expectResult, VPCheckType type)
+         * Check two strings.
+         */
         public virtual bool PerformStringTest(string actualResult, string expectResult, VPCheckType type)
         {
-            if (actualResult != null && expectResult != null)
+            OnBeforeTestVP("PerformStringTest", new object[] { actualResult, expectResult }, type);
+
+            bool checkResult = false;
+
+            try
             {
-                try
+                if (actualResult != null && expectResult != null)
                 {
                     if (type == VPCheckType.Equal)
                     {
-                        return String.Compare(actualResult, expectResult, false) == 0;
+                        checkResult = String.Compare(actualResult, expectResult, false) == 0;
                     }
                     else if (type == VPCheckType.NotEqual)
                     {
-                        return String.Compare(actualResult, expectResult, false) != 0;
+                        checkResult = String.Compare(actualResult, expectResult, false) != 0;
                     }
                     else if (type == VPCheckType.Small)
                     {
-                        return actualResult.CompareTo(expectResult) < 0;
+                        checkResult = actualResult.CompareTo(expectResult) < 0;
                     }
                     else if (type == VPCheckType.Larger)
                     {
-                        return actualResult.CompareTo(expectResult) > 0;
+                        checkResult = actualResult.CompareTo(expectResult) > 0;
                     }
                     else if (type == VPCheckType.SmallOrEqual)
                     {
-                        return (String.Compare(actualResult, expectResult, false) == 0) || (actualResult.CompareTo(expectResult) < 0);
+                        checkResult = (String.Compare(actualResult, expectResult, false) == 0) || (actualResult.CompareTo(expectResult) < 0);
                     }
                     else if (type == VPCheckType.LargerOrEqual)
                     {
-                        return (String.Compare(actualResult, expectResult, false) == 0) || (actualResult.CompareTo(expectResult) > 0);
+                        checkResult = (String.Compare(actualResult, expectResult, false) == 0) || (actualResult.CompareTo(expectResult) > 0);
                     }
                     else if (type == VPCheckType.Included)
                     {
-                        return actualResult != "" && actualResult.IndexOf(expectResult) >= 0;
+                        checkResult = actualResult != "" && actualResult.IndexOf(expectResult) >= 0;
+                    }
+                    else if (type == VPCheckType.Excluded)
+                    {
+                        checkResult = actualResult != "" && actualResult.IndexOf(expectResult) <= 0;
                     }
                     else if (type == VPCheckType.Cross)
                     {
-                        return PerformArrayTest(expectResult.Split(' '), actualResult.Split(' '), VPCheckType.Cross);
+                        checkResult = PerformArrayTest(actualResult.Split(' '), expectResult.Split(' '), VPCheckType.Cross);
                     }
                 }
-                catch
-                {
-                    return false;
-                }
-            }
 
-            return false;
+                return checkResult;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                OnAfterTestVP(checkResult, null, "PerformStringTest", new object[] { actualResult, expectResult }, type);
+            }
         }
 
-        public virtual bool PerformArrayTest(Object[] expectArray, Object[] actualArray, VPCheckType type)
+        /* bool PerformArrayTest(Object[] expectArray, Object[] actualArray, VPCheckType type)
+         * Check two arraies.
+         */
+        public virtual bool PerformArrayTest(Object[] actualArray, Object[] expectArray, VPCheckType type)
         {
-            if (expectArray != null && actualArray != null)
+
+            OnBeforeTestVP("PerformArrayTest", new object[] { actualArray, expectArray }, type);
+
+            bool checkResult = false;
+
+            try
             {
-                try
+                if (expectArray != null && actualArray != null)
                 {
                     if (type == VPCheckType.Equal)
                     {
+                        checkResult = true;
+
                         if (expectArray.Length == actualArray.Length)
                         {
                             for (int i = 0; i < expectArray.Length; i++)
                             {
                                 if (!expectArray[i].Equals(actualArray[i]))
                                 {
-                                    return false;
+                                    checkResult = false;
+                                    return checkResult;
                                 }
                             }
-
-                            return true;
                         }
                     }
                     else if (type == VPCheckType.NotEqual)
                     {
+                        checkResult = false;
+
                         if (expectArray.Length != actualArray.Length)
                         {
-                            return true;
+                            checkResult = true;
                         }
                         else
                         {
@@ -127,13 +162,16 @@ namespace Shrinerain.AutoTester.Core
                             {
                                 if (!expectArray[i].Equals(actualArray[i]))
                                 {
-                                    return true;
+                                    checkResult = true;
+                                    return checkResult;
                                 }
                             }
                         }
                     }
                     else if (type == VPCheckType.Included)
                     {
+                        checkResult = false;
+
                         if (actualArray.Length >= expectArray.Length)
                         {
                             foreach (Object eObj in expectArray)
@@ -142,8 +180,25 @@ namespace Shrinerain.AutoTester.Core
                                 {
                                     if (eObj.Equals(aObj))
                                     {
-                                        return true;
+                                        checkResult = true;
+                                        return checkResult;
                                     }
+                                }
+                            }
+                        }
+                    }
+                    else if (type == VPCheckType.Excluded)
+                    {
+                        checkResult = true;
+
+                        foreach (Object eObj in expectArray)
+                        {
+                            foreach (Object aObj in actualArray)
+                            {
+                                if (eObj.Equals(aObj))
+                                {
+                                    checkResult = false;
+                                    return checkResult;
                                 }
                             }
                         }
@@ -152,6 +207,8 @@ namespace Shrinerain.AutoTester.Core
                     {
                         bool same = false;
                         bool diff = false;
+
+                        checkResult = false;
 
                         foreach (Object eObj in expectArray)
                         {
@@ -168,19 +225,24 @@ namespace Shrinerain.AutoTester.Core
 
                                 if (same && diff)
                                 {
-                                    return true;
+                                    checkResult = true;
+                                    return checkResult;
                                 }
                             }
                         }
                     }
                 }
-                catch
-                {
-                    return false;
-                }
-            }
 
-            return false;
+                return checkResult;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                OnAfterTestVP(checkResult, null, "PerformArrayTest", new object[] { actualArray, expectArray }, type);
+            }
         }
 
         public virtual bool PerformRegexTest(object testObj, string vpProperty, string expectReg, VPCheckType type, out String actualResult)
@@ -193,7 +255,7 @@ namespace Shrinerain.AutoTester.Core
                 {
                     TestObject obj = (TestObject)testObj;
 
-                    actualResult = obj.GetPropertyByName(vpProperty).ToString();
+                    actualResult = obj.GetProperty(vpProperty).ToString();
 
                     if (actualResult != null)
                     {
@@ -234,55 +296,81 @@ namespace Shrinerain.AutoTester.Core
             throw new NotImplementedException();
         }
 
+        /* bool PerformPropertyTest(object testObj, string vpProperty, object expectResult, VPCheckType type, out object actualResult)
+         * Check a proerpty of a test object.
+         */
         public virtual bool PerformPropertyTest(object testObj, string vpProperty, object expectResult, VPCheckType type, out object actualResult)
         {
             actualResult = null;
 
-            try
+            if (testObj != null && !String.IsNullOrEmpty(vpProperty))
             {
-                TestObject obj = (TestObject)testObj;
-
-                //get actual property value
-                actualResult = obj.GetPropertyByName(vpProperty);
-
-                if (actualResult != null && expectResult != null)
+                try
                 {
-                    if (expectResult is String)
-                    {
-                        return PerformStringTest(actualResult.ToString(), expectResult.ToString(), type);
-                    }
-                    else if (expectResult is Array)
-                    {
-                        return PerformArrayTest((object[])expectResult, (object[])actualResult, type);
-                    }
-                    else if (type == VPCheckType.Equal)
-                    {
-                        return actualResult.Equals(expectResult);
-                    }
-                    else if (type == VPCheckType.NotEqual)
-                    {
-                        return !actualResult.Equals(expectResult);
-                    }
-                }
+                    TestObject obj = (TestObject)testObj;
 
-            }
-            catch
-            {
-                return false;
+                    //get actual property value
+                    actualResult = obj.GetProperty(vpProperty);
+
+                    if (actualResult != null && expectResult != null)
+                    {
+                        if (expectResult is String)
+                        {
+                            return PerformStringTest(actualResult.ToString(), expectResult.ToString(), type);
+                        }
+                        else if (expectResult is Array)
+                        {
+                            return PerformArrayTest((object[])actualResult, (object[])expectResult, type);
+                        }
+                        else if (type == VPCheckType.Equal)
+                        {
+                            return actualResult.Equals(expectResult);
+                        }
+                        else if (type == VPCheckType.NotEqual)
+                        {
+                            return !actualResult.Equals(expectResult);
+                        }
+                    }
+
+                }
+                catch
+                {
+                    return false;
+                }
             }
 
             return false;
         }
 
+        /* bool PerformFileTest(String actualFile, String expectedFile, VPCheckType type)
+         * Check two files.
+         * 
+         * type should be :
+         * Equal: two files are exactly the same.
+         * NotEqual: two files are not the same.
+         * Existent: the expected file should be existed.
+         * NotExistent: the expected file should not be existed.
+         * Included: the actual file should include the expected file.
+         * Excluded: the actual file should not include the expected file.
+         */
         public virtual bool PerformFileTest(String actualFile, String expectedFile, VPCheckType type)
         {
+            if (String.IsNullOrEmpty(actualFile) && String.IsNullOrEmpty(expectedFile))
+            {
+                return false;
+            }
+
             if (type == VPCheckType.Existent)
             {
-                return File.Exists(expectedFile);
+                string testFile = !String.IsNullOrEmpty(expectedFile) ? expectedFile : actualFile;
+
+                return File.Exists(testFile);
             }
             else if (type == VPCheckType.NotExistent)
             {
-                return !File.Exists(expectedFile);
+                string testFile = !String.IsNullOrEmpty(expectedFile) ? expectedFile : actualFile;
+
+                return !File.Exists(testFile);
             }
             else
             {
@@ -395,6 +483,26 @@ namespace Shrinerain.AutoTester.Core
 
                                 return result;
                             }
+                        }
+                        else if (type == VPCheckType.Excluded)
+                        {
+                            TextReader actualReader = File.OpenText(actualFile);
+                            TextReader expectedReader = File.OpenText(expectedFile);
+
+                            String actualContent = actualReader.ReadToEnd();
+                            String expectedContent = actualReader.ReadToEnd();
+
+                            bool result = true;
+
+                            if (actualContent.IndexOf(expectedContent) >= 0)
+                            {
+                                result = false;
+                            }
+
+                            actualReader.Close();
+                            expectedReader.Close();
+
+                            return result;
                         }
                     }
                 }

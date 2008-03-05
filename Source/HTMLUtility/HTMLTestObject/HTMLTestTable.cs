@@ -143,7 +143,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 IHTMLElement element = GetElementByCell(row, col);
                 string text;
-                if (HTMLTestObject.TryGetValueByProperty(element, "innerText", out text))
+                if (HTMLTestObject.TryGetProperty(element, "innerText", out text))
                 {
                     return text;
                 }
@@ -269,14 +269,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return GetTextByCell(0, 0);
         }
 
-        public virtual string GetFontStyle()
+        public virtual string GetFontFamily()
         {
             throw new NotImplementedException();
         }
 
-        public virtual string GetFontFamily()
+        public string GetFontSize()
         {
-            throw new NotImplementedException();
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public string GetFontColor()
+        {
+            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion

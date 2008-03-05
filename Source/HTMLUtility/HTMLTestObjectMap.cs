@@ -118,7 +118,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     if (obj.Type != HTMLTestObjectType.Unknow)
                     {
-                        key = obj.Type.ToString() + _keySplitter + name;
+                        key = BuildKey(obj.Type.ToString() + name);
 
                         ObjectCache.InsertObjectToCache(key, obj);
                     }
@@ -376,7 +376,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (type != HTMLTestObjectType.Unknow)
                 {
-                    string key = type.ToString() + _keySplitter + name;
+                    string key = BuildKey(type.ToString() + name);
 
                     object tmp = null;
 
@@ -583,6 +583,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             throw new ObjectNotFoundException("Type can not be empty.");
 
+        }
+
+        private String BuildKey(string feed)
+        {
+            return this.HTMLTestObjectPool.TestBrower.GetCurrentUrl() + _keySplitter + feed;
         }
 
         #endregion
