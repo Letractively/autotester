@@ -33,7 +33,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region fields
 
+        //handles for file dialog
+        protected IntPtr _dialogHandle;
+        protected IntPtr _fileNameHandle;
+        protected IntPtr _btnHandle;
 
+        //windows class
+        protected String _className;
         #endregion
 
         #region properties
@@ -49,6 +55,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             : base()
         {
             this._type = HTMLTestObjectType.FileDialog;
+        }
+
+        public HTMLTestFileDialog(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                throw new CannotBuildObjectException("Handle can not be 0.");
+            }
+
+            this._className = "";
+          
         }
 
         #endregion

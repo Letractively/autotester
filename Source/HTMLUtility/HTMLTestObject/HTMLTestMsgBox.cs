@@ -54,6 +54,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected IntPtr _handle;
         protected string _className;
 
+        protected IntPtr _btnHandle;
+
         //button groups, for different messagebox, we may have different buttons. eg: OK, Yes,No, Cancel.
         protected string[] _buttons = new string[] { "OK" };
 
@@ -157,11 +159,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public override Rectangle GetRectOnScreen()
         {
-            //Get the "OK" button position
-            //It is OK for JavaScript.
             try
             {
-                return GetButtonPosition("OK");
+                Win32API.Rect tmp = new Win32API.Rect();
+                Win32API.GetWindowRect(this._handle, ref tmp);
+
+                CalCenterPoint(tmp.left, tmp.top, tmp.Width, tmp.Height);
+
+                return new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height);
             }
             catch (TestException)
             {
@@ -182,6 +187,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+
                 MouseOp.MoveTo(_centerPoint);
 
                 //sleep for 0.2s, make it looks like human action.
@@ -246,13 +252,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                _actionFinished.WaitOne();
-
-                Hover();
-
-                MouseOp.Click();
-
-                _actionFinished.Set();
+                Click("OK");
             }
             catch (Exception ex)
             {
@@ -400,9 +400,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._rect = GetButtonPosition(text);
 
-                Hover();
-
-                MouseOp.Click();
+                if (_sendMsgOnly && _btnHandle != IntPtr.Zero)
+                {
+                    MouseOp.Click(_btnHandle);
+                }
+                else
+                {
+                    Hover();
+                    MouseOp.Click();
+                }
 
             }
             catch (TestException)
@@ -445,11 +451,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         if (String.Compare(textSB.ToString(), text, true) == 0)
                         {
+                            _btnHandle = lastButtonHandle;
+
                             //get the actual position.
                             Win32API.Rect tmp = new Win32API.Rect();
-                            Win32API.GetClientRect(okHandle, ref tmp);
+                            Win32API.GetWindowRect(okHandle, ref tmp);
 
-                            return new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height); ;
+                            CalCenterPoint(tmp.left, tmp.top, tmp.Width, tmp.Height);
+
+                            return new Rectangle(tmp.left, tmp.top, tmp.Width, tmp.Height);
                         }
 
                     }
@@ -483,8 +493,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    StringBuilder text = new StringBuilder(50);
-                    Win32API.GetWindowText(messageHandle, text, 50);
+                    StringBuilder text = new StringBuilder(256);
+                    Win32API.GetWindowText(messageHandle, text, 256);
 
                     if (text.Length == 0)
                     {
