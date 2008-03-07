@@ -73,7 +73,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not conver to Label element: " + ex.Message);
+                throw new CannotBuildObjectException("Can not convert to Label element: " + ex.Message);
             }
 
             //get text of the label.
