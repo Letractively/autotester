@@ -2087,9 +2087,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
 
             //get the handle, the text of MessageBox is "Windows Internet Explorer", we use this to find it.
-            handle = Win32API.FindWindowEx(_htmlTestBrowser.MainHandle, handle, null, "Windows Internet Explorer");
+            handle = Win32API.FindWindow(null, "Microsoft Internet Explorer");
 
-            return handle != IntPtr.Zero;
+            if (handle != IntPtr.Zero)
+            {
+                return Win32API.GetParent(handle) == this._htmlTestBrowser.MainHandle;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /* bool CheckFileDialogObject(string value, int simPercent)
@@ -2580,8 +2587,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (_htmlTestBrowser != null)
             {
+                bool needWait = true;
+
+                //some special object, we don't need to wait the browser.
+                if (String.Compare(method, "GetObjectByType", true) == 0)
+                {
+                    string typeStr = paras[0];
+                    HTMLTestObjectType type = ConvertStrToHTMLType(typeStr);
+                    if (type == HTMLTestObjectType.FileDialog || type == HTMLTestObjectType.MsgBox)
+                    {
+                        needWait = false;
+                    }
+                }
+
                 int times = 0;
-                while (times <= _htmlTestBrowser.MaxWaitSeconds && _htmlTestBrowser.IsBusy)
+                while (needWait && times <= _htmlTestBrowser.MaxWaitSeconds && _htmlTestBrowser.IsBusy)
                 {
                     //browser is busy, sleep for 1 second.
                     System.Threading.Thread.Sleep(1 * 1000);
