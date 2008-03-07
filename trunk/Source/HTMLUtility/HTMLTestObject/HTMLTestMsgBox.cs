@@ -402,7 +402,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (_sendMsgOnly && _btnHandle != IntPtr.Zero)
                 {
+                    //save the last status.
+                    bool isMouseMsgOnly = MouseOp.SendMessageOnly;
+
+                    MouseOp.SendMessageOnly = true;
                     MouseOp.Click(_btnHandle);
+
+                    //reset the status.
+                    MouseOp.SendMessageOnly = isMouseMsgOnly;
                 }
                 else
                 {
