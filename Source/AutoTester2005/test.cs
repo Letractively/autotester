@@ -91,12 +91,14 @@ namespace Shrinerain.AutoTester
             Google();
             return;
 
-            // KeyboardOp.SendChars("shrinerain");
+
+          //  IntPtr handle = Win32API.FindWindow(null, "Microsoft Internet Explorer");
+
             qidian();
             return;
 
 
-
+            // KeyboardOp.SendChars("shrinerain");
 
 
 
@@ -194,11 +196,20 @@ namespace Shrinerain.AutoTester
 
             //test.Pool.GetObjectByType("textbox", "用户名");
 
+<<<<<<< .mine
+            //test.Map.TextBox("用户名").Input("shrinerain");
+            //test.Map.TextBox("密码").Input("jyoicq");
+            test.Map.Button("登录").Click();
+            //test.Map.Link("搜书").Click();
+            test.Map.MsgBox().Click();
+            //test.Map.Link("个人空间").Click();
+=======
             test.Map.TextBox("用户名").Input("shrinerain");
             test.Map.TextBox("密码").Input("jyoicq");
             test.Map.Button("登录").Click();
             test.Map.Link("搜书").Click();
             //test.Map.Link("个人空间").Click();
+>>>>>>> .r165
             //test.Map.TextBox("关键字").Input("变身");
             //test.Map.Button("搜索").Click();
 
