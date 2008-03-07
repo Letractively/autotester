@@ -57,7 +57,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         // _needRefresh is used for cache, if this is set to true, we need to get the object
         // from test browser, if it is false, we can just return the ohject from cache.
-        private static bool _needRefresh = false;
+        //private static bool _needRefresh = false;
 
         //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter.
         private bool _useCache = true;
@@ -1417,7 +1417,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public static void DocumentRefreshed()
         {
-            _needRefresh = true;
+            //_needRefresh = true;
         }
 
 

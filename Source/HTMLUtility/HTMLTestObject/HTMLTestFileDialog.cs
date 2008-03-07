@@ -65,7 +65,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             this._className = "";
-          
+
         }
 
         #endregion
@@ -161,8 +161,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #endregion
-
-
 
         #region IClickable Members
 
