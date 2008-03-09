@@ -37,6 +37,7 @@ namespace Shrinerain.AutoTester.Win32
         }
 
         #endregion
+
         #region ctor
 
         //not allow to create instance
