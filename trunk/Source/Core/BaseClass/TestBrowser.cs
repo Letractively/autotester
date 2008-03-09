@@ -796,6 +796,14 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        /* void Print(String printerName)
+         * print current page.
+         */
+        public virtual void Print(String printerName)
+        {
+
+        }
+
         /* void CloseDialog()
          * 
          */
