@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
+using Accessibility;
 
 namespace Shrinerain.AutoTester.Helper
 {
@@ -26,6 +27,15 @@ namespace Shrinerain.AutoTester.Helper
 
         #region fields
 
+        //MSAA interface for printer list.
+        static IAccessible _paccPrintList;
+
+        //handle for each control
+        static IntPtr _printDialogHandle;
+        static IntPtr _printBtnHandle;
+        static IntPtr _cancelBtnHandle;
+        static IntPtr _copyCountHandle;
+        static IntPtr _printerListHandle;
 
         #endregion
 
@@ -41,6 +51,41 @@ namespace Shrinerain.AutoTester.Helper
         #endregion
 
         #region public methods
+
+        static void GetActivePrintDialog()
+        {
+
+        }
+
+        static void PressPrint()
+        {
+
+        }
+
+        static void PressCancel()
+        {
+
+        }
+
+        static String[] GetPrinterList()
+        {
+            return null;
+        }
+
+        static void ChoosePrinter(String name)
+        {
+
+        }
+
+        static int GetCopyCount()
+        {
+            return -1;
+        }
+
+        static void SetCopyCount(int number)
+        {
+
+        }
 
         #endregion
 
