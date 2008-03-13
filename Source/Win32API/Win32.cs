@@ -1094,6 +1094,14 @@ namespace Shrinerain.AutoTester.Win32
             }
         }
 
+        //constant for IACC.
+        public enum IACC : uint
+        {
+            //constant for MSAA interface.
+            OBJID_WINDOW = 0,
+            OBJID_CLIENT = 0xFFFFFFFC,
+        }
+
         public delegate bool EnumWindowEventHandler(IntPtr hWnd, Int32 lParam);
 
         [DllImport("user32.dll", EntryPoint = "GetCursorPos")]
@@ -1115,6 +1123,9 @@ namespace Shrinerain.AutoTester.Win32
         [DllImport("user32.dll", EntryPoint = "FindWindowEx")]
         public static extern IntPtr FindWindowEx(IntPtr hwndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
 
+        //GUID of IAccessible interface
+        public static Guid IACCUID = new Guid("618736e0-3c3d-11cf-810c-00aa00389b71");
+
         [DllImport("oleacc.dll")]
         public static extern IntPtr AccessibleObjectFromPoint(POINT pt, [Out, MarshalAs(UnmanagedType.Interface)] out IAccessible accObj, [Out] out object ChildID);
 
@@ -1122,7 +1133,7 @@ namespace Shrinerain.AutoTester.Win32
         [return: MarshalAs(UnmanagedType.Interface)]
         public static extern object AccessibleObjectFromWindow(
             IntPtr hwnd,
-            Int32 dwObjectID,
+            uint dwObjectID,
             [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
          ref IAccessible ppvObject);
 

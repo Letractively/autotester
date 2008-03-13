@@ -55,6 +55,10 @@
       <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
       <Name>Function</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Helper\Helper.csproj">
+      <Project>{1A9ED92E-938E-4085-9FE8-A47A1D16DA95}</Project>
+      <Name>Helper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HTMLUtility\HtmlUtility.csproj">
       <Project>{E5761F00-01D5-4090-9277-3BE12686B808}</Project>
       <Name>HtmlUtility</Name>
