@@ -23,6 +23,7 @@ using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Framework;
 using Shrinerain.AutoTester.Win32;
+using Shrinerain.AutoTester.Helper;
 
 namespace Shrinerain.AutoTester
 {
@@ -33,7 +34,7 @@ namespace Shrinerain.AutoTester
             //FrameworkEXE(args);
             FunctionTest();
             //FrameworkTest();
-            //Console.ReadLine();
+            Console.ReadLine();
         }
 
 
@@ -88,6 +89,10 @@ namespace Shrinerain.AutoTester
         static void FunctionTest()
         {
 
+            Console.WriteLine(ScreenWords.GetWords(20,30));
+
+            return;
+
             qidian();
 
             return;
@@ -95,9 +100,6 @@ namespace Shrinerain.AutoTester
             Google();
 
             return;
-
-
-
 
 
             //TestLog myLog = new TestLog();
