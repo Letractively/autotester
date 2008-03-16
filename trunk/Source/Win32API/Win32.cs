@@ -1166,6 +1166,9 @@ namespace Shrinerain.AutoTester.Win32
         [DllImport("User32.dll")]
         public static extern Int32 GetWindow(IntPtr hWnd, Int32 wCmd);
 
+        [DllImport("User32.dll")]
+        public static extern bool PrintWindow(IntPtr hwnd, IntPtr hDC, uint nFlags);
+
         //		[DllImport("User32.dll")]
         //		public static extern WindowStyles GetWindowLong(IntPtr hWnd, Int32 index);
 

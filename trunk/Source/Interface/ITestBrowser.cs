@@ -44,8 +44,8 @@ namespace Shrinerain.AutoTester.Interface
         void MaxSize(); //set the internet explorer to max size.
         void Active();  //active browser, make sure when testing, it is topmost
 
-        //use the selected printer to print current page.
-        void Print(String printerName);
+        //use the selected printer and how many copies to print current page.
+        void Print(String printerName, int copies);
 
         //Browser information
         string GetBrowserName(); //get the  browser name, eg: Internet Explorer

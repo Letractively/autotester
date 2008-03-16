@@ -139,4 +139,17 @@ namespace Shrinerain.AutoTester.Core
         }
     }
 
+    public class CannotPrintException : TestBrowserException
+    {
+        public CannotPrintException()
+            : this("Can not print current page.")
+        {
+        }
+
+        public CannotPrintException(string message)
+            : base(message)
+        {
+        }
+    }
+
 }

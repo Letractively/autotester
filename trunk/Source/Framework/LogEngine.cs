@@ -170,7 +170,7 @@ namespace Shrinerain.AutoTester.Framework
 
         public void SaveScreenPrint(string fileName)
         {
-            ImageHelper.SaveScreenPrint(fileName);
+            ScreenCaptruer.SaveScreenPrint(fileName);
         }
 
         #endregion

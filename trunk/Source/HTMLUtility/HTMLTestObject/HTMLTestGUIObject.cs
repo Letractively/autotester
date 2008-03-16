@@ -289,7 +289,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 //we need to add 2, then we can get the "right" print, don't ask me why, ask Microsoft...
-                return new Bitmap(ImageHelper.CaptureScreenArea(_rect.Left + 2, _rect.Top + 2, _rect.Width, _rect.Height));
+                return new Bitmap(ScreenCaptruer.CaptureScreenArea(_rect.Left + 2, _rect.Top + 2, _rect.Width, _rect.Height));
             }
             catch (TestException)
             {
