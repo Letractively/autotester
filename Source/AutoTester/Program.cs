@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.Threading;
+using System.Drawing;
 
 using Shrinerain.AutoTester.HTMLUtility;
 using Shrinerain.AutoTester.Core;
@@ -88,8 +89,12 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+            IntPtr handle = Win32API.FindWindow("Maxthon2_Frame", null);
 
-            Console.WriteLine(ScreenWords.GetWords(20,30));
+            ScreenCaptruer.SaveControlPrint(handle,"Z:\\1.jpg");
+            ScreenCaptruer.SaveScreenPrint("z:\\2.jpg");// .SaveScreenPrint("z:\\1.jpg");
+
+            //Console.WriteLine(ScreenWords.GetWords(20,30));
 
             return;
 

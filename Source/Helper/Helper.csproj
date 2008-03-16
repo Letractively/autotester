@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImageHelper.cs" />
+    <Compile Include="ScreenCaptruer.cs" />
     <Compile Include="Mail.cs" />
     <Compile Include="ObjectCache.cs" />
     <Compile Include="Printer.cs" />

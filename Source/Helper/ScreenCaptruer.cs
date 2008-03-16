@@ -4,9 +4,9 @@
 * AutoTester is a free software, you can use it in any commercial work. 
 * But you CAN NOT redistribute it and/or modify it.
 *--------------------------------------------------------------------
-* Component: ImageHelper.cs
+* Component: ScreenCaptruer.cs
 *
-* Description: This class provide functions to handle image.
+* Description: This class provide functions to get screen/window print.
 *
 * History: 2008/01/23 wan,yu Init version.
 *
@@ -22,7 +22,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.Helper
 {
-    public sealed class ImageHelper
+    public sealed class ScreenCaptruer
     {
 
         #region fields
@@ -38,7 +38,7 @@ namespace Shrinerain.AutoTester.Helper
 
         #region ctor
 
-        private ImageHelper()
+        private ScreenCaptruer()
         {
 
         }
@@ -120,34 +120,62 @@ namespace Shrinerain.AutoTester.Helper
                     throw new Exception("Handle can not be 0.");
                 }
 
-                // get te hDC of the target window
-                IntPtr hdcSrc = Win32API.GetWindowDC(handle);
                 // get the size
                 Win32API.Rect windowRect = new Win32API.Rect();
                 Win32API.GetWindowRect(handle, ref windowRect);
                 int width = windowRect.right - windowRect.left;
                 int height = windowRect.bottom - windowRect.top;
-                // create a device context we can copy to
-                IntPtr hdcDest = Win32API.CreateCompatibleDC(hdcSrc);
-                // create a bitmap we can copy it to,
-                // using GetDeviceCaps to get the width/height
-                IntPtr hBitmap = Win32API.CreateCompatibleBitmap(hdcSrc, width, height);
-                // select the bitmap object
-                IntPtr hOld = Win32API.SelectObject(hdcDest, hBitmap);
-                // bitblt over
-                Win32API.BitBlt(hdcDest, 0, 0, width, height, hdcSrc, 0, 0, Win32API.SRCCOPY);
-                // restore selection
-                Win32API.SelectObject(hdcDest, hOld);
-                // clean up 
-                Win32API.DeleteDC(hdcDest);
-                Win32API.ReleaseDC(handle, hdcSrc);
 
-                // get a .NET image object for it
-                Image img = Image.FromHbitmap(hBitmap);
-                // free up the Bitmap object
-                Win32API.DeleteObject(hBitmap);
+                if (width > 0 && height > 0)
+                {
+                    bool printed = false;
 
-                return img;
+                    //firstly, try PrintWindow to get the image of the window.
+                    Bitmap bm = new Bitmap(width, height);
+                    using (Graphics g = Graphics.FromImage(bm))
+                    {
+                        System.IntPtr bmDC = g.GetHdc();
+                        printed = Win32API.PrintWindow(handle, bmDC, 0);
+                        g.ReleaseHdc(bmDC);
+                    }
+
+                    if (printed)
+                    {
+                        return bm;
+                    }
+                    else
+                    {
+                        //not printed, try other way.
+
+                        // get te hDC of the target window
+                        IntPtr hdcSrc = Win32API.GetWindowDC(handle);
+
+                        // create a device context we can copy to
+                        IntPtr hdcDest = Win32API.CreateCompatibleDC(hdcSrc);
+                        // create a bitmap we can copy it to,
+                        IntPtr hBitmap = Win32API.CreateCompatibleBitmap(hdcSrc, width, height);
+                        // select the bitmap object
+                        IntPtr hOld = Win32API.SelectObject(hdcDest, hBitmap);
+                        // bitblt over
+                        Win32API.BitBlt(hdcDest, 0, 0, width, height, hdcSrc, 0, 0, Win32API.SRCCOPY);
+                        // restore selection
+                        Win32API.SelectObject(hdcDest, hOld);
+                        // clean up 
+                        Win32API.DeleteDC(hdcDest);
+                        Win32API.ReleaseDC(handle, hdcSrc);
+
+                        // get a .NET image object for it
+                        Image img = Image.FromHbitmap(hBitmap);
+                        // free up the Bitmap object
+                        Win32API.DeleteObject(hBitmap);
+
+                        return img;
+                    }
+                }
+                else
+                {
+                    throw new Exception("Can not get size infomation of the window.");
+                }
 
             }
             catch (Exception ex)
@@ -189,15 +217,6 @@ namespace Shrinerain.AutoTester.Helper
         public static Image CaptureScreenArea(Rectangle rect)
         {
             return CaptureScreenArea(rect.Left, rect.Top, rect.Width, rect.Height);
-        }
-
-
-        /* bool CompareImages(Image sourceImg, Image desImg)
-         * compare two images pixel by pixel, return true if they are the same.
-         */
-        public static bool CompareImages(Image sourceImg, Image desImg)
-        {
-            return false;
         }
 
         #endregion

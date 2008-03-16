@@ -799,9 +799,33 @@ namespace Shrinerain.AutoTester.Core
         /* void Print(String printerName)
          * print current page.
          */
-        public virtual void Print(String printerName)
+        public virtual void Print(String printerName, int copies)
         {
+            if (Printer.GetActivePrintDialog())
+            {
+                try
+                {
+                    if (!String.IsNullOrEmpty(printerName))
+                    {
+                        Printer.ChoosePrinter(printerName);
+                    }
 
+                    if (copies > 0)
+                    {
+                        Printer.SetCopyCount(copies);
+                    }
+
+                    Printer.PressPrint();
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotPrintException("Can not print current page: " + ex.Message);
+                }
+            }
+            else
+            {
+                throw new CannotPrintException("Can not find print dialog.");
+            }
         }
 
         /* void CloseDialog()
