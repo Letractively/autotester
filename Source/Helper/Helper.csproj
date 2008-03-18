@@ -54,6 +54,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AIUtility\AIUtility.vcproj">
+      <Project>{142ADF6B-825A-49BE-AC94-0B56F3FB1404}</Project>
+      <Name>AIUtility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Interface\Interface.csproj">
       <Project>{9B21D3ED-5BAC-4C66-BAB7-34CE7A076FFE}</Project>
       <Name>Interface</Name>
