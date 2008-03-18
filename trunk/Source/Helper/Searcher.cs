@@ -26,6 +26,8 @@
 using System;
 using System.Text.RegularExpressions;
 
+using Shrinerain.AutoTester.AIUtility;
+
 namespace Shrinerain.AutoTester.Helper
 {
     public sealed class Searcher
@@ -144,7 +146,7 @@ namespace Shrinerain.AutoTester.Helper
                             }
                         }
 
-                        return CalSimilarPercent(str1, str2, ignoreCase, compressBlank) >= percent;
+                        return StringHelper.CalSimilarPercent(str1, str2, ignoreCase, compressBlank) >= percent;
 
                     }
                     else
@@ -323,177 +325,177 @@ namespace Shrinerain.AutoTester.Helper
 
         #region private methods
 
-        /* int CalSimilarPercent(string str1, string str2)
-        * return the similarity of 2 strings, use dynamic programming.
-        * the similarity = the count of same chracters *2 /(length of str1 + length of str2)
-        * eg: test1, test2, they have 4 same chracters, so the similarity = 4*2/(5+5)=0.8=80%
-        * for performance issue, use unsafe code to access the dynamic array. 
-        */
+        ///* int CalSimilarPercent(string str1, string str2)
+        //* return the similarity of 2 strings, use dynamic programming.
+        //* the similarity = the count of same chracters *2 /(length of str1 + length of str2)
+        //* eg: test1, test2, they have 4 same chracters, so the similarity = 4*2/(5+5)=0.8=80%
+        //* for performance issue, use unsafe code to access the dynamic array. 
+        //*/
 
-        private static int CalSimilarPercent(string str1, string str2)
-        {
-            return CalSimilarPercent(str1, str2, true, true);
-        }
+        //private static int CalSimilarPercent(string str1, string str2)
+        //{
+        //    return CalSimilarPercent(str1, str2, true, true);
+        //}
 
-        private unsafe static int CalSimilarPercent(string str1, string str2, bool ignoreCase, bool compressBlank)
-        {
-            //check if they are equal
-            if (String.Compare(str1, str2, ignoreCase) == 0)
-            {
-                return 100;
-            }
-            else if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
-            {
-                //one string is null, return 0
-                return 0;
-            }
-            else
-            {
+        //private unsafe static int CalSimilarPercent(string str1, string str2, bool ignoreCase, bool compressBlank)
+        //{
+        //    //check if they are equal
+        //    if (String.Compare(str1, str2, ignoreCase) == 0)
+        //    {
+        //        return 100;
+        //    }
+        //    else if (String.IsNullOrEmpty(str1) || String.IsNullOrEmpty(str2))
+        //    {
+        //        //one string is null, return 0
+        //        return 0;
+        //    }
+        //    else
+        //    {
 
-                //both two strings are not empty, then we can start to check the similar percent.
+        //        //both two strings are not empty, then we can start to check the similar percent.
 
-                //remove blank
-                if (compressBlank)
-                {
-                    str1 = _blankReg.Replace(str1, "");
-                    str2 = _blankReg.Replace(str2, "");
-                }
+        //        //remove blank
+        //        if (compressBlank)
+        //        {
+        //            str1 = _blankReg.Replace(str1, "");
+        //            str2 = _blankReg.Replace(str2, "");
+        //        }
 
-                //if ignore case, convert to upper case.
-                if (ignoreCase)
-                {
-                    str1 = str1.ToUpper();
-                    str2 = str2.ToUpper();
-                }
+        //        //if ignore case, convert to upper case.
+        //        if (ignoreCase)
+        //        {
+        //            str1 = str1.ToUpper();
+        //            str2 = str2.ToUpper();
+        //        }
 
-                //if the two strings is a sentence(contains blank) not a single word, then split the sentence to words, check each word.
-                if (!compressBlank && str1.IndexOf(" ") > 0 && str2.IndexOf(" ") > 0)
-                {
-                    string[] str1Arr = str1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                    string[] str2Arr = str2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        //        //if the two strings is a sentence(contains blank) not a single word, then split the sentence to words, check each word.
+        //        if (!compressBlank && str1.IndexOf(" ") > 0 && str2.IndexOf(" ") > 0)
+        //        {
+        //            string[] str1Arr = str1.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        //            string[] str2Arr = str2.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    //if the two strings have the same number of words, check each word.
-                    if (str1Arr.Length == str2Arr.Length)
-                    {
-                        int totalSimPercent = 0;
-                        float weight = 0;
+        //            //if the two strings have the same number of words, check each word.
+        //            if (str1Arr.Length == str2Arr.Length)
+        //            {
+        //                int totalSimPercent = 0;
+        //                float weight = 0;
 
-                        for (int i = 0; i < str1Arr.Length; i++)
-                        {
-                            weight = (float)(str1Arr[i].Length + str2Arr[i].Length) / (float)(str1.Length + str2.Length);
-                            totalSimPercent += Convert.ToInt32(CalSimilarPercent(str1Arr[i], str2Arr[i]) * weight);
-                        }
+        //                for (int i = 0; i < str1Arr.Length; i++)
+        //                {
+        //                    weight = (float)(str1Arr[i].Length + str2Arr[i].Length) / (float)(str1.Length + str2.Length);
+        //                    totalSimPercent += Convert.ToInt32(CalSimilarPercent(str1Arr[i], str2Arr[i]) * weight);
+        //                }
 
-                        return totalSimPercent;
-                    }
+        //                return totalSimPercent;
+        //            }
 
-                }
+        //        }
 
-                int len1 = str1.Length;
-                int len2 = str2.Length;
+        //        int len1 = str1.Length;
+        //        int len2 = str2.Length;
 
-                //dynamic programming array.
-                //to improve performance, we use 1 dim stack arrary.
-                int* dpArr = stackalloc int[(len1 + 1) * (len2 + 1)];
+        //        //dynamic programming array.
+        //        //to improve performance, we use 1 dim stack arrary.
+        //        int* dpArr = stackalloc int[(len1 + 1) * (len2 + 1)];
 
-                //init array
-                int curIndex = 0;
+        //        //init array
+        //        int curIndex = 0;
 
-                for (int i = 0; i < len1; i++)
-                {
-                    for (int j = 0; j < len2; j++)
-                    {
-                        curIndex = (j + 1) * (len1 + 1) + i + 1;
+        //        for (int i = 0; i < len1; i++)
+        //        {
+        //            for (int j = 0; j < len2; j++)
+        //            {
+        //                curIndex = (j + 1) * (len1 + 1) + i + 1;
 
-                        if (str1[i] == str2[j])
-                        {
-                            if (i == 0 || j == 0)
-                            {
-                                dpArr[curIndex] = 1;
-                            }
-                            else
-                            {
-                                dpArr[curIndex] = dpArr[j * (len1 + 1) + i] + 1;
-                            }
-                        }
-                        else
-                        {
-                            dpArr[curIndex] = 0;
-                        }
-                    }
-                }
+        //                if (str1[i] == str2[j])
+        //                {
+        //                    if (i == 0 || j == 0)
+        //                    {
+        //                        dpArr[curIndex] = 1;
+        //                    }
+        //                    else
+        //                    {
+        //                        dpArr[curIndex] = dpArr[j * (len1 + 1) + i] + 1;
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    dpArr[curIndex] = 0;
+        //                }
+        //            }
+        //        }
 
-                int currentSameCharCount = 0;
-                int totalSameCharCount = 0;
-                int totalLen = len1 + len2;
+        //        int currentSameCharCount = 0;
+        //        int totalSameCharCount = 0;
+        //        int totalLen = len1 + len2;
 
-                int str1Index = len1;
-                int str2Index = len2;
+        //        int str1Index = len1;
+        //        int str2Index = len2;
 
-                //the max number's position in the array of sepcific col and row.
-                int maxStr1Index = str1Index;
-                int maxStr2Index = str2Index;
+        //        //the max number's position in the array of sepcific col and row.
+        //        int maxStr1Index = str1Index;
+        //        int maxStr2Index = str2Index;
 
-                while (str1Index > 0 && str2Index > 0)
-                {
-                    currentSameCharCount = 0;
+        //        while (str1Index > 0 && str2Index > 0)
+        //        {
+        //            currentSameCharCount = 0;
 
-                    for (int i = str1Index; i > 0; i--)
-                    {
-                        curIndex = str2Index * (len1 + 1) + i;
+        //            for (int i = str1Index; i > 0; i--)
+        //            {
+        //                curIndex = str2Index * (len1 + 1) + i;
 
-                        if (dpArr[curIndex] > currentSameCharCount)
-                        {
-                            currentSameCharCount = dpArr[curIndex];
+        //                if (dpArr[curIndex] > currentSameCharCount)
+        //                {
+        //                    currentSameCharCount = dpArr[curIndex];
 
-                            maxStr1Index = i;
-                            maxStr2Index = str2Index;
-                        }
+        //                    maxStr1Index = i;
+        //                    maxStr2Index = str2Index;
+        //                }
 
-                        if (currentSameCharCount >= i)
-                        {
-                            break;
-                        }
-                    }
+        //                if (currentSameCharCount >= i)
+        //                {
+        //                    break;
+        //                }
+        //            }
 
-                    for (int j = str2Index; j > 0; j--)
-                    {
-                        curIndex = j * (len1 + 1) + str1Index;
+        //            for (int j = str2Index; j > 0; j--)
+        //            {
+        //                curIndex = j * (len1 + 1) + str1Index;
 
-                        if (dpArr[curIndex] > currentSameCharCount)
-                        {
-                            currentSameCharCount = dpArr[curIndex];
+        //                if (dpArr[curIndex] > currentSameCharCount)
+        //                {
+        //                    currentSameCharCount = dpArr[curIndex];
 
-                            maxStr1Index = str1Index;
-                            maxStr2Index = j;
-                        }
+        //                    maxStr1Index = str1Index;
+        //                    maxStr2Index = j;
+        //                }
 
-                        if (currentSameCharCount >= j)
-                        {
-                            break;
-                        }
-                    }
+        //                if (currentSameCharCount >= j)
+        //                {
+        //                    break;
+        //                }
+        //            }
 
-                    totalSameCharCount += currentSameCharCount;
+        //            totalSameCharCount += currentSameCharCount;
 
-                    if (currentSameCharCount > 0)
-                    {
-                        str1Index = maxStr1Index - currentSameCharCount;
-                        str2Index = maxStr2Index - currentSameCharCount;
-                    }
-                    else
-                    {
-                        str1Index--;
-                        str2Index--;
-                    }
+        //            if (currentSameCharCount > 0)
+        //            {
+        //                str1Index = maxStr1Index - currentSameCharCount;
+        //                str2Index = maxStr2Index - currentSameCharCount;
+        //            }
+        //            else
+        //            {
+        //                str1Index--;
+        //                str2Index--;
+        //            }
 
-                }
+        //        }
 
-                float percent = (float)(totalSameCharCount * 2) / (float)totalLen;
-                return Convert.ToInt32(percent * 100);
-            }
+        //        float percent = (float)(totalSameCharCount * 2) / (float)totalLen;
+        //        return Convert.ToInt32(percent * 100);
+        //    }
 
-        }
+        //}
 
 
         #endregion

@@ -6,7 +6,7 @@
 	ProjectGUID="{142ADF6B-825A-49BE-AC94-0B56F3FB1404}"
 	RootNamespace="AIUtility"
 	Keyword="ManagedCProj"
-	TargetFrameworkVersion="196613"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -209,6 +209,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\StringHelper.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -225,6 +229,10 @@
 			</File>
 			<File
 				RelativePath=".\Stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\StringHelper.h"
 				>
 			</File>
 		</Filter>
