@@ -137,13 +137,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
-        protected HTMLTestObject()
+        public HTMLTestObject()
             : base()
         {
             this._domain = "HTML";
         }
 
-        protected HTMLTestObject(IHTMLElement element)
+        public HTMLTestObject(IHTMLElement element)
             : base()
         {
 

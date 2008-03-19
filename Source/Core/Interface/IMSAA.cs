@@ -15,13 +15,17 @@
 *
 *********************************************************************/
 
-
 namespace Shrinerain.AutoTester.Core
 {
+    using Accessibility;
+
     public interface IMSAA
     {
         // this interface is a Windows Com interface.
-        // normally, you can get a IAccessble interface for a MSAA object.
-        object GetIAccInterface();
+        IAccessible GetIAccInterface();
+
+        //self id is the CHILD_ID used in MSAA tech. 
+        //0 means self, if >0, means the child.
+        int GetSelfID();
     }
 }
