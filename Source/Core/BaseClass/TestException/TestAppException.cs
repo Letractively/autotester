@@ -41,6 +41,24 @@ namespace Shrinerain.AutoTester.Core
 
     };
 
+    public class TestAppNotFoundExpcetion : TestAppException
+    {
+        public TestAppNotFoundExpcetion()
+            : this("Can not find test app.")
+        {
+        }
+
+        public TestAppNotFoundExpcetion(String message)
+            : base(message)
+        {
+        }
+
+        public TestAppNotFoundExpcetion(string appName, string message)
+            : base(appName, message)
+        {
+        }
+    }
+
     public class CannotStartAppException : TestAppException
     {
         public CannotStartAppException()
