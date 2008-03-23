@@ -30,22 +30,29 @@ namespace Shrinerain.AutoTester.Core
 
         #region fields
 
-        IntPtr _rootHandle;
+        protected IntPtr _rootHandle;
 
         //process to start the desktop application
-        Process _appProcess;
+        protected Process _appProcess;
 
-        string _appPath;
-        string _appName;
-        string _appVersion;
-        string _appCompany;
-        string _appAuthor;
+        protected string _appPath;
+        protected string _appName;
+        protected string _appVersion;
+        protected string _appCompany;
+        protected string _appAuthor;
 
         //size
-        int _top;
-        int _left;
-        int _width;
-        int _height;
+        protected int _top;
+        protected int _left;
+        protected int _width;
+        protected int _height;
+
+        //max wait time is 120s.
+        protected const int _maxWaitSeconds = 120;
+        protected const int _interval = 3;
+
+        //sync event
+        protected AutoResetEvent _appStartEvent = new AutoResetEvent(false);
 
         #endregion
 
@@ -174,6 +181,15 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotMoveAppException("Handle can not be 0.");
             }
+            try
+            {
+                GetSize();
+                Win32API.SetWindowPos(this._rootHandle, IntPtr.Zero, x, y, this._width, this._height, 0);
+            }
+            catch (Exception ex)
+            {
+                throw new CannotMoveAppException("Can not move window: " + ex.Message);
+            }
 
         }
 
@@ -186,6 +202,8 @@ namespace Shrinerain.AutoTester.Core
 
             try
             {
+                GetSize();
+
                 Win32API.SetWindowPos(this.Handle, IntPtr.Zero, left, top, width, height, 0);
             }
             catch (Exception ex)
@@ -230,7 +248,15 @@ namespace Shrinerain.AutoTester.Core
                 throw new CannotResizeAppException("Handle can not be 0.");
             }
 
-            throw new NotImplementedException();
+            try
+            {
+                Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_SHOWNORMAL);
+            }
+            catch (Exception ex)
+            {
+                throw new CannotResizeAppException("Can not restore window: " + ex.Message);
+            }
+
         }
 
         public virtual void Active()
@@ -277,6 +303,33 @@ namespace Shrinerain.AutoTester.Core
                 throw new CannotWaitAppException("Handle can not be 0.");
             }
 
+            try
+            {
+                int times = 0;
+                while (times <= _maxWaitSeconds)
+                {
+                    if (Win32API.IsWindowVisible(this._rootHandle))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        Thread.Sleep(_interval * 1000);
+                        times += _interval;
+                    }
+                }
+
+                throw new TestAppNotFoundExpcetion();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new TestAppNotFoundExpcetion("Can not find test app: " + ex.Message);
+            }
+
         }
 
         public virtual void WaitForDisappear()
@@ -286,6 +339,32 @@ namespace Shrinerain.AutoTester.Core
                 throw new CannotWaitAppException("Handle can not be 0.");
             }
 
+            try
+            {
+                int times = 0;
+                while (times <= _maxWaitSeconds)
+                {
+                    if (!Win32API.IsWindowVisible(this._rootHandle))
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        Thread.Sleep(_interval * 1000);
+                        times += _interval;
+                    }
+                }
+
+                throw new CannotStopAppException();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotStopAppException("Test app is still existed: " + ex.Message);
+            }
         }
 
         #endregion
@@ -294,11 +373,16 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual bool IsActive()
         {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                return false;
+            }
+
             try
             {
                 IntPtr currentActiveWindow = Win32API.GetActiveWindow();
 
-                return currentActiveWindow == this.Handle ? true : false;
+                return currentActiveWindow == this._rootHandle;
             }
             catch (Exception ex)
             {
@@ -308,12 +392,38 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual bool IsTopMost()
         {
-            throw new NotImplementedException();
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            try
+            {
+                IntPtr currentTopWindow = Win32API.GetForegroundWindow();
+
+                return currentTopWindow == this._rootHandle;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.Message);
+            }
         }
 
         public virtual bool IsVisible()
         {
-            throw new NotImplementedException();
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            try
+            {
+                return Win32API.IsWindowVisible(this._rootHandle);
+            }
+            catch (Exception ex)
+            {
+                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.Message);
+            }
         }
 
         public virtual bool IsMax()

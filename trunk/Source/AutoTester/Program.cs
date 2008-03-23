@@ -25,6 +25,7 @@ using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Framework;
 using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Helper;
+using Shrinerain.AutoTester.MSAAUtility;
 
 namespace Shrinerain.AutoTester
 {
@@ -89,9 +90,13 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+            MSAATest();
+
+            return;
+
             IntPtr handle = Win32API.FindWindow("Maxthon2_Frame", null);
 
-            ScreenCaptruer.SaveControlPrint(handle,"Z:\\1.jpg");
+            ScreenCaptruer.SaveControlPrint(handle, "Z:\\1.jpg");
             ScreenCaptruer.SaveScreenPrint("z:\\2.jpg");// .SaveScreenPrint("z:\\1.jpg");
 
             //Console.WriteLine(ScreenWords.GetWords(20,30));
@@ -202,7 +207,6 @@ namespace Shrinerain.AutoTester
             Console.ReadLine();
         }
 
-
         public static void qidian()
         {
             string url = @"www.qidian.com";// @"http://mm.cmfu.com/vip/ebook_subscibe_forbuy.asp?ebookid=367736&bl_id=149430";//
@@ -242,6 +246,20 @@ namespace Shrinerain.AutoTester
 
 
             Console.ReadLine();
+        }
+
+        public static void MSAATest()
+        {
+            TestBrowser tb = new TestBrowser();
+            string url = @"www.qidian.com";
+            tb.Load(url);
+
+            MSAATestObjectPool pool = new MSAATestObjectPool();
+            pool.SetTestBrowser(tb);
+
+
+            MSAATestGUIObject obj = (MSAATestGUIObject)pool.GetObjectByType("button", "ËÑË÷", 0);
+
         }
     }
 }

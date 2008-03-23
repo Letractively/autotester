@@ -103,6 +103,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #endregion
 
+        public bool IsVisible()
+        {
+            return MSAATestObject.IsVisible(this._iAcc, Convert.ToInt32(this._selfID));
+        }
+
         #endregion
 
         #region private methods

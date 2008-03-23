@@ -59,9 +59,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
         protected String _description;
         protected String _name;
         protected IAccessible _parent;
+        protected int _childCount = 0;
         protected String _role;
         protected String _state;
         protected String _value;
+
         protected int _id;
         protected IntPtr _window;
         protected String _msaaObjType;
@@ -73,6 +75,45 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region properties
 
+        public String Value
+        {
+            get { return _value; }
+        }
+
+        public String State
+        {
+            get { return _state; }
+        }
+
+        public String Role
+        {
+            get { return _role; }
+        }
+
+        public int ChildCount
+        {
+            get { return _childCount; }
+        }
+
+        public IAccessible Parent
+        {
+            get { return _parent; }
+        }
+
+        public String Name
+        {
+            get { return _name; }
+        }
+
+        public String Description
+        {
+            get { return _description; }
+        }
+
+        public String DefaultAction
+        {
+            get { return _defAction; }
+        }
 
         #endregion
 
@@ -246,6 +287,137 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
+        #region get msaa information
+
+        public static String GetRole(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                return iAcc.get_accRole(childID).ToString();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public static String GetValue(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                return iAcc.get_accValue(childID).ToString();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public static String GetName(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                return iAcc.get_accName(childID).ToString();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public static String GetDefAction(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                return iAcc.get_accDefaultAction(childID).ToString();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public static String GetDesc(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                return iAcc.get_accDescription(childID).ToString();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public static String GetState(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                return iAcc.get_accState(childID).ToString();
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
+        public static IAccessible GetParent(IAccessible iAcc, int childID)
+        {
+            if (childID > 0)
+            {
+                return iAcc;
+            }
+            else if (childID == 0)
+            {
+                return (IAccessible)iAcc.accParent;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static IAccessible GetChild(IAccessible iAcc, int childID)
+        {
+            if (childID > 0)
+            {
+                return (IAccessible)iAcc.get_accChild(childID);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+        public static bool IsVisible(IAccessible iAcc, int childID)
+        {
+            string state = GetState(iAcc, childID);
+
+            if (String.IsNullOrEmpty(state))
+            {
+                return true;
+            }
+            else
+            {
+                return state.IndexOf("invisible") < 0;
+            }
+        }
+
+        public static int GetChildCount(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                return iAcc.accChildCount;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+
+        #endregion
 
         #endregion
 
@@ -266,6 +438,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             if (Convert.ToInt32(_selfID) == 0)
             {
                 _parent = (IAccessible)this._iAcc.accParent;
+                _childCount = this._iAcc.accChildCount;
             }
 
             _role = this._iAcc.get_accRole(_selfID).ToString();

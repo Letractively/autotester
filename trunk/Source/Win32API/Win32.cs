@@ -1149,6 +1149,9 @@ namespace Shrinerain.AutoTester.Win32
         public static extern int SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         [DllImport("user32.dll")]
+        public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
+
+        [DllImport("user32.dll")]
         public static extern bool GetWindowPlacement(IntPtr window, ref WindowPlacement position);
 
         [DllImport("User32.dll")]
@@ -1210,6 +1213,9 @@ namespace Shrinerain.AutoTester.Win32
 
         [DllImport("User32.dll")]
         public static extern int ShowWindowAsync(IntPtr hWnd, int command);
+
+        [DllImport("User32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
         public static extern IntPtr GetDesktopWindow();
