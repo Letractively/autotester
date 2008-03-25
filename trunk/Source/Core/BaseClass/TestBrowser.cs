@@ -14,7 +14,7 @@
 * History: 2007/09/04 wan,yu Init version.
 *          2007/12/26 wan,yu add void Find(object) method. 
 *          2007/12/27 wan,yu rename WaitForIEExist to WaitForBrowser.     
-*          2008/01/15 wan,yu update, modify some static members to instance, elimate singleton
+*          2008/01/15 wan,yu update, modify some static members to instance.
 *          2008/02/24 wan,yu update, add GetAllBrowsers() , GetTopmostBrowser() and SetBrowser().          
 *
 *********************************************************************/

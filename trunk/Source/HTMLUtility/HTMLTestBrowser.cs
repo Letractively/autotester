@@ -10,8 +10,7 @@
 *              we use HTML DOM to get the object from Internet Explorer.
 *
 * History: 2007/09/04 wan,yu Init version
-*          2008/01/15 wan,yu update, modify some static memebers to instance,
-*                            elimate singleton.  
+*          2008/01/15 wan,yu update, modify some static memebers to instance 
 *
 *********************************************************************/
 
@@ -44,17 +43,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             Dispose();
         }
-
-        //singleton
-        //public new static HTMLTestBrowser GetInstance()
-        //{
-        //    if (_testBrowser == null)
-        //    {
-        //        _testBrowser = new HTMLTestBrowser();
-        //    }
-
-        //    return (HTMLTestBrowser)_testBrowser;
-        //}
 
         #region public methods
 
