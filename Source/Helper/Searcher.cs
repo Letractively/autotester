@@ -146,7 +146,7 @@ namespace Shrinerain.AutoTester.Helper
                             }
                         }
 
-                        return StringHelper.CalSimilarPercent(str1, str2, ignoreCase, compressBlank) >= percent;
+                        return TextHelper.CalSimilarPercent(str1, str2, ignoreCase, compressBlank) >= percent;
 
                     }
                     else

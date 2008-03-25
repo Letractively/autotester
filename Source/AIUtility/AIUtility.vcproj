@@ -210,7 +210,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\StringHelper.cpp"
+				RelativePath=".\TextHelper.cpp"
 				>
 			</File>
 		</Filter>
@@ -232,7 +232,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\StringHelper.h"
+				RelativePath=".\TextHelper.h"
 				>
 			</File>
 		</Filter>
