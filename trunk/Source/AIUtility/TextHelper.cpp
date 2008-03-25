@@ -4,7 +4,7 @@
 * AutoTester is a free software, you can use it in any commercial work. 
 * But you CAN NOT redistribute it and/or modify it.
 *--------------------------------------------------------------------
-* Component: StringHelper.cs
+* Component: TextHelper.cs
 *
 * Description: This class provide functions to handle strings.
 *
@@ -14,7 +14,7 @@
 
 #include "Stdafx.h"
 
-#include "StringHelper.h"
+#include "TextHelper.h"
 
 using namespace System;
 
@@ -26,7 +26,7 @@ using namespace Shrinerain::AutoTester::AIUtility;
 * eg: test1, test2, they have 4 same chracters, so the similarity = 4*2/(5+5)=0.8=80%
 * for performance issue, use unsafe code to access the dynamic array. 
 */
-int StringHelper::CalSimilarPercent(System::String ^str1, System::String ^str2, bool ignoreCase, bool ignoreBlank)
+int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bool ignoreBlank)
 {
 	//check if they are equal
 	if (String::Compare(str1, str2, ignoreCase) == 0)
@@ -169,7 +169,12 @@ int StringHelper::CalSimilarPercent(System::String ^str1, System::String ^str2, 
 	}
 }
 
-int StringHelper::CalSimilarPercent(System::String ^str1, System::String ^str2)
+int TextHelper::CalSimilarPercent(String ^str1, String ^str2)
 {
 	return CalSimilarPercent(str1,str2,true,true);
+}
+
+int TextHelper::CalStyleSimPercent(String^ str1,String ^str2)
+{
+	return 1;
 }
