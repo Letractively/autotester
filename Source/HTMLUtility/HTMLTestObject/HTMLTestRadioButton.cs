@@ -67,7 +67,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ICheckable Members
 
-        public void Check()
+        public virtual void Check()
         {
             try
             {
@@ -87,7 +87,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
-        public void UnCheck()
+        public virtual void UnCheck()
         {
             try
             {
@@ -106,7 +106,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public bool IsChecked()
+        public virtual bool IsChecked()
         {
             try
             {
@@ -122,7 +122,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IClickable Members
 
-        public void Click()
+        public virtual void Click()
         {
             try
             {
@@ -161,17 +161,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public void DoubleClick()
+        public virtual void DoubleClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void RightClick()
+        public virtual void RightClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void MiddleClick()
+        public virtual void MiddleClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -180,7 +180,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IInteractive Members
 
-        public void Focus()
+        public virtual void Focus()
         {
             try
             {
@@ -193,12 +193,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public object GetDefaultAction()
+        public virtual string GetAction()
         {
             return "Check";
         }
 
-        public void PerformDefaultAction(object para)
+        public virtual void DoAction(object para)
         {
             Check();
         }
@@ -266,22 +266,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IShowInfo Members
 
-        public string GetText()
+        public virtual string GetText()
         {
             return LabelText;
         }
 
-        public string GetFontFamily()
+        public virtual string GetFontFamily()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public string GetFontSize()
+        public virtual string GetFontSize()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public string GetFontColor()
+        public virtual string GetFontColor()
         {
             throw new Exception("The method or operation is not implemented.");
         }

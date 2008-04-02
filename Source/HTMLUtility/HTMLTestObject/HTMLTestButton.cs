@@ -244,12 +244,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //}
         }
 
-        public virtual object GetDefaultAction()
+        public virtual string GetAction()
         {
             return "Click";
         }
 
-        public virtual void PerformDefaultAction(object para)
+        public virtual void DoAction(object para)
         {
             Click();
         }

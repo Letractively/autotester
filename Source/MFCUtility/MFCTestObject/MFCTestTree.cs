@@ -43,12 +43,12 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         #region IPath Members
 
-        public int GetDepth()
+        public virtual int GetDepth()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public object[] GetObjectsAtPath(string path)
+        public virtual object[] GetObjectsAtPath(string path)
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -57,17 +57,17 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         #region IInteractive Members
 
-        public void Focus()
+        public virtual void Focus()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public object GetDefaultAction()
+        public virtual string GetAction()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void PerformDefaultAction(object parameter)
+        public virtual void DoAction(object parameter)
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -76,7 +76,7 @@ namespace Shrinerain.AutoTester.MFCUtility
 
         #region IContainer Members
 
-        public object[] GetChildren()
+        public virtual object[] GetChildren()
         {
             throw new Exception("The method or operation is not implemented.");
         }

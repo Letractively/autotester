@@ -30,10 +30,20 @@ namespace Shrinerain
 				Other
 			};
 
+			public enum WordClass
+			{
+				Noun,
+				Adj,
+				Adv,
+				Num,
+				Conj
+			};
+
 			public value class WordStyle
 			{
 			public:
 				CharClass _charClass;
+				int _otherCode;
 				int _percent;
 				int _pos;
 			};

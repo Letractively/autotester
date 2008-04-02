@@ -24,9 +24,9 @@ namespace Shrinerain.AutoTester.Core
         void Focus();
 
         //get the default action, eg: "click" is the default action of a button
-        object GetDefaultAction();
+        string GetAction();
 
         //for a button, the default action is "click"
-        void PerformDefaultAction(object parameter);
+        void DoAction(object parameter);
     }
 }

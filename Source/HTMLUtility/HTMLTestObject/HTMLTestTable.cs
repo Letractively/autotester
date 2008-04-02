@@ -250,12 +250,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new NotImplementedException();
         }
 
-        public virtual object GetDefaultAction()
+        public virtual string GetAction()
         {
             throw new NotImplementedException();
         }
 
-        public virtual void PerformDefaultAction(object parameter)
+        public virtual void DoAction(object parameter)
         {
             throw new NotImplementedException();
         }
