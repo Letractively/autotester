@@ -117,12 +117,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public object GetDefaultAction()
+        public string GetAction()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void PerformDefaultAction(object parameter)
+        public void DoAction(object parameter)
         {
             throw new Exception("The method or operation is not implemented.");
         }

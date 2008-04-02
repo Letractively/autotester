@@ -16,9 +16,6 @@
 *
 *********************************************************************/
 
-using System;
-using System.Collections.Generic;
-
 
 namespace Shrinerain.AutoTester.Core
 {
@@ -28,10 +25,6 @@ namespace Shrinerain.AutoTester.Core
 
         //domain means the object type, eg: HTML
         protected string _domain;
-
-        // this hashtable is used to store properties for a test object.
-        // key is the property name.
-        protected Dictionary<string, object> _properties;
 
         #endregion
 
@@ -53,16 +46,7 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual object GetProperty(string propertyName)
         {
-            if (String.IsNullOrEmpty(propertyName))
-            {
-                throw new ArgumentNullException("Error: Property can not be null.");
-            }
-            object res = new object();
-            if (!this._properties.TryGetValue(propertyName, out res))
-            {
-                throw new Exception("Error: Can not find the property: " + propertyName);
-            }
-            return res;
+            throw new PropertyNotFoundException("Error: Can not find the property: " + propertyName);
         }
 
         /* SetPropertyByName(string propertyName, object value)
@@ -70,25 +54,7 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual bool SetProperty(string propertyName, object value)
         {
-            if (String.IsNullOrEmpty(propertyName))
-            {
-                throw new ArgumentNullException("Error: Property can not be null.");
-            }
-            object res = new object();
-            try
-            {
-                if (this._properties.TryGetValue(propertyName, out res))
-                {
-                    this._properties.Remove(propertyName);
-                }
-                this._properties.Add(propertyName, value);
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            throw new PropertyNotFoundException("Error: Can not find the property: " + propertyName);
         }
 
         /* void HightLight()
@@ -96,7 +62,7 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void HighLight()
         {
-
+            throw new CannotHighlightObjectException();
         }
 
         #endregion

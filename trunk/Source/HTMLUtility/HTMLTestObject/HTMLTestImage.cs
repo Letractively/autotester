@@ -139,7 +139,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* void Click()
          * Click on the image.
          */
-        public void Click()
+        public virtual void Click()
         {
             try
             {
@@ -188,17 +188,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public void DoubleClick()
+        public virtual void DoubleClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void RightClick()
+        public virtual void RightClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void MiddleClick()
+        public virtual void MiddleClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -207,17 +207,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IInteractive Members
 
-        public void Focus()
+        public virtual void Focus()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public object GetDefaultAction()
+        public virtual string GetAction()
         {
             return "Click";
         }
 
-        public void PerformDefaultAction(object para)
+        public virtual void DoAction(object para)
         {
             Click();
         }

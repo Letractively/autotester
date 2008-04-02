@@ -206,12 +206,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IWindows Members
 
-        public IntPtr GetHandle()
+        public virtual IntPtr GetHandle()
         {
             return this._handle;
         }
 
-        public string GetClass()
+        public virtual string GetClass()
         {
             return this._className;
         }
@@ -220,22 +220,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IShowInfo Members
 
-        public string GetText()
+        public virtual string GetText()
         {
             return this._message;
         }
 
-        public string GetFontFamily()
+        public virtual string GetFontFamily()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public string GetFontSize()
+        public virtual string GetFontSize()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public string GetFontColor()
+        public virtual string GetFontColor()
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -248,7 +248,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * Click the "OK" button.
          * It is OK for JavaScript Window.Alert messagebox.
          */
-        public void Click()
+        public virtual void Click()
         {
             try
             {
@@ -263,7 +263,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* void Click(string text)
          * Click on the expected button.
          */
-        public void Click(string text)
+        public virtual void Click(string text)
         {
             try
             {
@@ -279,17 +279,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public void DoubleClick()
+        public virtual void DoubleClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void RightClick()
+        public virtual void RightClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void MiddleClick()
+        public virtual void MiddleClick()
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -298,17 +298,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IInteractive Members
 
-        public void Focus()
+        public virtual void Focus()
         {
             Click();
         }
 
-        public object GetDefaultAction()
+        public virtual string GetAction()
         {
             return "Click";
         }
 
-        public void PerformDefaultAction(object parameter)
+        public virtual void DoAction(object parameter)
         {
             Click();
         }
@@ -317,7 +317,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IContainer Members
 
-        public object[] GetChildren()
+        public virtual object[] GetChildren()
         {
             throw new Exception("The method or operation is not implemented.");
         }
