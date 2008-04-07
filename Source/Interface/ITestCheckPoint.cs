@@ -4,13 +4,14 @@
 * AutoTester is a free software, you can use it in any commercial work. 
 * But you CAN NOT redistribute it and/or modify it.
 *--------------------------------------------------------------------
-* Component: ITestVP.cs
+* Component: ITestCheckPoint.cs
 *
 * Description: This interface define the check point methods provide 
 *              by AutoTester, we can perform these kind of check point.  
 *
 * History:  2007/09/04 wan,yu Init version
 *           2008/03/02 wan,yu update, add PerformTestObjectTest() and PerformArrayTest().
+*           2008/04/07 wan,yu update, rename to ITestCheckPoint and rename Perfrom*Test() to Check*().           
 *
 *********************************************************************/
 
@@ -19,29 +20,29 @@ using System;
 namespace Shrinerain.AutoTester.Interface
 {
     [CLSCompliant(true)]
-    public interface ITestVP
+    public interface ITestCheckPoint
     {
-        bool PerformStringTest(String actualString, String expectResult, VPCheckType type);
+        bool CheckString(String actualString, String expectResult, CheckType type);
 
-        bool PerformArrayTest(Object[] actualArray, Object[] expectArray, VPCheckType type);
+        bool CheckArray(Object[] actualArray, Object[] expectArray, CheckType type);
 
-        bool PerformRegexTest(Object testObj, String vpProperty, String expectReg, VPCheckType type, out String actualResult);
+        bool CheckRegex(Object testObj, String vpProperty, String expectReg, CheckType type, out String actualResult);
 
-        bool PerformImageTest(String actualImgPath, String expectImgPath, VPCheckType type, out object actualImg);
+        bool CheckImage(String actualImgPath, String expectImgPath, CheckType type);
 
-        bool PerformDataTableTest(Object actualDataTable, Object expectedDataTable, VPCheckType type);
+        bool CheckDataTable(Object actualDataTable, Object expectedDataTable, CheckType type);
 
-        bool PerformTestObjectTest(Object testObj, Object expectedListBox, VPCheckType type);
+        bool CheckTestObject(Object testObj, Object expectedListBox, CheckType type);
 
-        bool PerformPropertyTest(Object testObj, String vpProperty, Object expectResult, VPCheckType type, out object actualProperty);
+        bool CheckProperty(Object testObj, String vpProperty, Object expectResult, CheckType type, out object actualProperty);
 
-        bool PerformFileTest(String actualFile, String expectedFile, VPCheckType type);
+        bool CheckFile(String actualFile, String expectedFile, CheckType type);
 
-        bool PerformNetworkTest(object testObj, object expectResult, VPCheckType type, out object actualNetwork);
+        bool CheckNetwork(object testObj, object expectResult, CheckType type, out object actualNetwork);
     }
 
     [CLSCompliant(true)]
-    public enum VPCheckType
+    public enum CheckType
     {
         Small,         //actual < expected
         SmallOrEqual,  //actual <= expected

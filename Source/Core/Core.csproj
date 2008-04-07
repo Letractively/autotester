@@ -52,7 +52,7 @@
     <Compile Include="BaseClass\TestException\TestFrameworkException.cs" />
     <Compile Include="BaseClass\TestException\TestLogException.cs" />
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
-    <Compile Include="BaseClass\TestVP.cs" />
+    <Compile Include="BaseClass\TestCheckPoint.cs" />
     <Compile Include="Interface\ICheckable.cs" />
     <Compile Include="Interface\IMatrix.cs" />
     <Compile Include="Interface\IPath.cs" />

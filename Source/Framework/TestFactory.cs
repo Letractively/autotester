@@ -62,7 +62,7 @@ namespace Shrinerain.AutoTester.Framework
         private static ITestApp _app;
         private static ITestObjectPool _objPool;
         private static ITestAction _actionPool;
-        private static ITestVP _testVP;
+        private static ITestCheckPoint _testVP;
 
         //the dll path
         private static string _testAppDLL;
@@ -238,7 +238,7 @@ namespace Shrinerain.AutoTester.Framework
          * Return ITestVP interface.
          * This interface is used to perform check point.
          */
-        public static ITestVP CreateTestVP()
+        public static ITestCheckPoint CreateTestVP()
         {
             if (String.IsNullOrEmpty(_testVPDLL))
             {
@@ -246,7 +246,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             try
             {
-                _testVP = (ITestVP)LoadDll(_testVPDLL, _testVPClassName);
+                _testVP = (ITestCheckPoint)LoadDll(_testVPDLL, _testVPClassName);
             }
             catch (Exception ex)
             {

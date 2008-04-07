@@ -29,7 +29,7 @@ namespace Shrinerain.AutoTester.Framework
         #region fields
 
         //interface to perform actual check.
-        private ITestVP _testVP;
+        private ITestCheckPoint _testVP;
 
         // private AutoConfig _autoConfig = AutoConfig.GetInstance();
 
@@ -66,7 +66,7 @@ namespace Shrinerain.AutoTester.Framework
             try
             {
                 //currently, just support string test.
-                result = _testVP.PerformPropertyTest(obj, vpProperty, expectResult.ToString(), VPCheckType.Equal, out actualResult);
+                result = _testVP.CheckProperty(obj, vpProperty, expectResult.ToString(), CheckType.Equal, out actualResult);
             }
             catch
             {
