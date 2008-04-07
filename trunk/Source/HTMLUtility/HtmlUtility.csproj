@@ -69,7 +69,7 @@
     <Compile Include="HTMLTestObject\HTMLTestRadioButton.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTable.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTextBox.cs" />
-    <Compile Include="HTMLTestVP.cs" />
+    <Compile Include="HTMLTestCheckPoint.cs" />
     <Compile Include="HTMLTestBrowser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

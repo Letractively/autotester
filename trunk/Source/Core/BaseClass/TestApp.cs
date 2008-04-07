@@ -6,7 +6,7 @@
 *--------------------------------------------------------------------
 * Component: TestApp.cs
 *
-* Description: This class manage desktop application. It implement
+* Description: This class manage desktop application. It implements
 *              ITestApp interface.  
 *
 * History: 2007/11/20 wan,yu Init version.
