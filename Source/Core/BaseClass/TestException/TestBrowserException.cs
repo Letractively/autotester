@@ -34,67 +34,67 @@ namespace Shrinerain.AutoTester.Core
         }
     };
 
-    public class TestBrowserNotFoundException : TestBrowserException
+    public class BrowserNotFoundException : TestBrowserException
     {
-        public TestBrowserNotFoundException()
+        public BrowserNotFoundException()
             : this("Can not find test browser.")
         {
 
         }
-        public TestBrowserNotFoundException(string message)
+        public BrowserNotFoundException(string message)
             : base(message)
         {
 
         }
     };
-    public class CannotStartTestBrowserException : TestBrowserException
+    public class CannotStartBrowserException : TestBrowserException
     {
-        public CannotStartTestBrowserException()
+        public CannotStartBrowserException()
             : this("Can not start test browser.")
         {
 
         }
-        public CannotStartTestBrowserException(string message)
+        public CannotStartBrowserException(string message)
             : base(message)
         {
 
         }
     };
-    public class CannotAttachTestBrowserException : TestBrowserException
+    public class CannotAttachBrowserException : TestBrowserException
     {
-        public CannotAttachTestBrowserException()
+        public CannotAttachBrowserException()
             : this("Can not hook test browser.")
         {
         }
-        public CannotAttachTestBrowserException(string message)
+        public CannotAttachBrowserException(string message)
             : base(message)
         {
 
         }
     };
-    public class CannotActiveTestBrowserException : TestBrowserException
+    public class CannotActiveBrowserException : TestBrowserException
     {
-        public CannotActiveTestBrowserException()
+        public CannotActiveBrowserException()
             : this("Can not active test browser.")
         {
 
         }
-        public CannotActiveTestBrowserException(string message)
+        public CannotActiveBrowserException(string message)
             : base(message)
         {
 
         }
     };
 
-    public class CannotStopTestBrowserException : TestBrowserException
+    public class CannotStopBrowserException : TestBrowserException
     {
-        public CannotStopTestBrowserException()
+        public CannotStopBrowserException()
             : this("Can not stop test browser.")
         {
 
         }
 
-        public CannotStopTestBrowserException(string message)
+        public CannotStopBrowserException(string message)
             : base(message)
         {
 

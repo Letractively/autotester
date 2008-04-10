@@ -371,7 +371,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
-                    throw new CannotStartTestBrowserException("Can not start test browser.");
+                    throw new CannotStartBrowserException("Can not start test browser.");
                 }
 
             }
@@ -381,7 +381,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotStartTestBrowserException("Can not start Internet explorer: " + ex.Message);
+                throw new CannotStartBrowserException("Can not start Internet explorer: " + ex.Message);
             }
 
         }
@@ -395,7 +395,7 @@ namespace Shrinerain.AutoTester.Core
             string title;
             if (browserTitle == null || String.IsNullOrEmpty(browserTitle.ToString()))
             {
-                throw new CannotAttachTestBrowserException("Browser title can not be empty.");
+                throw new CannotAttachBrowserException("Browser title can not be empty.");
             }
             else
             {
@@ -423,7 +423,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
-                    throw new CannotAttachTestBrowserException("Can not find test browser.");
+                    throw new CannotAttachBrowserException("Can not find test browser.");
                 }
 
             }
@@ -433,7 +433,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not find test browser: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not find test browser: " + ex.Message);
             }
         }
 
@@ -452,7 +452,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotStopTestBrowserException("Can not close browser: " + ex.Message);
+                throw new CannotStopBrowserException("Can not close browser: " + ex.Message);
             }
         }
 
@@ -502,7 +502,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -512,7 +512,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotActiveTestBrowserException("Can not move browser: " + ex.Message);
+                throw new CannotActiveBrowserException("Can not move browser: " + ex.Message);
             }
         }
 
@@ -523,7 +523,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             if (width < 1)
@@ -542,7 +542,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotActiveTestBrowserException("Can not resize browser: " + ex.Message);
+                throw new CannotActiveBrowserException("Can not resize browser: " + ex.Message);
             }
         }
 
@@ -554,7 +554,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -575,7 +575,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -595,7 +595,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -616,7 +616,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -637,7 +637,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             if (seconds > 0)
@@ -664,7 +664,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new TestBrowserNotFoundException(ex.Message);
+                throw new BrowserNotFoundException(ex.Message);
             }
         }
 
@@ -676,7 +676,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -691,7 +691,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new TestBrowserNotFoundException(ex.Message);
+                throw new BrowserNotFoundException(ex.Message);
             }
         }
 
@@ -704,7 +704,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             WaitDocumentLoadComplete();
@@ -719,7 +719,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             int times = 0;
@@ -760,7 +760,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -769,7 +769,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotActiveTestBrowserException("Can not MAX Internet Explorer: " + ex.Message);
+                throw new CannotActiveBrowserException("Can not MAX Internet Explorer: " + ex.Message);
             }
         }
 
@@ -780,7 +780,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -792,7 +792,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotActiveTestBrowserException("Can not Active browser: " + ex.Message);
+                throw new CannotActiveBrowserException("Can not Active browser: " + ex.Message);
             }
         }
 
@@ -849,7 +849,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotStopTestBrowserException("Can not close dialog: " + ex.Message);
+                    throw new CannotStopBrowserException("Can not close dialog: " + ex.Message);
                 }
             }
         }
@@ -866,7 +866,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -886,7 +886,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -907,7 +907,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -928,7 +928,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -949,7 +949,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -1207,7 +1207,7 @@ namespace Shrinerain.AutoTester.Core
 
             }
 
-            throw new TestBrowserNotFoundException();
+            throw new BrowserNotFoundException();
 
         }
 
@@ -1248,7 +1248,7 @@ namespace Shrinerain.AutoTester.Core
                     }
                     catch (Exception ex)
                     {
-                        throw new TestBrowserNotFoundException(ex.Message);
+                        throw new BrowserNotFoundException(ex.Message);
                     }
                 }
                 else
@@ -1298,7 +1298,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (ieHandle == IntPtr.Zero)
             {
-                throw new CannotAttachTestBrowserException("IE handle can not be 0.");
+                throw new CannotAttachBrowserException("IE handle can not be 0.");
             }
 
             //try until timeout, the default is 120s.
@@ -1327,7 +1327,7 @@ namespace Shrinerain.AutoTester.Core
                 Thread.Sleep(_interval * 1000);
             }
 
-            throw new CannotAttachTestBrowserException();
+            throw new CannotAttachBrowserException();
         }
 
         /* InternetExplorer GetTopmostBrowser()
@@ -1468,7 +1468,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotAttachTestBrowserException("Can not set browser: " + ex.Message);
+                    throw new CannotAttachBrowserException("Can not set browser: " + ex.Message);
                 }
                 finally
                 {
@@ -1491,7 +1491,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotAttachTestBrowserException("Can not get previous handle: " + ex.Message);
+                    throw new CannotAttachBrowserException("Can not get previous handle: " + ex.Message);
                 }
             }
         }
@@ -1558,7 +1558,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_ie == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -1570,7 +1570,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not get the rect: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not get the rect: " + ex.Message);
             }
         }
 
@@ -1585,13 +1585,13 @@ namespace Shrinerain.AutoTester.Core
 
             if (_mainHandle == IntPtr.Zero)
             {
-                throw new TestBrowserNotFoundException("Can not get main handle of test browser.");
+                throw new BrowserNotFoundException("Can not get main handle of test browser.");
             }
 
             _shellDocHandle = GetShellDocHandle(_mainHandle);
             if (_shellDocHandle == IntPtr.Zero)
             {
-                throw new TestBrowserNotFoundException("Can not get shell handle of test browser");
+                throw new BrowserNotFoundException("Can not get shell handle of test browser");
             }
 
 
@@ -1608,7 +1608,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
-                    throw new CannotAttachTestBrowserException("Can not get warn bar size.");
+                    throw new CannotAttachBrowserException("Can not get warn bar size.");
                 }
 
             }
@@ -1618,7 +1618,7 @@ namespace Shrinerain.AutoTester.Core
             _ieServerHandle = GetIEServerHandle(_shellDocHandle);
             if (_ieServerHandle == IntPtr.Zero)
             {
-                throw new TestBrowserNotFoundException("Can not get ie_server handle of test browser");
+                throw new BrowserNotFoundException("Can not get ie_server handle of test browser");
             }
 
             try
@@ -1633,7 +1633,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
-                    throw new CannotAttachTestBrowserException("Can not get client size of test browser.");
+                    throw new CannotAttachBrowserException("Can not get client size of test browser.");
                 }
 
             }
@@ -1643,7 +1643,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not get client size of test browser: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not get client size of test browser: " + ex.Message);
             }
 
         }
@@ -1669,7 +1669,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotAttachTestBrowserException("Can not get scroll size: " + ex.Message);
+                    throw new CannotAttachBrowserException("Can not get scroll size: " + ex.Message);
                 }
             }
         }
@@ -1845,7 +1845,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not register Quit event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register Quit event: " + ex.Message);
             }
         }
 
@@ -1861,7 +1861,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not register Downloadbegin event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register Downloadbegin event: " + ex.Message);
             }
         }
 
@@ -1878,7 +1878,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not register new window event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register new window event: " + ex.Message);
             }
 
         }
@@ -1903,7 +1903,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not register document complete event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register document complete event: " + ex.Message);
             }
         }
 
@@ -1921,7 +1921,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not register Rect change event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register Rect change event: " + ex.Message);
             }
         }
 
@@ -1938,7 +1938,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not register navigate event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register navigate event: " + ex.Message);
             }
         }
 
@@ -1985,7 +1985,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Can not attach new window: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not attach new window: " + ex.Message);
             }
 
         }
@@ -2005,7 +2005,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException(ex.Message);
+                throw new CannotAttachBrowserException(ex.Message);
             }
         }
 
@@ -2028,7 +2028,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Error OnDownLoadBegin: " + ex.Message);
+                throw new CannotAttachBrowserException("Error OnDownLoadBegin: " + ex.Message);
             }
 
         }
@@ -2073,7 +2073,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Error OnDocumentLoadComplete: " + ex.Message);
+                throw new CannotAttachBrowserException("Error OnDocumentLoadComplete: " + ex.Message);
             }
 
         }
@@ -2094,7 +2094,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachTestBrowserException("Error OnRectChanged: " + ex.Message);
+                throw new CannotAttachBrowserException("Error OnRectChanged: " + ex.Message);
             }
         }
 

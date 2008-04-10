@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Threading;
 
 using Shrinerain.AutoTester.HTMLUtility;
+using Shrinerain.AutoTester.MSAAUtility;
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Framework;
@@ -88,11 +89,15 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+
+            MSAATest();
+            return;
+
             Google();
             return;
 
 
-          //  IntPtr handle = Win32API.FindWindow(null, "Microsoft Internet Explorer");
+            //  IntPtr handle = Win32API.FindWindow(null, "Microsoft Internet Explorer");
 
             qidian();
             return;
@@ -196,20 +201,17 @@ namespace Shrinerain.AutoTester
 
             //test.Pool.GetObjectByType("textbox", "用户名");
 
-<<<<<<< .mine
             //test.Map.TextBox("用户名").Input("shrinerain");
             //test.Map.TextBox("密码").Input("jyoicq");
             test.Map.Button("登录").Click();
             //test.Map.Link("搜书").Click();
             test.Map.MsgBox().Click();
             //test.Map.Link("个人空间").Click();
-=======
             test.Map.TextBox("用户名").Input("shrinerain");
             test.Map.TextBox("密码").Input("jyoicq");
             test.Map.Button("登录").Click();
             test.Map.Link("搜书").Click();
             //test.Map.Link("个人空间").Click();
->>>>>>> .r165
             //test.Map.TextBox("关键字").Input("变身");
             //test.Map.Button("搜索").Click();
 
@@ -247,6 +249,23 @@ namespace Shrinerain.AutoTester
             test.Map.Button("Google Search").Click();
             //test.Browser.WaitForNextPage();
             test.Map.TextBox("name=q").Input("niuniu");
+
+        }
+
+        public static void MSAATest()
+        {
+            TestBrowser browser = new TestBrowser();
+            string url = @"http://cnst50063845:8080/qcbin/start_a.htm";
+            //browser.Load(url);
+            string title = "Mercury Quality Center 9.0";
+            browser.Find(title);
+            browser.Wait(3);
+
+            MSAATestObjectPool pool = new MSAATestObjectPool();
+            pool.SetTestBrowser(browser);
+
+            MSAATestGUIObject obj = (MSAATestGUIObject)pool.GetObjectByType("button", "Authenticate", 0);
+            obj.Hover();
 
         }
     }

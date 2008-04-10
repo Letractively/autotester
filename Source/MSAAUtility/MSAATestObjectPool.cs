@@ -32,6 +32,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region fields
 
+        private struct MSAAElement
+        {
+            public IAccessible _iAcc;
+            public int _childID;
+        }
+
+        private List<MSAAElement> _allElementsList;
+
         private TestApp _testApp;
         private TestBrowser _testBrowser;
         private bool _isBrowser = false;
@@ -56,6 +64,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
         //current object used.
         private TestObject _testObj;
         private Object _cacheObj;
+
+        private IAccessible _curIACC;
+        private int _curChildID;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
         private int _maxWaitSeconds = 30;
@@ -117,12 +128,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             if (!_isBrowser && this._testApp == null)
             {
-                throw new TestAppNotFoundExpcetion("Can not find test app.");
+                throw new AppNotFoundExpcetion("Can not find test app.");
             }
 
             if (_isBrowser && this._testBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find test browser.");
+                throw new BrowserNotFoundException("Can not find test browser.");
             }
 
             if (type == null || type.Trim() == "")
@@ -190,22 +201,22 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     GetRootMSAAInterface();
 
                     //check object by type
-                    //if (CheckObjectByType(_tempElement, typeValue, values, simPercent))
-                    //{
-                    //    leftIndex--;
-                    //}
+                    if (CheckObjectByType(ref _curIACC, ref _curChildID, typeValue, values, simPercent))
+                    {
+                        leftIndex--;
+                    }
 
                     ////if index is 0 , that means we found the object.
-                    //if (leftIndex < 0)
-                    //{
-                    //    _testObj = BuildObjectByType(_tempElement, typeValue);
+                    if (leftIndex < 0)
+                    {
+                        _testObj = BuildObjectByType(_curIACC, _curChildID, typeValue);
 
-                    //    ObjectCache.InsertObjectToCache(key, _testObj);
+                        ObjectCache.InsertObjectToCache(key, _testObj);
 
-                    //    OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
+                        //OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
 
-                    //    return _testObj;
-                    //}
+                        return _testObj;
+                    }
 
 
                 }
@@ -294,39 +305,163 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region private methods
 
-        private static bool CheckObjectByType(IAccessible iAcc, int childID, MSAATestObjectType type, String value, int simPercent)
+        private bool CheckObjectByType(ref IAccessible iAcc, ref int childID, MSAATestObjectType type, String value, int simPercent)
         {
+            iAcc = null;
+            childID = 0;
+
             if (type == MSAATestObjectType.Unknow)
             {
                 return false;
             }
             else if (type == MSAATestObjectType.Button)
             {
-                return CheckButtonObject(iAcc, childID, value, simPercent);
+                return CheckButtonObject(ref iAcc, ref childID, value, simPercent);
             }
 
             return false;
         }
 
-        private static bool CheckButtonObject(IAccessible iAcc, int childID, String value, int simPercent)
+        private bool CheckButtonObject(ref IAccessible iAcc, ref int childID, String value, int simPercent)
         {
-            if (GetObjectType(iAcc, childID) != MSAATestObjectType.Button)
+            //firstly, get all elements in the test app.
+            GetAllMSAAElements();
+
+            foreach (MSAAElement e in _allElementsList)
             {
-                return false;
+                iAcc = e._iAcc;
+                childID = e._childID;
+
+                if (GetObjectType(iAcc, childID) != MSAATestObjectType.Button)
+                {
+                    continue;
+                }
+
+                string name = MSAATestObject.GetName(iAcc, childID);
+
+                if (!String.IsNullOrEmpty(name))
+                {
+                    if (Searcher.IsStringLike(value, name, simPercent))
+                    {
+                        return true;
+                    }
+                }
             }
 
-            string name = MSAATestObject.GetName(iAcc, childID);
+            return false;
 
-            if (String.IsNullOrEmpty(name))
+        }
+
+
+        private static MSAATestGUIObject BuildObjectByType(IAccessible iAcc, int childID, MSAATestObjectType type)
+        {
+            return new MSAATestGUIObject(iAcc, childID);
+        }
+
+        /* List<MSAAElement> GetAllMSAAElements()
+         * Get all MSAA elements in the application under test.
+         */
+        private List<MSAAElement> GetAllMSAAElements()
+        {
+            if (_rootMSAAInterface == null)
             {
-                return false;
+                GetRootMSAAInterface();
             }
-            else
+
+            try
             {
-                return Searcher.IsStringLike(value, name, simPercent);
+                _allElementsList = GetChildrenMSAAElements(_rootMSAAInterface, 0);
+
+                return _allElementsList;
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                if (_isBrowser)
+                {
+                    throw new CannotAttachBrowserException("Can not get MSAA elements: " + ex.Message);
+                }
+                else
+                {
+                    throw new CannotAttachAppException("Can not get MSAA elements: " + ex.Message);
+                }
             }
         }
 
+        /* List<MSAAElement> GetChildrenMSAAElements(IAccessible iACC)
+         * get all the children of the expected IAccessible.
+         */
+        private List<MSAAElement> GetChildrenMSAAElements(IAccessible iACC, int childID)
+        {
+            if (iACC != null)
+            {
+
+                List<MSAAElement> elementsList = new List<MSAAElement>();
+
+                MSAAElement curElement;
+
+                string state = MSAATestObject.GetState(iACC, childID);
+                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                {
+                    //add self.
+                    curElement = new MSAAElement();
+                    curElement._iAcc = iACC;
+                    curElement._childID = childID;
+                    elementsList.Add(curElement);
+                }
+
+                int childCount = childID > 0 ? 0 : iACC.accChildCount;
+
+                if (childCount > 0)
+                {
+                    for (int i = 1; i <= childCount; i++)
+                    {
+                        List<MSAAElement> childrenList = null;
+
+                        object tmpChildID = (object)i;
+
+                        try
+                        {
+                            IAccessible childIACC = (IAccessible)iACC.get_accChild(tmpChildID);
+
+                            state = MSAATestObject.GetState(childIACC, 0);
+
+                            //child also support IACC, check each child.
+                            if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                            {
+                                childrenList = GetChildrenMSAAElements(childIACC, 0);
+                            }
+                        }
+                        catch
+                        {
+                            state = MSAATestObject.GetState(iACC, i);
+
+                            if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                            {
+                                childrenList = GetChildrenMSAAElements(iACC, i);
+                            }
+                        }
+                        finally
+                        {
+                            if (childrenList != null)
+                            {
+                                foreach (MSAAElement e in childrenList)
+                                {
+                                    elementsList.Add(e);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return elementsList;
+            }
+
+            return null;
+        }
 
         /* IAccessible GetRootMSAAInterface()
          * Get MSAA interface for app or browser.

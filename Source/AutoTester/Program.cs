@@ -251,14 +251,17 @@ namespace Shrinerain.AutoTester
         public static void MSAATest()
         {
             TestBrowser tb = new TestBrowser();
-            string url = @"www.qidian.com";
-            tb.Load(url);
+           // string url = @"www.google.cn";
+            //tb.Load(url);
+            tb.Find("Google");
 
             MSAATestObjectPool pool = new MSAATestObjectPool();
             pool.SetTestBrowser(tb);
 
 
-            MSAATestGUIObject obj = (MSAATestGUIObject)pool.GetObjectByType("button", "ËÑË÷", 0);
+            MSAATestGUIObject obj = (MSAATestGUIObject)pool.GetObjectByType("button", "Google ËÑË÷", 0);
+            obj.Hover();
+            
 
         }
     }

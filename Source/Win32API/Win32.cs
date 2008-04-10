@@ -1098,8 +1098,8 @@ namespace Shrinerain.AutoTester.Win32
         public enum IACC : uint
         {
             //constant for MSAA interface.
-            OBJID_WINDOW = 0,
-            OBJID_CLIENT = 0xFFFFFFFC,
+            OBJID_WINDOW = (uint)0,
+            OBJID_CLIENT = (uint)0xFFFFFFFC,
         }
 
         public delegate bool EnumWindowEventHandler(IntPtr hWnd, Int32 lParam);
@@ -1125,6 +1125,12 @@ namespace Shrinerain.AutoTester.Win32
 
         //GUID of IAccessible interface
         public static Guid IACCUID = new Guid("618736e0-3c3d-11cf-810c-00aa00389b71");
+
+        [DllImport("oleacc.dll")]
+        public static extern uint GetStateText(uint dwStateBit, [Out] StringBuilder lpszStateBit, uint cchStateBitMax);
+
+        [DllImport("oleacc.dll")]
+        public static extern uint GetRoleText(uint dwRole, [Out] StringBuilder lpszRole, uint cchRoleMax);
 
         [DllImport("oleacc.dll")]
         public static extern IntPtr AccessibleObjectFromPoint(POINT pt, [Out, MarshalAs(UnmanagedType.Interface)] out IAccessible accObj, [Out] out object ChildID);

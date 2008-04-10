@@ -319,7 +319,7 @@ namespace Shrinerain.AutoTester.Core
                     }
                 }
 
-                throw new TestAppNotFoundExpcetion();
+                throw new AppNotFoundExpcetion();
             }
             catch (TestException)
             {
@@ -327,7 +327,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new TestAppNotFoundExpcetion("Can not find test app: " + ex.Message);
+                throw new AppNotFoundExpcetion("Can not find test app: " + ex.Message);
             }
 
         }
