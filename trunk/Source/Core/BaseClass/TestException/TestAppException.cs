@@ -41,19 +41,19 @@ namespace Shrinerain.AutoTester.Core
 
     };
 
-    public class TestAppNotFoundExpcetion : TestAppException
+    public class AppNotFoundExpcetion : TestAppException
     {
-        public TestAppNotFoundExpcetion()
+        public AppNotFoundExpcetion()
             : this("Can not find test app.")
         {
         }
 
-        public TestAppNotFoundExpcetion(String message)
+        public AppNotFoundExpcetion(String message)
             : base(message)
         {
         }
 
-        public TestAppNotFoundExpcetion(string appName, string message)
+        public AppNotFoundExpcetion(string appName, string message)
             : base(appName, message)
         {
         }

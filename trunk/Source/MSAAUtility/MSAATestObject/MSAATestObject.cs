@@ -22,6 +22,7 @@ using Accessibility;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Interface;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
@@ -293,7 +294,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                return iAcc.get_accRole(childID).ToString();
+                StringBuilder sb = new StringBuilder(64);
+                Win32API.GetRoleText(Convert.ToUInt32(iAcc.get_accRole(childID)), sb, 64);
+                return sb.ToString();
             }
             catch
             {
@@ -353,7 +356,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                return iAcc.get_accState(childID).ToString();
+                StringBuilder sb = new StringBuilder(64);
+                Win32API.GetStateText(Convert.ToUInt32(iAcc.get_accState(childID)), sb, 64);
+                return sb.ToString();
             }
             catch
             {
@@ -429,21 +434,27 @@ namespace Shrinerain.AutoTester.MSAAUtility
         protected virtual void GetMSAAInfo()
         {
 
-            _name = this._iAcc.get_accName(_selfID);
-            _defAction = this._iAcc.get_accDefaultAction(_selfID);
-            _description = this._iAcc.get_accDescription(_selfID);
-
-            //if the self id is 0, means the current MSAA interface is belong to this object, or belong to it's parent.
-            //then try to find the parent. 
-            if (Convert.ToInt32(_selfID) == 0)
+            try
             {
-                _parent = (IAccessible)this._iAcc.accParent;
-                _childCount = this._iAcc.accChildCount;
-            }
+                _name = this._iAcc.get_accName(_selfID);
+                _defAction = this._iAcc.get_accDefaultAction(_selfID);
+                _description = this._iAcc.get_accDescription(_selfID);
 
-            _role = this._iAcc.get_accRole(_selfID).ToString();
-            _state = this._iAcc.get_accState(_selfID).ToString();
-            _value = this._iAcc.get_accValue(_selfID).ToString();
+                //if the self id is 0, means the current MSAA interface is belong to this object, or belong to it's parent.
+                //then try to find the parent. 
+                if (Convert.ToInt32(_selfID) == 0)
+                {
+                    _parent = (IAccessible)this._iAcc.accParent;
+                    _childCount = this._iAcc.accChildCount;
+                }
+
+                _role = GetRole(this._iAcc, Convert.ToInt32(_selfID));
+                _state = GetState(this._iAcc, Convert.ToInt32(_selfID));
+                _value = this._iAcc.get_accValue(_selfID).ToString();
+            }
+            catch
+            {
+            }
 
         }
 

@@ -243,7 +243,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (String.IsNullOrEmpty(id))
@@ -309,7 +309,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (string.IsNullOrEmpty(name))
@@ -388,7 +388,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (index < 0)
@@ -452,7 +452,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(value))
@@ -618,7 +618,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (properties == null || values == null)
@@ -747,7 +747,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(regexStr))
@@ -860,7 +860,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (type == null || type.Trim() == "")
@@ -1137,7 +1137,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (String.IsNullOrEmpty(value))
@@ -1196,7 +1196,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             string key = GetKey(x.ToString() + " " + y.ToString());
@@ -1246,7 +1246,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             if (width < 1 || height < 1)
@@ -1348,7 +1348,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             return null;
@@ -1363,7 +1363,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             return null;
@@ -1377,7 +1377,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             //firstly, get all IHTMLElement from the browser
@@ -1432,7 +1432,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (_htmlTestBrowser == null)
             {
-                throw new TestBrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             try

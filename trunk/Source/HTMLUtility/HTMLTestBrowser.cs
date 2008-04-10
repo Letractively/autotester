@@ -56,7 +56,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (_HTMLDom == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
             try
             {
@@ -80,7 +80,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             if (_HTMLDom == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
             try
             {
@@ -105,7 +105,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_HTMLDom == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try
@@ -130,7 +130,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (_HTMLDom == null)
             {
-                throw new TestBrowserNotFoundException();
+                throw new BrowserNotFoundException();
             }
 
             try

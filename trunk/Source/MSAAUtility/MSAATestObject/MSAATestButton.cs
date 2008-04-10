@@ -6,5 +6,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 {
     class MSAATestButton
     {
+
     }
 }
