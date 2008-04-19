@@ -1095,11 +1095,11 @@ namespace Shrinerain.AutoTester.Win32
         }
 
         //constant for IACC.
-        public enum IACC : uint
+        public enum IACC : int
         {
             //constant for MSAA interface.
-            OBJID_WINDOW = (uint)0,
-            OBJID_CLIENT = (uint)0xFFFFFFFC,
+            OBJID_WINDOW = 0,
+            OBJID_CLIENT = -4,
         }
 
         public delegate bool EnumWindowEventHandler(IntPtr hWnd, Int32 lParam);
@@ -1137,11 +1137,10 @@ namespace Shrinerain.AutoTester.Win32
 
         [DllImport("oleacc.dll", ExactSpelling = true, PreserveSig = false)]
         [return: MarshalAs(UnmanagedType.Interface)]
-        public static extern object AccessibleObjectFromWindow(
-            IntPtr hwnd,
-            uint dwObjectID,
-            [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-         ref IAccessible ppvObject);
+        public static extern object AccessibleObjectFromWindow(IntPtr hwnd, int dwObjectID, ref Guid riid, ref IAccessible ppvObject);
+
+        [DllImport("Oleacc.dll")]
+        public static extern int AccessibleChildren(IAccessible paccContainer, int iChildStart, int cChildren, [Out] object[] rgvarChildren, out int pcObtained);
 
         [DllImport("oleacc.dll", PreserveSig = false)]
         [return: MarshalAs(UnmanagedType.Interface)]
