@@ -77,6 +77,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
         //buf to store the key for cache. 
         private static StringBuilder _keySB = new StringBuilder(128);
 
+        //delegate for check methods.
+        private delegate bool CheckObjectDelegate(IAccessible iAcc, int childID, string value, int simPercent);
+
         #endregion
 
         #region properties
@@ -121,7 +124,99 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public object GetObjectByName(string name)
         {
-            throw new NotImplementedException();
+            if (!_isBrowser && this._testApp == null)
+            {
+                throw new AppNotFoundExpcetion("Can not find test app.");
+            }
+
+            if (_isBrowser && this._testBrowser == null)
+            {
+                throw new BrowserNotFoundException("Can not find test browser.");
+            }
+            if (name == null || name.Trim().Length == 0)
+            {
+                throw new ObjectNotFoundException("Can not find object by name: name can not be empty.");
+            }
+            else
+            {
+                name = name.Trim();
+            }
+
+            //try to get object from cache.
+            string key = GetKey(name);
+
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
+            {
+                return _testObj = (TestObject)_cacheObj;
+            }
+
+            //the similar percent to find an object.
+            int simPercent = _defaultPercent;
+
+            if (_useFuzzySearch)
+            {
+                if (_autoAdjustSimilarPercent)
+                {
+                    simPercent = _similarPercentUpBound;
+                }
+                else
+                {
+                    simPercent = _customSimilarPercent;
+                }
+            }
+
+            //we will try 30s to find an object.
+            int times = 0;
+            while (times <= _maxWaitSeconds)
+            {
+                try
+                {
+                    //get root msaa interface.
+                    GetRootMSAAInterface();
+
+                    //check object by type
+                    if (CheckMSAAElement(ref _curIACC, ref _curChildID, name, simPercent, CheckObjectByName))
+                    {
+                        _testObj = BuildObjectByType(_curIACC, _curChildID, GetObjectType(_curIACC, _curChildID));
+
+                        ObjectCache.InsertObjectToCache(key, _testObj);
+
+                        //OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
+
+                        return _testObj;
+                    }
+
+                }
+                catch (CannotBuildObjectException)
+                {
+                    throw;
+                }
+                catch
+                {
+                    continue;
+                }
+            }
+
+            //not found, sleep for 3 seconds, then try again.
+            times += _interval;
+            Thread.Sleep(_interval * 1000);
+
+            //not found, we will try lower similarity
+            if (_useFuzzySearch && _autoAdjustSimilarPercent)
+            {
+                if (simPercent > _similarPercentLowBound)
+                {
+                    simPercent -= _similarPercentStep;
+                }
+                else
+                {
+                    simPercent = _similarPercentUpBound;
+                }
+            }
+
+
+            throw new ObjectNotFoundException("Can not find object by name: " + name);
+
         }
 
         public object GetObjectByType(string type, string values, int index)
@@ -201,7 +296,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     GetRootMSAAInterface();
 
                     //check object by type
-                    if (CheckObjectByType(ref _curIACC, ref _curChildID, typeValue, values, simPercent))
+                    if (CheckObjectByType(out _curIACC, out _curChildID, typeValue, values, simPercent))
                     {
                         leftIndex--;
                     }
@@ -259,7 +354,70 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public object GetObjectByPoint(int x, int y)
         {
-            throw new NotImplementedException();
+            if (!_isBrowser && this._testApp == null)
+            {
+                throw new AppNotFoundExpcetion("Can not find test app.");
+            }
+
+            if (_isBrowser && this._testBrowser == null)
+            {
+                throw new BrowserNotFoundException("Can not find test browser.");
+            }
+
+            //try to get object from cache.
+            string key = GetKey(x + "," + y);
+
+            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
+            {
+                return _testObj = (TestObject)_cacheObj;
+            }
+
+            //we will try 30s to find an object.
+            int times = 0;
+            while (times <= _maxWaitSeconds)
+            {
+                try
+                {
+                    //get root msaa interface.
+                    GetRootMSAAInterface();
+
+                    Win32API.POINT p = new Win32API.POINT();
+                    p.x = x;
+                    p.y = y;
+
+                    Object childID;
+
+                    Win32API.AccessibleObjectFromPoint(p, out _curIACC, out childID);
+
+                    if (_curIACC != null)
+                    {
+                        _curChildID = Convert.ToInt32(childID);
+
+                        _testObj = BuildObjectByType(_curIACC, _curChildID, GetObjectType(_curIACC, _curChildID));
+
+                        ObjectCache.InsertObjectToCache(key, _testObj);
+
+                        //OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
+
+                        return _testObj;
+                    }
+
+                }
+                catch (CannotBuildObjectException)
+                {
+                    throw;
+                }
+                catch
+                {
+                    continue;
+                }
+
+                //not found, sleep for 3 seconds, then try again.
+                times += _interval;
+                Thread.Sleep(_interval * 1000);
+            }
+
+            throw new ObjectNotFoundException("Can not find object at Point:[" + x + "," + y + "]");
         }
 
         public object GetObjectByRect(int top, int left, int width, int height, string typeStr, bool isPercent)
@@ -305,7 +463,19 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region private methods
 
-        private bool CheckObjectByType(ref IAccessible iAcc, ref int childID, MSAATestObjectType type, String value, int simPercent)
+        private bool CheckObjectByName(IAccessible iAcc, int childID, String name, int simPercent)
+        {
+            if (iAcc != null && childID >= 0 && !String.IsNullOrEmpty(name))
+            {
+                string curName = MSAATestObject.GetName(iAcc, childID);
+
+                return Searcher.IsStringLike(curName, name, simPercent);
+            }
+
+            return false;
+        }
+
+        private bool CheckObjectByType(out IAccessible iAcc, out int childID, MSAATestObjectType type, String value, int simPercent)
         {
             iAcc = null;
             childID = 0;
@@ -316,45 +486,117 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             else if (type == MSAATestObjectType.Button)
             {
-                return CheckButtonObject(ref iAcc, ref childID, value, simPercent);
+                return CheckMSAAElement(ref iAcc, ref childID, value, simPercent, CheckButtonObject);
             }
 
             return false;
         }
 
-        private bool CheckButtonObject(ref IAccessible iAcc, ref int childID, String value, int simPercent)
+        private bool CheckButtonObject(IAccessible iAcc, int childID, String value, int simPercent)
         {
-            //firstly, get all elements in the test app.
-            GetAllMSAAElements();
-
-            foreach (MSAAElement e in _allElementsList)
+            if (iAcc != null && childID >= 0)
             {
-                iAcc = e._iAcc;
-                childID = e._childID;
-
-                if (GetObjectType(iAcc, childID) != MSAATestObjectType.Button)
+                if (GetObjectType(iAcc, childID) == MSAATestObjectType.Button)
                 {
-                    continue;
-                }
+                    string name = MSAATestObject.GetName(iAcc, childID);
 
-                string name = MSAATestObject.GetName(iAcc, childID);
-
-                if (!String.IsNullOrEmpty(name))
-                {
-                    if (Searcher.IsStringLike(value, name, simPercent))
+                    if (!String.IsNullOrEmpty(name))
                     {
-                        return true;
+                        if (Searcher.IsStringLike(value, name, simPercent))
+                        {
+                            return true;
+                        }
                     }
                 }
             }
 
             return false;
-
         }
 
+        private bool CheckMSAAElement(ref IAccessible iAcc, ref int childID, string value, int simPercent, CheckObjectDelegate checkObjDelegate)
+        {
+            if (iAcc == null)
+            {
+                iAcc = GetRootMSAAInterface();
+                childID = 0;
+            }
+
+            if (iAcc != null)
+            {
+                string state = MSAATestObject.GetState(iAcc, childID);
+                string name = MSAATestObject.GetName(iAcc, childID);
+
+                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                {
+                    if (checkObjDelegate(iAcc, childID, value, simPercent))
+                    {
+                        return true;
+                    }
+                }
+
+                int childCount = childID > 0 ? 0 : iAcc.accChildCount;
+
+                if (childCount > 0)
+                {
+                    object[] childrenObj = new object[childCount];
+
+                    int count = 0;
+                    Win32API.AccessibleChildren(iAcc, 0, childCount, childrenObj, out count);
+
+                    for (int i = 0; i < childCount; i++)
+                    {
+                        try
+                        {
+                            IAccessible childIACC = (IAccessible)childrenObj[i];        //iAcc.get_accChild(tmpChildID);
+
+                            if (childIACC != null)
+                            {
+                                state = MSAATestObject.GetState(childIACC, 0);
+
+                                //child also support IACC, check each child.
+                                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                                {
+                                    int tmpID = 0;
+                                    if (CheckMSAAElement(ref childIACC, ref tmpID, value, simPercent, checkObjDelegate))
+                                    {
+                                        iAcc = childIACC;
+                                        childID = tmpID;
+                                        return true;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                state = MSAATestObject.GetState(iAcc, i);
+
+                                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                                {
+                                    if (checkObjDelegate(iAcc, i, value, simPercent))
+                                    {
+                                        childID = i;
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
 
         private static MSAATestGUIObject BuildObjectByType(IAccessible iAcc, int childID, MSAATestObjectType type)
         {
+            if (type == MSAATestObjectType.Button)
+            {
+                return new MSAATestButton(iAcc, childID);
+            }
+
             return new MSAATestGUIObject(iAcc, childID);
         }
 
@@ -365,7 +607,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             if (_rootMSAAInterface == null)
             {
-                GetRootMSAAInterface();
+                _rootMSAAInterface = GetRootMSAAInterface();
             }
 
             try
@@ -471,21 +713,25 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                if (!_isBrowser)
+                if (this._rootMSAAInterface == null)
                 {
-                    Win32API.AccessibleObjectFromWindow(this._testApp.Handle, (uint)Win32API.IACC.OBJID_CLIENT, Win32API.IACCUID, ref this._rootMSAAInterface);
-                }
-                else
-                {
-                    Win32API.AccessibleObjectFromWindow(this._testBrowser.IEServerHandle, (uint)Win32API.IACC.OBJID_CLIENT, Win32API.IACCUID, ref this._rootMSAAInterface);
-                }
-
-                if (this._rootMSAAInterface != null)
-                {
-                    return _rootMSAAInterface;
+                    if (!_isBrowser)
+                    {
+                        Win32API.AccessibleObjectFromWindow(this._testApp.Handle, (int)Win32API.IACC.OBJID_WINDOW, ref Win32API.IACCUID, ref this._rootMSAAInterface);
+                    }
+                    else
+                    {
+                        Win32API.AccessibleObjectFromWindow(this._testBrowser.IEServerHandle, (int)Win32API.IACC.OBJID_WINDOW, ref Win32API.IACCUID, ref this._rootMSAAInterface);
+                    }
                 }
 
-                throw new CannotAttachAppException("Can not get MSAA interface.");
+                if (this._rootMSAAInterface == null)
+                {
+                    throw new CannotAttachAppException("Can not get MSAA interface.");
+                }
+
+                return _rootMSAAInterface;
+
             }
             catch (TestException)
             {
@@ -530,7 +776,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                         }
                         else
                         {
-                            if (action.IndexOf("jump") >= 0)
+                            if (action.IndexOf("Jump") >= 0)
                             {
                                 return MSAATestObjectType.Link;
                             }
@@ -561,6 +807,22 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     else if (role.IndexOf("graphic") >= 0)
                     {
                         return MSAATestObjectType.Image;
+                    }
+                }
+
+                if (!String.IsNullOrEmpty(action))
+                {
+                    if (action.IndexOf("Press") >= 0)
+                    {
+                        return MSAATestObjectType.Button;
+                    }
+                    else if (action.IndexOf("Collapse") >= 0 || action.IndexOf("Expand") >= 0)
+                    {
+                        return MSAATestObjectType.Tree;
+                    }
+                    else if (action.IndexOf("Jump") >= 0)
+                    {
+                        return MSAATestObjectType.Link;
                     }
                 }
             }

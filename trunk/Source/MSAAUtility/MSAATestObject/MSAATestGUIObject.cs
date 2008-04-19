@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+using System.Threading;
 
 using Accessibility;
 
@@ -33,6 +34,17 @@ namespace Shrinerain.AutoTester.MSAAUtility
         protected Rectangle _rect;
         protected Point _centerPoint;
 
+        protected bool _isVisible = true;
+        protected bool _isEnable = true;
+        protected bool _isReadonly = false;
+
+        //sync event to ensure action is finished before next step.
+        protected static AutoResetEvent _actionFinished = new AutoResetEvent(true);
+
+        //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
+        //then we will not see the mouse move.
+        protected bool _sendMsgOnly = false;
+
         #endregion
 
         #region properties
@@ -45,14 +57,16 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #region ctor
 
         public MSAATestGUIObject(IAccessible iAcc)
-            : base(iAcc)
+            : this(iAcc, 0)
         {
-            GetRectOnScreen();
         }
 
         public MSAATestGUIObject(IAccessible parentAcc, int childID)
             : base(parentAcc, childID)
         {
+            this._isEnable = IsEnable();
+            this._isVisible = IsVisible();
+            this._isReadonly = IsReadonly();
             GetRectOnScreen();
         }
 
@@ -62,12 +76,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region IVisible Members
 
-        public Point GetCenterPoint()
+        public virtual Point GetCenterPoint()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public Rectangle GetRectOnScreen()
+        public virtual Rectangle GetRectOnScreen()
         {
             if (this._iAcc != null)
             {
@@ -91,22 +105,57 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
-        public Bitmap GetControlPrint()
+        public virtual Bitmap GetControlPrint()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void Hover()
+        public virtual void Hover()
         {
             MouseOp.MoveTo(_centerPoint);
         }
 
-        #endregion
-
-        public bool IsVisible()
+        public virtual bool IsVisible()
         {
-            return MSAATestObject.IsVisible(this._iAcc, Convert.ToInt32(this._selfID));
+            string state = GetState(this._iAcc, Convert.ToInt32(this._selfID));
+
+            if (String.IsNullOrEmpty(state))
+            {
+                return true;
+            }
+            else
+            {
+                return state.IndexOf("invisible") < 0;
+            }
         }
+
+        public virtual bool IsEnable()
+        {
+            string state = GetState(this._iAcc, Convert.ToInt32(this._selfID));
+
+            if (String.IsNullOrEmpty(state))
+            {
+                return true;
+            }
+            else
+            {
+                return state.IndexOf("unavailable") < 0;
+            }
+        }
+
+        public virtual bool IsReadonly()
+        {
+            string state = GetState(this._iAcc, Convert.ToInt32(this._selfID));
+
+            return true;
+        }
+
+        public virtual void HighLight()
+        {
+
+        }
+
+        #endregion
 
         #endregion
 
