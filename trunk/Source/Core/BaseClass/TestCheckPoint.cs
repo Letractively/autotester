@@ -28,15 +28,17 @@ namespace Shrinerain.AutoTester.Core
 
         #region fields
 
+        protected ITestObjectPool _objPool;
+
         #endregion
 
         #region event
 
         public delegate void _beforeCheckDelegate(String methodName, object[] paras, CheckType type);
-        public event _beforeCheckDelegate OnBeforeTestVP;
+        public event _beforeCheckDelegate OnBeforeCheck;
 
         public delegate void _afterCheckDelegate(bool checkResult, object actualValue, String methodName, object[] paras, CheckType type);
-        public event _afterCheckDelegate OnAfterTestVP;
+        public event _afterCheckDelegate OnAfterCheck;
 
         #endregion
 
@@ -60,7 +62,7 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual bool CheckString(string actualResult, string expectResult, CheckType type)
         {
-            OnBeforeTestVP("PerformStringTest", new object[] { actualResult, expectResult }, type);
+            OnBeforeCheck("CheckString", new object[] { actualResult, expectResult }, type);
 
             bool checkResult = false;
 
@@ -98,12 +100,22 @@ namespace Shrinerain.AutoTester.Core
                     }
                     else if (type == CheckType.Excluded)
                     {
-                        checkResult = actualResult != "" && actualResult.IndexOf(expectResult) <= 0;
+                        checkResult = actualResult != "" && actualResult.IndexOf(expectResult) < 0;
+                    }
+                    else if (type == CheckType.Existent)
+                    {
+                        checkResult = actualResult != "" && actualResult.IndexOf(expectResult) >= 0;
+                    }
+                    else if (type == CheckType.NotExistent)
+                    {
+                        checkResult = actualResult != "" && actualResult.IndexOf(expectResult) < 0;
                     }
                     else if (type == CheckType.Cross)
                     {
                         checkResult = CheckArray(actualResult.Split(' '), expectResult.Split(' '), CheckType.Cross);
                     }
+
+
                 }
 
                 return checkResult;
@@ -114,7 +126,7 @@ namespace Shrinerain.AutoTester.Core
             }
             finally
             {
-                OnAfterTestVP(checkResult, null, "PerformStringTest", new object[] { actualResult, expectResult }, type);
+                OnAfterCheck(checkResult, null, "CheckString", new object[] { actualResult, expectResult }, type);
             }
         }
 
@@ -124,7 +136,7 @@ namespace Shrinerain.AutoTester.Core
         public virtual bool CheckArray(Object[] actualArray, Object[] expectArray, CheckType type)
         {
 
-            OnBeforeTestVP("PerformArrayTest", new object[] { actualArray, expectArray }, type);
+            OnBeforeCheck("CheckArray", new object[] { actualArray, expectArray }, type);
 
             bool checkResult = false;
 
@@ -241,7 +253,7 @@ namespace Shrinerain.AutoTester.Core
             }
             finally
             {
-                OnAfterTestVP(checkResult, null, "PerformArrayTest", new object[] { actualArray, expectArray }, type);
+                OnAfterCheck(checkResult, null, "CheckArray", new object[] { actualArray, expectArray }, type);
             }
         }
 
@@ -293,10 +305,19 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual bool CheckTestObject(Object testObj, Object expectedObject, CheckType type)
         {
-            throw new NotImplementedException();
+            if (type == CheckType.Equal)
+            {
+                return testObj.Equals(expectedObject);
+            }
+            else if (type == CheckType.NotEqual)
+            {
+                return !testObj.Equals(expectedObject);
+            }
+
+            return false;
         }
 
-        /* bool PerformPropertyTest(object testObj, string vpProperty, object expectResult, VPCheckType type, out object actualResult)
+        /* bool CheckProperty(object testObj, string vpProperty, object expectResult, VPCheckType type, out object actualResult)
          * Check a proerpty of a test object.
          */
         public virtual bool CheckProperty(object testObj, string vpProperty, object expectResult, CheckType type, out object actualResult)
@@ -342,7 +363,7 @@ namespace Shrinerain.AutoTester.Core
             return false;
         }
 
-        /* bool PerformFileTest(String actualFile, String expectedFile, VPCheckType type)
+        /* bool CheckFile(String actualFile, String expectedFile, VPCheckType type)
          * Check two files.
          * 
          * type should be :
@@ -518,6 +539,11 @@ namespace Shrinerain.AutoTester.Core
         public virtual bool CheckNetwork(object testObj, object expectResult, CheckType type, out object actualNetwork)
         {
             throw new NotImplementedException();
+        }
+
+        public virtual void SetTestObjectPool(ITestObjectPool pool)
+        {
+            this._objPool = pool;
         }
 
         #endregion

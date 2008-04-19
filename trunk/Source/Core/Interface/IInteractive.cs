@@ -28,5 +28,6 @@ namespace Shrinerain.AutoTester.Core
 
         //for a button, the default action is "click"
         void DoAction(object parameter);
+
     }
 }
