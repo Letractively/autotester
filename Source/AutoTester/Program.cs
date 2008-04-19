@@ -90,24 +90,19 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
-            MSAATest();
+            Google();
 
             return;
 
-            IntPtr handle = Win32API.FindWindow("Maxthon2_Frame", null);
+            MSAATest();
 
-            ScreenCaptruer.SaveControlPrint(handle, "Z:\\1.jpg");
-            ScreenCaptruer.SaveScreenPrint("z:\\2.jpg");// .SaveScreenPrint("z:\\1.jpg");
+            return;
 
             //Console.WriteLine(ScreenWords.GetWords(20,30));
 
             return;
 
             qidian();
-
-            return;
-
-            Google();
 
             return;
 
@@ -201,8 +196,9 @@ namespace Shrinerain.AutoTester
             //Console.WriteLine("Date: {0:o}", DateTime.Now);
 
             test.Map.TextBox().Input("shrinerain");
-            test.Map.Button("Google Search").Click();
 
+
+            test.Map.Button("Google ËÑË÷").Click();
             Console.WriteLine(test.Browser.GetLoadSeconds());
             Console.ReadLine();
         }
@@ -251,7 +247,7 @@ namespace Shrinerain.AutoTester
         public static void MSAATest()
         {
             TestBrowser tb = new TestBrowser();
-           // string url = @"www.google.cn";
+            // string url = @"www.google.cn";
             //tb.Load(url);
             tb.Find("Google");
 
@@ -261,7 +257,7 @@ namespace Shrinerain.AutoTester
 
             MSAATestGUIObject obj = (MSAATestGUIObject)pool.GetObjectByType("button", "Google ËÑË÷", 0);
             obj.Hover();
-            
+
 
         }
     }
