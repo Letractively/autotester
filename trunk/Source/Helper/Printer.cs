@@ -174,7 +174,7 @@ namespace Shrinerain.AutoTester.Helper
                 try
                 {
                     //get MSAA interface for copy count.
-                    Win32API.AccessibleObjectFromWindow(_copyCountHandle, (uint)Win32API.IACC.OBJID_CLIENT, Win32API.IACCUID, ref _paccCopyCount);
+                    Win32API.AccessibleObjectFromWindow(_copyCountHandle, (int)Win32API.IACC.OBJID_CLIENT, ref Win32API.IACCUID, ref _paccCopyCount);
 
                     if (_paccCopyCount != null)
                     {
@@ -205,7 +205,7 @@ namespace Shrinerain.AutoTester.Helper
                 try
                 {
                     //get MSAA interface for copy count.
-                    Win32API.AccessibleObjectFromWindow(_copyCountHandle, (uint)Win32API.IACC.OBJID_CLIENT, Win32API.IACCUID, ref _paccCopyCount);
+                    Win32API.AccessibleObjectFromWindow(_copyCountHandle, (int)Win32API.IACC.OBJID_CLIENT, ref Win32API.IACCUID, ref _paccCopyCount);
 
                     if (_paccCopyCount != null)
                     {
@@ -278,7 +278,7 @@ namespace Shrinerain.AutoTester.Helper
         {
             if (_printerListHandle != IntPtr.Zero)
             {
-                Win32API.AccessibleObjectFromWindow(_printerListHandle, (uint)Win32API.IACC.OBJID_CLIENT, Win32API.IACCUID, ref _paccPrintList);
+                Win32API.AccessibleObjectFromWindow(_printerListHandle, (int)Win32API.IACC.OBJID_CLIENT, ref Win32API.IACCUID, ref _paccPrintList);
                 return _paccPrintList;
             }
 
