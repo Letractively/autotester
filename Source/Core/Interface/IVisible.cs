@@ -31,5 +31,13 @@ namespace Shrinerain.AutoTester.Core
 
         //move mouse to the top of control
         void Hover();
+
+        //high light the object.
+        void HighLight();
+
+        //status of visible object.
+        bool IsVisible();
+        bool IsEnable();
+        bool IsReadonly();
     }
 }

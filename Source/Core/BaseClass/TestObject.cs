@@ -41,28 +41,20 @@ namespace Shrinerain.AutoTester.Core
 
         #region public method
 
-        /*  object GetPropertyByName(string propertyName)
+        /*  object GetProperty(string propertyName)
          *  get the expected property value.
          */
         public virtual object GetProperty(string propertyName)
         {
-            throw new PropertyNotFoundException("Error: Can not find the property: " + propertyName);
+            throw new PropertyNotFoundException("Can not find the property: " + propertyName);
         }
 
-        /* SetPropertyByName(string propertyName, object value)
+        /* bool SetProperty(string propertyName, object value)
          * set the expected property, return true if successful.
          */
         public virtual bool SetProperty(string propertyName, object value)
         {
-            throw new PropertyNotFoundException("Error: Can not find the property: " + propertyName);
-        }
-
-        /* void HightLight()
-         * highlight the object, we can see a red rectangle around the object.
-         */
-        public virtual void HighLight()
-        {
-            throw new CannotHighlightObjectException();
+            throw new PropertyNotFoundException("Can not find the property: " + propertyName);
         }
 
         #endregion

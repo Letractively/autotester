@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -50,6 +50,7 @@
     <Compile Include="BaseClass\TestException\TestBrowserException.cs" />
     <Compile Include="BaseClass\TestException\TestDataExpception.cs" />
     <Compile Include="BaseClass\TestException\TestFrameworkException.cs" />
+    <Compile Include="BaseClass\TestException\TestInterfaceException.cs" />
     <Compile Include="BaseClass\TestException\TestLogException.cs" />
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
     <Compile Include="BaseClass\TestCheckPoint.cs" />
