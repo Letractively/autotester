@@ -129,7 +129,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!IsReady() || !_isEnable || !_isVisible || _isReadOnly)
+                if (!IsReady() || !_isEnable || !_isVisible || _isReadonly)
                 {
                     throw new CannotPerformActionException("Checkbox is not enabled.");
                 }

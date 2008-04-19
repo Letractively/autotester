@@ -197,7 +197,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public override void Hover()
         {
-            if (!_isEnable || !_isVisible || _isReadOnly)
+            if (!_isEnable || !_isVisible || _isReadonly)
             {
                 throw new CannotPerformActionException("Listbox is not enabled.");
             }
