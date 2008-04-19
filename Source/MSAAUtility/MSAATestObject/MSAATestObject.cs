@@ -30,6 +30,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
     public enum MSAATestObjectType
     {
         Unknow = 0,
+        Any,
         Label,
         Button,
         CheckBox,
@@ -44,6 +45,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         FileDialog,
         Menu,
         Tab,
+        Tree,
         ScrollBar
     }
 
@@ -292,128 +294,190 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public static String GetRole(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                StringBuilder sb = new StringBuilder(64);
-                Win32API.GetRoleText(Convert.ToUInt32(iAcc.get_accRole(childID)), sb, 64);
-                return sb.ToString();
+                int childCount = iAcc.accChildCount;
+                if (childID <= childCount)
+                {
+                    try
+                    {
+                        StringBuilder sb = new StringBuilder(64);
+                        Win32API.GetRoleText(Convert.ToUInt32(iAcc.get_accRole(childID)), sb, 64);
+                        return sb.ToString();
+                    }
+                    catch
+                    {
+                        return "";
+                    }
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
         }
 
         public static String GetValue(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                return iAcc.get_accValue(childID).ToString();
+                int childCount = iAcc.accChildCount;
+                if (childID <= childCount)
+                {
+                    try
+                    {
+                        return iAcc.get_accValue(childID).ToString();
+                    }
+                    catch
+                    {
+                        return "";
+                    }
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
         }
 
         public static String GetName(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                return iAcc.get_accName(childID).ToString();
+                int childCount = iAcc.accChildCount;
+                if (childID <= childCount)
+                {
+                    try
+                    {
+                        return iAcc.get_accName(childID).ToString();
+                    }
+                    catch
+                    {
+                        return "";
+                    }
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
         }
 
         public static String GetDefAction(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                return iAcc.get_accDefaultAction(childID).ToString();
+                int childCount = iAcc.accChildCount;
+                if (childID <= childCount)
+                {
+                    try
+                    {
+                        return iAcc.get_accDefaultAction(childID).ToString();
+                    }
+                    catch
+                    {
+                        return "";
+                    }
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
         }
 
         public static String GetDesc(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                return iAcc.get_accDescription(childID).ToString();
+                int childCount = iAcc.accChildCount;
+                if (childID <= childCount)
+                {
+                    try
+                    {
+                        return iAcc.get_accDescription(childID).ToString();
+                    }
+                    catch
+                    {
+                        return "";
+                    }
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
         }
 
         public static String GetState(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                StringBuilder sb = new StringBuilder(64);
-                Win32API.GetStateText(Convert.ToUInt32(iAcc.get_accState(childID)), sb, 64);
-                return sb.ToString();
+                int childCount = iAcc.accChildCount;
+                if (childID <= childCount)
+                {
+                    try
+                    {
+                        StringBuilder sb = new StringBuilder(32);
+                        Win32API.GetStateText(Convert.ToUInt32(iAcc.get_accState(childID)), sb, 32);
+                        return sb.ToString();
+                    }
+                    catch
+                    {
+                        return "";
+                    }
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
+
         }
 
         public static IAccessible GetParent(IAccessible iAcc, int childID)
         {
-            if (childID > 0)
+            if (iAcc != null)
             {
-                return iAcc;
+                if (childID > 0)
+                {
+                    return iAcc;
+                }
+                else if (childID == 0)
+                {
+                    try
+                    {
+                        return (IAccessible)iAcc.accParent;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
             }
-            else if (childID == 0)
-            {
-                return (IAccessible)iAcc.accParent;
-            }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public static IAccessible GetChild(IAccessible iAcc, int childID)
         {
-            if (childID > 0)
+            if (childID > 0 && iAcc != null)
             {
-                return (IAccessible)iAcc.get_accChild(childID);
-            }
-            else
-            {
-                return null;
-            }
-        }
+                int childCount = iAcc.accChildCount;
 
+                if (childID <= childCount)
+                {
+                    try
+                    {
+                        object[] childrenObj = new object[1];
+                        int count = 0;
+                        Win32API.AccessibleChildren(iAcc, childID - 1, 1, childrenObj, out count);
 
-        public static bool IsVisible(IAccessible iAcc, int childID)
-        {
-            string state = GetState(iAcc, childID);
+                        return (IAccessible)childrenObj[0];
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                }
+            }
 
-            if (String.IsNullOrEmpty(state))
-            {
-                return true;
-            }
-            else
-            {
-                return state.IndexOf("invisible") < 0;
-            }
+            return null;
         }
 
         public static int GetChildCount(IAccessible iAcc, int childID)
         {
             try
             {
-                return iAcc.accChildCount;
+                return childID == 0 ? iAcc.accChildCount : 0;
             }
             catch
             {
