@@ -37,6 +37,7 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="QC.cs" />
     <Compile Include="test.cs" />
   </ItemGroup>
   <ItemGroup>
