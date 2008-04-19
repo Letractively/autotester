@@ -496,7 +496,7 @@ namespace Shrinerain.AutoTester.Framework
 
                 if (this._isHighlight)
                 {
-                    obj.HighLight();
+                    ((IVisible)obj).HighLight();
                 }
 
                 _actEngine.PerformAction(obj, step._testAction, step._testData);
@@ -520,7 +520,7 @@ namespace Shrinerain.AutoTester.Framework
 
                 TestObject obj = _objEngine.GetTestObject(step);
 
-                obj.HighLight();
+                ((IVisible)obj).HighLight();
                 this._logEngine.SaveScreenPrint();
 
                 object actualReslut;
