@@ -39,6 +39,8 @@ namespace Shrinerain.AutoTester.Interface
         bool CheckFile(String actualFile, String expectedFile, CheckType type);
 
         bool CheckNetwork(object testObj, object expectResult, CheckType type, out object actualNetwork);
+
+        void SetTestObjectPool(ITestObjectPool pool);
     }
 
     [CLSCompliant(true)]
