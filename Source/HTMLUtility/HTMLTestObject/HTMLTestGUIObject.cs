@@ -69,19 +69,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //then we will not see the mouse move.
         protected bool _sendMsgOnly = false;
 
+        //status of gui object.
+        protected bool _isVisible = true;
+        protected bool _isEnable = true;
+        protected bool _isReadonly = false;
+
         #endregion
 
         #region properties
 
         public virtual Rectangle Rect
         {
-            get { return _rect; }
-            set
+            get
             {
-                if (value != null)
-                {
-                    _rect = value;
-                }
+                return GetRectOnScreen();
             }
         }
 
@@ -89,6 +90,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get
             {
+                GetRectOnScreen();
                 return _rect.X;
             }
         }
@@ -97,6 +99,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get
             {
+                GetRectOnScreen();
                 return _rect.Y;
             }
         }
@@ -105,6 +108,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get
             {
+                GetRectOnScreen();
                 return _rect.Width;
             }
         }
@@ -113,6 +117,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get
             {
+                GetRectOnScreen();
                 return _rect.Height;
             }
         }
@@ -182,6 +187,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestGUIObject(IHTMLElement element)
             : base(element)
         {
+            this._isEnable = IsEnable();
+            this._isReadonly = IsReadonly();
+            this._isVisible = IsVisible();
             //GetRectOnScreen();
         }
 
@@ -221,6 +229,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual Point GetCenterPoint()
         {
+            GetRectOnScreen();
             return _centerPoint;
         }
 
@@ -263,10 +272,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 top -= _browser.ScrollTop;
                 left -= _browser.ScrollLeft;
 
-                // we will calculate the center point of this object.
-                CalCenterPoint(left, top, width, height);
+                if (this._rect.Left != left || this._rect.Top != top || this._rect.Width != width || this._rect.Height != height)
+                {
+                    // we will calculate the center point of this object.
+                    CalCenterPoint(left, top, width, height);
 
-                this._rect = new Rectangle(left, top, width, height);
+                    this._rect = new Rectangle(left, top, width, height);
+                }
 
                 return _rect;
             }
@@ -669,11 +681,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-
         /*  void HighLight()
          *  Highlight the object, we will see a red rect around the object.
          */
-        public override void HighLight()
+        public virtual void HighLight()
         {
             try
             {
@@ -693,9 +704,103 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
 
+        /* bool IsVisible()
+       * return true if it is a visible object.
+       */
+        public virtual bool IsVisible()
+        {
+            string isVisible;
+
+            if (this._sourceElement.offsetWidth < 1 || this._sourceElement.offsetHeight < 1)
+            {
+                return false;
+            }
+
+            if (!TryGetProperty(this._sourceElement, "visibility", out isVisible))
+            {
+                return true && IsDisplayed(this._sourceElement);
+            }
+            else
+            {
+                return String.Compare(isVisible, "HIDDEN", true) == 0;
+            }
+        }
+
+        /* bool IsEnable()
+         * return true if it is a enable object.
+         */
+        public virtual bool IsEnable()
+        {
+            string isEnable;
+
+            if (!TryGetProperty(this._sourceElement, "diabled", out isEnable))
+            {
+                return true;
+            }
+            else
+            {
+                return !(String.Compare(isEnable, "true", true) == 0);
+            }
+        }
+
+        /* bool IsReadOnly()
+         * return true if it is a readonly object.
+         */
+        public virtual bool IsReadonly()
+        {
+            if (!IsEnable())
+            {
+                return true;
+            }
+
+            string isReadOnly;
+
+            if (!TryGetProperty(this._sourceElement, "readOnly", out isReadOnly))
+            {
+                return false;
+            }
+            else
+            {
+                return String.Compare(isReadOnly, "TRUE", true) == 0;
+            }
+        }
+
+
         #endregion
 
         #region private methods
+
+        /* bool IsDisplay(IHTMLElement element)
+        * Check the style
+        */
+        protected virtual bool IsDisplayed(IHTMLElement element)
+        {
+            if (element == null)
+            {
+                return false;
+            }
+
+            string isDisabled;
+            if (HTMLTestObject.TryGetProperty(element, "disabled", out isDisabled))
+            {
+                if (String.Compare("true", isDisabled, true) == 0)
+                {
+                    return false;
+                }
+            }
+
+            string isDisplayed;
+            if (HTMLTestObject.TryGetProperty(element, "style", out isDisplayed))
+            {
+                isDisplayed = isDisplayed.Replace(" ", "");
+                if (isDisplayed.IndexOf("display:none", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         /* void ScrollIntoView(bool toTop)
          * if the object is out of page view, scroll it to make it is visible.
@@ -719,10 +824,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Thread.Sleep(1000 * 1);
 
                 //re-calculate the position, because we had move it.
-                this.Rect = GetRectOnScreen();
+                GetRectOnScreen();
             }
-
-
         }
 
         /* void HighLightRectCallback(Object obj)

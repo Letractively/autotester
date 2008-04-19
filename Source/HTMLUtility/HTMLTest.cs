@@ -27,7 +27,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private HTMLTestObjectPool _pool;
         private HTMLTestObjectMap _map;
         private HTMLTestAction _action;
-        private HTMLTestCheckPoint _vp;
+        private HTMLTestCheckPoint _cp;
 
         #endregion
 
@@ -53,9 +53,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _action; }
         }
 
-        public HTMLTestCheckPoint Vp
+        public HTMLTestCheckPoint CheckPoint
         {
-            get { return _vp; }
+            get { return _cp; }
         }
 
         public bool SendMsgOnly
@@ -82,7 +82,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             _pool = new HTMLTestObjectPool(_browser);
             _map = new HTMLTestObjectMap(_pool);
             _action = new HTMLTestAction();
-            _vp = new HTMLTestCheckPoint();
+            _cp = new HTMLTestCheckPoint();
+         //   _cp.SetTestObjectPool(_pool);
         }
 
         #endregion

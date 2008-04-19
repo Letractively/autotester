@@ -13,7 +13,7 @@
     <Position X="5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestTextBox.cs</FileName>
-      <HashCode>QTAAAAABACAAEAAIgAAQAAAAMBACAIAAAAgAAgBAAAA=</HashCode>
+      <HashCode>QSAAAAABICBAEAAIgAAQAAAAMBAIAIAAAAgAAABAAAA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -21,7 +21,7 @@
     <Position X="11.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestButton.cs</FileName>
-      <HashCode>ATAABAAAAAAAAAAJAAAQACAEABADAAAAAQAaAgAABwA=</HashCode>
+      <HashCode>ASAABAAAIABAAAAJgAAQCSAEABAJAAAACQAaAAAABwA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -29,7 +29,7 @@
     <Position X="18.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestCheckBox.cs</FileName>
-      <HashCode>ADAAAAgAACAAAAAJAAAAAAAAABACAIECAAAKAgAAAgA=</HashCode>
+      <HashCode>ACAAAAgAICBAAAAJgAAAAQAAABAIAIECCAAKAAAAAgA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -37,7 +37,7 @@
     <Position X="0.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestComboBox.cs</FileName>
-      <HashCode>ALAACSASBGAAAAAIAAAAAAACCBQCAAAAIFAAQkAAggA=</HashCode>
+      <HashCode>AKAACSASJGBAAAAIgAAAAAACCBQIAAAAIFAAQEAAggA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -45,7 +45,7 @@
     <Position X="7.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestFileDialog.cs</FileName>
-      <HashCode>QLAAAAAAAAAAAAAJAAAAAAAAGBACAAAAAAAOAgBAAgA=</HashCode>
+      <HashCode>QKAAAAAAIABAAAAJgAAAAgAAGBAYAAAAABAOAABEAgA=</HashCode>
     </TypeIdentifier>
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
@@ -56,7 +56,7 @@
     <Position X="14" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestImage.cs</FileName>
-      <HashCode>ADAAAAAAAAIAAACBIgAAAIAAAAQCAAAAAAAqAAAAAgA=</HashCode>
+      <HashCode>ACAAAAAAAAJAAACBIgAAAYAAAAQIAAAACQAqAAAAAgA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -64,7 +64,7 @@
     <Position X="20.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestLink.cs</FileName>
-      <HashCode>ADQIAAAAAAAABAEJAAAAAAAEABACQIBAAAAKAgAAAgE=</HashCode>
+      <HashCode>ACQIAAAAIABABAEJgAAAAQAEABAIQIBACAAKAAAAAgE=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -72,7 +72,7 @@
     <Position X="2.75" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestListBox.cs</FileName>
-      <HashCode>ALAACSASBGgAAAAIAAAAAAACCBQCAAAAIVAAQkAAgAA=</HashCode>
+      <HashCode>AKAACSASJGhAAAAIgAAAAQACCBQIAAAAIVAAQEAAgAA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -80,7 +80,7 @@
     <Position X="16.25" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestMsgBox.cs</FileName>
-      <HashCode>ALIAAgAAgEAAAAAJAAAAAAAACBADQACAERAOAgAACgA=</HashCode>
+      <HashCode>ALIAAgAAoEBAAAAJgAAAAAAACBAJQACAERAOAAAECgA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -88,7 +88,7 @@
     <Position X="11.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestObject.cs</FileName>
-      <HashCode>AAAEIADAACAgsAQQIAFQCEQAAAAAgAAIIQAIIgBEAAA=</HashCode>
+      <HashCode>EEAEIABAACAgoAQAAABAAEQAAAEEAAAAAQAAAgBEAAA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -96,7 +96,7 @@
     <Position X="9.5" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestRadioButton.cs</FileName>
-      <HashCode>ADACAAgAICAAAAAJAAAAAAAAABACAIACAAAKAgAAAgA=</HashCode>
+      <HashCode>ACACAAgAICBAAAAJgAAAAQAAABAIAIACCAAKAAAAAgA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -104,7 +104,7 @@
     <Position X="23" Y="2" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObject\HTMLTestTable.cs</FileName>
-      <HashCode>ADAAIEACgQAAAAQIAAABAQEAAJACQAAEAAAAAgBgAgA=</HashCode>
+      <HashCode>ACAAIEACoQBAAAQIgAABAQEAAJAIQAAEAAAAAABgAgA=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
@@ -127,7 +127,7 @@
     <Position X="4" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <FileName>HTMLTestObjectPool.cs</FileName>
-      <HashCode>YJADB0UBUAACUFAJQAIQIHSECUhQCKCgCSVACTJCjSQ=</HashCode>
+      <HashCode>YJADB0UBUAACUFApQAIQIHSECUhQCKgkCSVACTMCjSQ=</HashCode>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>

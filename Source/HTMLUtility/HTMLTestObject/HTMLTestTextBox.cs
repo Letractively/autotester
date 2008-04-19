@@ -213,7 +213,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!_isEnable || !_isVisible || _isReadOnly)
+                if (!_isEnable || !_isVisible || _isReadonly)
                 {
                     throw new CannotPerformActionException("Textbox is not enabled.");
                 }
@@ -251,7 +251,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!_isEnable || !_isVisible || _isReadOnly)
+                if (!_isEnable || !_isVisible || _isReadonly)
                 {
                     throw new CannotPerformActionException("Textbox is not enabled.");
                 }

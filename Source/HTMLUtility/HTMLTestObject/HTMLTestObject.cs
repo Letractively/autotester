@@ -31,6 +31,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     public enum HTMLTestObjectType
     {
         Unknow = 0,
+        Any,
         Label,
         Button,
         CheckBox,
@@ -57,10 +58,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //tag for this object, like "A" ,"INPUT"...
         protected string _tag;
-
-        protected bool _isVisible;
-        protected bool _isEnable;
-        protected bool _isReadOnly;
 
         protected HTMLTestObjectType _type;
         protected IHTMLElement _sourceElement;
@@ -101,21 +98,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public string Tag
         {
             get { return this._tag; }
-        }
-
-        public bool IsEnable
-        {
-            get { return _isEnable; }
-        }
-
-        public bool IsVisible
-        {
-            get { return _isVisible; }
-        }
-
-        public bool IsReadOnly
-        {
-            get { return _isReadOnly; }
         }
 
         public virtual HTMLTestBrowser Browser
@@ -197,37 +179,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch
             {
                 this._name = "";
-            }
-
-            try
-            {
-                //check the "visibility" property.
-                this._isVisible = Visible();
-            }
-            catch
-            {
-                this._isVisible = true;
-            }
-
-            try
-            {
-                //check the "enable" property
-                this._isEnable = Enable();
-
-            }
-            catch
-            {
-                this._isEnable = true;
-            }
-
-            try
-            {
-                //check the "readonly" property
-                this._isReadOnly = ReadOnly();
-            }
-            catch
-            {
-                this._isReadOnly = false;
             }
 
         }
@@ -419,99 +370,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
-
-        /* bool IsVisible()
-         * return true if it is a visible object.
-         */
-        protected virtual bool Visible()
-        {
-            string isVisible;
-
-            if (this._sourceElement.offsetWidth < 1 || this._sourceElement.offsetHeight < 1)
-            {
-                return false;
-            }
-
-            if (!TryGetProperty(this._sourceElement, "visibility", out isVisible))
-            {
-                return true && IsDisplayed(this._sourceElement);
-            }
-            else
-            {
-                return String.Compare(isVisible, "HIDDEN", true) == 0;
-            }
-        }
-
-        /* bool IsEnable()
-         * return true if it is a enable object.
-         */
-        protected virtual bool Enable()
-        {
-            string isEnable;
-
-            if (!TryGetProperty(this._sourceElement, "diabled", out isEnable))
-            {
-                return true;
-            }
-            else
-            {
-                return !(String.Compare(isEnable, "true", true) == 0);
-            }
-        }
-
-        /* bool IsReadOnly()
-         * return true if it is a readonly object.
-         */
-        protected virtual bool ReadOnly()
-        {
-            if (!Enable())
-            {
-                return true;
-            }
-
-            string isReadOnly;
-
-            if (!TryGetProperty(this._sourceElement, "readOnly", out isReadOnly))
-            {
-                return false;
-            }
-            else
-            {
-                return String.Compare(isReadOnly, "TRUE", true) == 0;
-            }
-        }
-
-        /* bool IsDisplay(IHTMLElement element)
-        * Check the style
-        */
-        protected virtual bool IsDisplayed(IHTMLElement element)
-        {
-            if (element == null)
-            {
-                return false;
-            }
-
-            string isDisabled;
-            if (HTMLTestObject.TryGetProperty(element, "disabled", out isDisabled))
-            {
-                if (String.Compare("true", isDisabled, true) == 0)
-                {
-                    return false;
-                }
-            }
-
-            string isDisplayed;
-            if (HTMLTestObject.TryGetProperty(element, "style", out isDisplayed))
-            {
-                isDisplayed = isDisplayed.Replace(" ", "");
-                if (isDisplayed.IndexOf("display:none", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
 
         #endregion
 

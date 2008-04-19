@@ -466,7 +466,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual void Click()
         {
-            if (!_isEnable || !_isVisible || _isReadOnly)
+            if (!_isEnable || !_isVisible || _isReadonly)
             {
                 throw new CannotPerformActionException("ComboBox is not enabled.");
             }
