@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Interface Name="Shrinerain.AutoTester.Interface.ITestAction" Collapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QCEAALhEAAIACAAlAAACQYBEFiBCACACAQAKRAFAggg=</HashCode>
+      <FileName>ITestAction.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Interface.ITestApp" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAgBQggALAIUABBMAAKiABgAAAAABggABAAAEGIAAE=</HashCode>
+      <FileName>ITestApp.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Interface.ITestBrowser" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAgAAAAKBAAAAEAABAAAAAAAQAAAAiAgAgAQGAAEI=</HashCode>
+      <FileName>ITestBrowser.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Interface.ITestObjectPool" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>YAAAAEEBAAAAAAAIQAAQAAAAAABAAAAgAABACAAABAA=</HashCode>
+      <FileName>ITestObjectPool.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Shrinerain.AutoTester.Interface.ITestVP" Collapsed="true">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAIABAAAAgAAIAAgAAAgAAAAIgAEAAAAAAA=</HashCode>
+      <FileName>ITestVP.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
