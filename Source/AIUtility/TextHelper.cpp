@@ -100,8 +100,8 @@ int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bo
 		}
 
 		int currentSameCharCount = 0;
-		float totalSameCharCount = 0;
-		float totalLen = len1 + len2;
+		int totalSameCharCount = 0;
+		int totalLen = len1 + len2;
 
 		int str1Index = len1;
 		int str2Index = len2;
@@ -165,7 +165,7 @@ int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bo
 
 		}
 
-		return Convert::ToInt32(totalSameCharCount * 2 * 100 / totalLen);
+		return Convert::ToInt32((float)(totalSameCharCount * 2 * 100) / (float)totalLen);
 	}
 }
 
@@ -177,4 +177,48 @@ int TextHelper::CalSimilarPercent(String ^str1, String ^str2)
 int TextHelper::CalStyleSimPercent(String^ str1,String ^str2)
 {
 	return 1;
+}
+
+CharClass TextHelper::GetCharClass(char ch)
+{
+	if(ch>='A' && ch<='z')
+	{
+		return CharClass::Alpha;
+	}
+	else if(ch>='0' && ch<='9')
+	{
+		return CharClass::Number;
+	}
+	else if(ch==' ')
+	{
+		return CharClass::Space;
+	}
+	else if(ch=='\t')
+	{
+		return CharClass::Tab;
+	}
+	else if(ch=='\n')
+	{
+		return CharClass::NewLine;
+	}
+	else if(ch=='(' || ch==')' || ch=='[' ||ch==']' || ch=='{' || ch=='}')
+	{
+		return CharClass::Brackets;
+	}
+	else if(ch=='+' ||ch=='-' ||ch=='*' || ch=='/')
+	{
+		return CharClass::Operator;
+	}
+	else if(ch==',' ||ch=='.' ||ch=='?' ||ch=='!' ||ch==';' || ch==':' ||ch=='"'|| ch=='\'')
+	{
+		return CharClass::Punctuation;
+	}
+	else if(ch=='~' ||ch=='@'||ch=='#' ||ch=='$' || ch=='%' ||ch=='^' ||ch=='&')
+	{
+		return CharClass::Special;
+	}
+	else
+	{
+		return CharClass::Other;
+	}
 }
