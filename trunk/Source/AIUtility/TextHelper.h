@@ -8,29 +8,23 @@ namespace Shrinerain
 	{
 		namespace AIUtility
 		{
-			public ref class TextHelper
-			{
-			private:
-				static initonly int _defaultPercent=70;
-			public:
-				static int CalSimilarPercent(String^ str1, String^ str2);
-				static int CalSimilarPercent(String^ str1, String^ str2, bool ignoreCase, bool compressBlank);
-				static int CalStyleSimPercent(String^ str1, String^ str2);
-			};
-
-			public enum CharClass
+			public enum class CharClass
 			{
 				Alpha,
 				Number,
+				Space,
+				Tab,
+				NewLine,
 				Brackets,
 				Punctuation,
+				Operator,
 				Special,
-				Compute,
 				Chinese,
+				Empty,
 				Other
 			};
 
-			public enum WordClass
+			public enum class WordClass
 			{
 				Noun,
 				Adj,
@@ -43,8 +37,8 @@ namespace Shrinerain
 			{
 			public:
 				CharClass _charClass;
-				int _otherCode;
-				int _percent;
+				int _unicode;
+				int _length;
 				int _pos;
 			};
 
@@ -53,6 +47,19 @@ namespace Shrinerain
 			public:
 				array<WordStyle>^ _sentenceSytle;
 			};
+
+			public ref class TextHelper
+			{
+			private:
+				static initonly int _defaultPercent=70;
+			public:
+				static CharClass GetCharClass(char ch);
+				static int CalSimilarPercent(String^ str1, String^ str2);
+				static int CalSimilarPercent(String^ str1, String^ str2, bool ignoreCase, bool compressBlank);
+				static int CalStyleSimPercent(String^ str1, String^ str2);
+
+			};
+
 		}
 	}
 }
