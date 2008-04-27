@@ -54,9 +54,11 @@ namespace Shrinerain
 				static initonly int _defaultPercent=70;
 			public:
 				static CharClass GetCharClass(char ch);
+				static array<String^>^ SplitWords(String^ text);
 				static int CalSimilarPercent(String^ str1, String^ str2);
 				static int CalSimilarPercent(String^ str1, String^ str2, bool ignoreCase, bool compressBlank);
 				static int CalStyleSimPercent(String^ str1, String^ str2);
+				static String^ GetShortWord(String^ word);
 
 			};
 

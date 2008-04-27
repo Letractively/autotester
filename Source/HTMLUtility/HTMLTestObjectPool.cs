@@ -2489,7 +2489,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     tmp.Browser = _htmlTestBrowser;
-                    tmp.HtmlObjPool = this;
+                    tmp.HTMLTestObjPool = this;
                     tmp.SendMsgOnly = _sendMsgOnly;
                     return tmp;
                 }

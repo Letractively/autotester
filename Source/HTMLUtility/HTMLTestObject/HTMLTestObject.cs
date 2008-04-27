@@ -106,7 +106,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             set { _browser = value; }
         }
 
-        public virtual HTMLTestObjectPool HtmlObjPool
+        public virtual HTMLTestObjectPool HTMLTestObjPool
         {
             get { return _htmlObjPool; }
             set { _htmlObjPool = value; }

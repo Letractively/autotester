@@ -17,6 +17,9 @@
 #include "TextHelper.h"
 
 using namespace System;
+using namespace System::Text;
+using namespace System::Collections;
+using namespace System::Collections::Generic;
 
 using namespace Shrinerain::AutoTester::AIUtility;
 
@@ -220,5 +223,67 @@ CharClass TextHelper::GetCharClass(char ch)
 	else
 	{
 		return CharClass::Other;
+	}
+}
+
+/* String[] SplitWords
+ * return a string array which contains the words included in the text.
+ */
+array<String^>^ TextHelper::SplitWords(String^ text)
+{
+	array<String^>^ res=gcnew array<String^>(1){text};
+
+	if(!String::IsNullOrEmpty(text))
+	{
+		List<String^> wordsList;
+		int startPos=0;
+		int endPos=0;
+
+		for(int i=0;i<text->Length;i++)
+		{
+			if(i>0 && (text[i]<='Z' && text[i]>='A') && (text[i-1]<'A' || text[i-1]>'Z'))
+			{
+				startPos=i;
+			}
+			else if(i==text->Length-1 || (i>0 && ( 
+				                         (text[i]>='a' && text[i]<='z')&& (text[i+1]<'a' ||text[i+1]>'z')||
+				                         (text[i]>='A' && text[i]<='Z' && text[i-1]>='A' && text[i-1]<='Z' && (text[i+1]<'A' || text[i+1]>'Z')) )))
+			{
+				endPos=i;
+			}
+
+			if(endPos>startPos)
+			{
+				String^ curWords=text->Substring(startPos,endPos-startPos+1);
+
+				if(!String::IsNullOrEmpty(curWords->Trim()))
+				{
+					wordsList.Add(curWords->Trim());
+				}
+
+				startPos=endPos+1;
+			}
+		}
+
+		res=gcnew array<String^>(wordsList.Count);
+
+		for(int j=0;j<wordsList.Count;j++)
+		{
+			res[j]=wordsList[j];
+		}
+	}
+
+	return res;
+}
+
+String^ TextHelper::GetShortWord(String^ word)
+{
+	if(!String::IsNullOrEmpty(word) && word->Length>3)
+	{
+		return word->Substring(0,3);
+	}
+	else
+	{
+		return word;
 	}
 }

@@ -47,9 +47,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Test\Google.cs" />
     <Compile Include="Test\MSAA.cs" />
+    <Compile Include="Test\Other.cs" />
     <Compile Include="Test\Qidian.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AIUtility\AIUtility.vcproj">
+      <Project>{142ADF6B-825A-49BE-AC94-0B56F3FB1404}</Project>
+      <Name>AIUtility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Framework\Framework.csproj">
       <Project>{3554AFF5-0D9A-43A8-B048-D38C8C9F0C1D}</Project>
       <Name>Framework</Name>
