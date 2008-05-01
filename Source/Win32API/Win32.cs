@@ -1211,6 +1211,9 @@ namespace Shrinerain.AutoTester.Win32
         public static extern int SendMessage(IntPtr hWnd, int uMsg, int wParam, int lParam);
 
         [DllImport("User32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, string lParam);
+
+        [DllImport("User32.dll")]
         public static extern int PostMessage(IntPtr hWnd, int uMsg, int wParam, int lParam);
 
         [DllImport("User32.dll")]

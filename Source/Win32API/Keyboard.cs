@@ -85,7 +85,23 @@ namespace Shrinerain.AutoTester.Win32
                 //sleep for 0.05 second, make it looks like human actions
                 //System.Threading.Thread.Sleep(50 * 1);
             }
+        }
 
+        public static void SendChars(IntPtr handle, string str)
+        {
+            if (String.IsNullOrEmpty(str))
+            {
+                return;
+            }
+
+            if (_sendMessageOnly && handle != IntPtr.Zero)
+            {
+                Win32API.SendMessage(handle, (int)Win32API.WindowMessages.WM_SETTEXT, IntPtr.Zero, str);
+            }
+            else
+            {
+                SendChars(str);
+            }
         }
 
         /* void SendKey(string keys)

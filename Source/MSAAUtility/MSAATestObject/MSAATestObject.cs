@@ -70,7 +70,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         protected int _id;
         protected IntPtr _window;
         protected String _msaaObjType;
-        protected object _selfID = 0;
+        protected int _selfID = 0;
 
         protected MSAATestObjectType _type;
 
@@ -188,7 +188,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public int GetSelfID()
         {
-            return Convert.ToInt32(this._selfID);
+            return this._selfID;
         }
 
         #endregion
@@ -212,39 +212,35 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 if (String.Compare(propertyName, "name", true) == 0)
                 {
-                    return this._iAcc.get_accName(_selfID);
+                    return this._iAcc.get_accName((object)_selfID);
                 }
                 else if (String.Compare(propertyName, "value", true) == 0)
                 {
-                    return this._iAcc.get_accValue(_selfID);
+                    return this._iAcc.get_accValue((object)_selfID);
                 }
                 else if (String.Compare(propertyName, "role", true) == 0)
                 {
-                    return this._iAcc.get_accRole(_selfID);
+                    return this._iAcc.get_accRole((object)_selfID);
                 }
                 else if (String.Compare(propertyName, "state", true) == 0)
                 {
-                    return this._iAcc.get_accState(_selfID);
+                    return this._iAcc.get_accState((object)_selfID);
                 }
                 else if (String.Compare(propertyName, "defAction", true) == 0 || propertyName.IndexOf("action", StringComparison.InvariantCultureIgnoreCase) > 0)
                 {
-                    return this._iAcc.get_accDefaultAction(_selfID);
+                    return this._iAcc.get_accDefaultAction((object)_selfID);
                 }
                 else if (String.Compare(propertyName, "description", true) == 0)
                 {
-                    return this._iAcc.get_accDescription(_selfID);
+                    return this._iAcc.get_accDescription((object)_selfID);
                 }
                 else if (String.Compare(propertyName, "help", true) == 0)
                 {
-                    return this._iAcc.get_accHelp(_selfID);
+                    return this._iAcc.get_accHelp((object)_selfID);
                 }
                 else if (String.Compare(propertyName, "rect", true) == 0 || String.Compare(propertyName, "location", true) == 0)
                 {
-                    //get location.
-                    int left, top, width, height;
-                    this._iAcc.accLocation(out left, out top, out width, out height, _selfID);
-
-                    return new Rectangle(left, top, width, height);
+                    return GetRect(_iAcc, _selfID);
                 }
                 else if (String.Compare(propertyName, "childCount", true) == 0)
                 {
@@ -281,7 +277,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                this._iAcc.set_accValue(_selfID, value.ToString());
+                this._iAcc.set_accValue((object)_selfID, value.ToString());
                 return true;
             }
             catch
@@ -324,7 +320,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     try
                     {
-                        return iAcc.get_accValue(childID).ToString();
+                        return iAcc.get_accValue((object)childID).ToString();
                     }
                     catch
                     {
@@ -345,7 +341,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     try
                     {
-                        return iAcc.get_accName(childID).ToString();
+                        return iAcc.get_accName((object)childID).ToString();
                     }
                     catch
                     {
@@ -366,7 +362,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     try
                     {
-                        return iAcc.get_accDefaultAction(childID).ToString();
+                        return iAcc.get_accDefaultAction((object)childID).ToString();
                     }
                     catch
                     {
@@ -387,7 +383,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     try
                     {
-                        return iAcc.get_accDescription(childID).ToString();
+                        return iAcc.get_accDescription((object)childID).ToString();
                     }
                     catch
                     {
@@ -485,6 +481,42 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
+        public static Rectangle GetRect(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                //get location.
+                int left, top, width, height;
+                iAcc.accLocation(out left, out top, out width, out height, (object)childID);
+
+                return new Rectangle(left, top, width, height);
+            }
+            catch
+            {
+                return new Rectangle(0, 0, 0, 0);
+            }
+        }
+
+        public static IntPtr GetWindowsHandle(IAccessible iAcc, int childID)
+        {
+            try
+            {
+                Rectangle rect = GetRect(iAcc, childID);
+
+                if (rect.Width > 0 && rect.Height > 0)
+                {
+                    int x = rect.Left + rect.Width / 2;
+                    int y = rect.Top + rect.Height / 2;
+
+                    return Win32API.WindowFromPoint(x, y);
+                }
+            }
+            catch
+            {
+            }
+
+            return IntPtr.Zero;
+        }
 
         #endregion
 

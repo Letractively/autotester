@@ -17,6 +17,7 @@
 
 using System;
 using System.Drawing;
+using System.Text;
 
 using mshtml;
 
@@ -388,6 +389,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public virtual string GetClass()
         {
             return this._className;
+        }
+
+        public String GetCaption()
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder(128);
+                Win32API.GetWindowText(_handle, sb, 128);
+
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get windows caption: " + ex.Message);
+            }
         }
 
         #endregion
