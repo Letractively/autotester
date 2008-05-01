@@ -46,6 +46,7 @@
     <Compile Include="MSAATestObject\MSAATestComboBox.cs" />
     <Compile Include="MSAATestObject\MSAATestGUIObject.cs" />
     <Compile Include="MSAATestObject\MSAATestObject.cs" />
+    <Compile Include="MSAATestObject\MSAATestTextBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

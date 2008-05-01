@@ -89,6 +89,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
+        public String GetCaption()
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder(128);
+                Win32API.GetWindowText(_dialogHandle, sb, 128);
+
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get windows caption: " + ex.Message);
+            }
+        }
+
         #endregion
 
         #region IInputable Members
