@@ -28,13 +28,19 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region fields
 
-        protected string _text;
+        protected String _text;
 
         #endregion
 
         #region properties
 
-
+        public virtual String Text
+        {
+            get
+            {
+                return _text;
+            }
+        }
         #endregion
 
         #region methods
@@ -49,7 +55,27 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public MSAATestButton(IAccessible iAcc, int childID)
             : base(iAcc, childID)
         {
-            this._text = GetText();
+            try
+            {
+                _text = GetText();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build Button: " + ex.Message);
+            }
+        }
+
+        public MSAATestButton(IntPtr handle)
+            : base(handle)
+        {
+            try
+            {
+                _text = GetText();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build Button: " + ex.Message);
+            }
         }
 
         #endregion
@@ -67,12 +93,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 if (!_sendMsgOnly)
                 {
                     Hover();
-
                     MouseOp.Click();
                 }
                 else
                 {
-                    _iAcc.accDoDefaultAction(_selfID);
+                    IAcc.accDoDefaultAction(SelfID);
                 }
 
                 _actionFinished.Set();
@@ -128,7 +153,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public string GetText()
         {
-            return MSAATestObject.GetName(this._iAcc, Convert.ToInt32(this._selfID));
+            return GetName();
         }
 
         public string GetFontFamily()

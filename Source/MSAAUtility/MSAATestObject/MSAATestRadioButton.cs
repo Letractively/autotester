@@ -4,11 +4,11 @@
 * AutoTester is a free software, you can use it in any commercial work. 
 * But you CAN NOT redistribute it and/or modify it.
 *--------------------------------------------------------------------
-* Component: MSAATestCheckBox.cs
+* Component: MSAATestRadioButton.cs
 *
-* Description: This class define the checkbox object for MSAA.
+* Description: This class define the radio button object for MSAA.
 *
-* History: 2008/04/23 wan,yu init version.
+* History: 2008/05/02 wan,yu init version.
 *
 *********************************************************************/
 
@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public class MSAATestCheckBox : MSAATestGUIObject, ICheckable, IShowInfo
+    public class MSAATestRadioButton : MSAATestGUIObject, ICheckable, IShowInfo
     {
 
         #region fields
@@ -68,12 +68,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region ctor
 
-        public MSAATestCheckBox(IAccessible iAcc)
+        public MSAATestRadioButton(IAccessible iAcc)
             : this(iAcc, 0)
         {
         }
 
-        public MSAATestCheckBox(IAccessible iAcc, int childID)
+        public MSAATestRadioButton(IAccessible iAcc, int childID)
             : base(iAcc, childID)
         {
             try
@@ -83,11 +83,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build  Check Box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build Radio Button: " + ex.Message);
             }
         }
 
-        public MSAATestCheckBox(IntPtr handle)
+        public MSAATestRadioButton(IntPtr handle)
             : base(handle)
         {
             try
@@ -97,7 +97,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build Check Box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build Radio Button: " + ex.Message);
             }
         }
 
@@ -231,6 +231,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     Click();
                 }
+
+                _isChecked = true;
             }
             catch (TestException)
             {
@@ -251,6 +253,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     Click();
                 }
+
+                _isChecked = false;
             }
             catch (TestException)
             {

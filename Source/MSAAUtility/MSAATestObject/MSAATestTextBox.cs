@@ -24,19 +24,31 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public class MSAATestTextBox : MSAATestGUIObject, IInputable, IWindows
+    public class MSAATestTextBox : MSAATestGUIObject, IInputable
     {
 
         #region fields
 
-        protected IntPtr _handle;
-        protected String _class;
-        protected String _caption;
+        protected String _text;
 
         #endregion
 
         #region properties
 
+        public virtual String Text
+        {
+            get
+            {
+                return _text;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    this.Input(value);
+                }
+            }
+        }
 
         #endregion
 
@@ -47,13 +59,32 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public MSAATestTextBox(IAccessible iAcc)
             : this(iAcc, 0)
         {
-
         }
 
         public MSAATestTextBox(IAccessible iAcc, int childID)
             : base(iAcc, childID)
         {
-            this._handle = GetWindowsHandle(iAcc, childID);
+            try
+            {
+                _text = GetText();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build Text Box: " + ex.Message);
+            }
+        }
+
+        public MSAATestTextBox(IntPtr handle)
+            : base(handle)
+        {
+            try
+            {
+                _text = GetText();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build Text Box: " + ex.Message);
+            }
         }
 
         #endregion
@@ -66,7 +97,18 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                KeyboardOp.SendChars(this._handle, values);
+                _actionFinished.WaitOne();
+
+                if (!_sendMsgOnly)
+                {
+                    Hover();
+                    MouseOp.Click();
+                }
+
+                KeyboardOp.SendChars(WindowHandle, values);
+                _text = values;
+
+                _actionFinished.Set();
             }
             catch (Exception ex)
             {
@@ -81,7 +123,30 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _actionFinished.WaitOne();
+
+                if (!SetProperty("value", ""))
+                {
+                    throw new CannotPerformActionException("Can not clear text in text box");
+                }
+                else
+                {
+                    _text = "";
+                }
+
+                _actionFinished.Set();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not clear text in text box: " + ex.Message);
+            }
+
         }
 
         #endregion
@@ -112,7 +177,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public string GetText()
         {
-            return MSAATestObject.GetValue(this._iAcc, _selfID);
+            return GetValue();
         }
 
         public string GetFontFamily()
@@ -132,34 +197,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #endregion
 
-        #region IWindows Members
-
-        public IntPtr GetHandle()
-        {
-            return MSAATestObject.GetWindowsHandle(this._iAcc, this._selfID);
-        }
-
-        public string GetClass()
-        {
-            throw new NotImplementedException();
-        }
-
-        public String GetCaption()
-        {
-            try
-            {
-                StringBuilder sb = new StringBuilder(128);
-                Win32API.GetWindowText(_handle, sb, 128);
-
-                return sb.ToString();
-            }
-            catch (Exception ex)
-            {
-                throw new PropertyNotFoundException("Can not get windows caption: " + ex.Message);
-            }
-        }
-
-        #endregion
 
         #endregion
 

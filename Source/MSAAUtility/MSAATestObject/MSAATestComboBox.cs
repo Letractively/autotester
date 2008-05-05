@@ -28,6 +28,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region fields
 
+        protected String _selectedItem;
+        protected String[] _items;
+
         #endregion
 
         #region properties
@@ -47,6 +50,31 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public MSAATestComboBox(IAccessible iAcc, int childID)
             : base(iAcc, childID)
         {
+            try
+            {
+                _items = GetAllValues();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build combo box: " + ex.Message);
+            }
+        }
+
+        public MSAATestComboBox(IntPtr handle)
+            : base(handle)
+        {
+            try
+            {
+                _items = GetAllValues();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build combo box: " + ex.Message);
+            }
         }
 
         #endregion
@@ -57,7 +85,54 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public void Select(string str)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (String.IsNullOrEmpty(str))
+                {
+                    throw new CannotPerformActionException("Value is empty.");
+                }
+
+                if (_items == null || _items.Length < 1)
+                {
+                    _items = GetAllValues();
+                }
+
+                if (_items == null || _items.Length < 1)
+                {
+                    throw new CannotPerformActionException("Can not get sub items.");
+                }
+
+                bool found = false;
+                int index = 0;
+                for (index = 0; index < _items.Length; index++)
+                {
+                    String curItem = _items[index];
+
+                    if (String.Compare(str, curItem, true) == 0)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found)
+                {
+                    SelectByIndex(index);
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Value: " + str + " is not existed.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not select by value: " + ex.Message);
+            }
+
         }
 
         public void SelectMulti(string[] strs)
@@ -74,17 +149,17 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                int childrenCount = MSAATestObject.GetChildCount(this._iAcc, (int)this._selfID);
+                int childrenCount = MSAATestObject.GetChildCount(this.IAcc, (int)this.SelfID);
 
                 for (int i = 0; i < childrenCount; i++)
                 {
                     //there are some children for combobox.
                     //one child's role text may "list", it contains the sub items.
-                    String role = MSAATestObject.GetRole(this._iAcc, i);
+                    String role = MSAATestObject.GetRole(this.IAcc, i);
 
                     if (String.Compare(role, "list", true) == 0)
                     {
-                        IAccessible listIAcc = MSAATestObject.GetChild(this._iAcc, i);
+                        IAccessible listIAcc = MSAATestObject.GetChild(this.IAcc, i);
 
                         int itemCount = MSAATestObject.GetChildCount(listIAcc, 0);
 
@@ -122,19 +197,18 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public string GetAction()
         {
-            return "Check";
+            return "Select";
         }
 
         public void DoAction(object parameter)
         {
             try
             {
-                int index = 0;
 
                 if (parameter != null)
                 {
                     string value = parameter.ToString();
-
+                    int index = 0;
                     if (int.TryParse(value, out index))
                     {
                         SelectByIndex(index);
@@ -144,9 +218,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                         Select(value);
                     }
                 }
-
-                SelectByIndex(index);
-
             }
             catch (TestException)
             {
@@ -164,7 +235,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public string GetText()
         {
-            return MSAATestObject.GetValue(this._iAcc, Convert.ToInt32(this._selfID));
+            return GetValue();
         }
 
         public string GetFontFamily()
