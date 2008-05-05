@@ -49,13 +49,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
         ScrollBar
     }
 
-    public class MSAATestObject : TestObject, IMSAA
+    public class MSAATestObject : TestObject, IMSAA, IWindows
     {
 
         #region fields
 
         //MSAA interface.
         protected IAccessible _iAcc;
+        protected int _selfID = 0;
 
         //MSAA property 
         protected String _defAction;
@@ -66,46 +67,33 @@ namespace Shrinerain.AutoTester.MSAAUtility
         protected String _role;
         protected String _state;
         protected String _value;
-
         protected int _id;
-        protected IntPtr _window;
-        protected String _msaaObjType;
-        protected int _selfID = 0;
 
+        //windows info.
+        protected String _class;
+        protected String _caption;
+        protected IntPtr _windowHandle;
+
+        protected String _msaaObjType;
         protected MSAATestObjectType _type;
 
         #endregion
 
         #region properties
 
-        public String Value
+        public IAccessible IAcc
         {
-            get { return _value; }
+            get { return _iAcc; }
         }
 
-        public String State
+        public int SelfID
         {
-            get { return _state; }
+            get { return _selfID; }
         }
 
-        public String Role
+        public String DefAction
         {
-            get { return _role; }
-        }
-
-        public int ChildCount
-        {
-            get { return _childCount; }
-        }
-
-        public IAccessible Parent
-        {
-            get { return _parent; }
-        }
-
-        public String Name
-        {
-            get { return _name; }
+            get { return _defAction; }
         }
 
         public String Description
@@ -113,9 +101,49 @@ namespace Shrinerain.AutoTester.MSAAUtility
             get { return _description; }
         }
 
-        public String DefaultAction
+        public String Name
         {
-            get { return _defAction; }
+            get { return _name; }
+        }
+
+        public IAccessible Parent
+        {
+            get { return _parent; }
+        }
+
+        public int ChildCount
+        {
+            get { return _childCount; }
+        }
+
+        public String Role
+        {
+            get { return _role; }
+        }
+
+        public String State
+        {
+            get { return _state; }
+        }
+
+        public String Value
+        {
+            get { return _value; }
+        }
+
+        public MSAATestObjectType Type
+        {
+            get { return _type; }
+        }
+
+        public String WindowsClass
+        {
+            get { return _class; }
+        }
+
+        public IntPtr WindowHandle
+        {
+            get { return GetHandle(); }
         }
 
         #endregion
@@ -166,13 +194,41 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 this._iAcc = parentAcc;
 
                 GetMSAAInfo();
-
             }
             catch (Exception ex)
             {
                 throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.Message);
             }
+        }
 
+        public MSAATestObject(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                throw new CannotBuildObjectException("Handle can not be 0.");
+            }
+
+            try
+            {
+                this._domain = "MSAA";
+                this._selfID = 0;
+                this._windowHandle = handle;
+
+                Win32API.AccessibleObjectFromWindow(handle, (int)Win32API.IACC.OBJID_CLIENT, ref Win32API.IACCUID, ref this._iAcc);
+
+                if (this._iAcc != null)
+                {
+                    GetMSAAInfo();
+                }
+                else
+                {
+                    throw new CannotBuildObjectException("Can not get MSAA interface from handle: " + handle);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build object from handle: " + ex.Message);
+            }
         }
 
         #endregion
@@ -240,7 +296,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 }
                 else if (String.Compare(propertyName, "rect", true) == 0 || String.Compare(propertyName, "location", true) == 0)
                 {
-                    return GetRect(_iAcc, _selfID);
+                    return GetRect();
                 }
                 else if (String.Compare(propertyName, "childCount", true) == 0)
                 {
@@ -288,6 +344,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region get msaa information
 
+        public String GetRole()
+        {
+            return GetRole(this._iAcc, _selfID);
+        }
+
         public static String GetRole(IAccessible iAcc, int childID)
         {
             if (iAcc != null && childID >= 0)
@@ -311,6 +372,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return "";
         }
 
+        public String GetValue()
+        {
+            return GetValue(this._iAcc, _selfID);
+        }
+
         public static String GetValue(IAccessible iAcc, int childID)
         {
             if (iAcc != null && childID >= 0)
@@ -330,6 +396,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             return "";
+        }
+
+        public String GetName()
+        {
+            return GetName(_iAcc, _selfID);
         }
 
         public static String GetName(IAccessible iAcc, int childID)
@@ -353,6 +424,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return "";
         }
 
+        public String GetDefAction()
+        {
+            return GetDefAction(_iAcc, _selfID);
+        }
+
         public static String GetDefAction(IAccessible iAcc, int childID)
         {
             if (iAcc != null && childID >= 0)
@@ -374,6 +450,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return "";
         }
 
+        public String GetDesc()
+        {
+            return GetDesc(_iAcc, _selfID);
+        }
+
         public static String GetDesc(IAccessible iAcc, int childID)
         {
             if (iAcc != null && childID >= 0)
@@ -393,6 +474,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             return "";
+        }
+
+        public String GetState()
+        {
+            return GetState(_iAcc, _selfID);
         }
 
         public static String GetState(IAccessible iAcc, int childID)
@@ -419,6 +505,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         }
 
+        public IAccessible GetParent()
+        {
+            return GetParent(_iAcc, _selfID);
+        }
+
         public static IAccessible GetParent(IAccessible iAcc, int childID)
         {
             if (iAcc != null)
@@ -441,6 +532,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             return null;
+        }
+
+        public IAccessible GetChild(int childID)
+        {
+            return GetChild(_iAcc, childID);
         }
 
         public static IAccessible GetChild(IAccessible iAcc, int childID)
@@ -469,6 +565,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return null;
         }
 
+        public int GetChildCount()
+        {
+            return GetChildCount(_iAcc, _selfID);
+        }
+
         public static int GetChildCount(IAccessible iAcc, int childID)
         {
             try
@@ -479,6 +580,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 return 0;
             }
+        }
+
+        public Rectangle GetRect()
+        {
+            return GetRect(_iAcc, _selfID);
         }
 
         public static Rectangle GetRect(IAccessible iAcc, int childID)
@@ -497,7 +603,81 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
-        public static IntPtr GetWindowsHandle(IAccessible iAcc, int childID)
+        #endregion
+
+        #region IWindows Members
+
+        public IntPtr GetHandle()
+        {
+            if (_windowHandle == IntPtr.Zero)
+            {
+                _windowHandle = GetWindowsHandle(this._iAcc, this._selfID);
+            }
+
+            return _windowHandle;
+        }
+
+        public string GetClass()
+        {
+            throw new NotImplementedException();
+        }
+
+        public String GetCaption()
+        {
+            try
+            {
+                StringBuilder sb = new StringBuilder(128);
+                Win32API.GetWindowText(_windowHandle, sb, 128);
+
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get windows caption: " + ex.Message);
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region private methods
+
+        /* void GetMSAAInfo()
+         * Get MSAA information.
+         */
+        protected virtual void GetMSAAInfo()
+        {
+            try
+            {
+                _name = this._iAcc.get_accName(_selfID);
+                _defAction = this._iAcc.get_accDefaultAction(_selfID);
+                _description = this._iAcc.get_accDescription(_selfID);
+
+                //if the self id is 0, means the current MSAA interface is belong to this object, or belong to it's parent.
+                //then try to find the parent. 
+                if (Convert.ToInt32(_selfID) == 0)
+                {
+                    _parent = (IAccessible)this._iAcc.accParent;
+                    _childCount = this._iAcc.accChildCount;
+                }
+
+                _role = GetRole();
+                _state = GetState();
+                _value = this._iAcc.get_accValue(_selfID);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not get MSAA property: " + ex.Message);
+            }
+
+        }
+
+        private static IntPtr GetWindowsHandle(IAccessible iAcc, int childID)
         {
             try
             {
@@ -521,42 +701,5 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #endregion
 
         #endregion
-
-        #region private methods
-
-        /* void GetMSAAInfo()
-         * Get MSAA information.
-         */
-        protected virtual void GetMSAAInfo()
-        {
-
-            try
-            {
-                _name = this._iAcc.get_accName(_selfID);
-                _defAction = this._iAcc.get_accDefaultAction(_selfID);
-                _description = this._iAcc.get_accDescription(_selfID);
-
-                //if the self id is 0, means the current MSAA interface is belong to this object, or belong to it's parent.
-                //then try to find the parent. 
-                if (Convert.ToInt32(_selfID) == 0)
-                {
-                    _parent = (IAccessible)this._iAcc.accParent;
-                    _childCount = this._iAcc.accChildCount;
-                }
-
-                _role = GetRole(this._iAcc, Convert.ToInt32(_selfID));
-                _state = GetState(this._iAcc, Convert.ToInt32(_selfID));
-                _value = this._iAcc.get_accValue(_selfID).ToString();
-            }
-            catch
-            {
-            }
-
-        }
-
-        #endregion
-
-        #endregion
-
     }
 }

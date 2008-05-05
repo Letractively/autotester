@@ -49,6 +49,77 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region properties
 
+        public virtual Rectangle Rect
+        {
+            get
+            {
+                return _rect;
+            }
+        }
+
+        public virtual int Left
+        {
+            get
+            {
+                return this._rect.Left;
+            }
+        }
+
+        public virtual int Top
+        {
+            get
+            {
+                return this._rect.Top;
+            }
+        }
+
+        public virtual int Width
+        {
+            get
+            {
+                return this._rect.Width;
+            }
+        }
+
+        public virtual int Height
+        {
+            get
+            {
+                return this._rect.Height;
+            }
+        }
+
+        public virtual Point CenterPoint
+        {
+            get
+            {
+                return _centerPoint;
+            }
+        }
+
+        public virtual bool Enable
+        {
+            get
+            {
+                return _isEnable;
+            }
+        }
+
+        public virtual bool Visible
+        {
+            get
+            {
+                return _isVisible;
+            }
+        }
+
+        public virtual bool Readonly
+        {
+            get
+            {
+                return _isReadonly;
+            }
+        }
 
         #endregion
 
@@ -64,10 +135,33 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public MSAATestGUIObject(IAccessible parentAcc, int childID)
             : base(parentAcc, childID)
         {
-            this._isEnable = IsEnable();
-            this._isVisible = IsVisible();
-            this._isReadonly = IsReadonly();
-            GetRectOnScreen();
+            try
+            {
+                this._isEnable = IsEnable();
+                this._isVisible = IsVisible();
+                this._isReadonly = IsReadonly();
+                GetRectOnScreen();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build GUI object: " + ex.Message);
+            }
+        }
+
+        public MSAATestGUIObject(IntPtr handle)
+            : base(handle)
+        {
+            try
+            {
+                this._isEnable = IsEnable();
+                this._isVisible = IsVisible();
+                this._isReadonly = IsReadonly();
+                GetRectOnScreen();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build GUI object: " + ex.Message);
+            }
         }
 
         #endregion
@@ -83,10 +177,10 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public virtual Rectangle GetRectOnScreen()
         {
-            if (this._iAcc != null)
+            if (this.IAcc != null)
             {
                 int left, top, width, height;
-                this._iAcc.accLocation(out left, out top, out width, out height, _selfID);
+                this.IAcc.accLocation(out left, out top, out width, out height, SelfID);
 
                 if (width < 1 || height < 1)
                 {
@@ -112,12 +206,15 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public virtual void Hover()
         {
-            MouseOp.MoveTo(_centerPoint);
+            if (!_sendMsgOnly)
+            {
+                MouseOp.MoveTo(_centerPoint);
+            }
         }
 
         public virtual bool IsVisible()
         {
-            string state = GetState(this._iAcc, Convert.ToInt32(this._selfID));
+            string state = GetState();
 
             if (String.IsNullOrEmpty(state))
             {
@@ -131,7 +228,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public virtual bool IsEnable()
         {
-            string state = GetState(this._iAcc, Convert.ToInt32(this._selfID));
+            string state = GetState();
 
             if (String.IsNullOrEmpty(state))
             {
@@ -145,7 +242,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public virtual bool IsReadonly()
         {
-            string state = GetState(this._iAcc, Convert.ToInt32(this._selfID));
+            string state = GetState();
 
             return true;
         }
