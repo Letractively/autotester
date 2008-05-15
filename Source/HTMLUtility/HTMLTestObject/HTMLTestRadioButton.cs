@@ -300,11 +300,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //for radio button, we think the text on the right is it's label.
                 if (!String.IsNullOrEmpty(label))
                 {
-                    if (!String.IsNullOrEmpty(label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[1]))
+                    if (label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries).Length > 1)
                     {
                         return label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[1];
                     }
-                    else if (!String.IsNullOrEmpty(label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0]))
+                    else if (label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries).Length > 0)
                     {
                         return label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0];
                     }

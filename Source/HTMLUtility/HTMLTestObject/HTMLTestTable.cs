@@ -8,7 +8,6 @@
   *
   * Description: This class defines the actions for <Table>.
   *              
-  *
   * History: 2007/09/04 wan,yu Init version
   *
   *********************************************************************/

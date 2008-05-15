@@ -334,6 +334,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //2008/01/12 wan,yu update
                     //getObjectByName will return more than 1 object(if have), so we need a collection to
                     //store these objects.
+                    //in HTML, .id is unique, but .name is not, so we may get a collection.
                     //we will check each object.
                     IHTMLElementCollection nameObjectsCol = _htmlTestBrowser.GetObjectsByName(name);
 
@@ -345,8 +346,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         nameObj = (object)i;
                         indexObj = (object)i;
 
-                        //get the object collection with the same name.
-                        // in HTML, .id is unique, but .name is not, so we may get a collection.
                         _tempElement = (IHTMLElement)nameObjectsCol.item(nameObj, indexObj);
 
                         if (!IsVisible(_tempElement))
@@ -2381,7 +2380,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return HTMLTestObjectType.RadioButton;
                 }
             }
-            else if (tag == "TEXTAERA")
+            else if (tag == "TEXTAREA")
             {
                 return HTMLTestObjectType.TextBox;
             }

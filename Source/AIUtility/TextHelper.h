@@ -1,6 +1,7 @@
 #pragma once
 
 using namespace System;
+using namespace System::Collections::Generic;
 
 namespace Shrinerain
 {
@@ -51,12 +52,14 @@ namespace Shrinerain
 			public ref class TextHelper
 			{
 			private:
+				static Dictionary<String^,int>^ _cache=gcnew  Dictionary<String^,int>();
+				static initonly String^ _keySP="__WY__";
 				static initonly int _defaultPercent=70;
 			public:
 				static CharClass GetCharClass(char ch);
 				static array<String^>^ SplitWords(String^ text);
 				static int CalSimilarPercent(String^ str1, String^ str2);
-				static int CalSimilarPercent(String^ str1, String^ str2, bool ignoreCase, bool compressBlank);
+				static int CalSimilarPercent(String^ str1, String^ str2, bool ignoreCase, bool ignoreBlank);
 				static int CalStyleSimPercent(String^ str1, String^ str2);
 				static String^ GetShortWord(String^ word);
 

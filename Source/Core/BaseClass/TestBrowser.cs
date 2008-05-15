@@ -386,6 +386,12 @@ namespace Shrinerain.AutoTester.Core
 
         }
 
+        public virtual void Start(String url)
+        {
+            Start();
+            Load(url);
+        }
+
         /*  void Find(object browserTitle)
          *  find an instance of browser by its title.
          *  eg: Google.com.
@@ -1693,8 +1699,6 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-
-
         #endregion
 
         #region get handles of each windows control
@@ -1815,6 +1819,8 @@ namespace Shrinerain.AutoTester.Core
 
             if (ieServerHandle != IntPtr.Zero)
             {
+                mshtml.HTMLDocument doc = new mshtml.HTMLDocument();
+
                 int nMsg = Win32API.RegisterWindowMessage("WM_HTML_GETOBJECT");
 
                 UIntPtr lRes;
@@ -1823,7 +1829,6 @@ namespace Shrinerain.AutoTester.Core
                 {
                     return null;
                 }
-
                 return (HTMLDocument)Win32API.ObjectFromLresult(lRes, typeof(IHTMLDocument).GUID, IntPtr.Zero);
             }
             else

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Interface")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("shrinerain")]
+[assembly: AssemblyCompany("Shrinerain")]
 [assembly: AssemblyProduct("Interface")]
 [assembly: AssemblyCopyright("版权所有 (C) shrinerain 2007")]
 [assembly: AssemblyTrademark("")]
