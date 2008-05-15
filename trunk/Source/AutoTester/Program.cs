@@ -90,7 +90,8 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
-            Other.Test();
+            Google.Test();
+            //Other.Test();
            // Qidian.Test();
         }
     }

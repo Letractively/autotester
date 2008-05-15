@@ -209,12 +209,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                base.Dispose();
                 if (_actionFinished != null)
                 {
                     //_actionFinished.Close();
                     //_actionFinished = null;
                 }
+                base.Dispose();
                 GC.SuppressFinalize(this);
             }
             catch

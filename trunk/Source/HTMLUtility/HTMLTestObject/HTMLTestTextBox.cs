@@ -76,7 +76,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                if (this.Tag == "TEXTAERA")
+                if (this.Tag == "TEXTAREA")
                 {
                     _textAreaElement = (IHTMLTextAreaElement)element;
 
@@ -333,7 +333,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 string label = GetAroundText(element);
 
                 //for textbox, we think the text on the left is it's label.
-                if (!String.IsNullOrEmpty(label) && !String.IsNullOrEmpty(label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0]))
+                if (!String.IsNullOrEmpty(label) && label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries).Length > 0)
                 {
                     return label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries)[0];
                 }

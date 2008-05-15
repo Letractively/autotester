@@ -22,7 +22,7 @@ using namespace System::Collections;
 using namespace System::Collections::Generic;
 
 using namespace Shrinerain::AutoTester::AIUtility;
-
+ 
 /* int CalSimilarPercent(string str1, string str2)
 * return the similarity of 2 strings, use dynamic programming.
 * the similarity = the count of same chracters *2 /(length of str1 + length of str2)
@@ -43,6 +43,25 @@ int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bo
 	}
 	else
 	{
+		if(ignoreCase)
+		{
+			str1=str1->ToUpper();
+			str2=str2->ToUpper();
+		}
+
+		if(ignoreBlank)
+		{
+			str1=str1->Replace(" ","");
+			str2=str2->Replace(" ","");
+		}
+
+		String^ key=str1+_keySP+str2;
+
+		if(_cache->ContainsKey(key))
+		{
+			return _cache[key];
+		}
+
 		//both two strings are not empty, then we can start to check the similar percent.
 		int len1 = str1->Length;
 		int len2 = str2->Length;
@@ -53,38 +72,13 @@ int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bo
 		//init array
 		int curIndex = 0;
 
-		bool same=false;
-
 		for (int i = 0; i < len1; i++)
 		{
-			if(ignoreBlank && str1[i]==' ')
-			{
-				continue;
-			}
-
 			for (int j = 0; j < len2; j++)
 			{
-				if(ignoreBlank && str2[j]==' ')
-				{
-					continue;
-				}
-
-				same=false;
-
 				curIndex = (j + 1) * (len1 + 1) + i + 1;
 
-				if (str1[i] == str2[j])
-				{
-					same=true;
-				}
-				else if(ignoreCase&& (str1[i]-str2[j]==32 || str1[i]-str2[j]==-32)
-					&& str1[i]>=65 && str1[i]<=122
-					&& str2[j]>=65 && str2[j]<=122)
-				{
-					same=true;
-				}
-
-				if(same)
+				if(str1[i] == str2[j])
 				{
 					if (i == 0 || j == 0)
 					{
@@ -102,6 +96,8 @@ int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bo
 			}
 		}
 
+        //distance is used to calculate the 跳跃度.
+		int distance=0;
 		int currentSameCharCount = 0;
 		int totalSameCharCount = 0;
 		int totalLen = len1 + len2;
@@ -135,6 +131,7 @@ int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bo
 				}
 			}
 
+			//获取当前跳跃度
 			for (int j = str2Index; j > 0; j--)
 			{
 				curIndex = j * (len1 + 1) + str1Index;
@@ -153,6 +150,17 @@ int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bo
 				}
 			}
 
+			if(maxStr1Index<str1Index || maxStr2Index<str2Index)
+			{
+				int curDistance=str1Index-maxStr1Index+str2Index-maxStr2Index;
+				if(curDistance<0)
+				{
+					curDistance=-curDistance;
+				}
+
+				distance+=curDistance;
+			}
+
 			totalSameCharCount += currentSameCharCount;
 
 			if (currentSameCharCount > 0)
@@ -168,7 +176,10 @@ int TextHelper::CalSimilarPercent(String ^str1,String ^str2, bool ignoreCase, bo
 
 		}
 
-		return Convert::ToInt32((float)(totalSameCharCount * 2 * 100) / (float)totalLen);
+		int simP=Convert::ToInt32((float)(totalSameCharCount * 2 * 100)*(float)(totalLen-distance/2)/(float)totalLen/(float)totalLen);
+
+		_cache->Add(key,simP);
+		return simP;
 	}
 }
 

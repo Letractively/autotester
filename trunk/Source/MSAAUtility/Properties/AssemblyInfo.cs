@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("MSAAUtility")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("SAP")]
+[assembly: AssemblyCompany("Shrinerain")]
 [assembly: AssemblyProduct("MSAAUtility")]
-[assembly: AssemblyCopyright("Copyright © SAP 2008")]
+[assembly: AssemblyCopyright("Copyright © shrinerain 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

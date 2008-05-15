@@ -374,13 +374,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual string GetCustomMethodName()
         {
-
-            if (this._sourceElement.getAttribute("onclick", 0) != null && this._sourceElement.getAttribute("onclick", 0).GetType().ToString() != "System.DBNull")
+            string methodName="";
+            if (HTMLTestObject.TryGetProperty(this._sourceElement, "onclick", out methodName))
             {
-                return this._sourceElement.getAttribute("onclick", 0).ToString().Trim();
+                return methodName;
             }
-
-            return "";
+            else
+            {
+                return "";
+            }
         }
 
         public override void Hover()
