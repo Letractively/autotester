@@ -292,6 +292,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new NotImplementedException();
         }
 
+        public virtual Object GetChild(int childIndex)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion

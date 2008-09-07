@@ -50,7 +50,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //HTML element.
         protected IHTMLSelectElement _htmlSelectElement;
-        //protected HTMLSelectElementClass _htmlSelectClass;
 
         #endregion
 
@@ -85,7 +84,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
-                //_htmlSelectClass = (HTMLSelectElementClass)element;
             }
             catch (Exception ex)
             {
@@ -107,9 +105,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._selectedValue = "";
             }
+        }
 
+        #endregion
+
+        #region public methods
+
+
+        public override Rectangle GetRectOnScreen()
+        {
             try
             {
+                this._rect = base.GetRectOnScreen();
+
                 this._className = "Internet Explorer_TridentCmboBx";
 
                 //find the windows handle of combo box, it's class name is "Internet Explorer_TridentCmboBx".
@@ -125,6 +133,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //we compare the position of the Windows control and HTML object. if they have same position, that means we find it.
                     if ((centerX > this.Rect.Left && centerX < this.Rect.Left + this.Rect.Width) && (centerY > this.Rect.Top && centerY < this.Rect.Top + this.Rect.Height))
                     {
+                        this._rect = new Rectangle(tmpRect.left, tmpRect.top, tmpRect.Width, tmpRect.Height);
                         this._handle = comboboxHandle;
                         break;
                     }
@@ -149,11 +158,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._itemHeight = 13;
             }
 
+            return this._rect;
+
         }
-
-        #endregion
-
-        #region public methods
 
         /* void Select(string value)
          * select an item by text.
@@ -428,7 +435,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 listHeight = this._itemHeight * this._allValues.Length;
             }
 
-            if (this._rect.Top + listHeight > _browser.ClientHeight)
+            if (this._rect.Top + listHeight > System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height)
             {
                 isDownward = false;
             }

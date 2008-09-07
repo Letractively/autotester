@@ -1143,7 +1143,7 @@ namespace Shrinerain.AutoTester.Win32
         public static extern int AccessibleChildren(IAccessible paccContainer, int iChildStart, int cChildren, [Out] object[] rgvarChildren, out int pcObtained);
 
         [DllImport("oleacc.dll", PreserveSig = false)]
-        [return: MarshalAs(UnmanagedType.Interface)]
+        [return: MarshalAs(UnmanagedType.Interface)] 
         public static extern object ObjectFromLresult(UIntPtr lResult,
              [MarshalAs(UnmanagedType.LPStruct)] Guid refiid, IntPtr wParam);
 

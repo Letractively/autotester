@@ -40,7 +40,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Custom
     }
 
-    public class HTMLTestMsgBox : HTMLTestGUIObject, IWindows, IShowInfo, IClickable, IContainer
+    public class HTMLTestMsgBox : HTMLTestGUIObject, IWindows, IShowInfo, IClickable
     {
 
         #region fields
@@ -326,15 +326,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public virtual void DoAction(object parameter)
         {
             Click();
-        }
-
-        #endregion
-
-        #region IContainer Members
-
-        public virtual object[] GetChildren()
-        {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion

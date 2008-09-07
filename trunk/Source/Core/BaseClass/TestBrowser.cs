@@ -142,6 +142,24 @@ namespace Shrinerain.AutoTester.Core
 
         #region Properties
 
+        public InternetExplorer InternalBrowser
+        {
+            get { return this._ie; }
+            set
+            {
+                this._ie = value;
+            }
+        }
+
+        public int BrowserCount
+        {
+            get
+            {
+                InternetExplorer[] curIEs = GetAllBrowsers();
+                return curIEs == null ? 0 : curIEs.Length;
+            }
+        }
+
         public int MaxWaitSeconds
         {
             get { return this._maxWaitSeconds; }
@@ -632,6 +650,20 @@ namespace Shrinerain.AutoTester.Core
             catch (Exception ex)
             {
                 throw new CannotNavigateException("Can not refresh: " + ex.Message);
+            }
+        }
+
+        //use the top most browser.
+        public virtual bool SetTopBrowser()
+        {
+            try
+            {
+                SetBrowser(GetTopmostBrowser());
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -1433,6 +1465,8 @@ namespace Shrinerain.AutoTester.Core
             return null;
         }
 
+
+
         /* void RefreshBrowser(InternetExplorer ie)
          * use the new ie to replace old instance.
          */
@@ -1447,12 +1481,7 @@ namespace Shrinerain.AutoTester.Core
                     InternetExplorer tmp = _ie;
 
                     //set handle
-                    this._mainHandle = (IntPtr)ie.HWND;
-
-                    MaxSize();
-
-                    //register event.
-                    RegBrowserEvent(ie);
+                    this._mainHandle = (IntPtr)ie.HWND;             
 
                     try
                     {
@@ -1468,6 +1497,11 @@ namespace Shrinerain.AutoTester.Core
 
                     //set Internet Explorer.
                     this._ie = ie;
+
+                    MaxSize();
+
+                    //register event.
+                    RegBrowserEvent(ie);
 
                     if (!ie.Busy)
                     {
@@ -1516,6 +1550,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
+                    this._ie = null;
                     throw new CannotAttachBrowserException("Can not get previous handle: " + ex.Message);
                 }
             }

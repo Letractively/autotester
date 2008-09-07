@@ -12,23 +12,23 @@
 *
 *********************************************************************/
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
-using System.Threading;
-using System.Drawing;
-
-using Shrinerain.AutoTester.HTMLUtility;
-using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Interface;
-using Shrinerain.AutoTester.Framework;
-using Shrinerain.AutoTester.Win32;
-using Shrinerain.AutoTester.Helper;
-using Shrinerain.AutoTester.MSAAUtility;
-
 namespace Shrinerain.AutoTester
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Diagnostics;
+    using System.Threading;
+    using System.Drawing;
+
+    using Shrinerain.AutoTester.HTMLUtility;
+    using Shrinerain.AutoTester.Core;
+    using Shrinerain.AutoTester.Interface;
+    using Shrinerain.AutoTester.Framework;
+    using Shrinerain.AutoTester.Win32;
+    using Shrinerain.AutoTester.Helper;
+    using Shrinerain.AutoTester.MSAAUtility;
+
     class Program
     {
         static void Main(string[] args)
@@ -90,6 +90,8 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+            //MSAA.Test();
+            //Baidu.Test();
             Google.Test();
             //Other.Test();
            // Qidian.Test();

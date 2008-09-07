@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestLink : HTMLTestGUIObject, IClickable, IContainer, IShowInfo, IStatus
+    public class HTMLTestLink : HTMLTestGUIObject, IClickable, IShowInfo, IStatus
     {
 
         #region fields
@@ -207,16 +207,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public virtual void DoAction(object para)
         {
             Click();
-        }
-
-        public virtual Object[] GetChildren()
-        {
-            if (_childeren != null)
-            {
-                return _childeren;
-            }
-
-            return null;
         }
 
         #region IShowInfo Members

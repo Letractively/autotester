@@ -2,6 +2,7 @@
 
 using namespace System;
 using namespace System::Collections::Generic;
+using namespace System::Text::RegularExpressions;
 
 namespace Shrinerain
 {
@@ -52,6 +53,7 @@ namespace Shrinerain
 			public ref class TextHelper
 			{
 			private:
+				static Regex^ _blankReg = gcnew Regex(" +", RegexOptions::IgnoreCase | RegexOptions::Compiled);
 				static Dictionary<String^,int>^ _cache=gcnew  Dictionary<String^,int>();
 				static initonly String^ _keySP="__WY__";
 				static initonly int _defaultPercent=70;
@@ -59,7 +61,8 @@ namespace Shrinerain
 				static CharClass GetCharClass(char ch);
 				static array<String^>^ SplitWords(String^ text);
 				static int CalSimilarPercent(String^ str1, String^ str2);
-				static int CalSimilarPercent(String^ str1, String^ str2, bool ignoreCase, bool ignoreBlank);
+				static int CalSimilarPercent(String^ str1, String^ str2,  bool compressBlank,bool ignoreCase);
+				static int LCSSum(String^ str1, String^ str2,  bool ignoreBlank, bool ignoreCase);
 				static int CalStyleSimPercent(String^ str1, String^ str2);
 				static String^ GetShortWord(String^ word);
 
