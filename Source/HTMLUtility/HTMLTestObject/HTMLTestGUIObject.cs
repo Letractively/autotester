@@ -262,12 +262,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     top += parent.offsetTop;
                     left += parent.offsetLeft;
+
+                    if (parent.offsetTop == 0 && parent.offsetLeft == 0)
+                    {
+                        top++;
+                        left++;
+                    }
+
                     parent = parent.offsetParent;
                 }
 
                 //get the browser information, get the real position on screen.
-                top += _browser.ClientTop;
-                left += _browser.ClientLeft;
+                top += _browser.ClientTop + 1;
+                left += _browser.ClientLeft + 1;
 
                 top -= _browser.ScrollTop;
                 left -= _browser.ScrollLeft;

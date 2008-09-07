@@ -159,7 +159,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
                     if (String.Compare(role, "list", true) == 0)
                     {
-                        IAccessible listIAcc = MSAATestObject.GetChild(this.IAcc, i);
+                        IAccessible listIAcc = MSAATestObject.GetChildIAcc(this.IAcc, i);
 
                         int itemCount = MSAATestObject.GetChildCount(listIAcc, 0);
 

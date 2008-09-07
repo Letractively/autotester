@@ -297,14 +297,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return _msgBox;
         }
 
-        public HTMLTestRadioButton RadioBtn()
+        public HTMLTestRadioButton RadioButton()
         {
             _radioBtn = (HTMLTestRadioButton)GetNamelessObject("radio");
 
             return _radioBtn;
         }
 
-        public HTMLTestRadioButton RadioBtn(string name)
+        public HTMLTestRadioButton RadioButton(string name)
         {
             GetMapObject(name, HTMLTestObjectType.RadioButton);
 

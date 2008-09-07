@@ -27,6 +27,8 @@ namespace Shrinerain.AutoTester.Interface
         //operation on desktop applicatoin
         void Start(string appFullPath);
         void Start(string appFullPath, string[] parameters);
+        void Find(IntPtr handle);
+        void Find(String caption, String className);
         void Close();
 
         void Move(int x, int y);

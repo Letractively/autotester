@@ -21,5 +21,6 @@ namespace Shrinerain.AutoTester.Core
     public interface IContainer
     {
         object[] GetChildren();
+        object GetChild(int childIndex);
     }
 }

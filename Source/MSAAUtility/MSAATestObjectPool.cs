@@ -78,7 +78,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         private static StringBuilder _keySB = new StringBuilder(128);
 
         //delegate for check methods.
-        private delegate bool CheckObjectDelegate(IAccessible iAcc, int childID, string value, int simPercent);
+        private delegate bool CheckObjectDelegate(IAccessible iAcc, int childID, Object[] values, int simPercent);
 
         #endregion
 
@@ -175,7 +175,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     GetRootMSAAInterface();
 
                     //check object by type
-                    if (CheckMSAAElement(ref _curIACC, ref _curChildID, name, simPercent, CheckObjectByName))
+                    if (CheckMSAAElement(ref _curIACC, ref _curChildID, new object[] { name }, simPercent, CheckObjectByName))
                     {
                         _testObj = BuildObjectByType(_curIACC, _curChildID, GetObjectType(_curIACC, _curChildID));
 
@@ -463,13 +463,16 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region private methods
 
-        private bool CheckObjectByName(IAccessible iAcc, int childID, String name, int simPercent)
+        private bool CheckObjectByName(IAccessible iAcc, int childID, Object[] name, int simPercent)
         {
-            if (iAcc != null && childID >= 0 && !String.IsNullOrEmpty(name))
+
+            if (iAcc != null && childID >= 0 && name != null)
             {
+                string expectedName = name[0].ToString();
+
                 string curName = MSAATestObject.GetName(iAcc, childID);
 
-                return Searcher.IsStringLike(curName, name, simPercent);
+                return Searcher.IsStringLike(curName, expectedName, simPercent);
             }
 
             return false;
@@ -486,35 +489,49 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             else if (type == MSAATestObjectType.Button)
             {
-                return CheckMSAAElement(ref iAcc, ref childID, value, simPercent, CheckButtonObject);
+                return CheckMSAAElement(ref iAcc, ref childID, new object[] { value }, simPercent, CheckButtonObject);
             }
 
             return false;
         }
 
-        private bool CheckButtonObject(IAccessible iAcc, int childID, String value, int simPercent)
+        private bool CheckButtonObject(IAccessible iAcc, int childID, Object[] value, int simPercent)
         {
             if (iAcc != null && childID >= 0)
             {
                 if (GetObjectType(iAcc, childID) == MSAATestObjectType.Button)
                 {
-                    string name = MSAATestObject.GetName(iAcc, childID);
-
-                    if (!String.IsNullOrEmpty(name))
+                    if (value == null || value[0] == null)
                     {
-                        if (Searcher.IsStringLike(value, name, simPercent))
+                        return true;
+                    }
+                    else
+                    {
+                        string expectedVal = value[0].ToString();
+
+                        string name = MSAATestObject.GetName(iAcc, childID);
+
+                        if (!String.IsNullOrEmpty(name))
                         {
-                            return true;
+                            if (Searcher.IsStringLike(expectedVal, name, simPercent))
+                            {
+                                return true;
+                            }
                         }
                     }
+
                 }
             }
 
             return false;
         }
 
-        private bool CheckMSAAElement(ref IAccessible iAcc, ref int childID, string value, int simPercent, CheckObjectDelegate checkObjDelegate)
+        /* bool CheckMSAAElement(ref IAccessible iAcc, ref int childID, string value, int simPercent, CheckObjectDelegate checkObjDelegate)
+         * Go through each MSAA element, use the delegate to check it.
+         */
+        private bool CheckMSAAElement(ref IAccessible iAcc, ref int childID, object[] values, int simPercent, CheckObjectDelegate checkObjDelegate)
         {
+            //if the iAcc is null, means it is the first time to check.
             if (iAcc == null)
             {
                 iAcc = GetRootMSAAInterface();
@@ -523,60 +540,45 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             if (iAcc != null)
             {
+                //check state, ensure the object is visible.
                 string state = MSAATestObject.GetState(iAcc, childID);
-                string name = MSAATestObject.GetName(iAcc, childID);
-
-                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) >= 0)
                 {
-                    if (checkObjDelegate(iAcc, childID, value, simPercent))
-                    {
-                        return true;
-                    }
+                    return false;
                 }
 
-                int childCount = childID > 0 ? 0 : iAcc.accChildCount;
+                //call delegate to perform check.
+                if (checkObjDelegate(iAcc, childID, values, simPercent))
+                {
+                    return true;
+                }
 
+                IAccessible parentIAcc = iAcc;
+
+                //check each child element.
+                int childCount = childID > 0 ? 0 : iAcc.accChildCount;
                 if (childCount > 0)
                 {
-                    object[] childrenObj = new object[childCount];
-
-                    int count = 0;
-                    Win32API.AccessibleChildren(iAcc, 0, childCount, childrenObj, out count);
-
                     for (int i = 0; i < childCount; i++)
                     {
                         try
                         {
-                            IAccessible childIACC = (IAccessible)childrenObj[i];        //iAcc.get_accChild(tmpChildID);
+                            IAccessible childIAcc = MSAATestObject.GetChildIAcc(parentIAcc, i);
 
-                            if (childIACC != null)
+                            if (childIAcc != null)
                             {
-                                state = MSAATestObject.GetState(childIACC, 0);
-
-                                //child also support IACC, check each child.
-                                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
-                                {
-                                    int tmpID = 0;
-                                    if (CheckMSAAElement(ref childIACC, ref tmpID, value, simPercent, checkObjDelegate))
-                                    {
-                                        iAcc = childIACC;
-                                        childID = tmpID;
-                                        return true;
-                                    }
-                                }
+                                iAcc = childIAcc;
+                                childID = 0;
                             }
                             else
                             {
-                                state = MSAATestObject.GetState(iAcc, i);
+                                iAcc = parentIAcc;
+                                childID = i + 1;
+                            }
 
-                                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
-                                {
-                                    if (checkObjDelegate(iAcc, i, value, simPercent))
-                                    {
-                                        childID = i;
-                                        return true;
-                                    }
-                                }
+                            if (CheckMSAAElement(ref iAcc, ref childID, values, simPercent, checkObjDelegate))
+                            {
+                                return true;
                             }
                         }
                         catch
@@ -595,6 +597,10 @@ namespace Shrinerain.AutoTester.MSAAUtility
             if (type == MSAATestObjectType.Button)
             {
                 return new MSAATestButton(iAcc, childID);
+            }
+            else if (type == MSAATestObjectType.TextBox)
+            {
+                return new MSAATestTextBox(iAcc, childID);
             }
 
             return new MSAATestGUIObject(iAcc, childID);
@@ -717,11 +723,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     if (!_isBrowser)
                     {
-                        Win32API.AccessibleObjectFromWindow(this._testApp.Handle, (int)Win32API.IACC.OBJID_WINDOW, ref Win32API.IACCUID, ref this._rootMSAAInterface);
+                        Win32API.AccessibleObjectFromWindow(this._testApp.Handle, (int)Win32API.IACC.OBJID_CLIENT, ref Win32API.IACCUID, ref this._rootMSAAInterface);
                     }
                     else
                     {
-                        Win32API.AccessibleObjectFromWindow(this._testBrowser.IEServerHandle, (int)Win32API.IACC.OBJID_WINDOW, ref Win32API.IACCUID, ref this._rootMSAAInterface);
+                        Win32API.AccessibleObjectFromWindow(this._testBrowser.IEServerHandle, (int)Win32API.IACC.OBJID_CLIENT, ref Win32API.IACCUID, ref this._rootMSAAInterface);
                     }
                 }
 
@@ -761,6 +767,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
                 if (!String.IsNullOrEmpty(role))
                 {
+                    role = role.ToLower();
+
                     if (role.IndexOf("push") >= 0 || role.IndexOf("button") >= 0)
                     {
                         return MSAATestObjectType.Button;
@@ -769,14 +777,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     {
                         if (String.IsNullOrEmpty(action))
                         {
-                            if (state.IndexOf("read only") >= 0)
+                            if (state.IndexOf("read only", StringComparison.CurrentCultureIgnoreCase) >= 0)
                             {
                                 return MSAATestObjectType.Label;
                             }
                         }
                         else
                         {
-                            if (action.IndexOf("Jump") >= 0)
+                            if (action.IndexOf("Jump", StringComparison.CurrentCultureIgnoreCase) >= 0)
                             {
                                 return MSAATestObjectType.Link;
                             }
@@ -812,15 +820,15 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
                 if (!String.IsNullOrEmpty(action))
                 {
-                    if (action.IndexOf("Press") >= 0)
+                    if (action.IndexOf("Press", StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
                         return MSAATestObjectType.Button;
                     }
-                    else if (action.IndexOf("Collapse") >= 0 || action.IndexOf("Expand") >= 0)
+                    else if (action.IndexOf("Collapse", StringComparison.CurrentCultureIgnoreCase) >= 0 || action.IndexOf("Expand", StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
                         return MSAATestObjectType.Tree;
                     }
-                    else if (action.IndexOf("Jump") >= 0)
+                    else if (action.IndexOf("Jump", StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
                         return MSAATestObjectType.Link;
                     }

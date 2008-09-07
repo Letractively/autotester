@@ -135,24 +135,75 @@ namespace Shrinerain.AutoTester.Core
                 }
             }
 
-
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = appFullPath;
             startInfo.Arguments = arg;
+            startInfo.UseShellExecute = false;
 
             //process to start application.
             _appProcess = new Process();
             _appProcess.StartInfo = startInfo;
 
+
             //if not sucessful
-            if (!_appProcess.Start())
+            if (_appProcess.Start())
             {
-                throw new CannotStartAppException("Can not start test application: " + appFullPath + " with parameters: " + arg);
+                int times = 0;
+                while (times < _maxWaitSeconds)
+                {
+                    Thread.Sleep(_interval * 1000);
+                    times += _interval;
+
+                    //get the main handle.
+                    this._rootHandle = _appProcess.MainWindowHandle;
+                    if (this._rootHandle != IntPtr.Zero)
+                    {
+                        break;
+                    }
+                }
+
+                if (this._rootHandle != IntPtr.Zero)
+                {
+                    return;
+                }
+            }
+
+            throw new CannotStartAppException("Can not start test application: " + appFullPath + " with parameters: " + arg);
+        }
+
+        /* void Find(IntPtr handle)
+         * Find a window by it's handle.
+         */
+        public virtual void Find(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                throw new AppNotFoundExpcetion("Handle can not be 0.");
             }
             else
             {
-                //get the main handle.
-                this._rootHandle = _appProcess.MainWindowHandle;
+                this._rootHandle = handle;
+            }
+        }
+
+        public virtual void Find(String caption, String className)
+        {
+            if (!String.IsNullOrEmpty(caption) || !String.IsNullOrEmpty(className))
+            {
+                IntPtr handle = Win32API.FindWindow(className, caption);
+
+                if (handle != IntPtr.Zero)
+                {
+                    Find(handle);
+                }
+                else
+                {
+                    throw new AppNotFoundExpcetion("Can not find window by caption and class.");
+                }
+            }
+            else
+            {
+                throw new AppNotFoundExpcetion("Caption and class can not be null.");
             }
         }
 
@@ -579,10 +630,25 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void WaitForApp()
         {
+            if (this._appProcess == null)
+            {
+                throw new AppNotFoundExpcetion("Process is null.");
+            }
 
+            int times = 0;
+            while (times < _maxWaitSeconds && !this._appProcess.Responding)
+            {
+                Thread.Sleep(_interval * 1000);
+                times += _interval;
+            }
+
+            if (times >= _maxWaitSeconds)
+            {
+                throw new CannotWaitAppException("Wait for test app timeout.");
+            }
         }
 
-        protected virtual void WaitForApp(Object title)
+        protected virtual void WaitForApp(String title)
         {
 
         }
@@ -615,7 +681,18 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void TerminateProcess(int processID)
         {
+            if (processID <= 0)
+            {
+                Process curProcess = Process.GetProcessById(processID);
 
+                if (curProcess != null)
+                {
+                    curProcess.Kill();
+                    return;
+                }
+            }
+
+            throw new CannotStopAppException("Can not find process by ID:" + processID);
         }
 
         #endregion

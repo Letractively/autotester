@@ -19,7 +19,7 @@ namespace Shrinerain.AutoTester.Core
 {
     using Accessibility;
 
-    public interface IMSAA
+    public interface IMSAA : IContainer
     {
         // this interface is a Windows Com interface.
         IAccessible GetIAccInterface();

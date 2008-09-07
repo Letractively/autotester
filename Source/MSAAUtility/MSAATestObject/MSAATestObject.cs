@@ -364,7 +364,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     }
                     catch
                     {
-                        return "";
                     }
                 }
             }
@@ -390,7 +389,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     }
                     catch
                     {
-                        return "";
                     }
                 }
             }
@@ -416,7 +414,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     }
                     catch
                     {
-                        return "";
                     }
                 }
             }
@@ -442,7 +439,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     }
                     catch
                     {
-                        return "";
                     }
                 }
             }
@@ -468,7 +464,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     }
                     catch
                     {
-                        return "";
                     }
                 }
             }
@@ -496,7 +491,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     }
                     catch
                     {
-                        return "";
                     }
                 }
             }
@@ -534,31 +528,121 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return null;
         }
 
-        public IAccessible GetChild(int childID)
+        public virtual Object[] GetChildren()
         {
-            return GetChild(_iAcc, childID);
+            try
+            {
+                int c = GetChildCount();
+                if (c > 0)
+                {
+                    Object[] children = new Object[c];
+                    for (int i = 0; i < c; i++)
+                    {
+                        children[i] = GetChild(i);
+                    }
+
+                    return children;
+                }
+
+                return null;
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new ObjectNotFoundException("Can not get MSAA children: " + ex.Message);
+            }
+
+
         }
 
-        public static IAccessible GetChild(IAccessible iAcc, int childID)
+        /*  MSAATestObject GetChild(int childID)
+         *  return the child MSAA test object by index.
+         *  the childID start from 0.
+         */
+        public virtual Object GetChild(int childID)
         {
-            if (childID > 0 && iAcc != null)
+            try
+            {
+                if (childID >= 0 && this._iAcc != null && this._selfID == 0)
+                {
+                    IAccessible childIAcc = GetChildIAcc(childID);
+
+                    if (childIAcc != null)
+                    {
+                        return new MSAATestObject(childIAcc);
+                    }
+                    else
+                    {
+                        return new MSAATestObject(this._iAcc, childID + 1);
+                    }
+                }
+
+                throw new ObjectNotFoundException("Can not find MSAA child by index: " + childID);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new ObjectNotFoundException("Can not find MSAA child: " + ex.Message);
+            }
+        }
+
+        public IAccessible GetChildIAcc(int childID)
+        {
+            return GetChildIAcc(_iAcc, childID);
+        }
+
+        public static IAccessible GetChildIAcc(IAccessible iAcc, int childID)
+        {
+            if (childID >= 0 && iAcc != null)
             {
                 int childCount = iAcc.accChildCount;
 
-                if (childID <= childCount)
+                if (childID < childCount)
                 {
+                    int newChildID = childID + 1;
+
+                    IAccessible childIAcc = null;
+
                     try
                     {
-                        object[] childrenObj = new object[1];
-                        int count = 0;
-                        Win32API.AccessibleChildren(iAcc, childID - 1, 1, childrenObj, out count);
+                        object childIDObj = newChildID;
 
-                        return (IAccessible)childrenObj[0];
+                        childIDObj = iAcc.get_accChild(childIDObj);
+
+                        if (childIDObj is IAccessible)
+                        {
+                            childIAcc = (IAccessible)childIDObj;
+                        }
                     }
                     catch
                     {
-                        return null;
                     }
+
+                    if (childIAcc == null)
+                    {
+                        try
+                        {
+                            object[] childrenObj = new object[1];
+                            int count = 0;
+                            Win32API.AccessibleChildren(iAcc, childID, 1, childrenObj, out count);
+
+                            if (count == 1)
+                            {
+                                childIAcc = (IAccessible)childrenObj[0];
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    return childIAcc;
                 }
             }
 
@@ -619,17 +703,37 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public string GetClass()
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (this._windowHandle != IntPtr.Zero)
+                {
+                    StringBuilder sb = new StringBuilder(128);
+                    Win32API.GetClassName(_windowHandle, sb, 128);
+
+                    return sb.ToString();
+                }
+
+                return "";
+            }
+            catch (Exception ex)
+            {
+                throw new PropertyNotFoundException("Can not get windows class name: " + ex.Message);
+            }
         }
 
         public String GetCaption()
         {
             try
             {
-                StringBuilder sb = new StringBuilder(128);
-                Win32API.GetWindowText(_windowHandle, sb, 128);
+                if (this._windowHandle != IntPtr.Zero)
+                {
+                    StringBuilder sb = new StringBuilder(128);
+                    Win32API.GetWindowText(_windowHandle, sb, 128);
 
-                return sb.ToString();
+                    return sb.ToString();
+                }
+
+                return "";
             }
             catch (Exception ex)
             {
@@ -664,7 +768,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
                 _role = GetRole();
                 _state = GetState();
-                _value = this._iAcc.get_accValue(_selfID);
+                _value = GetValue();
             }
             catch (TestException)
             {
