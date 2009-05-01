@@ -417,13 +417,13 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             List<MSAATestObject> resultList = new List<MSAATestObject>();
 
-            if ((objType != MSAATestObject.RoleType.None || properties != null && properties.Length > 0) && checkObjDelegate != null)
+            if (objType != MSAATestObject.RoleType.None || (properties != null && properties.Length > 0 && checkObjDelegate != null))
             {
-                List<TestProperty> newProperties = new List<TestProperty>();
-                TestProperty typeProperty = new TestProperty("RoleType", objType, false, 100);
-                newProperties.Add(typeProperty);
                 if (properties != null)
                 {
+                    List<TestProperty> newProperties = new List<TestProperty>();
+                    TestProperty typeProperty = new TestProperty("RoleType", objType, false, 100);
+                    newProperties.Add(typeProperty);
                     foreach (TestProperty tp in properties)
                     {
                         newProperties.Add(tp);

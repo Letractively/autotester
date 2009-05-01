@@ -551,15 +551,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     IHTMLElement[] tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
                     if (tagElementCol != null && tagElementCol.Length > 0)
                     {
-                        Regex tagReg;
-                        if (!_regCache.TryGetValue(tag, out tagReg))
+                        int possibleStartIndex = 0;
+                        if (properties != null && properties.Length > 0)
                         {
-                            //create new regex to match objects from HTML code.
-                            tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-                            _regCache.Add(tag, tagReg);
+                            Regex tagReg;
+                            if (!_regCache.TryGetValue(tag, out tagReg))
+                            {
+                                //create new regex to match objects from HTML code.
+                                tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                                _regCache.Add(tag, tagReg);
+                            }
+                            //if we have too many objects, we will try to find it's possible position to improve performance.
+                            possibleStartIndex = Searcher.GetPossibleStartIndex(tagElementCol.Length, tagReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
                         }
-                        //if we have too many objects, we will try to find it's possible position to improve performance.
-                        int possibleStartIndex = Searcher.GetPossibleStartIndex(tagElementCol.Length, tagReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
                         int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, tagElementCol.Length - 1);
                         // check object one by one, start from the possible position.
                         // the "|" means the start position, the "--->" means the search direction.            

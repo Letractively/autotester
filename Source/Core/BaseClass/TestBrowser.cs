@@ -1086,7 +1086,7 @@ namespace Shrinerain.AutoTester.Core
                 Thread.Sleep(_interval * 1000);
             }
 
-            throw new CannotAttachBrowserException();
+            throw new CannotAttachBrowserException("Browser: " + ieHandle + " does not exist.");
         }
 
         /* InternetExplorer GetTopmostBrowser()
