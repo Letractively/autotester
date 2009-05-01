@@ -110,7 +110,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("Can not get href of link: " + ex.Message);
             }
-
         }
 
         #endregion
