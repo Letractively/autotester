@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public class MSAATestComboBox : MSAATestGUIObject, ISelectable, IShowInfo
+    public class MSAATestComboBox : MSAATestGUIObject, ISelectable, IText
     {
 
         #region fields
@@ -149,15 +149,15 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                int childrenCount = MSAATestObject.GetChildCount(this.IAcc, (int)this.SelfID);
+                int childrenCount = MSAATestObject.GetChildCount(this.IAcc, (int)this.ChildID);
 
                 for (int i = 0; i < childrenCount; i++)
                 {
                     //there are some children for combobox.
                     //one child's role text may "list", it contains the sub items.
-                    String role = MSAATestObject.GetRole(this.IAcc, i);
+                    MSAATestObject.RoleType role = MSAATestObject.GetRole(this.IAcc, i);
 
-                    if (String.Compare(role, "list", true) == 0)
+                    if (role == RoleType.List)
                     {
                         IAccessible listIAcc = MSAATestObject.GetChildIAcc(this.IAcc, i);
 
@@ -231,9 +231,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #endregion
 
-        #region IShowInfo Members
+        #region IText Members
 
         public string GetText()
+        {
+            return GetValue();
+        }
+
+        public override string GetLabel()
         {
             return GetValue();
         }
@@ -259,10 +264,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region private methods
 
+        protected override void GetMSAAInfo()
+        {
+            this._type = Type.ComboBox;
+            base.GetMSAAInfo();
+        }
 
         #endregion
 
         #endregion
-
     }
 }

@@ -29,7 +29,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestImage : HTMLTestGUIObject, IClickable, IStatus
+    public class HTMLTestImage : HTMLTestGUIObject, IClickable, IPicture
     {
 
         #region fields
@@ -79,39 +79,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region public methods
-
-        /* void DownloadImageSync(string des)
-         * Download source image, wait until the image is downloaded.
-         */
-        public void DownloadImageSync(string des)
-        {
-            try
-            {
-                DowloadImage(des);
-
-                _actionFinished.WaitOne();
-
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not download image: " + ex.Message);
-            }
-        }
-
-        /* void DownloadImageAsync(string des)
-         * Download the image, DO NOT wait.
-         */
-        public void DownloadImageAsync(string des)
-        {
-            try
-            {
-                DowloadImage(des);
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not download image: " + ex.Message);
-            }
-        }
 
         /*  Bitmap GetControlPrint()
          *  for image, we don't need to "capture" it's screen print, just get it's source image.
@@ -222,107 +189,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
             Click();
         }
 
-        #endregion
+        #endregion 
 
-        #region IStatus Members
-
-        /* object GetCurrentStatus()
-         * get the readystate of element. 
-         */
-        public virtual object GetCurrentStatus()
+        public String GetSrc()
         {
             try
             {
-                if (_imgElement != null)
-                {
-                    return _imgElement.readyState;
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
-                }
+                return this._src.Trim();
             }
-            catch (TestException)
+            catch
             {
-                throw;
             }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not get status: " + ex.Message);
-            }
+
+            return null;
         }
 
-        /* bool IsReady()
-         * return true if the object is ready.
-         */
-        public virtual bool IsReady()
-        {
-            try
-            {
-                if (_imgElement != null)
-                {
-                    return _imgElement.readyState == null ||
-                        _imgElement.readyState == "interactive" ||
-                        _imgElement.readyState == "complete";
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
-            }
-        }
-
-        #endregion
-
-        // override Hover() to ignore _sendMsgOnly flag.
-        public override void Hover()
-        {
-            try
-            {
-                if (!this._isVisible)
-                {
-                    throw new CannotPerformActionException("Object is not visible.");
-                }
-
-                this._browser.Active();
-
-                //if the object is not visible, then move it.
-                ScrollIntoView();
-
-                //get the center point of the object, and move mouse to it.
-                MouseOp.MoveTo(_centerPoint);
-
-                //after move mouse to the control, wait for 0.2s, make it looks like human action.
-                System.Threading.Thread.Sleep(200 * 1);
-
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not perform Hover action:" + ex.Message);
-            }
-        }
-
-        #endregion
-
-        #region private methods
-
-        /* void DowloadImage(string des)
-         * use web client to download the image.
-         * web client often NO use if cookie needed.
-         */
-        private void DowloadImage(string des)
+        public void Download(string des)
         {
             if (String.IsNullOrEmpty(des))
             {
@@ -331,9 +213,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             WebClient client = new WebClient();
             client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
-
             client.DownloadFileAsync(new System.Uri(this._src), des);
         }
+
+        public override string GetLabel()
+        {
+            string label;
+            if (HTMLTestObject.TryGetProperty(this._sourceElement, "alt", out label) && !String.IsNullOrEmpty(label))
+            {
+                return label;
+            }
+            else
+            {
+                return this._src;
+            }
+        }
+        #endregion
+
+        #region private methods
 
         /* private void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
          * callback function when the image is downloaded.
@@ -343,11 +240,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             _actionFinished.Set();
         }
 
-
-
         #endregion
 
         #endregion
-
     }
 }

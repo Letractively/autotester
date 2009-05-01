@@ -29,7 +29,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public class HTMLTestComboBox : HTMLTestGUIObject, ISelectable, IWindows
     {
-
         #region fields
 
         //HTML combobox is NOT a HTML control, it is a standard windows control, so we can  get it's handle.
@@ -199,8 +198,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                //click the object.
-                Click();
 
                 _actionFinished.WaitOne();
 
@@ -210,9 +207,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
+                    //click the object.
+                    Click();
+
                     //get the position on the screen 
                     Point itemPosition = GetItemPosition(index);
-
                     //click on the actual item.
                     MouseOp.Click(itemPosition.X, itemPosition.Y);
                 }
@@ -272,11 +271,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
 
-        #region IShowInfo methods
+        #region IText methods
 
         public virtual string GetText()
         {
             return this._selectedValue;
+        }
+
+        public override string GetLabel()
+        {
+            return GetText();
         }
 
         public virtual string GetFontFamily()
@@ -493,27 +497,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotPerformActionException("ComboBox is not enabled.");
             }
 
-            _actionFinished.WaitOne();
+            Hover();
 
-            if (!_sendMsgOnly)
-            {
-                Hover();
+            //get the right point
+            int right = this._rect.Left + this._rect.Width;
+            int height = this._rect.Height;
 
-                //get the right point
-                int right = this._rect.Left + this._rect.Width;
-                int height = this._rect.Height;
+            int x = right - height / 2;
+            int y = this.Rect.Top + height / 2;
 
-                int x = right - height / 2;
-                int y = this.Rect.Top + height / 2;
+            MouseOp.Click(x, y);
 
-                MouseOp.Click(x, y);
-
-                //sleep for 0.2 second, make sure the user can see this action.
-                //if no sleep, the the action may too fast.
-                System.Threading.Thread.Sleep(200 * 1);
-            }
-
-            _actionFinished.Set();
+            //sleep for 0.2 second, make sure the user can see this action.
+            //if no sleep, the the action may too fast.
+            System.Threading.Thread.Sleep(200 * 1);
         }
 
         /*  void HighLightRectCallback(object obj)
@@ -527,7 +524,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #endregion
-
 
     }
 }

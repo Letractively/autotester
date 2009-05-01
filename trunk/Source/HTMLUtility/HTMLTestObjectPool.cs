@@ -42,8 +42,6 @@ using System.Threading;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Interface;
-using Shrinerain.AutoTester.Helper;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
@@ -54,10 +52,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region fields
 
         private HTMLTestBrowser _htmlTestBrowser;
-
-        // _needRefresh is used for cache, if this is set to true, we need to get the object
-        // from test browser, if it is false, we can just return the ohject from cache.
-        //private static bool _needRefresh = false;
 
         //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter.
         private bool _useCache = true;
@@ -74,21 +68,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //IHTMLElement is the interface for mshtml html object. We build actual test object on IHTMLElement.
         private IHTMLElement _tempElement;
-
         //IHTMLElementCollection is an array of IHTMLElement, some functions return the array of IHTMLElement.
-        private IHTMLElementCollection _allElements;
-
-        private object[] _allObjects;
+        private IHTMLElement[] _allElements;
+        private TestObject[] _allObjects;
 
         //current object used.
         private TestObject _testObj;
-        private Object _cacheObj;
+        private TestObject _cacheObj;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
         private int _maxWaitSeconds = 30;
-
         //very time we sleep for 3 seconds, and find again.
-        private const int _interval = 3;
+        private const int Interval = 3;
 
         //buf to store the key for cache. 
         private static StringBuilder _keySB = new StringBuilder(128);
@@ -102,11 +93,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //if this flag set to ture, we will ignore the table whose "border" < 1.
         private static bool _ignoreBorderlessTable = false;
 
-        //each percent is a group, for vibration search.
-        //为什么是8? 因为"发"嘛, 还有, 从高中到大学,我的球衣号码一直是8号~~~
-        private const int _vibrationPercent = 8;
-
-        private bool _sendMsgOnly = false;
+        public event TestObjectEventHandler OnObjectFound;
 
         #endregion
 
@@ -174,23 +161,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             set { _ignoreBorderlessTable = value; }
         }
 
-        public bool SendMsgOnly
-        {
-            get { return _sendMsgOnly; }
-            set { _sendMsgOnly = value; }
-        }
-
         #endregion
 
         #region event
-
-        //when a new object is found.
-        public delegate void _afterNewObjectFoundDelegate(string methodName, string[] paras, TestObject newObj);
-        public event _afterNewObjectFoundDelegate OnNewObjectFound;
-
-        //when try to find a new object.
-        public delegate void _beforeNewObjectFoundDelegate(string methodName, string[] parars);
-        public event _beforeNewObjectFoundDelegate OnBeforeNewObjectFound;
 
         #endregion
 
@@ -200,18 +173,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestObjectPool()
         {
-            RegEvent();
         }
 
         public HTMLTestObjectPool(ITestBrowser brower)
         {
             _htmlTestBrowser = (HTMLTestBrowser)brower;
-            RegEvent();
-        }
-
-        private void RegEvent()
-        {
-            OnBeforeNewObjectFound += new _beforeNewObjectFoundDelegate(BeforeSearch);
         }
 
         #endregion
@@ -230,17 +196,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //for HTML tesing, no desktop application is needed.
         }
 
-
         #region ITestObjectPool
 
         /* Object GetObjectByID(string id)
          * return the test object by .id property.
          *
          */
-        public Object GetObjectByID(string id)
+        public TestObject GetObjectByID(string id)
         {
-            OnBeforeNewObjectFound("GetObjectByID", new string[] { id });
-
             if (_htmlTestBrowser == null)
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -255,7 +218,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //first, we will try get object from cache --- a hash table.
             string key = GetKey(id);
-
             if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
             {
                 return _testObj = (TestObject)_cacheObj;
@@ -269,18 +231,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     //get IHTMLElement interface
                     _tempElement = _htmlTestBrowser.GetObjectByID(id);
-
                     if (_tempElement != null)
                     {
-
                         //build actual test object.
                         _testObj = BuildObjectByType(_tempElement);
-
                         ObjectCache.InsertObjectToCache(key, _testObj);
-
                         return _testObj;
                     }
-
                 }
                 catch (CannotBuildObjectException)
                 {
@@ -288,25 +245,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 catch
                 {
-
                 }
 
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
             }
 
             throw new ObjectNotFoundException("Can not get object by id:" + id);
-
         }
 
 
         /*  Object GetObjectByName(string name)
          *  return the test object by .name property
          */
-        public Object GetObjectByName(string name)
+        public TestObject[] GetObjectsByName(string name)
         {
-            OnBeforeNewObjectFound("GetObjectByName", new string[] { name });
-
             if (_htmlTestBrowser == null)
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -319,48 +272,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             name = name.Trim();
 
-            string key = GetKey(name);
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
             //we will try 30s to find a object
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
                 try
                 {
-                    //2008/01/12 wan,yu update
-                    //getObjectByName will return more than 1 object(if have), so we need a collection to
-                    //store these objects.
-                    //in HTML, .id is unique, but .name is not, so we may get a collection.
-                    //we will check each object.
-                    IHTMLElementCollection nameObjectsCol = _htmlTestBrowser.GetObjectsByName(name);
+                    List<TestObject> result = new List<TestObject>();
 
-                    object nameObj = null;
-                    object indexObj = null;
-
-                    for (int i = 0; i < nameObjectsCol.length; i++)
+                    IHTMLElement[] nameObjectsCol = _htmlTestBrowser.GetObjectsByName(name);
+                    for (int i = 0; i < nameObjectsCol.Length; i++)
                     {
-                        nameObj = (object)i;
-                        indexObj = (object)i;
-
-                        _tempElement = (IHTMLElement)nameObjectsCol.item(nameObj, indexObj);
-
+                        _tempElement = (IHTMLElement)nameObjectsCol[i];
                         if (!IsVisible(_tempElement))
                         {
                             continue;
                         }
 
                         _testObj = BuildObjectByType(_tempElement);
-
-                        ObjectCache.InsertObjectToCache(key, _testObj);
-
-                        return _testObj;
-
+                        if (OnObjectFound != null)
+                        {
+                            OnObjectFound(_testObj, null);
+                        }
+                        result.Add(_testObj);
                     }
 
+                    if (result.Count > 0)
+                    {
+                        return result.ToArray();
+                    }
                 }
                 catch (CannotBuildObjectException)
                 {
@@ -368,23 +308,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 catch
                 {
-
                 }
 
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
             }
 
-            throw new ObjectNotFoundException("Can not get object by name:" + name);
+            throw new ObjectNotFoundException("Can not get objects by name:" + name);
         }
 
         /* Object GetObjectByIndex(int index)
          * return the test object by an integer index.
          */
-        public Object GetObjectByIndex(int index)
+        public TestObject GetObjectByIndex(int index)
         {
-            OnBeforeNewObjectFound("GetObjectByIndex", new string[] { index.ToString() });
-
             if (_htmlTestBrowser == null)
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -409,18 +346,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     GetAllElements();
 
-                    _tempElement = (IHTMLElement)_allElements.item((object)index, (object)index);
-
+                    _tempElement = _allElements[index];
                     if (IsVisible(_tempElement))
                     {
-
                         _testObj = BuildObjectByType(_tempElement);
-
+                        if (OnObjectFound != null)
+                        {
+                            OnObjectFound(_testObj, null);
+                        }
                         ObjectCache.InsertObjectToCache(key, _testObj);
-
                         return _testObj;
                     }
-
                 }
                 catch (CannotBuildObjectException)
                 {
@@ -428,11 +364,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 catch
                 {
-
                 }
 
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
             }
 
             throw new ObjectNotFoundException("Can not get object by index:" + index);
@@ -445,28 +380,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * eg: to find a image, we can find it by it's .src property, like .src="111.jpg"
          * we will use "Fuzzy Search" in this method
          */
-        public Object GetObjectByProperty(string property, string value)
+        public TestObject[] GetObjectsByProperties(TestProperty[] properties)
         {
-            OnBeforeNewObjectFound("GetObjectByProperty", new string[] { property, value });
-
             if (_htmlTestBrowser == null)
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
-            if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(value))
+            if (properties == null || properties.Length == 0)
             {
-                throw new PropertyNotFoundException("Property and Value can not be empty.");
+                throw new ObjectNotFoundException("Properties can not be empty.");
             }
-
-            value = value.Trim();
-
-            string key = GetKey(property + value);
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
             //the similar percent to find an object.
             int simPercent = _defaultPercent;
 
@@ -486,54 +410,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
-
                 //get all HTML objects.
                 GetAllElements();
+                List<TestObject> result = new List<TestObject>();
 
                 //if we have too many objects, we will try to find it's possible position to improve performance.
-                int possibleStartIndex = 0;
-
-                try
-                {
-                    //if we have more than 99 objects, we will try to find the position by text search.
-                    if (this._allElements.length > 2 * _vibrationPercent)
-                    {
-                        //get HTML code of current page, remove blank.
-                        string currentHTMLCode = _htmlTestBrowser.GetHTML().Trim();
-
-                        // try to find the text position in HTML code.
-                        int startPos = currentHTMLCode.IndexOf(value, StringComparison.CurrentCultureIgnoreCase);
-
-                        if (startPos > 0)
-                        {
-                            //use regex to extract objects.
-                            MatchCollection mc = _htmlReg.Matches(currentHTMLCode.Substring(0, startPos));
-
-                            if (mc.Count > _vibrationPercent)
-                            {
-                                if (mc.Count >= _allElements.length)
-                                {
-                                    possibleStartIndex = _allElements.length - 1;
-                                }
-                                else
-                                {
-                                    possibleStartIndex = mc.Count - 1;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch
-                {
-
-                }
-
-
-                int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, this._allElements.length - 1, _vibrationPercent);
-
-                object nameObj = null;
-                object indexObj = null;
-
+                int possibleStartIndex = Searcher.GetPossibleStartIndex(this._allElements.Length, _htmlReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
+                int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, this._allElements.Length - 1);
                 // check object one by one, start from the possible position.
                 // the "|" means the start position, the "--->" means the search direction.            
                 //  -----------------------------------------------------------------------
@@ -545,31 +428,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     try
                     {
-                        //go through all element, check it's property value.
-                        nameObj = (object)currentObjIndex;
-                        indexObj = (object)currentObjIndex;
-
                         //get element by index.
-                        _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
-
-                        //get property value
-                        string propertyValue;
+                        _tempElement = (IHTMLElement)_allElements[currentObjIndex];
 
                         //if it is not an interactive object or the property is not found. 
-                        if (!IsVisible(_tempElement) || !HTMLTestObject.TryGetProperty(_tempElement, property, out propertyValue))
+                        if (IsVisible(_tempElement))
                         {
-                            continue;
-                        }
-                        else
-                        {
-                            //if equal, means we found it.
-                            if (Searcher.IsStringLike(propertyValue, value, simPercent))
+                            if (CheckObjectProperties(_tempElement, HTMLTestObjectType.Unknow, properties, out _testObj))
                             {
-                                _testObj = BuildObjectByType(_tempElement);
-
-                                ObjectCache.InsertObjectToCache(key, _testObj);
-
-                                return _testObj;
+                                if (OnObjectFound != null)
+                                {
+                                    OnObjectFound(_testObj, null);
+                                }
+                                result.Add(_testObj);
                             }
                         }
                     }
@@ -582,8 +453,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                if (result.Count > 0)
+                {
+                    return result.ToArray();
+                }
+
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
 
                 //while current simpercent is bigger than the low bound,we can still try lower similarity
                 if (_useFuzzySearch && _autoAdjustSimilarPercent)
@@ -599,264 +475,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
-            throw new ObjectNotFoundException("Can not find object by property[" + property + "] with value [" + value + "].");
+            StringBuilder propertiesInfo = new StringBuilder();
+            foreach (TestProperty tp in properties)
+            {
+                propertiesInfo.Append("[" + tp.Name + ":" + tp.Value.ToString() + "],");
+            }
+
+            throw new ObjectNotFoundException("Can not find object by properties: " + propertiesInfo.ToString());
         }
 
-        /* Object GetObjectBySimilarProperties(string[] properties, string[] values, int[] similarity, bool useAll)
-         * return the test object by propeties if the value match the similarity of actual value.
-         * similarity should be between 1 and 100, means 1% to 100%.
-         * NOTICE: this method is much slower than GetObjectByProperty.
-         */
-        public Object GetObjectBySimilarProperties(string[] properties, string[] values, int[] similarity, bool useAll)
+
+        public TestObject[] GetObjectsByType(string type, TestProperty[] properties)
         {
-            string[] arg = new string[100];
-            Array.Copy(properties, arg, properties.Length);
-            Array.Copy(values, 0, arg, arg.Length, values.Length);
-
-            OnBeforeNewObjectFound("GetObjectBySimilarProperties", arg);
-
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
-            if (properties == null || values == null)
-            {
-                throw new ObjectNotFoundException("Properties and values can not be null.");
-            }
-            else if (properties.Length != values.Length)
-            {
-                throw new ObjectNotFoundException("Properties and values must have the same count of items.");
-            }
-
-            string key = GetKey(properties.ToString() + values.ToString() + similarity.ToString() + useAll.ToString());
-
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
-            int times = 0;
-            while (times <= _maxWaitSeconds)
-            {
-
-                //get all HTML objects.
-                GetAllElements();
-
-                object nameObj = null;
-                object indexObj = null;
-
-                //go through all element, check it's property value.
-                for (int i = 0; i < _allElements.length; i++)
-                {
-                    try
-                    {
-                        nameObj = (object)i;
-                        indexObj = (object)i;
-
-                        //get element by index.
-                        _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
-
-                        if (!IsVisible(_tempElement))
-                        {
-                            continue;
-                        }
-
-                        for (int j = 0; j < properties.Length; j++)
-                        {
-                            string property = properties[j].Trim();
-                            string value = values[j].Trim();
-
-                            string propertyValue;
-                            //if not interactive object or the property is not found. 
-                            if (String.IsNullOrEmpty(property) || String.IsNullOrEmpty(value)
-                                || !HTMLTestObject.TryGetProperty(_tempElement, property, out propertyValue))
-                            {
-                                if (useAll)
-                                {
-                                    break;
-                                }
-                                else
-                                {
-                                    continue;
-                                }
-                            }
-                            else
-                            {
-                                int expectedPercent = 100;
-
-                                if (similarity.Length > j)
-                                {
-                                    expectedPercent = similarity[j];
-                                }
-
-                                //check the similarity.
-                                if (Searcher.IsStringLike(propertyValue, value, expectedPercent))
-                                {
-                                    if (useAll && j < properties.Length - 1)
-                                    {
-                                        continue;
-                                    }
-
-                                    _testObj = BuildObjectByType(_tempElement);
-
-                                    ObjectCache.InsertObjectToCache(key, _testObj);
-
-                                    return _testObj;
-
-                                }
-                                else
-                                {
-                                    if (useAll)
-                                    {
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        continue;
-                                    }
-                                }
-                            }
-
-                        }
-
-                    }
-                    catch (CannotBuildObjectException)
-                    {
-                        throw;
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
-            }
-
-            throw new ObjectNotFoundException("Can not find object by SimilarProperties: " + key);
-        }
-
-        /* Object GetObjectByRegex(string property, string regex)
-         * return the test object by property, the value match the regular expression
-         */
-        public Object GetObjectByRegex(string property, string regexStr)
-        {
-            OnBeforeNewObjectFound("GetObjectByRegex", new string[] { property, regexStr });
-
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
-            if (string.IsNullOrEmpty(property) || string.IsNullOrEmpty(regexStr))
-            {
-                throw new PropertyNotFoundException("Property and regex can not be empty.");
-            }
-
-            Regex reg;
-
-            try
-            {
-                reg = new Regex(regexStr.Trim());
-            }
-            catch (Exception ex)
-            {
-                throw new ObjectNotFoundException("Can not get object by regular expression: " + ex.Message);
-            }
-
-            string key = GetKey(property + regexStr);
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
-            //we will try 30s to find an object.
-            int times = 0;
-            while (times <= _maxWaitSeconds)
-            {
-
-                //get all HTML objects.
-                GetAllElements();
-
-                object nameObj = null;
-                object indexObj = null;
-
-                //go through all element, check it's property value.
-                for (int i = 0; i < _allElements.length; i++)
-                {
-                    try
-                    {
-                        nameObj = (object)i;
-                        indexObj = (object)i;
-
-                        //get element by index.
-                        _tempElement = (IHTMLElement)_allElements.item(nameObj, indexObj);
-
-                        //get property value
-                        string propertyValue;
-
-                        //if not interactive object or the property is not found. 
-                        if (!IsVisible(_tempElement) || !HTMLTestObject.TryGetProperty(_tempElement, property, out propertyValue))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            //if match, means we found it.
-                            if (reg.IsMatch(propertyValue))
-                            {
-                                _testObj = BuildObjectByType(_tempElement);
-
-                                ObjectCache.InsertObjectToCache(key, _testObj);
-
-                                return _testObj;
-                            }
-                        }
-                    }
-                    catch (CannotBuildObjectException)
-                    {
-                        throw;
-                    }
-                    catch
-                    {
-
-                    }
-                }
-
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
-            }
-
-            throw new ObjectNotFoundException("Can not find object by property[" + property + "] with regular expresson[" + regexStr + "].");
-        }
-
-        /*  Object GetObjectByType(string type, string values, int index)
-         *  return the test object by an TYPE text, eg: button.
-         *  values means the visible value of the control, 
-         *  index means if we have more than one object, return which one, normally, it should be 0, return the first one.
-         *  we will use "Fuzzy Search" in this method
-         */
-        public Object GetObjectByType(string type, string values)
-        {
-            int objIndex;
-
-            if (int.TryParse(values, out objIndex))
-            {
-                if (objIndex < 10)
-                {
-                    return GetObjectByType(type, null, objIndex - 1);
-                }
-            }
-
-            return GetObjectByType(type, values, 0);
-
-        }
-
-        public Object GetObjectByType(string type, string values, int index)
-        {
-            OnBeforeNewObjectFound("GetObjectByType", new string[] { type, values, index.ToString() });
-
             if (_htmlTestBrowser == null)
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -871,28 +501,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 type = type.Trim();
             }
 
-            if (!String.IsNullOrEmpty(values))
-            {
-                values = values.Trim();
-            }
-
-            if (index < 0)
-            {
-                index = 0;
-            }
-
-            //try to get object from cache.
-            string key = GetKey(type + values + index.ToString());
-
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
-
-            //some control, like Messagebox, File dialog, they are Windows control, we don't need to check HTML DOM.
-            bool isHTMLType = true;
-
             //convert the TYPE text to valid internal type.
             // eg: "button" to HTMLTestObjectType.Button
             HTMLTestObjectType typeValue = ConvertStrToHTMLType(type);
@@ -900,10 +508,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (typeValue == HTMLTestObjectType.Unknow)
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
-            }
-            else if (typeValue == HTMLTestObjectType.MsgBox || typeValue == HTMLTestObjectType.FileDialog)
-            {
-                isHTMLType = false;
             }
 
             //convert the type to HTML tags.
@@ -917,10 +521,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //if the expected value is number like, we think it is stand for the index of the object, not text on it.
             // eg: we can use type="textbox", values="1" to find the first textbox.
-
-
-            //if we can find more than one test object, we need to consider about the index.
-            int leftIndex = index;
 
             //the similar percent to find an object.
             int simPercent = _defaultPercent;
@@ -941,114 +541,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
-                //special type, we don't need to check HTML object.
-                if (!isHTMLType)
-                {
-                    try
-                    {
-                        //windows handle of Message Box and File Dialog
-                        IntPtr handle = IntPtr.Zero;
+                List<TestObject> result = new List<TestObject>();
 
-                        //check object by type
-                        if (CheckObjectByType(ref handle, typeValue, values, simPercent))
+                //because we may convert one type to multi tags, so check them one by one.
+                //eg: Button to <input> and <button>
+                foreach (string tag in tags)
+                {
+                    //find the object by tag.
+                    IHTMLElement[] tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
+                    if (tagElementCol != null && tagElementCol.Length > 0)
+                    {
+                        Regex tagReg;
+                        if (!_regCache.TryGetValue(tag, out tagReg))
                         {
-                            leftIndex--;
-
-                            if (leftIndex >= 0)
-                            {
-                                continue;
-                            }
-                            else
-                            {
-                                //if index is 0 , that means we found the object.
-                                _testObj = BuildObjectByType(handle, typeValue);
-
-                                ObjectCache.InsertObjectToCache(key, _testObj);
-
-                                OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
-
-                                return _testObj;
-                            }
-
+                            //create new regex to match objects from HTML code.
+                            tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                            _regCache.Add(tag, tagReg);
                         }
-
-                    }
-                    catch (CannotBuildObjectException)
-                    {
-                        throw;
-                    }
-                    catch
-                    {
-                    }
-
-                }
-                else
-                {
-                    //normal HTML objects
-
-                    IHTMLElementCollection tagElementCol;
-
-                    object nameObj = null;
-                    object indexObj = null;
-
-                    //because we may convert one type to multi tags, so check them one by one.
-                    //eg: Button to <input> and <button>
-                    foreach (string tag in tags)
-                    {
-                        //find the object by tag.
-                        tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
-
                         //if we have too many objects, we will try to find it's possible position to improve performance.
-                        int possibleStartIndex = 0;
-
-                        try
-                        {
-                            //if we have more than 2*percent objects, we will try to find the position by searching the text.
-                            if (!String.IsNullOrEmpty(values) && tagElementCol.length > _vibrationPercent * 2)
-                            {
-
-                                Regex tagReg;
-
-                                if (!_regCache.TryGetValue(tag, out tagReg))
-                                {
-                                    //create new regex to match objects from HTML code.
-                                    tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-                                    _regCache.Add(tag, tagReg);
-                                }
-
-                                //get HTML code of current page, remove blank.
-                                string currentHTMLCode = _htmlTestBrowser.GetHTML().Trim();
-
-                                // try to find the text position in HTML code.
-                                int startPos = currentHTMLCode.IndexOf(values, StringComparison.CurrentCultureIgnoreCase);
-
-                                if (startPos > 0)
-                                {
-                                    //use regex to extract objects.
-                                    MatchCollection mc = tagReg.Matches(currentHTMLCode.Substring(0, startPos));
-
-                                    if (mc.Count > _vibrationPercent)
-                                    {
-                                        if (mc.Count >= tagElementCol.length)
-                                        {
-                                            possibleStartIndex = tagElementCol.length - 1;
-                                        }
-                                        else
-                                        {
-                                            possibleStartIndex = mc.Count - 1;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        catch
-                        {
-
-                        }
-
-
-                        int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, tagElementCol.length - 1, _vibrationPercent);
-
+                        int possibleStartIndex = Searcher.GetPossibleStartIndex(tagElementCol.Length, tagReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
+                        int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, tagElementCol.Length - 1);
                         // check object one by one, start from the possible position.
                         // the "|" means the start position, the "--->" means the search direction.            
                         //  -----------------------------------------------------------------------
@@ -1058,38 +570,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         //  ...                      <---    |
                         foreach (int currentObjIndex in searchOrder)
                         {
-
-                            nameObj = (object)currentObjIndex;
-                            indexObj = (object)currentObjIndex;
-
                             try
                             {
-                                _tempElement = (IHTMLElement)tagElementCol.item(nameObj, indexObj);
-
+                                _tempElement = tagElementCol[currentObjIndex];
                                 // check if it is a interactive object.
                                 if (IsVisible(_tempElement))
                                 {
                                     //check object by type
-                                    if (CheckObjectByType(_tempElement, typeValue, values, simPercent))
+                                    if (GetObjectType(_tempElement) == typeValue)
                                     {
-                                        leftIndex--;
+                                        bool found = false;
+                                        if (properties == null)
+                                        {
+                                            _testObj = BuildObjectByType(_tempElement, typeValue);
+                                            found = true;
+                                        }
+                                        else if (CheckObjectProperties(_tempElement, typeValue, properties, out _testObj))
+                                        {
+                                            found = true;
+                                        }
+
+                                        if (found)
+                                        {
+                                            if (OnObjectFound != null)
+                                            {
+                                                OnObjectFound(_testObj, null);
+                                            }
+                                            result.Add(_testObj);
+                                        }
                                     }
-
-                                    //if index is 0 , that means we found the object.
-                                    if (leftIndex < 0)
-                                    {
-                                        _testObj = BuildObjectByType(_tempElement, typeValue);
-
-                                        ObjectCache.InsertObjectToCache(key, _testObj);
-
-                                        OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
-
-                                        return _testObj;
-                                    }
-                                }
-                                else
-                                {
-
                                 }
                             }
                             catch (CannotBuildObjectException)
@@ -1098,15 +607,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             }
                             catch
                             {
-
                             }
                         }
                     }
                 }
 
+                if (result.Count > 0)
+                {
+                    return result.ToArray();
+                }
+
                 //not found, sleep for 3 seconds, then try again.
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
 
                 //not found, we will try lower similarity
                 if (_useFuzzySearch && _autoAdjustSimilarPercent)
@@ -1122,77 +635,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
-            throw new ObjectNotFoundException("Can not find object by type [" + type.ToString() + "] with value [" + values.ToString() + "]");
+            throw new ObjectNotFoundException("Can not find object by type [" + type + "]");
         }
-
-
-        /* Object GetObjectByAI(string value)
-         * return object by value, we will use some common property to find the control.
-         * eg: use .value for a button
-         */
-        public Object GetObjectByAI(string value)
-        {
-            OnBeforeNewObjectFound("GetObjectByAI", new string[] { value });
-
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
-            if (String.IsNullOrEmpty(value))
-            {
-                throw new ObjectNotFoundException("Can not find object by AI: value can not be empty.");
-            }
-
-            value = value.Trim();
-
-            //we will try some properties to find the object.
-            string[] possibleProperties = new string[] { "value", "innerText", "innerHTML", "title", "id", "name" };
-
-            TestObject tmpObj;
-
-            int lastMaxSnds = _maxWaitSeconds;
-
-            foreach (string s in possibleProperties)
-            {
-                try
-                {
-                    //each object we just try 3s, because we need to check other property.
-                    _maxWaitSeconds = 3;
-
-                    tmpObj = (TestObject)GetObjectByProperty(s, value);
-                }
-                catch (ObjectNotFoundException)
-                {
-                    continue;
-                }
-                finally
-                {
-                    //we need to resume the _maxWaitSeconds, because other methods not just wait for 3s.
-                    _maxWaitSeconds = lastMaxSnds;
-                }
-
-                if (tmpObj != null)
-                {
-                    _testObj = tmpObj;
-
-                    return _testObj;
-                }
-            }
-
-            throw new ObjectNotFoundException("Can not find object by AI with value: " + value);
-        }
-
 
         /* Object GetObjectByPoint(int x, int y)
          * return object from a expected point
          * x, y is the offset with browser, NOT screen.
          * 
          */
-        public Object GetObjectByPoint(int x, int y)
+        public TestObject GetObjectByPoint(int x, int y)
         {
-            OnBeforeNewObjectFound("GetObjectByPoint", new string[] { x.ToString(), y.ToString() });
-
             if (_htmlTestBrowser == null)
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -1215,6 +667,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         _testObj = BuildObjectByType(_tempElement);
 
+                        if (OnObjectFound != null)
+                        {
+                            OnObjectFound(_testObj, null);
+                        }
+
                         ObjectCache.InsertObjectToCache(key, _testObj);
 
                         return _testObj;
@@ -1229,8 +686,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                 }
 
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
             }
 
             throw new ObjectNotFoundException("Can not get object at point(" + x.ToString() + "" + y.ToString() + ")");
@@ -1239,10 +696,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* Object GetObjectByRect(int top, int left, int width, int height)
          * return object from a expected rect.
          */
-        public Object GetObjectByRect(int left, int top, int width, int height, string typeStr, bool isPercent)
+        public TestObject GetObjectByRect(int left, int top, int width, int height, string typeStr, bool isPercent)
         {
-            OnBeforeNewObjectFound("GetObjectByRect", new string[] { left.ToString(), top.ToString(), width.ToString(), height.ToString(), typeStr });
-
             if (_htmlTestBrowser == null)
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
@@ -1323,6 +778,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         _testObj = tmpObj[i];
 
+                        if (OnObjectFound != null)
+                        {
+                            OnObjectFound(_testObj, null);
+                        }
+
                         return _testObj;
                     }
                 }
@@ -1337,42 +797,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new ObjectNotFoundException("Can not get object by rect.");
         }
 
-        /* Object GetObjectByColor(string color)
-         * return object by expected color
-         * NOTICE: need update!!!
-         */
-        public Object GetObjectByColor(string color)
-        {
-            OnBeforeNewObjectFound("GetObjectByColor", new string[] { color });
-
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
-            return null;
-        }
-
-        /* Object GetObjectByCustomer(object value)
-         * for future use.
-         */
-        public Object GetObjectByCustomer(object value)
-        {
-            OnBeforeNewObjectFound("GetObjectByCustomer", new string[] { value.ToString() });
-
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
-            return null;
-        }
-
         /* Object[] GetAllObjects()
          * return all object from the  browser.
          * we use _allObjects to store these object.
          */
-        public Object[] GetAllObjects()
+        public TestObject[] GetAllObjects()
         {
             if (_htmlTestBrowser == null)
             {
@@ -1382,17 +811,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //firstly, get all IHTMLElement from the browser
             GetAllElements();
 
-            _allObjects = new object[this._allElements.length];
-
-            object nameObj;
-            object indexObj;
+            _allObjects = new TestObject[this._allElements.Length];
 
             //convert IHTMLELementCollection to an array.
-            for (int i = 0; i < this._allElements.length; i++)
+            for (int i = 0; i < this._allElements.Length; i++)
             {
-                nameObj = (object)i;
-                indexObj = (object)i;
-                _allObjects[i] = this._allElements.item(nameObj, indexObj);
+                _allObjects[i] = this.BuildObjectByType((IHTMLElement)this._allElements[i]);
             }
 
             return _allObjects;
@@ -1401,7 +825,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* Object GetLastObject()
          * return the last object we have got.
          */
-        public Object GetLastObject()
+        public TestObject GetLastObject()
         {
             return _testObj;
         }
@@ -1410,15 +834,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region help methods
-
-        /* void DocumentRefreshed()
-         * happened when document load successfully, we need to reload all test objects.
-         */
-        public static void DocumentRefreshed()
-        {
-            //_needRefresh = true;
-        }
-
 
         #region private methods
 
@@ -1436,16 +851,78 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                this._allElements = _htmlTestBrowser.GetAllObjects();
+                this._allElements = _htmlTestBrowser.GetAllHTMLElements();
             }
             catch
             {
-
             }
         }
 
-
         #region check test object
+
+        private bool CheckObjectProperties(IHTMLElement element, HTMLTestObjectType type, TestProperty[] properties, out TestObject obj)
+        {
+            obj = null;
+            if (properties == null)
+            {
+                return true;
+            }
+            else
+            {
+                int totalResult = 0;
+                foreach (TestProperty tp in properties)
+                {
+                    //get property value
+                    string propertyValue;
+                    if (String.Compare(tp.Name, TestObject.VisibleProperty, true) == 0)
+                    {
+                        string visibleText = null;
+                        try
+                        {
+                            obj = this.BuildObjectByType(element, type);
+                            visibleText = ((HTMLTestGUIObject)obj).GetLabel().Trim();
+                        }
+                        catch
+                        {
+                            return false;
+                        }
+
+                        if (String.IsNullOrEmpty(visibleText) && HTMLTestObject.TryGetProperty(element, "innerText", out propertyValue))
+                        {
+                            visibleText = propertyValue;
+                        }
+
+                        if (!String.IsNullOrEmpty(visibleText))
+                        {
+                            return Searcher.IsStringLike(visibleText, tp.Value.ToString());
+                        }
+                        else
+                        {
+                            return HTMLTestGUIObject.GetAroundText(element).IndexOf(tp.Value.ToString()) >= 0;
+                        }
+                    }
+                    else if (String.Compare(tp.Name, "tag", true) == 0)
+                    {
+                        return Searcher.IsStringLike(element.tagName, tp.Value.ToString());
+                    }
+                    else if (HTMLTestObject.TryGetProperty(element, tp.Name, out propertyValue))
+                    {
+                        //if equal, means we found it.
+                        if (Searcher.IsStringLike(propertyValue, tp.Value.ToString()))
+                        {
+                            totalResult += tp.Weight;
+                        }
+                        else
+                        {
+                            totalResult -= tp.Weight;
+                        }
+                    }
+                }
+
+                return totalResult > 0;
+            }
+        }
+
 
         /* bool CheckObjectByType(IHTMLElement element, HTMLTestObjectType type, string value)
          * Check the object by expected type.
@@ -1464,7 +941,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return CheckSelectObject(element, value, simPercent);
             }
-            else if (type == HTMLTestObjectType.RadioButton)
+            else if (type == HTMLTestObjectType.RadioBox)
             {
                 return CheckRadioObject(element, value, simPercent);
             }
@@ -1515,27 +992,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //not special type, just need to check some property.
             return Searcher.IsStringLike(propertyValue, value, simPercent);
-        }
-
-        /* bool CheckObjectByType(ref IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
-         * check windows object, like message box and file dialog
-         */
-        private bool CheckObjectByType(ref IntPtr handle, HTMLTestObjectType type, string value, int simPercent)
-        {
-
-            if (type == HTMLTestObjectType.MsgBox)
-            {
-                return CheckMsgBoxObject(ref handle, value, simPercent);
-            }
-            else if (type == HTMLTestObjectType.FileDialog)
-            {
-                return CheckFileDialogObject(ref handle, value, simPercent);
-            }
-            else
-            {
-                return false;
-            }
-
         }
 
         /* bool CheckTextBoxObject(IHTMLElement, string value, int simPercent)
@@ -1654,9 +1110,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         return Searcher.IsStringLike(value, innerText, simPercent);
                     }
-
                 }
-
             }
             catch
             {
@@ -1679,9 +1133,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 string propertyName = "innerHTML";
-
                 string items;
-
                 if (!HTMLTestObject.TryGetProperty(element, propertyName, out items))
                 {
                     return false;
@@ -1694,20 +1146,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 //get the position of ">"
                 int pos1 = items.IndexOf(">");
-
                 //get the position of "<" 
                 int pos2 = items.IndexOf("<", pos1);
 
                 // then we can get the first item of select object.
                 string firstItem = items.Substring(pos1 + 1, pos2 - pos1 - 1);
-
                 return Searcher.IsStringLike(firstItem, value, simPercent);
             }
             catch
             {
                 return false;
             }
-
         }
 
         /* bool CheckImageObject(IHTMLElement element, string value)
@@ -1748,9 +1197,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 imgSrc = System.IO.Path.GetFileName(imgSrc);
-
                 return Searcher.IsStringLike(imgSrc, value, simPercent);
-
             }
             catch
             {
@@ -1795,8 +1242,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return true;
                 }
 
-                string labelText = HTMLTestRadioButton.GetLabelForRadioBox(element);
-
+                string labelText = HTMLTestRadioBox.GetLabelForRadioBox(element);
                 if (!String.IsNullOrEmpty(labelText) && value.Length > 1)
                 {
                     if (value.EndsWith(".") || value.EndsWith("。"))
@@ -1901,7 +1347,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 return IsPropertyLike(element, propertyName, value, simPercent);
-
             }
             catch
             {
@@ -1964,7 +1409,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 return IsPropertyLike(element, propertyName, value, simPercent);
-
             }
             catch
             {
@@ -2011,7 +1455,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return true;
                 }
 
-
                 //check caption of the table.
                 string caption;
 
@@ -2025,15 +1468,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 //get table.
                 IHTMLTable tableElement = (IHTMLTable)element;
-
                 //get the first row.
                 IHTMLTableRow tableRowElement = (IHTMLTableRow)tableElement.rows.item((object)0, (object)0);
-
                 //get the first cell.
                 IHTMLElement cellElement = (IHTMLElement)tableRowElement.cells.item((object)0, (object)0);
 
                 string innerText;
-
                 if (HTMLTestObject.TryGetProperty(cellElement, "innerText", out innerText))
                 {
                     return Searcher.IsStringLike(innerText, value, simPercent);
@@ -2042,7 +1482,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     return false;
                 }
-
             }
             catch
             {
@@ -2077,37 +1516,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return Searcher.IsStringLike(propertyValue, value, simPercent);
         }
 
-        /* bool CheckMsgBoxObject(string value, int simPercent)
-         * check pop up message box.
-         * it is a window control, not a HTML control, so we don't need IHTMLElement.
-         * NEED UPDATE!!!
-         */
-        private bool CheckMsgBoxObject(ref IntPtr handle, string value, int simPercent)
-        {
-
-            //get the handle, the text of MessageBox is "Windows Internet Explorer", we use this to find it.
-            handle = Win32API.FindWindow(null, "Microsoft Internet Explorer");
-
-            if (handle != IntPtr.Zero)
-            {
-                return Win32API.GetParent(handle) == this._htmlTestBrowser.MainHandle;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /* bool CheckFileDialogObject(string value, int simPercent)
-         * check file dialog, when you need input/browse file/folder, we can see this control.
-         * it is a windows control, not a HTML control, so we don't need IHTMLElement.
-         */
-        private bool CheckFileDialogObject(ref IntPtr handle, string value, int simPercent)
-        {
-            handle = IntPtr.Zero;
-            return false;
-        }
-
         #endregion
 
         /* bool IsPropertyEqual(IHTMLElement element, string propertyName, string value, int simPercent)
@@ -2138,7 +1546,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             string property = "innerText";
 
             string tagValue = tag.ToUpper();
-
             if (tagValue == "INPUT")
             {
                 switch (type)
@@ -2213,7 +1620,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             type = type.ToUpper().Replace(" ", "");
-
             if (type == "BUTTON" || type == "BTN" || type == "B")
             {
                 return HTMLTestObjectType.Button;
@@ -2244,23 +1650,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (type == "RADIOBOX" || type == "RADIOBUTTON" || type == "RADIO" || type == "RAD" || type == "R")
             {
-                return HTMLTestObjectType.RadioButton;
+                return HTMLTestObjectType.RadioBox;
             }
             else if (type == "CHECKBOX" || type == "CHECK" || type == "CHK" || type == "CK")
             {
                 return HTMLTestObjectType.CheckBox;
             }
-            else if (type == "FILEDIAGLOG" || type == "FILE" || type == "FOLDER" || type == "FOLDERDIALOG" || type == "F")
-            {
-                return HTMLTestObjectType.FileDialog;
-            }
             else if (type == "ACTIVEX")
             {
                 return HTMLTestObjectType.ActiveX;
-            }
-            else if (type == "MSGBOX" || type == "MSG" || type == "MESSAGE" || type == "MESSAGEBOX" || type == "POPWINDOW" || type == "POPBOX" || type == "M")
-            {
-                return HTMLTestObjectType.MsgBox;
             }
             else if (type == "TABLE" || type == "TBL" || type == "T")
             {
@@ -2270,7 +1668,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Unknow;
             }
-
         }
 
 
@@ -2293,7 +1690,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return new string[] { "img" };
                 case HTMLTestObjectType.CheckBox:
                     return new string[] { "input", "label" };
-                case HTMLTestObjectType.RadioButton:
+                case HTMLTestObjectType.RadioBox:
                     return new string[] { "input", "label" };
                 case HTMLTestObjectType.ComboBox:
                     return new string[] { "select" };
@@ -2301,10 +1698,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return new string[] { "select" };
                 case HTMLTestObjectType.Table:
                     return new string[] { "table" };
-                case HTMLTestObjectType.FileDialog:
-                    return new string[] { "windows" };
-                case HTMLTestObjectType.MsgBox:
-                    return new string[] { "windows" };
                 case HTMLTestObjectType.ActiveX:
                     return new string[] { "object" };
                 case HTMLTestObjectType.Unknow:
@@ -2345,7 +1738,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     return HTMLTestObjectType.Image;
                 }
-
             }
             else if (tag == "BUTTON")
             {
@@ -2357,11 +1749,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (!HTMLTestObject.TryGetProperty(element, "type", out inputType))
                 {
-                    return HTMLTestObjectType.Unknow;
+                    return HTMLTestObjectType.TextBox;
                 }
 
                 inputType = inputType.ToUpper();
-
                 if (inputType == "TEXT" || inputType == "PASSWORD")
                 {
                     return HTMLTestObjectType.TextBox;
@@ -2377,7 +1768,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else if (inputType == "RADIO")
                 {
-                    return HTMLTestObjectType.RadioButton;
+                    return HTMLTestObjectType.RadioBox;
                 }
             }
             else if (tag == "TEXTAREA")
@@ -2390,7 +1781,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (tag == "SELECT")
             {
-
                 string selectValue;
 
                 if (!HTMLTestObject.TryGetProperty(element, "size", out selectValue))
@@ -2418,7 +1808,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return HTMLTestObjectType.Unknow;
-
         }
 
         /* HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
@@ -2469,8 +1858,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.Image:
                     tmp = new HTMLTestImage(element);
                     break;
-                case HTMLTestObjectType.RadioButton:
-                    tmp = new HTMLTestRadioButton(element);
+                case HTMLTestObjectType.RadioBox:
+                    tmp = new HTMLTestRadioBox(element);
                     break;
                 case HTMLTestObjectType.CheckBox:
                     tmp = new HTMLTestCheckBox(element);
@@ -2489,7 +1878,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     tmp.Browser = _htmlTestBrowser;
                     tmp.HTMLTestObjPool = this;
-                    tmp.SendMsgOnly = _sendMsgOnly;
                     return tmp;
                 }
                 catch (CannotGetObjectPositionException ex)
@@ -2504,44 +1892,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     throw new CannotBuildObjectException(ex.Message);
                 }
-            }
-            else
-            {
-                throw new CannotBuildObjectException();
-            }
-
-        }
-
-        /* HTMLGuiTestObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
-         * Build some special object, like MessageBox and FileDialog, they are Windows control.
-         */
-        public HTMLTestGUIObject BuildObjectByType(IntPtr handle, HTMLTestObjectType type)
-        {
-            if (handle == IntPtr.Zero || type == HTMLTestObjectType.Unknow)
-            {
-                throw new CannotBuildObjectException("Handle and type can not be null.");
-            }
-
-            HTMLTestGUIObject tmp;
-
-            switch (type)
-            {
-                case HTMLTestObjectType.MsgBox:
-                    tmp = new HTMLTestMsgBox(handle);
-                    break;
-                case HTMLTestObjectType.FileDialog:
-                    tmp = new HTMLTestFileDialog();
-                    break;
-                default:
-                    tmp = null;
-                    break;
-            }
-
-            if (tmp != null)
-            {
-                tmp.Browser = _htmlTestBrowser;
-                tmp.SendMsgOnly = _sendMsgOnly;
-                return tmp;
             }
             else
             {
@@ -2587,18 +1937,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (_htmlTestBrowser != null)
             {
                 bool needWait = true;
-
-                //some special object, we don't need to wait the browser.
-                if (String.Compare(method, "GetObjectByType", true) == 0)
-                {
-                    string typeStr = paras[0];
-                    HTMLTestObjectType type = ConvertStrToHTMLType(typeStr);
-                    if (type == HTMLTestObjectType.FileDialog || type == HTMLTestObjectType.MsgBox)
-                    {
-                        needWait = false;
-                    }
-                }
-
                 int times = 0;
                 while (needWait && times <= _htmlTestBrowser.MaxWaitSeconds && _htmlTestBrowser.IsBusy)
                 {

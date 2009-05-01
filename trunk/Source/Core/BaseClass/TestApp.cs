@@ -20,7 +20,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
-using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.Core
@@ -30,12 +29,12 @@ namespace Shrinerain.AutoTester.Core
 
         #region fields
 
+        protected TestApp _parent;
         protected IntPtr _rootHandle;
-
-        //process to start the desktop application
         protected Process _appProcess;
 
         protected string _appPath;
+        protected string _appArgs;
         protected string _appName;
         protected string _appVersion;
         protected string _appCompany;
@@ -48,8 +47,8 @@ namespace Shrinerain.AutoTester.Core
         protected int _height;
 
         //max wait time is 120s.
-        protected const int _maxWaitSeconds = 120;
-        protected const int _interval = 3;
+        protected int _maxWaitSeconds = 120;
+        protected int _interval = 3;
 
         //sync event
         protected AutoResetEvent _appStartEvent = new AutoResetEvent(false);
@@ -88,6 +87,13 @@ namespace Shrinerain.AutoTester.Core
             set { _appPath = value; }
         }
 
+
+        public string AppArgs
+        {
+            get { return _appArgs; }
+            set { _appArgs = value; }
+        }
+
         //return the handle of the application.
         public IntPtr Handle
         {
@@ -119,92 +125,116 @@ namespace Shrinerain.AutoTester.Core
             Start(appFullPath, null);
         }
 
-        public virtual void Start(string appFullPath, string[] parameters)
+        public virtual void Start(string appFullPath, string parameters)
         {
-            if (!File.Exists(appFullPath))
+            try
             {
-                throw new CannotStartAppException("Can not find test application: " + appFullPath);
-            }
+                BeforeStart();
 
-            string arg = "";
-            if (parameters != null && parameters.Length > 0)
-            {
-                foreach (string i in parameters)
+                if (!File.Exists(appFullPath))
                 {
-                    arg += (i + " ");
-                }
-            }
-
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = appFullPath;
-            startInfo.Arguments = arg;
-            startInfo.UseShellExecute = false;
-
-            //process to start application.
-            _appProcess = new Process();
-            _appProcess.StartInfo = startInfo;
-
-
-            //if not sucessful
-            if (_appProcess.Start())
-            {
-                int times = 0;
-                while (times < _maxWaitSeconds)
-                {
-                    Thread.Sleep(_interval * 1000);
-                    times += _interval;
-
-                    //get the main handle.
-                    this._rootHandle = _appProcess.MainWindowHandle;
-                    if (this._rootHandle != IntPtr.Zero)
-                    {
-                        break;
-                    }
+                    throw new CannotStartAppException("Can not find test application: " + appFullPath);
                 }
 
-                if (this._rootHandle != IntPtr.Zero)
+                this._appArgs = parameters;
+
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.FileName = appFullPath;
+                startInfo.Arguments = parameters;
+
+                //process to start application.
+                _appProcess = new Process();
+                _appProcess.StartInfo = startInfo;
+
+                //if not sucessful
+                if (!_appProcess.Start())
                 {
-                    return;
-                }
-            }
-
-            throw new CannotStartAppException("Can not start test application: " + appFullPath + " with parameters: " + arg);
-        }
-
-        /* void Find(IntPtr handle)
-         * Find a window by it's handle.
-         */
-        public virtual void Find(IntPtr handle)
-        {
-            if (handle == IntPtr.Zero)
-            {
-                throw new AppNotFoundExpcetion("Handle can not be 0.");
-            }
-            else
-            {
-                this._rootHandle = handle;
-            }
-        }
-
-        public virtual void Find(String caption, String className)
-        {
-            if (!String.IsNullOrEmpty(caption) || !String.IsNullOrEmpty(className))
-            {
-                IntPtr handle = Win32API.FindWindow(className, caption);
-
-                if (handle != IntPtr.Zero)
-                {
-                    Find(handle);
+                    throw new CannotStartAppException("Can not start test application: " + appFullPath + " with parameters: " + parameters);
                 }
                 else
                 {
-                    throw new AppNotFoundExpcetion("Can not find window by caption and class.");
+                    //get the main handle.
+                    this._rootHandle = _appProcess.MainWindowHandle;
                 }
             }
-            else
+            catch (TestException)
             {
-                throw new AppNotFoundExpcetion("Caption and class can not be null.");
+                throw;
             }
+            catch (Exception ex)
+            {
+                throw new CannotStartAppException("Can not start application by path:" + appFullPath + " with parameters:" + parameters + ": " + ex.ToString());
+            }
+            finally
+            {
+                AfterStart();
+            }
+        }
+
+        //attach to an exist application
+        public virtual void Find(IntPtr handle)
+        {
+            try
+            {
+                BeforeFound();
+
+                if (handle != IntPtr.Zero)
+                {
+                    this._rootHandle = handle;
+                    GetProcessByHandle(this._rootHandle);
+                }
+                else
+                {
+                    throw new AppNotFoundExpcetion("Can not find application by handle:" + handle);
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new AppNotFoundExpcetion("Can not find applicatoin by handle:" + ex.ToString());
+            }
+            finally
+            {
+                AfterFound();
+            }
+
+        }
+
+        public virtual void Find(string caption, string className)
+        {
+            IntPtr handle = Win32API.FindWindow(className, caption);
+            Find(handle);
+        }
+
+        public virtual void Find(String processName, int index)
+        {
+            IntPtr handle = IntPtr.Zero;
+            if (!String.IsNullOrEmpty(processName) && index >= 0)
+            {
+                foreach (Process p in System.Diagnostics.Process.GetProcesses())
+                {
+                    if (String.Compare(p.ProcessName, processName, true) == 0)
+                    {
+                        handle = p.MainWindowHandle;
+                        index--;
+
+                        if (index < 0)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            Find(handle);
+        }
+
+        public virtual void Find(String title)
+        {
+            Find(title, null);
         }
 
         /* void Close()
@@ -216,6 +246,13 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
+                    ITestEventDispatcher dispatcher = this.GetEventDispatcher();
+                    if (dispatcher != null)
+                    {
+                        dispatcher.Stop();
+                        dispatcher = null;
+                    }
+
                     _appProcess.Close();
                     _appProcess = null;
                 }
@@ -226,6 +263,18 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+
+        public virtual ITestApp[] GetChildren()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public virtual ITestApp GetParent()
+        {
+            return this._parent;
+        }
+
+
         public virtual void Move(int x, int y)
         {
             if (this._rootHandle == IntPtr.Zero)
@@ -234,7 +283,7 @@ namespace Shrinerain.AutoTester.Core
             }
             try
             {
-                GetSize();
+                GetRectOnScreen();
                 Win32API.SetWindowPos(this._rootHandle, IntPtr.Zero, x, y, this._width, this._height, 0);
             }
             catch (Exception ex)
@@ -253,8 +302,7 @@ namespace Shrinerain.AutoTester.Core
 
             try
             {
-                GetSize();
-
+                GetRectOnScreen();
                 Win32API.SetWindowPos(this.Handle, IntPtr.Zero, left, top, width, height, 0);
             }
             catch (Exception ex)
@@ -383,7 +431,7 @@ namespace Shrinerain.AutoTester.Core
 
         }
 
-        public virtual void WaitForDisappear()
+        public virtual void WaitForClose()
         {
             if (this._rootHandle == IntPtr.Zero)
             {
@@ -477,39 +525,29 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public virtual bool IsMax()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual bool IsMin()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual bool IsIcon()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual bool IsBusy()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual bool IsVisualStyle()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual bool IsTaskbar()
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #region size
+
+        public System.Drawing.Rectangle GetRectOnScreen()
+        {
+            try
+            {
+                Win32API.Rect rect = new Win32API.Rect();
+                Win32API.GetWindowRect(this.Handle, ref rect);
+
+                this._left = rect.left;
+                this._top = rect.top;
+                this._width = rect.Width;
+                this._height = rect.Height;
+
+                return new System.Drawing.Rectangle(_left, _top, _width, _height);
+            }
+            catch (Exception ex)
+            {
+                throw new CannotGetAppInfoException("Can not get size of test app: " + ex.Message);
+            }
+        }
 
         public virtual int GetTop()
         {
@@ -630,25 +668,10 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void WaitForApp()
         {
-            if (this._appProcess == null)
-            {
-                throw new AppNotFoundExpcetion("Process is null.");
-            }
 
-            int times = 0;
-            while (times < _maxWaitSeconds && !this._appProcess.Responding)
-            {
-                Thread.Sleep(_interval * 1000);
-                times += _interval;
-            }
-
-            if (times >= _maxWaitSeconds)
-            {
-                throw new CannotWaitAppException("Wait for test app timeout.");
-            }
         }
 
-        protected virtual void WaitForApp(String title)
+        protected virtual void WaitForApp(Object title)
         {
 
         }
@@ -658,45 +681,91 @@ namespace Shrinerain.AutoTester.Core
 
         }
 
-        protected virtual void GetSize()
+        protected void GetProcessByHandle(IntPtr handle)
         {
-
-            Win32API.Rect rect = new Win32API.Rect();
-
-            try
+            if (handle != IntPtr.Zero)
             {
-                Win32API.GetWindowRect(this.Handle, ref rect);
-
-                this._left = rect.left;
-                this._top = rect.top;
-                this._width = rect.Width;
-                this._height = rect.Height;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotGetAppInfoException("Can not get size of test app: " + ex.Message);
-            }
-        }
-
-
-        protected virtual void TerminateProcess(int processID)
-        {
-            if (processID <= 0)
-            {
-                Process curProcess = Process.GetProcessById(processID);
-
-                if (curProcess != null)
+                foreach (Process p in System.Diagnostics.Process.GetProcesses())
                 {
-                    curProcess.Kill();
-                    return;
+                    if (p.MainWindowHandle == handle)
+                    {
+                        this._appProcess = p;
+                        return;
+                    }
                 }
             }
-
-            throw new CannotStopAppException("Can not find process by ID:" + processID);
         }
 
         #endregion
 
         #endregion
+
+        #region ITestApp Members
+
+        public event TestAppEventHandler OnBeforeAppStart;
+
+        public event TestAppEventHandler OnAfterAppStart;
+
+        public event TestAppEventHandler OnBeforeAppClose;
+
+        public event TestAppEventHandler OnAfterAppClose;
+
+        public event TestAppEventHandler OnBeforeAppFound;
+
+        public event TestAppEventHandler OnAfterAppFound;
+
+        #endregion
+
+        #region ITestApp Members
+
+
+        public virtual void BeforeStart()
+        {
+            if (OnBeforeAppStart != null)
+                OnBeforeAppStart(this, null);
+        }
+
+        public virtual void AfterStart()
+        {
+            if (OnAfterAppStart != null)
+                OnAfterAppStart(this, null);
+        }
+
+        public virtual void BeforeFound()
+        {
+            if (OnBeforeAppFound != null)
+                OnBeforeAppFound(this, null);
+        }
+
+        public virtual void AfterFound()
+        {
+            if (OnAfterAppFound != null)
+                OnAfterAppFound(this, null);
+        }
+
+        public virtual void BoforeClose()
+        {
+            if (OnBeforeAppClose != null)
+                OnBeforeAppClose(this, null);
+        }
+
+        public virtual void AfterClose()
+        {
+            if (OnAfterAppClose != null)
+                OnAfterAppClose(this, null);
+        }
+
+        #endregion
+
+        public virtual ITestEventDispatcher GetEventDispatcher()
+        {
+            return null;
+        }
+
+        public virtual ITestObjectPool GetObjectPool()
+        {
+            return null;
+        }
+
     }
 }

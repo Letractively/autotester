@@ -19,7 +19,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Win32;
 
@@ -28,7 +27,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public sealed class HTMLTestCheckPoint : TestCheckPoint
     {
-
         #region fields
 
         private static Regex _htmlTagReg = new Regex(@"<.*?>", RegexOptions.Singleline | RegexOptions.Compiled);
@@ -159,7 +157,5 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #endregion
-
-
     }
 }

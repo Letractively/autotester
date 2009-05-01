@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestLink : HTMLTestGUIObject, IClickable, IShowInfo, IStatus
+    public class HTMLTestLink : HTMLTestGUIObject, IClickable, IText, IStatus
     {
 
         #region fields
@@ -131,14 +131,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.WaitOne();
 
-                Hover();
-
                 if (_sendMsgOnly)
                 {
                     _acnchorElement.click();
                 }
                 else
                 {
+                    Hover();
                     MouseOp.Click();
                 }
 
@@ -209,13 +208,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             Click();
         }
 
-        #region IShowInfo Members
+        #region IText Members
 
         public string GetText()
         {
             return this._linkText;
         }
 
+        public override string GetLabel()
+        {
+            return GetText();
+        }
 
         public string GetFontFamily()
         {
@@ -232,63 +235,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
-        #endregion
-
-        #region IStatus Members
-
-        /* object GetCurrentStatus()
-         * get the readystate of element. 
-         */
-        public virtual object GetCurrentStatus()
-        {
-            try
-            {
-                if (_acnchorElement != null)
-                {
-                    return _acnchorElement.readyState;
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not get status: " + ex.Message);
-            }
-        }
-
-        /* bool IsReady()
-         * return true if the object is ready.
-         */
-        public virtual bool IsReady()
-        {
-            try
-            {
-                if (_acnchorElement != null)
-                {
-                    return _acnchorElement.readyState == null ||
-                        _acnchorElement.readyState.ToString() == "interactive" ||
-                        _acnchorElement.readyState.ToString() == "complete";
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
-            }
-        }
         #endregion
 
         #endregion

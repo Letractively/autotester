@@ -220,4 +220,29 @@ namespace Shrinerain.AutoTester.Core
         {
         }
     }
+
+    public class TestPropertyException : TestObjectException
+    {
+        public TestPropertyException()
+            : this("Error of test property.")
+        {
+        }
+
+        public TestPropertyException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class CannotParseTestPropertyException : TestPropertyException
+    {
+        public CannotParseTestPropertyException()
+            : this("Can not parse test property.")
+        {
+        }
+        public CannotParseTestPropertyException(string message)
+            : base(message)
+        {
+        }
+    }
 }

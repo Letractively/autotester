@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B21CB9F5-462E-4A2D-9A1B-8C9373F707B5}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -108,13 +108,49 @@
     <None Include="Resources\clear.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AIUtility\AIUtility.vcproj">
+      <Project>{142ADF6B-825A-49BE-AC94-0B56F3FB1404}</Project>
+      <Name>AIUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AutoTester\AutoTester.csproj">
+      <Project>{8ACBB6CF-E749-4E1D-93CD-56D4C5705B78}</Project>
+      <Name>AutoTester</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataUtility\DataUtility.csproj">
+      <Project>{7AA7D5AC-69F1-41FA-A1EC-91E4CB0F9E98}</Project>
+      <Name>DataUtility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Framework\Framework.csproj">
       <Project>{3554AFF5-0D9A-43A8-B048-D38C8C9F0C1D}</Project>
       <Name>Framework</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HTMLUtility\HtmlUtility.csproj">
+      <Project>{E5761F00-01D5-4090-9277-3BE12686B808}</Project>
+      <Name>HtmlUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MSAAUtility\MSAAUtility.csproj">
+      <Project>{C752F3C5-6FD8-4B36-AD5C-73393537A773}</Project>
+      <Name>MSAAUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Recorder\Recorder.csproj">
+      <Project>{E9CE29F8-827F-4A05-B229-50058FBF98DB}</Project>
+      <Name>Recorder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Win32API\Win32API.csproj">
       <Project>{C27330C3-8F5D-46C6-9601-CDD96134E717}</Project>
       <Name>Win32API</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsHook\WindowsHook.vcproj">
+      <Project>{0D7B20EE-75C3-47AC-8644-C452E8E3C57B}</Project>
+      <Name>WindowsHook</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinformUtility\WinformUtility.csproj">
+      <Project>{640AB3CF-2E2A-40B2-9CE5-D5C5033B4862}</Project>
+      <Name>WinformUtility</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

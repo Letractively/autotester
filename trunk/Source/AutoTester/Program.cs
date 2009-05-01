@@ -22,21 +22,20 @@ namespace Shrinerain.AutoTester
     using System.Drawing;
 
     using Shrinerain.AutoTester.HTMLUtility;
-    using Shrinerain.AutoTester.Core;
-    using Shrinerain.AutoTester.Interface;
     using Shrinerain.AutoTester.Framework;
+    using Shrinerain.AutoTester.Core;
     using Shrinerain.AutoTester.Win32;
-    using Shrinerain.AutoTester.Helper;
     using Shrinerain.AutoTester.MSAAUtility;
 
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
             //FrameworkEXE(args);
             FunctionTest();
             //FrameworkTest();
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
 
@@ -90,11 +89,14 @@ namespace Shrinerain.AutoTester
 
         static void FunctionTest()
         {
+            //Test1.Test();
             //MSAA.Test();
             //Baidu.Test();
-            Google.Test();
+            //Google.Test();
             //Other.Test();
-           // Qidian.Test();
+            //Qidian.Test();
+            //CSDN.Test();
+            QQ.Test();
         }
     }
 }

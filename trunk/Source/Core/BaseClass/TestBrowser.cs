@@ -19,6 +19,7 @@
 *
 *********************************************************************/
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -27,55 +28,32 @@ using System.Net;
 using mshtml;
 using SHDocVw;
 
-using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Win32;
-using Shrinerain.AutoTester.Helper;
 
 namespace Shrinerain.AutoTester.Core
 {
-
-    public class TestBrowser : IDisposable, ITestBrowser
+    public class TestBrowser : TestApp, IDisposable, ITestBrowser
     {
         #region Fileds
 
-        //this struct is used to save the browser status.
-        //Sometimes the web app will pop up a new window, it is a new browser, and we will switch to
-        //the new browser, after operation finished, we need to go back to the origin browser.
-        //so we need a stack to save the status, after pop window disappear, we need to pop the old status from the stack.
-
-
         //stack to save the browser status.
         protected Stack<InternetExplorer> _ieStack = new Stack<InternetExplorer>(5);
-
-        protected TestBrowser _testBrowser;
-
         //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
         protected InternetExplorer _ie;
-
-        protected Process _browserProcess;
-
-        //Handle of IE, class name is "IEFRAME"
-        protected IntPtr _mainHandle;
+        protected TestBrowser _testBrowser;
 
         //handle of client area.
         // client area means the area to display web pages, not include the menu, address bar, etc.
         // we can use Spy++ to get these information.
         protected IntPtr _ieServerHandle;
-
         //handle of shell doc.
         protected IntPtr _shellDocHandle;
-
         //handle of "showModelessDialog" and "showDialog". They contain HTML, but not a InternetExplorer instance.
         protected IntPtr _dialogHandle;
 
         //HTML dom, we use HTML dom to get the HTML object.
-        protected HTMLDocument _HTMLDom;
-
-        //wait for 120 secs, for example, to wait for the browser exist.
-        protected int _maxWaitSeconds = 120;
-
-        //every time sleep for 3 secs if browser is not found.
-        protected const int _interval = 3;
+        protected HTMLDocument _rootDocument;
+        protected object _rootDisp;
 
         //timespan to store the response time.
         //the time is the interval between starting download and downloading finish.
@@ -89,7 +67,7 @@ namespace Shrinerain.AutoTester.Core
 
         //the version of browser, eg 7.0
         protected string _version;
-
+        protected int _majorVersion;
         //the name of browser, eg Internet Explorer.
         protected string _browserName;
 
@@ -182,67 +160,42 @@ namespace Shrinerain.AutoTester.Core
 
         public int Top
         {
-            get
-            {
-                return _ieTop;
-            }
+            get { return _ieTop; }
         }
 
         public int Width
         {
-            get
-            {
-                return _ieWidth;
-            }
+            get { return _ieWidth; }
         }
 
         public int Height
         {
-            get
-            {
-                return _ieHeight;
-            }
+            get { return _ieHeight; }
         }
 
         public int ClientTop
         {
-            get
-            {
-                return _clientTop;
-            }
+            get { return _clientTop; }
         }
 
         public int ClientLeft
         {
-            get
-            {
-                return _clientLeft;
-            }
+            get { return _clientLeft; }
         }
 
         public int ClientWidth
         {
-            get
-            {
-                return _clientWidth;
-            }
+            get { return _clientWidth; }
         }
 
         public int ClientHeight
         {
-            get
-            {
-                return _clientHeight;
-            }
+            get { return _clientHeight; }
         }
 
         public int ScrollLeft
         {
-            get
-            {
-                //GetScrollRect();
-                return _scrollLeft;
-            }
+            get { return _scrollLeft; }
         }
         public int ScrollTop
         {
@@ -254,26 +207,17 @@ namespace Shrinerain.AutoTester.Core
         }
         public int ScrollWidth
         {
-            get
-            {
-                //GetScrollRect();
-                return _scrollWidth;
-            }
+            get { return _scrollWidth; }
         }
         public int ScrollHeight
         {
-            get
-            {
-                //GetScrollRect();
-                return _scrollHeight;
-            }
-
+            get { return _scrollHeight; }
         }
 
         //main handle of ie window
         public IntPtr MainHandle
         {
-            get { return _mainHandle; }
+            get { return _rootHandle; }
         }
 
         //handle of client area, Internet Explorer_Server
@@ -297,20 +241,12 @@ namespace Shrinerain.AutoTester.Core
         //property to show if the browser is downloading sth.
         public bool IsBusy
         {
-            get
-            {
-                CheckModelessDialog();
-
-                return _isDownloading || _ie.Busy;
-            }
+            get { return _isDownloading || _ie.Busy; }
         }
 
         public InternetExplorer[] AllBrowsers
         {
-            get
-            {
-                return GetAllBrowsers();
-            }
+            get { return GetAllBrowsers(); }
         }
 
         public bool SendMsgOnly
@@ -318,7 +254,6 @@ namespace Shrinerain.AutoTester.Core
             get { return _sendMsgOnly; }
             set { _sendMsgOnly = value; }
         }
-
 
         #endregion
 
@@ -329,9 +264,9 @@ namespace Shrinerain.AutoTester.Core
         public TestBrowser()
         {
             //currently, just support internet explorer
-            _browserName = "Internet Explorer";
+            _browserName = TestConstants.IE_Browser_Name;
             _version = GetBrowserVersion();
-
+            _majorVersion = Convert.ToInt32(_version[0].ToString());
         }
 
         ~TestBrowser()
@@ -344,11 +279,8 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_browserExisted != null)
             {
-                //  _ieExisted.Close();
                 _browserExisted.Close();
-                //_ieExisted = null;
                 _browserExisted = null;
-
             }
 
             if (_documentLoadComplete != null)
@@ -374,12 +306,11 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-                _browserProcess = Process.Start("iexplore.exe", "about:blank");
+                _appProcess = Process.Start(TestConstants.IE_EXE, TestConstants.IE_BlankPage_Url);
 
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
-                Thread ieExistT = new Thread(new ThreadStart(WaitForBrowserExist));
-                ieExistT.Start();
-
+                Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
+                ieExistT.Start(TestConstants.IE_BlankPage_Title);
                 //wait until the internet explorer started.
                 _browserExisted.WaitOne(_maxWaitSeconds * 1000, true);
 
@@ -404,17 +335,11 @@ namespace Shrinerain.AutoTester.Core
 
         }
 
-        public virtual void Start(String url)
-        {
-            Start();
-            Load(url);
-        }
-
         /*  void Find(object browserTitle)
          *  find an instance of browser by its title.
          *  eg: Google.com.
          */
-        public virtual void Find(object browserTitle)
+        public override void Find(string browserTitle)
         {
             string title;
             if (browserTitle == null || String.IsNullOrEmpty(browserTitle.ToString()))
@@ -424,11 +349,10 @@ namespace Shrinerain.AutoTester.Core
             else
             {
                 title = browserTitle.ToString();
-
                 //add standard title to the string.
-                if (!title.EndsWith(" - Windows Internet Explorer"))
+                if (!title.EndsWith(TestConstants.IE_TitleTail))
                 {
-                    title += " - Windows Internet Explorer";
+                    title += TestConstants.IE_TitleTail;
                 }
             }
 
@@ -465,7 +389,7 @@ namespace Shrinerain.AutoTester.Core
          * Close Browser.
          * 
          */
-        public virtual void Close()
+        public override void Close()
         {
             try
             {
@@ -484,17 +408,16 @@ namespace Shrinerain.AutoTester.Core
          * Load the expected url. eg: www.sina.com.cn 
          * before we load url, we need to use Start() method to start browser first.
          */
-        public virtual void Load(string url)
+        public virtual void Load(string url, bool waitForPage)
         {
             if (String.IsNullOrEmpty(url))
             {
                 throw new CannotLoadUrlException("Url can not be null.");
             }
 
-            // if ie is not started, wait for 120s.
             if (_ie == null)
             {
-                Start();
+                throw new BrowserNotFoundException("IE is not started.");
             }
 
             object tmp = new object();
@@ -502,6 +425,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 // navigate to the expected url.
                 _ie.Navigate(url, ref tmp, ref tmp, ref tmp, ref tmp);
+                Thread.Sleep(1000);
             }
             catch (Exception ex)
             {
@@ -509,64 +433,9 @@ namespace Shrinerain.AutoTester.Core
             }
 
             //wait until the HTML web page is loaded successfully.
-            this._documentLoadComplete.WaitOne(_maxWaitSeconds * 1000, true);
-
-        }
-
-        public virtual void Load(Uri url)
-        {
-            Load(url.ToString());
-        }
-
-        /* void Move(int top,int left)
-         * move the browser to expected position. 
-         * left,top means the position of left corner point
-         */
-        public virtual void Move(int top, int left)
-        {
-            if (_ie == null)
+            if (waitForPage)
             {
-                throw new BrowserNotFoundException();
-            }
-
-            try
-            {
-                _ie.Top = top;
-                _ie.Left = left;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotActiveBrowserException("Can not move browser: " + ex.Message);
-            }
-        }
-
-        /* void Resize(int width, int height) 
-         * resize the browser, set it's width and height
-         */
-        public virtual void Resize(int width, int height)
-        {
-            if (_ie == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-
-            if (width < 1)
-            {
-                width = 1;
-            }
-            if (height < 1)
-            {
-                height = 1;
-            }
-
-            try
-            {
-                _ie.Width = width;
-                _ie.Height = height;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotActiveBrowserException("Can not resize browser: " + ex.Message);
+                this._documentLoadComplete.WaitOne(_maxWaitSeconds * 1000, true);
             }
         }
 
@@ -667,77 +536,12 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        /* void Wait(int seconds)
-         * make the browser wait for seconds.
-         * if the parameter is smaller than 0, we will wait for int.MaxValue(2,147,483,647) seconds. 
-         */
-        public virtual void Wait(int seconds)
-        {
-            if (_ie == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-
-            if (seconds > 0)
-            {
-                Thread.Sleep(seconds * 1000);
-            }
-        }
-
-        /* void WaitForNewWindow()
-         * wait until a new Internet Explorer exist. 
-         */
-        public virtual void WaitForNewWindow()
-        {
-
-            try
-            {
-                WaitForNewBrowserAsyn();
-
-                _browserExisted.WaitOne(_maxWaitSeconds * 1000, true);
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new BrowserNotFoundException(ex.Message);
-            }
-        }
-
-        /* void WaitForNewTab()
-         *  in tabbed browser, like Internet Explorer 7, wait until a new tab exist.
-         * 
-         */
-        public virtual void WaitForNewTab()
-        {
-            if (_ie == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-
-            try
-            {
-                // WaitForNewBrowserSync();
-                WaitForNewBrowserAsyn();
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new BrowserNotFoundException(ex.Message);
-            }
-        }
-
         /* void WaitForNextPage()
          * wait until the browser load a new page.
          * eg: in google.com, you input something, then you click search button, you need to wait the browser to refresh,
          * then you can see the result page.
          */
-        public virtual void WaitForNextPage()
+        public virtual void WaitForPage()
         {
             if (_ie == null)
             {
@@ -745,92 +549,6 @@ namespace Shrinerain.AutoTester.Core
             }
 
             WaitDocumentLoadComplete();
-        }
-
-        /* void WaitForPopWindow()
-         * wait until the browser pop up a new HTML window.
-         * It is a new Internet Explorer_Server control.
-         * 
-         */
-        public virtual void WaitForPopWindow()
-        {
-            if (_ie == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-
-            int times = 0;
-            while (times < _maxWaitSeconds)
-            {
-                IntPtr popWindowHandle = GetDialogHandle(_mainHandle);
-
-                if (popWindowHandle != IntPtr.Zero)
-                {
-                    IntPtr popWindowIEServerHandle = GetIEServerHandle(popWindowHandle);
-
-                    if (popWindowIEServerHandle != IntPtr.Zero)
-                    {
-
-                        //save the current browser status.
-                        _ieStack.Push(_ie);
-
-                        _mainHandle = popWindowHandle;
-                        _ieServerHandle = popWindowIEServerHandle;
-                        _HTMLDom = GetHTMLDomFromHandle(popWindowIEServerHandle);
-
-                        // get the pop up window's size
-                        GetSize();
-
-                        break;
-                    }
-                }
-
-                Thread.Sleep(_interval * 1000);
-                times += _interval;
-            }
-        }
-
-        /* void MaxSize()
-         * max the browser.
-         */
-        public virtual void MaxSize()
-        {
-            if (_ie == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-
-            try
-            {
-                Win32API.SendMessage(_mainHandle, Convert.ToInt32(Win32API.WindowMessages.WM_SYSCOMMAND), Convert.ToInt32(Win32API.WindowMenuMessage.SC_MAXIMIZE), 0);
-            }
-            catch (Exception ex)
-            {
-                throw new CannotActiveBrowserException("Can not MAX Internet Explorer: " + ex.Message);
-            }
-        }
-
-        /* void Active()
-         * make the browser active, set it focus and to top most window, then we can interactive with it.
-         */
-        public virtual void Active()
-        {
-            if (_ie == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-
-            try
-            {
-                if (!_sendMsgOnly)
-                {
-                    Win32API.SetForegroundWindow(_mainHandle);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new CannotActiveBrowserException("Can not Active browser: " + ex.Message);
-            }
         }
 
         /* void Print(String printerName)
@@ -1025,11 +743,11 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual bool IsModelessDialog(IntPtr dialogHandle)
         {
-            if (this._mainHandle != IntPtr.Zero && dialogHandle != IntPtr.Zero && this._mainHandle != dialogHandle)
+            if (this._rootHandle != IntPtr.Zero && dialogHandle != IntPtr.Zero && this._rootHandle != dialogHandle)
             {
-                Win32API.SetForegroundWindow(this._mainHandle);
+                Win32API.SetForegroundWindow(this._rootHandle);
 
-                return Win32API.GetForegroundWindow() == this._mainHandle;
+                return Win32API.GetForegroundWindow() == this._rootHandle;
             }
 
             return false;
@@ -1051,7 +769,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (String.IsNullOrEmpty(_version))
             {
-                using (Microsoft.Win32.RegistryKey versionKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Internet Explorer"))
+                using (Microsoft.Win32.RegistryKey versionKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(TestConstants.IE_Reg_Path))
                 {
                     _version = versionKey.GetValue("Version").ToString();
                 }
@@ -1123,7 +841,70 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual string GetHTML()
         {
-            return _HTMLDom == null ? "" : _HTMLDom.body.innerHTML;
+            HTMLDocument[] allDocs = GetAllDocuments();
+            StringBuilder sb = new StringBuilder();
+            foreach (HTMLDocument doc in allDocs)
+            {
+                if (doc.body.innerHTML != null)
+                {
+                    sb.Append(doc.body.innerHTML);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public virtual HTMLDocument GetRootDocument()
+        {
+            _rootDocument = (HTMLDocument)_ie.Document;
+            try
+            {
+                IHTMLFramesCollection2 frames = _rootDocument.frames;
+            }
+            catch (InvalidCastException)
+            {
+                _rootDocument = COMUtil.GetHTMLDocFromHandle(this._ieServerHandle);
+            }
+            return _rootDocument;
+        }
+
+        //return all documents, include frames.
+        public virtual HTMLDocument[] GetAllDocuments()
+        {
+            GetRootDocument();
+            return GetAllDocuments(_rootDocument);
+        }
+
+        protected virtual HTMLDocument[] GetAllDocuments(HTMLDocument root)
+        {
+            if (root != null)
+            {
+                List<HTMLDocument> res = new List<HTMLDocument>();
+                res.Add(root);
+                try
+                {
+                    if (root != null && root.frames != null)
+                    {
+                        IHTMLFramesCollection2 frames = root.frames;
+                        for (int i = 0; i < frames.length; i++)
+                        {
+                            object index = i;
+                            IHTMLWindow2 frame = frames.item(ref index) as IHTMLWindow2;
+                            HTMLDocument temp = COMUtil.GetFrameDocument(frame);
+                            HTMLDocument[] curFrameDocs = GetAllDocuments(temp);
+                            if (curFrameDocs != null)
+                            {
+                                res.AddRange(curFrameDocs);
+                            }
+                        }
+                    }
+                }
+                catch
+                {
+                }
+                return res.ToArray();
+            }
+
+            return null;
         }
 
         #endregion
@@ -1146,12 +927,6 @@ namespace Shrinerain.AutoTester.Core
                 seconds = 0;
             }
 
-            // Console.WriteLine(DateTime.Now.ToString());
-
-            //_startDownload.Reset();
-            //_startDownload.WaitOne(seconds * 1000, true);
-
-            //_documentLoadComplete.Reset();
             _documentLoadComplete.WaitOne(seconds * 1000, true);
 
         }
@@ -1168,58 +943,21 @@ namespace Shrinerain.AutoTester.Core
                 seconds = 0;
             }
 
-            bool isByTitle = true;
-
-            //if the title is empty, we need to find the browser by process id.
-            if (String.IsNullOrEmpty(title))
-            {
-                isByTitle = false;
-            }
-
-            int simPercent = 100;
-
             int times = 0;
             while (times <= seconds)
             {
                 bool browserFound = false;
 
-                Process[] pArr = Process.GetProcessesByName("iexplore");
-
+                Process[] pArr = Process.GetProcessesByName(TestConstants.IE_Process_Name);
                 foreach (Process p in pArr)
                 {
-                    //find the browser by it's title
-                    if (isByTitle)
+                    if (p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
-                        if (Searcher.IsStringLike(p.MainWindowTitle, title, simPercent))
-                        {
-                            browserFound = true;
-                        }
-                        else
-                        {
-                            continue;
-                        }
+                        browserFound = true;
                     }
-                    else //find the browser by process id.
+                    else
                     {
-                        //if we didn't start a browser process, we will use an exist browser.
-                        if (_browserProcess == null)
-                        {
-                            browserFound = true;
-                        }
-                        else
-                        {
-                            // after starting an iexplorer, if we use _browserProcess.MainWindowHandle, it is always 0 and will not change.
-                            // currently I don't know why????
-                            // so we use this way to find the main handle.
-                            if (p.Id == _browserProcess.Id)
-                            {
-                                browserFound = true;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
+                        continue;
                     }
 
                     if (browserFound)
@@ -1230,38 +968,18 @@ namespace Shrinerain.AutoTester.Core
                             break;
                         }
 
-                        _browserProcess = p;
-
-                        //main window handle is the handle of Internet explorer.
-                        _mainHandle = p.MainWindowHandle;
-
-                        _ie = AttachBrowser(_mainHandle);
-
-                        //we attached to IE successfully.
+                        _appProcess = p;
+                        _rootHandle = p.MainWindowHandle;
+                        _ie = AttachBrowser(_rootHandle);
                         _browserExisted.Set();
 
                         return;
-
                     }
                 }
 
                 //sleep for 3 seconds, find again.
                 times += _interval;
                 Thread.Sleep(_interval * 1000);
-
-                //try to use lower similarity to find the browser.
-                if (!browserFound)
-                {
-                    if (simPercent > 70)
-                    {
-                        simPercent -= 10;
-                    }
-                    else
-                    {
-                        simPercent = 100;
-                    }
-                }
-
             }
 
             throw new BrowserNotFoundException();
@@ -1329,18 +1047,6 @@ namespace Shrinerain.AutoTester.Core
             ieExistT.Start();
         }
 
-        /* void CheckModelessDialog()
-         * Wait until a new browser exist.
-         */
-        protected virtual void CheckModelessDialog()
-        {
-            IntPtr dialogHandle = GetDialogHandle(this._mainHandle);
-
-            if (dialogHandle != IntPtr.Zero && IsModelessDialog(dialogHandle))
-            {
-                WaitForPopWindow();
-            }
-        }
         #endregion
 
         #endregion
@@ -1364,15 +1070,11 @@ namespace Shrinerain.AutoTester.Core
             {
                 //get all shell browser.
                 InternetExplorer[] allBrowsers = GetAllBrowsers();
-
-                if (allBrowsers != null)
+                if (allBrowsers != null && allBrowsers.Length > 0)
                 {
-                    InternetExplorer tempIE = null;
-
                     for (int i = 0; i < allBrowsers.Length; i++)
                     {
-                        tempIE = (InternetExplorer)allBrowsers[i];
-
+                        InternetExplorer tempIE = allBrowsers[i];
                         if (tempIE != null && (int)ieHandle == tempIE.HWND)
                         {
                             return tempIE;
@@ -1394,17 +1096,13 @@ namespace Shrinerain.AutoTester.Core
         {
             //get all shell browser.
             SHDocVw.ShellWindows allBrowsers = new ShellWindows();
-
             if (allBrowsers.Count > 0)
             {
-                InternetExplorer curIE = null;
-
                 for (int i = allBrowsers.Count - 1; i >= 0; i--)
                 {
                     try
                     {
-                        curIE = (InternetExplorer)allBrowsers.Item(i);
-
+                        InternetExplorer curIE = (InternetExplorer)allBrowsers.Item(i);
                         if (curIE != null && curIE.Document is IHTMLDocument)
                         {
                             return curIE;
@@ -1428,26 +1126,17 @@ namespace Shrinerain.AutoTester.Core
         {
             //get all shell browser.
             SHDocVw.ShellWindows allBrowsers = new ShellWindows();
-
             if (allBrowsers.Count > 0)
             {
                 List<InternetExplorer> ieList = new List<InternetExplorer>(allBrowsers.Count);
-
-                InternetExplorer curIE = null;
-
-                bool found = false;
-
                 for (int i = allBrowsers.Count - 1; i >= 0; i--)
                 {
                     try
                     {
-                        curIE = (InternetExplorer)allBrowsers.Item(i);
-
+                        InternetExplorer curIE = (InternetExplorer)allBrowsers.Item(i);
                         if (curIE != null && curIE.Document is IHTMLDocument)
                         {
                             ieList.Add(curIE);
-
-                            found = true;
                         }
                     }
                     catch
@@ -1455,17 +1144,11 @@ namespace Shrinerain.AutoTester.Core
                         continue;
                     }
                 }
-
-                if (found)
-                {
-                    return ieList.ToArray();
-                }
+                return ieList.ToArray();
             }
 
             return null;
         }
-
-
 
         /* void RefreshBrowser(InternetExplorer ie)
          * use the new ie to replace old instance.
@@ -1481,14 +1164,13 @@ namespace Shrinerain.AutoTester.Core
                     InternetExplorer tmp = _ie;
 
                     //set handle
-                    this._mainHandle = (IntPtr)ie.HWND;             
-
+                    this._rootHandle = (IntPtr)ie.HWND;
                     try
                     {
                         if (ie.Document != null)
                         {
                             //set HTML DOM
-                            this._HTMLDom = (HTMLDocument)ie.Document;
+                            this._rootDocument = (HTMLDocument)ie.Document;
                         }
                     }
                     catch
@@ -1498,7 +1180,7 @@ namespace Shrinerain.AutoTester.Core
                     //set Internet Explorer.
                     this._ie = ie;
 
-                    MaxSize();
+                    Max();
 
                     //register event.
                     RegBrowserEvent(ie);
@@ -1582,21 +1264,6 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        ///* void SetDialog()
-        // * use the dialog to find object.
-        // */
-        //protected virtual void SetDialog()
-        //{
-        //    this._isDownloading = true;
-
-        //    if (this._dialogHandle == IntPtr.Zero)
-        //    {
-
-        //    }
-
-        //    this._isDownloading = false;
-        //}
-
         #region get size
 
         /* void GetSize()
@@ -1604,7 +1271,7 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void GetSize()
         {
-            MaxSize();
+            Max();
 
             GetBrowserRect();
             GetClientRect();
@@ -1640,20 +1307,18 @@ namespace Shrinerain.AutoTester.Core
          */
         protected void GetClientRect()
         {
+            _rootHandle = GetIEMainHandle();
 
-            _mainHandle = GetIEMainHandle();
-
-            if (_mainHandle == IntPtr.Zero)
+            if (_rootHandle == IntPtr.Zero)
             {
                 throw new BrowserNotFoundException("Can not get main handle of test browser.");
             }
 
-            _shellDocHandle = GetShellDocHandle(_mainHandle);
+            _shellDocHandle = GetShellDocHandle(_rootHandle);
             if (_shellDocHandle == IntPtr.Zero)
             {
                 throw new BrowserNotFoundException("Can not get shell handle of test browser");
             }
-
 
             //determine the yellow warning bar, for example, if the web page contains ActiveX, we can see the yellow bar at the top of the web page.
             //if the warning bar exist, we need to add 20 height to each html control.
@@ -1670,7 +1335,6 @@ namespace Shrinerain.AutoTester.Core
                 {
                     throw new CannotAttachBrowserException("Can not get warn bar size.");
                 }
-
             }
 
             //Get the actual client area rect, which shows web page to the end user.
@@ -1695,7 +1359,6 @@ namespace Shrinerain.AutoTester.Core
                 {
                     throw new CannotAttachBrowserException("Can not get client size of test browser.");
                 }
-
             }
             catch (TestException)
             {
@@ -1714,24 +1377,24 @@ namespace Shrinerain.AutoTester.Core
          */
         protected void GetScrollRect()
         {
-            if (_ie != null && _ie.Document != null)
-            {
-                try
-                {
-                    _HTMLDom = (HTMLDocument)_ie.Document;
-                    HTMLBody bodyElement = (HTMLBody)_HTMLDom.body;
-                    _scrollWidth = bodyElement.scrollWidth;
-                    _scrollHeight = bodyElement.scrollHeight;
+            //if (_ie != null && _ie.Document != null)
+            //{
+            //    try
+            //    {
+            //        _rootDocument = (HTMLDocument)_ie.Document;
+            //        HTMLBody bodyElement = (HTMLBody)_rootDocument.body;
+            //        _scrollWidth = bodyElement.scrollWidth;
+            //        _scrollHeight = bodyElement.scrollHeight;
 
-                    // scrollLeft means the left that Can Not been seen, scrollTop the same.
-                    _scrollLeft = bodyElement.scrollLeft;
-                    _scrollTop = bodyElement.scrollTop;
-                }
-                catch (Exception ex)
-                {
-                    throw new CannotAttachBrowserException("Can not get scroll size: " + ex.Message);
-                }
-            }
+            //        // scrollLeft means the left that Can Not been seen, scrollTop the same.
+            //        _scrollLeft = bodyElement.scrollLeft;
+            //        _scrollTop = bodyElement.scrollTop;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new CannotAttachBrowserException("Can not get scroll size: " + ex.Message);
+            //    }
+            //}
         }
 
         #endregion
@@ -1743,13 +1406,13 @@ namespace Shrinerain.AutoTester.Core
          */
         protected IntPtr GetIEMainHandle()
         {
-            if (_mainHandle == IntPtr.Zero)
+            if (_rootHandle == IntPtr.Zero)
             {
-                return Win32API.FindWindow("IEFrame", null);
+                return Win32API.FindWindow(TestConstants.IE_IEframe, null);
             }
             else
             {
-                return _mainHandle;
+                return _rootHandle;
             }
         }
 
@@ -1764,27 +1427,39 @@ namespace Shrinerain.AutoTester.Core
                 mainHandle = GetIEMainHandle();
             }
 
-            //update for Internet Explorer 7
-            //Internet Explorer 7 is a tab browser, we need to find "TabWindowClass" before we get the "Sheel DocObject View"
-
             //lower version than IE 7.0
-            if (Convert.ToInt32(_version[0].ToString()) < 7)
+            if (_majorVersion < 7)
             {
-                return Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "Shell DocObject View", null);
+                return Win32API.FindWindowEx(mainHandle, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
             }
-            else
+            else if (_majorVersion == 7)
             {
                 IntPtr tabWindow = IntPtr.Zero;
-
                 //get the active tab.
                 while (!Win32API.IsWindowVisible(tabWindow))
                 {
-                    tabWindow = Win32API.FindWindowEx(mainHandle, tabWindow, "TabWindowClass", null);
+                    tabWindow = Win32API.FindWindowEx(mainHandle, tabWindow, TestConstants.IE_TabWindow_Class, null);
                 }
 
-                return Win32API.FindWindowEx(tabWindow, IntPtr.Zero, "Shell DocObject View", null);
+                return Win32API.FindWindowEx(tabWindow, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
+            }
+            else if (_majorVersion == 8)
+            {
+                IntPtr frame = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, TestConstants.IE_FrameTab_Class, null);
+
+                if (frame != IntPtr.Zero)
+                {
+                    IntPtr tabWindow = IntPtr.Zero;
+                    //get the active tab.
+                    while (!Win32API.IsWindowVisible(tabWindow))
+                    {
+                        tabWindow = Win32API.FindWindowEx(frame, tabWindow, TestConstants.IE_TabWindow_Class, null);
+                    }
+                    return Win32API.FindWindowEx(tabWindow, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
+                }
             }
 
+            return IntPtr.Zero;
         }
 
         /* IntPtr GetWarnBarHandle(IntPtr shellHandle)
@@ -1798,7 +1473,7 @@ namespace Shrinerain.AutoTester.Core
                 shellHandle = GetShellDocHandle(IntPtr.Zero);
             }
 
-            return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, "#32770 (Dialog)", null);
+            return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, TestConstants.WIN_Dialog_Class, null);
         }
 
         /* IntPtr GetIEServerHandle(IntPtr shellHandle)
@@ -1812,7 +1487,7 @@ namespace Shrinerain.AutoTester.Core
                 shellHandle = GetShellDocHandle(IntPtr.Zero);
             }
 
-            return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, "Internet Explorer_Server", null);
+            return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, TestConstants.IE_Server_Class, null);
         }
 
         /* IntPtr GetDialogHandle(IntPtr mainHandle)
@@ -1825,12 +1500,11 @@ namespace Shrinerain.AutoTester.Core
             {
                 mainHandle = GetIEMainHandle();
             }
-            IntPtr popHandle = Win32API.FindWindow("Internet Explorer_TridentDlgFrame", null);
 
+            IntPtr popHandle = Win32API.FindWindow(TestConstants.IE_Dialog_Class, null);
             if (popHandle != IntPtr.Zero)
             {
                 IntPtr parentHandle = Win32API.GetParent(popHandle);
-
                 if (parentHandle == mainHandle)
                 {
                     return popHandle;
@@ -1839,39 +1513,6 @@ namespace Shrinerain.AutoTester.Core
 
             return IntPtr.Zero;
         }
-
-        /*  HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
-         *  return HTMLDocument from a handle.
-         *  When we get a pop up window, we need to get it's HTML Dom to get HTML object.
-         *  So we need to convert it's handle to HTML Document.
-         */
-        protected HTMLDocument GetHTMLDomFromHandle(IntPtr ieServerHandle)
-        {
-            if (ieServerHandle == IntPtr.Zero)
-            {
-                ieServerHandle = GetIEServerHandle(IntPtr.Zero);
-            }
-
-            if (ieServerHandle != IntPtr.Zero)
-            {
-                mshtml.HTMLDocument doc = new mshtml.HTMLDocument();
-
-                int nMsg = Win32API.RegisterWindowMessage("WM_HTML_GETOBJECT");
-
-                UIntPtr lRes;
-
-                if (Win32API.SendMessageTimeout(ieServerHandle, nMsg, 0, 0, Win32API.SMTO_ABORTIFHUNG, 1000, out lRes) == 0)
-                {
-                    return null;
-                }
-                return (HTMLDocument)Win32API.ObjectFromLresult(lRes, typeof(IHTMLDocument).GUID, IntPtr.Zero);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
 
         #endregion
 
@@ -1888,7 +1529,6 @@ namespace Shrinerain.AutoTester.Core
             RegDocumentLoadCompleteEvent(ie);
             RegNavigateEvent(ie);
             RegRectChangeEvent(ie);
-            RegScrollEvent(ie);
             RegNewWindowEvent(ie);
             RegQuitEvent(ie);
         }
@@ -1917,6 +1557,7 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 ie.DownloadBegin += new DWebBrowserEvents2_DownloadBeginEventHandler(OnDownloadBegin);
+                ie.DownloadComplete += new DWebBrowserEvents2_DownloadCompleteEventHandler(OnDownloadComplete);
             }
             catch (Exception ex)
             {
@@ -1939,16 +1580,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotAttachBrowserException("Can not register new window event: " + ex.Message);
             }
-
-        }
-
-        /* void RegScrollEvent()
-         * register event when scroll bar scroll.
-         * Notice: current we don't need this event.
-         */
-        protected virtual void RegScrollEvent(InternetExplorer ie)
-        {
-
         }
 
         /* void RegDocumentLoadCompleteEvent()
@@ -1992,8 +1623,8 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 ie.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(OnBeforeNavigate2);
-                ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
-                ie.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(OnNavigateComplete2);
+                //ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
+                //ie.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(OnNavigateComplete2);
             }
             catch (Exception ex)
             {
@@ -2001,32 +1632,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-
         #region callback functions for each event
-
-        /* void OnBeforeNavigate
-         * Before start downloading.
-         */
-        protected virtual void OnBeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
-        {
-            //this._isDownloading = true;
-        }
-
-        /* void OnNavigateError
-         * the callback function to handle navigate error.
-         */
-        protected virtual void OnNavigateError(object pDisp, ref object URL, ref object Frame, ref object StatusCode, ref bool Cancel)
-        {
-            throw new CannotLoadUrlException("Can not navigate to URL: " + URL.ToString());
-        }
-
-        /* void OnNavigateComplete2(object pDisp, ref object URL)
-         * after navigate complete.
-         */
-        protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
-        {
-            //this._isDownloading = false;
-        }
 
         /* void OnNewWindow2(ref object ppDisp, ref bool Cancel)
          * the callback function to handle new "tab", it is not like IE 7 tab.
@@ -2046,7 +1652,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotAttachBrowserException("Can not attach new window: " + ex.Message);
             }
-
         }
 
         /* void void OnNewWindow3(ref object ppDisp, ref bool Cancel, uint dwFlags, string bstrUrlContext, string bstrUrl)
@@ -2068,6 +1673,13 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        protected virtual void OnBeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
+        {
+            if (_rootDisp == null)
+            {
+                _rootDisp = pDisp;
+            }
+        }
         /* void OnDownloadBegin()
          * the callback function to handle the browser starting download a web page.
          */
@@ -2075,21 +1687,17 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-                // _isDownloading = true;
-
-                //get the start time, used to cal response time.
                 _startTime = GetCurrentSeconds();
-
-                //this._startDownload.Set();
-
-                //this._documentLoadComplete.Reset();
-                //this._documentLoadComplete.WaitOne(_maxWaitSeconds * 1000, true);
             }
             catch (Exception ex)
             {
                 throw new CannotAttachBrowserException("Error OnDownLoadBegin: " + ex.Message);
             }
+        }
 
+        protected virtual void OnDownloadComplete()
+        {
+            //throw new NotImplementedException();
         }
 
         /* void OnDocumentLoadComplete(object pDesp, ref object pUrl)
@@ -2100,31 +1708,27 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-
-                string locationName = _ie.LocationName;
-
-                if (locationName.IndexOf("HTTP 404") >= 0
-                    || locationName.IndexOf("can not") > 0
-                    || locationName.IndexOf("counld not") > 0
-                    || locationName.IndexOf("ERROR") == 0)
+                if (_rootDisp != null && _rootDisp == pDesp)
                 {
-                    throw new CannotNavigateException("Can not load url: " + _ie.LocationURL);
+                    _rootDisp = null;
+
+                    string locationName = _ie.LocationName;
+                    if (locationName.IndexOf("HTTP 404") >= 0)
+                    {
+                        throw new CannotNavigateException("Can not load url: " + _ie.LocationURL);
+                    }
+
+                    string key = GetCurrentUrl();
+                    _endTime = GetCurrentSeconds();
+                    _responseTime = _endTime - _startTime;
+                    _performanceTimeHT.Add(key, _responseTime);
+
+                    _rootDocument = (HTMLDocument)_ie.Document;
+
+                    GetSize();
+
+                    _documentLoadComplete.Set();
                 }
-
-                _endTime = GetCurrentSeconds();
-
-                _responseTime = _endTime - _startTime;
-
-                string key = GetCurrentUrl();
-
-                _performanceTimeHT.Add(key, _responseTime);
-
-                _HTMLDom = (HTMLDocument)_ie.Document;
-
-                GetSize();
-
-                _documentLoadComplete.Set();
-
             }
             catch (TestException)
             {

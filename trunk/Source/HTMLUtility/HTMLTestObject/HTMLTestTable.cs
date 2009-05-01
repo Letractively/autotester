@@ -22,7 +22,7 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestTable : HTMLTestGUIObject, IShowInfo, IMatrix
+    public class HTMLTestTable : HTMLTestGUIObject, IText, ITable
     {
 
         #region fields
@@ -261,11 +261,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
-        #region IShowInfo Members
+        #region IText Members
 
         public virtual string GetText()
         {
             return GetTextByCell(0, 0);
+        }
+
+        public override string GetLabel()
+        {
+            return null;
         }
 
         public virtual string GetFontFamily()

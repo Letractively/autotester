@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public class MSAATestRadioButton : MSAATestGUIObject, ICheckable, IShowInfo
+    public class MSAATestRadioButton : MSAATestGUIObject, ICheckable, IText
     {
 
         #region fields
@@ -111,8 +111,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                _actionFinished.WaitOne();
-
                 if (!_sendMsgOnly)
                 {
                     Hover();
@@ -120,11 +118,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 }
                 else
                 {
-                    IAcc.accDoDefaultAction(SelfID);
+                    IAcc.accDoDefaultAction(ChildID);
                 }
-
-                _actionFinished.Set();
-
             }
             catch (TestException)
             {
@@ -197,11 +192,16 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #endregion
 
-        #region IShowInfo Members
+        #region IText Members
 
         public string GetText()
         {
             return GetName();
+        }
+
+        public override string GetLabel()
+        {
+            return GetText();
         }
 
         public string GetFontFamily()
@@ -286,10 +286,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region private methods
 
+        protected override void GetMSAAInfo()
+        {
+            this._type = Type.RadioBox;
+            base.GetMSAAInfo();
+        }
 
         #endregion
 
         #endregion
-
     }
 }

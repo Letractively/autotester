@@ -97,18 +97,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                _actionFinished.WaitOne();
-
                 if (!_sendMsgOnly)
                 {
                     Hover();
                     MouseOp.Click();
                 }
 
-                KeyboardOp.SendChars(WindowHandle, values);
+                //Keyboard.SendChars(GetHandle(), values);
                 _text = values;
-
-                _actionFinished.Set();
             }
             catch (Exception ex)
             {
@@ -125,8 +121,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                _actionFinished.WaitOne();
-
                 if (!SetProperty("value", ""))
                 {
                     throw new CannotPerformActionException("Can not clear text in text box");
@@ -135,8 +129,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     _text = "";
                 }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -173,11 +165,16 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #endregion
 
-        #region IShowInfo Members
+        #region IText Members
 
         public string GetText()
         {
             return GetValue();
+        }
+
+        public override string GetLabel()
+        {
+            return GetText();
         }
 
         public string GetFontFamily()
@@ -201,7 +198,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #endregion
 
         #region private methods
-
+        protected override void GetMSAAInfo()
+        {
+            this._type = Type.TextBox;
+            base.GetMSAAInfo();
+        }
 
         #endregion
 

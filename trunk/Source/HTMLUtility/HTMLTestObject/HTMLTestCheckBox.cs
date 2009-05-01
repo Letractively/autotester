@@ -25,7 +25,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestCheckBox : HTMLTestGUIObject, ICheckable, IShowInfo, IStatus
+    public class HTMLTestCheckBox : HTMLTestGUIObject, ICheckable, IText, IStatus
     {
 
         #region fields
@@ -49,9 +49,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
 
             this._type = HTMLTestObjectType.CheckBox;
-
             this._isDelayAfterAction = false;
-
             try
             {
                 this._checkBoxElement = (IHTMLInputElement)element;
@@ -199,11 +197,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
-        #region IShowInfo Members
+        #region IText Members
 
         public virtual string GetText()
         {
-            return LabelText;
+            return GetLabel();
         }
 
         public virtual string GetFontFamily()
@@ -219,6 +217,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public virtual string GetFontColor()
         {
             throw new Exception("The method or operation is not implemented.");
+        }
+
+        public override string GetLabel()
+        {
+            return GetLabelForCheckBox(this._sourceElement);
         }
 
         /* string GetLabelForCheckBox(IHTMLElement element)
@@ -268,75 +271,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         }
         #endregion
-
-        #region IStatus Members
-
-        /* object GetCurrentStatus()
-         * get the readystate of element. 
-         */
-        public virtual object GetCurrentStatus()
-        {
-            try
-            {
-                if (_checkBoxElement != null)
-                {
-                    return _checkBoxElement.readyState;
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not get status: " + ex.Message);
-            }
-        }
-
-        /* bool IsReady()
-         * return true if the object is ready.
-         */
-        public virtual bool IsReady()
-        {
-            try
-            {
-                if (_checkBoxElement != null)
-                {
-                    return _checkBoxElement.readyState == null ||
-                        _checkBoxElement.readyState == "interactive" ||
-                        _checkBoxElement.readyState == "complete";
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
-            }
-        }
-        #endregion
-
-        #endregion
-
-        #region private methods
-
-        /* string GetAroundText()
-         * return the text around the check box.
-         */
-        protected override string GetLabelText()
-        {
-            return GetLabelForCheckBox(this._sourceElement);
-        }
 
         #endregion
 

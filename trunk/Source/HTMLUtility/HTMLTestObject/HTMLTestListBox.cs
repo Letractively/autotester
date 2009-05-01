@@ -91,13 +91,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
 
             this._type = HTMLTestObjectType.ListBox;
-
             this._isDelayAfterAction = false;
-
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
-
                 _isMultiple = _htmlSelectElement.multiple;
             }
             catch (Exception ex)
@@ -254,17 +251,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.WaitOne();
 
-                Hover();
-
                 if (_sendMsgOnly)
                 {
                     this._htmlSelectElement.selectedIndex = index;
                 }
                 else
                 {
+                    Hover();
                     //get the actual position on the screen.
                     Point itemPosition = GetItemPosition(index);
-
                     MouseOp.Click(itemPosition);
                 }
 
@@ -326,9 +321,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     //get the actual position on the screen.
                     itemPosition = GetItemPosition(itemIndex);
-
                     MouseOp.Click(itemPosition);
-
                     //refresh the selected value.
                     this._selectedValue = this._allValues[itemIndex];
                 }
@@ -361,7 +354,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             // 2008/01/10 wan,yu update change HTMLOptionElementClass to IHTMLOptionElement
             IHTMLOptionElement optionElement;
-            //HTMLOptionElementClass optionClass;
 
             try
             {
@@ -440,6 +432,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public virtual string GetText()
         {
             return this._selectedValue;
+        }
+
+        public override string GetLabel()
+        {
+            return GetText();
         }
 
         public virtual string GetFontFamily()

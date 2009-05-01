@@ -21,52 +21,21 @@ using System.Threading;
 using Accessibility;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Interface;
-using Shrinerain.AutoTester.Helper;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
     public sealed class MSAATestObjectPool : ITestObjectPool
     {
-
         #region fields
 
-        private struct MSAAElement
-        {
-            public IAccessible _iAcc;
-            public int _childID;
-        }
+        private MSAATestApp _testApp;
 
-        private List<MSAAElement> _allElementsList;
-
-        private TestApp _testApp;
-        private TestBrowser _testBrowser;
-        private bool _isBrowser = false;
-
-        private IAccessible _rootMSAAInterface;
-        private const int _selfID = 0;
-
-
-        //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter.
-        private bool _useCache = true;
-        private const string _keySplitter = "__shrinerain__";
-
-        //the default similar pencent to  find an object, if 100, that means we should make sure 100% match. 
-        private bool _useFuzzySearch = false;
-        private bool _autoAdjustSimilarPercent = true;
-        private const int _defaultPercent = 100;
-        private int _similarPercentUpBound = 100;
-        private int _similarPercentLowBound = 70;
-        private int _similarPercentStep = 10;
-        private int _customSimilarPercent = _defaultPercent;
+        IAccessible _curIACC;
+        int _curChildID;
 
         //current object used.
         private TestObject _testObj;
-        private Object _cacheObj;
-
-        private IAccessible _curIACC;
-        private int _curChildID;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
         private int _maxWaitSeconds = 30;
@@ -78,7 +47,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
         private static StringBuilder _keySB = new StringBuilder(128);
 
         //delegate for check methods.
-        private delegate bool CheckObjectDelegate(IAccessible iAcc, int childID, Object[] values, int simPercent);
+        private delegate bool CheckObjectDelegate(IAccessible iAcc, int childID, TestProperty[] properties);
+
+        public event TestObjectEventHandler OnObjectFound;
 
         #endregion
 
@@ -97,72 +68,17 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region ITestObjectPool Members
 
-        public object GetObjectByIndex(int index)
+
+        public TestObject GetObjectByIndex(int index)
         {
-            throw new NotImplementedException();
+            throw new Exception("The method or operation is not implemented.");
         }
 
-        public object GetObjectByProperty(string property, string value)
+        public TestObject[] GetObjectsByProperties(TestProperty[] properties)
         {
-            throw new NotImplementedException();
-        }
-
-        public object GetObjectByRegex(string property, string regex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetObjectBySimilarProperties(string[] properties, string[] values, int[] similarity, bool useAll)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetObjectByID(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetObjectByName(string name)
-        {
-            if (!_isBrowser && this._testApp == null)
+            if (this._testApp == null)
             {
                 throw new AppNotFoundExpcetion("Can not find test app.");
-            }
-
-            if (_isBrowser && this._testBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find test browser.");
-            }
-            if (name == null || name.Trim().Length == 0)
-            {
-                throw new ObjectNotFoundException("Can not find object by name: name can not be empty.");
-            }
-            else
-            {
-                name = name.Trim();
-            }
-
-            //try to get object from cache.
-            string key = GetKey(name);
-
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
-            //the similar percent to find an object.
-            int simPercent = _defaultPercent;
-
-            if (_useFuzzySearch)
-            {
-                if (_autoAdjustSimilarPercent)
-                {
-                    simPercent = _similarPercentUpBound;
-                }
-                else
-                {
-                    simPercent = _customSimilarPercent;
-                }
             }
 
             //we will try 30s to find an object.
@@ -171,21 +87,18 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 try
                 {
-                    //get root msaa interface.
-                    GetRootMSAAInterface();
-
                     //check object by type
-                    if (CheckMSAAElement(ref _curIACC, ref _curChildID, new object[] { name }, simPercent, CheckObjectByName))
+                    List<MSAATestObject> res = CheckAllElements(MSAATestObject.RoleType.None, properties, CheckElementProperties, false);
+                    if (res != null)
                     {
-                        _testObj = BuildObjectByType(_curIACC, _curChildID, GetObjectType(_curIACC, _curChildID));
-
-                        ObjectCache.InsertObjectToCache(key, _testObj);
-
-                        //OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
-
-                        return _testObj;
+                        return res.ToArray();
                     }
-
+                    else
+                    {
+                        //not found, sleep for 3 seconds, then try again.
+                        times += _interval;
+                        Thread.Sleep(_interval * 1000);
+                    }
                 }
                 catch (CannotBuildObjectException)
                 {
@@ -201,34 +114,84 @@ namespace Shrinerain.AutoTester.MSAAUtility
             times += _interval;
             Thread.Sleep(_interval * 1000);
 
-            //not found, we will try lower similarity
-            if (_useFuzzySearch && _autoAdjustSimilarPercent)
+            throw new ObjectNotFoundException("Can not find object by properties.");
+        }
+
+        public TestObject GetObjectByID(string id)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public TestObject GetObjectByRect(int top, int left, int width, int height, string type, bool isPercent)
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public TestObject[] GetAllObjects()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public TestObject GetLastObject()
+        {
+            throw new Exception("The method or operation is not implemented.");
+        }
+
+        public TestObject[] GetObjectsByName(string name)
+        {
+            if (this._testApp == null)
             {
-                if (simPercent > _similarPercentLowBound)
-                {
-                    simPercent -= _similarPercentStep;
-                }
-                else
-                {
-                    simPercent = _similarPercentUpBound;
-                }
+                throw new AppNotFoundExpcetion("Can not find test app.");
             }
 
+            if (name == null || name.Trim().Length == 0)
+            {
+                throw new ObjectNotFoundException("Can not find object by name: name can not be empty.");
+            }
+            else
+            {
+                name = name.Trim();
+            }
+
+            //we will try 30s to find an object.
+            int times = 0;
+            while (times <= _maxWaitSeconds)
+            {
+                try
+                {
+                    //check object by name
+                    List<MSAATestObject> res = CheckAllElements(MSAATestObject.RoleType.None, new TestProperty[] { new TestProperty(name) }, CheckObjectByName, true);
+                    if (res != null)
+                    {
+                        return res.ToArray();
+                    }
+                    else
+                    {
+                        //not found, sleep for 3 seconds, then try again.
+                        times += _interval;
+                        Thread.Sleep(_interval * 1000);
+                    }
+
+                }
+                catch (CannotBuildObjectException)
+                {
+                    throw;
+                }
+                catch
+                {
+                    continue;
+                }
+            }
 
             throw new ObjectNotFoundException("Can not find object by name: " + name);
 
         }
 
-        public object GetObjectByType(string type, string values, int index)
+        public TestObject[] GetObjectsByType(string type, TestProperty[] properties)
         {
-            if (!_isBrowser && this._testApp == null)
+            if (this._testApp == null)
             {
                 throw new AppNotFoundExpcetion("Can not find test app.");
-            }
-
-            if (_isBrowser && this._testBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find test browser.");
             }
 
             if (type == null || type.Trim() == "")
@@ -240,50 +203,13 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 type = type.Trim();
             }
 
-            if (!String.IsNullOrEmpty(values))
-            {
-                values = values.Trim();
-            }
-
-            if (index < 0)
-            {
-                index = 0;
-            }
-
-            //try to get object from cache.
-            string key = GetKey(type + values + index.ToString());
-
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
             //convert the TYPE text to valid internal type.
-            // eg: "button" to MSAATestObjectType.Button
-            MSAATestObjectType typeValue = ConvertStrToMSAAType(type);
+            // eg: "button" to MSAATestObject.Type.Button
+            MSAATestObject.RoleType typeValue = MSAATestObjectFactory.GetMSAATypeByString(type);
 
-            if (typeValue == MSAATestObjectType.Unknow)
+            if (typeValue == MSAATestObject.RoleType.None)
             {
                 throw new ObjectNotFoundException("Unknow MSAA object type.");
-            }
-
-
-            //if we can find more than one test object, we need to consider about the index.
-            int leftIndex = index;
-
-            //the similar percent to find an object.
-            int simPercent = _defaultPercent;
-
-            if (_useFuzzySearch)
-            {
-                if (_autoAdjustSimilarPercent)
-                {
-                    simPercent = _similarPercentUpBound;
-                }
-                else
-                {
-                    simPercent = _customSimilarPercent;
-                }
             }
 
             //we will try 30s to find an object.
@@ -292,28 +218,18 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 try
                 {
-                    //get root msaa interface.
-                    GetRootMSAAInterface();
-
                     //check object by type
-                    if (CheckObjectByType(out _curIACC, out _curChildID, typeValue, values, simPercent))
+                    List<MSAATestObject> res = CheckAllElements(typeValue, properties, CheckObjectByType, false);
+                    if (res != null)
                     {
-                        leftIndex--;
+                        return res.ToArray();
                     }
-
-                    ////if index is 0 , that means we found the object.
-                    if (leftIndex < 0)
+                    else
                     {
-                        _testObj = BuildObjectByType(_curIACC, _curChildID, typeValue);
-
-                        ObjectCache.InsertObjectToCache(key, _testObj);
-
-                        //OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
-
-                        return _testObj;
+                        //not found, sleep for 3 seconds, then try again.
+                        times += _interval;
+                        Thread.Sleep(_interval * 1000);
                     }
-
-
                 }
                 catch (CannotBuildObjectException)
                 {
@@ -329,47 +245,15 @@ namespace Shrinerain.AutoTester.MSAAUtility
             times += _interval;
             Thread.Sleep(_interval * 1000);
 
-            //not found, we will try lower similarity
-            if (_useFuzzySearch && _autoAdjustSimilarPercent)
-            {
-                if (simPercent > _similarPercentLowBound)
-                {
-                    simPercent -= _similarPercentStep;
-                }
-                else
-                {
-                    simPercent = _similarPercentUpBound;
-                }
-            }
-
-
-            throw new ObjectNotFoundException("Can not find object by type [" + type.ToString() + "] with value [" + values.ToString() + "]");
+            throw new ObjectNotFoundException("Can not find object by type [" + type.ToString() + "]");
 
         }
 
-        public object GetObjectByAI(string value)
+        public TestObject GetObjectByPoint(int x, int y)
         {
-            throw new NotImplementedException();
-        }
-
-        public object GetObjectByPoint(int x, int y)
-        {
-            if (!_isBrowser && this._testApp == null)
+            if (this._testApp == null)
             {
                 throw new AppNotFoundExpcetion("Can not find test app.");
-            }
-
-            if (_isBrowser && this._testBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find test browser.");
-            }
-
-            //try to get object from cache.
-            string key = GetKey(x + "," + y);
-
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
             }
 
             //we will try 30s to find an object.
@@ -378,24 +262,18 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 try
                 {
-                    //get root msaa interface.
-                    GetRootMSAAInterface();
-
                     Win32API.POINT p = new Win32API.POINT();
                     p.x = x;
                     p.y = y;
 
                     Object childID;
-
                     Win32API.AccessibleObjectFromPoint(p, out _curIACC, out childID);
 
                     if (_curIACC != null)
                     {
                         _curChildID = Convert.ToInt32(childID);
 
-                        _testObj = BuildObjectByType(_curIACC, _curChildID, GetObjectType(_curIACC, _curChildID));
-
-                        ObjectCache.InsertObjectToCache(key, _testObj);
+                        _testObj = MSAATestObjectFactory.BuildObject(_curIACC, _curChildID);
 
                         //OnNewObjectFound("GetObjectByType", new string[] { type, values }, _testObj);
 
@@ -420,42 +298,23 @@ namespace Shrinerain.AutoTester.MSAAUtility
             throw new ObjectNotFoundException("Can not find object at Point:[" + x + "," + y + "]");
         }
 
-        public object GetObjectByRect(int top, int left, int width, int height, string typeStr, bool isPercent)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetObjectByColor(string color)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetObjectByCustomer(object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object[] GetAllObjects()
-        {
-            throw new NotImplementedException();
-        }
-
-        public object GetLastObject()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetTestBrowser(ITestBrowser testBrowser)
-        {
-            this._testBrowser = (TestBrowser)testBrowser;
-            _isBrowser = true;
-        }
-
         public void SetTestApp(ITestApp testApp)
         {
-            this._testApp = (TestApp)testApp;
-            _isBrowser = false;
+            if (testApp == null)
+            {
+                throw new AppNotFoundExpcetion("Application is not exist.");
+            }
+            else
+            {
+                this._testApp = (MSAATestApp)testApp;
+            }
         }
+
+        public void SetTestBrowser(ITestBrowser browser)
+        {
+            throw new NotImplementedException();
+        }
+
 
         #endregion
 
@@ -463,470 +322,158 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region private methods
 
-        private bool CheckObjectByName(IAccessible iAcc, int childID, Object[] name, int simPercent)
+        private static bool CheckObjectByName(IAccessible iAcc, int childID, TestProperty[] name)
         {
+            string expectedName = name[0].Value.ToString();
+            string curName = MSAATestObject.GetName(iAcc, childID);
 
-            if (iAcc != null && childID >= 0 && name != null)
-            {
-                string expectedName = name[0].ToString();
-
-                string curName = MSAATestObject.GetName(iAcc, childID);
-
-                return Searcher.IsStringLike(curName, expectedName, simPercent);
-            }
-
-            return false;
+            return Searcher.IsStringLike(curName, expectedName);
         }
 
-        private bool CheckObjectByType(out IAccessible iAcc, out int childID, MSAATestObjectType type, String value, int simPercent)
+        private static bool CheckObjectByType(IAccessible iAcc, int childID, TestProperty[] values)
         {
-            iAcc = null;
-            childID = 0;
-
-            if (type == MSAATestObjectType.Unknow)
+            MSAATestObject.RoleType type = (MSAATestObject.RoleType)values[0].Value;
+            if (type == MSAATestObject.RoleType.None)
             {
                 return false;
             }
-            else if (type == MSAATestObjectType.Button)
+            else if (type == MSAATestObject.RoleType.PushButton || type == MSAATestObject.RoleType.SplitButton ||
+                type == MSAATestObject.RoleType.SpinButton)
             {
-                return CheckMSAAElement(ref iAcc, ref childID, new object[] { value }, simPercent, CheckButtonObject);
+                return CheckButtonObject(iAcc, childID, values);
+            }
+            else if (type == MSAATestObject.RoleType.CheckButton)
+            {
+                return CheckButtonObject(iAcc, childID, values);
+            }
+            else if (type == MSAATestObject.RoleType.RadioButton)
+            {
+                return CheckButtonObject(iAcc, childID, values);
+            }
+            else if (type == MSAATestObject.RoleType.Text)
+            {
+                return CheckTextboxObject(iAcc, childID, values);
             }
 
             return false;
         }
 
-        private bool CheckButtonObject(IAccessible iAcc, int childID, Object[] value, int simPercent)
+        private static bool CheckTextboxObject(IAccessible iAcc, int childID, TestProperty[] value)
         {
-            if (iAcc != null && childID >= 0)
+            if (value == null || value[0] == null)
             {
-                if (GetObjectType(iAcc, childID) == MSAATestObjectType.Button)
-                {
-                    if (value == null || value[0] == null)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        string expectedVal = value[0].ToString();
-
-                        string name = MSAATestObject.GetName(iAcc, childID);
-
-                        if (!String.IsNullOrEmpty(name))
-                        {
-                            if (Searcher.IsStringLike(expectedVal, name, simPercent))
-                            {
-                                return true;
-                            }
-                        }
-                    }
-
-                }
+                return true;
             }
+            else
+            {
+                string expectedVal = value[1].Value.ToString();
+                string curValue = MSAATestObject.GetValue(iAcc, childID);
 
-            return false;
+                return Searcher.IsStringLike(expectedVal, curValue);
+            }
         }
-
-        /* bool CheckMSAAElement(ref IAccessible iAcc, ref int childID, string value, int simPercent, CheckObjectDelegate checkObjDelegate)
-         * Go through each MSAA element, use the delegate to check it.
-         */
-        private bool CheckMSAAElement(ref IAccessible iAcc, ref int childID, object[] values, int simPercent, CheckObjectDelegate checkObjDelegate)
+        private static bool CheckButtonObject(IAccessible iAcc, int childID, TestProperty[] value)
         {
-            //if the iAcc is null, means it is the first time to check.
-            if (iAcc == null)
+            if (value == null || value[0] == null)
             {
-                iAcc = GetRootMSAAInterface();
-                childID = 0;
+                return true;
             }
-
-            if (iAcc != null)
+            else
             {
-                //check state, ensure the object is visible.
-                string state = MSAATestObject.GetState(iAcc, childID);
-                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                string expectedVal = value[1].Value.ToString();
+                string name = MSAATestObject.GetName(iAcc, childID);
+
+                if (!String.IsNullOrEmpty(name))
                 {
-                    return false;
-                }
-
-                //call delegate to perform check.
-                if (checkObjDelegate(iAcc, childID, values, simPercent))
-                {
-                    return true;
-                }
-
-                IAccessible parentIAcc = iAcc;
-
-                //check each child element.
-                int childCount = childID > 0 ? 0 : iAcc.accChildCount;
-                if (childCount > 0)
-                {
-                    for (int i = 0; i < childCount; i++)
-                    {
-                        try
-                        {
-                            IAccessible childIAcc = MSAATestObject.GetChildIAcc(parentIAcc, i);
-
-                            if (childIAcc != null)
-                            {
-                                iAcc = childIAcc;
-                                childID = 0;
-                            }
-                            else
-                            {
-                                iAcc = parentIAcc;
-                                childID = i + 1;
-                            }
-
-                            if (CheckMSAAElement(ref iAcc, ref childID, values, simPercent, checkObjDelegate))
-                            {
-                                return true;
-                            }
-                        }
-                        catch
-                        {
-                            continue;
-                        }
-                    }
+                    return Searcher.IsStringLike(expectedVal, name);
                 }
             }
 
             return false;
         }
 
-        private static MSAATestGUIObject BuildObjectByType(IAccessible iAcc, int childID, MSAATestObjectType type)
+        private static bool CheckElementProperties(IAccessible iAcc, int childID, TestProperty[] properties)
         {
-            if (type == MSAATestObjectType.Button)
+            int totalResult = 0;
+            foreach (TestProperty tp in properties)
             {
-                return new MSAATestButton(iAcc, childID);
-            }
-            else if (type == MSAATestObjectType.TextBox)
-            {
-                return new MSAATestTextBox(iAcc, childID);
-            }
-
-            return new MSAATestGUIObject(iAcc, childID);
-        }
-
-        /* List<MSAAElement> GetAllMSAAElements()
-         * Get all MSAA elements in the application under test.
-         */
-        private List<MSAAElement> GetAllMSAAElements()
-        {
-            if (_rootMSAAInterface == null)
-            {
-                _rootMSAAInterface = GetRootMSAAInterface();
-            }
-
-            try
-            {
-                _allElementsList = GetChildrenMSAAElements(_rootMSAAInterface, 0);
-
-                return _allElementsList;
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                if (_isBrowser)
+                //get property value
+                string propertyValue = MSAATestObject.GetProperty(iAcc, childID, tp.Name).ToString();
+                //if equal, means we found it.
+                if (Searcher.IsStringLike(propertyValue, tp.Value.ToString()))
                 {
-                    throw new CannotAttachBrowserException("Can not get MSAA elements: " + ex.Message);
+                    totalResult += tp.Weight;
                 }
                 else
                 {
-                    throw new CannotAttachAppException("Can not get MSAA elements: " + ex.Message);
+                    totalResult -= tp.Weight;
                 }
             }
+
+            return totalResult > 0;
         }
 
-        /* List<MSAAElement> GetChildrenMSAAElements(IAccessible iACC)
-         * get all the children of the expected IAccessible.
-         */
-        private List<MSAAElement> GetChildrenMSAAElements(IAccessible iACC, int childID)
+        private List<MSAATestObject> CheckAllElements(MSAATestObject.RoleType objType, TestProperty[] properties, CheckObjectDelegate checkObjDelegate, bool onlyOne)
         {
-            if (iACC != null)
+            List<MSAATestObject> resultList = new List<MSAATestObject>();
+
+            if ((objType != MSAATestObject.RoleType.None || properties != null && properties.Length > 0) && checkObjDelegate != null)
             {
-
-                List<MSAAElement> elementsList = new List<MSAAElement>();
-
-                MSAAElement curElement;
-
-                string state = MSAATestObject.GetState(iACC, childID);
-                if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                List<TestProperty> newProperties = new List<TestProperty>();
+                TestProperty typeProperty = new TestProperty("RoleType", objType, false, 100);
+                newProperties.Add(typeProperty);
+                if (properties != null)
                 {
-                    //add self.
-                    curElement = new MSAAElement();
-                    curElement._iAcc = iACC;
-                    curElement._childID = childID;
-                    elementsList.Add(curElement);
+                    foreach (TestProperty tp in properties)
+                    {
+                        newProperties.Add(tp);
+                    }
+                    properties = newProperties.ToArray();
                 }
 
-                int childCount = childID > 0 ? 0 : iACC.accChildCount;
+                Queue<IAccessible> que = new Queue<IAccessible>();
+                MSAATestObject rootObj = this._testApp.RootObject;
+                que.Enqueue(rootObj.IAcc);
 
-                if (childCount > 0)
+                //BFS
+                while (que.Count > 0)
                 {
-                    for (int i = 1; i <= childCount; i++)
+                    IAccessible curObj = que.Dequeue();
+                    if (MSAATestObject.IsValidObject(curObj, 0))
                     {
-                        List<MSAAElement> childrenList = null;
-
-                        object tmpChildID = (object)i;
-
-                        try
+                        if (objType == MSAATestObject.RoleType.None || MSAATestObject.GetRole(curObj, 0) == objType)
                         {
-                            IAccessible childIACC = (IAccessible)iACC.get_accChild(tmpChildID);
-
-                            state = MSAATestObject.GetState(childIACC, 0);
-
-                            //child also support IACC, check each child.
-                            if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
+                            if (properties == null || checkObjDelegate(curObj, 0, properties))
                             {
-                                childrenList = GetChildrenMSAAElements(childIACC, 0);
-                            }
-                        }
-                        catch
-                        {
-                            state = MSAATestObject.GetState(iACC, i);
+                                MSAATestObject resObj = MSAATestObjectFactory.BuildObject(curObj, 0);
+                                resultList.Add(resObj);
 
-                            if (state.IndexOf("invisible", StringComparison.CurrentCultureIgnoreCase) < 0)
-                            {
-                                childrenList = GetChildrenMSAAElements(iACC, i);
-                            }
-                        }
-                        finally
-                        {
-                            if (childrenList != null)
-                            {
-                                foreach (MSAAElement e in childrenList)
+                                if (onlyOne)
                                 {
-                                    elementsList.Add(e);
+                                    break;
                                 }
                             }
                         }
                     }
-                }
 
-                return elementsList;
-            }
-
-            return null;
-        }
-
-        /* IAccessible GetRootMSAAInterface()
-         * Get MSAA interface for app or browser.
-         * we will search the test object from this interface.
-         */
-        private IAccessible GetRootMSAAInterface()
-        {
-            try
-            {
-                if (this._rootMSAAInterface == null)
-                {
-                    if (!_isBrowser)
+                    IAccessible[] childrenObj = MSAATestObject.GetChildrenIAcc(curObj);
+                    if (childrenObj != null)
                     {
-                        Win32API.AccessibleObjectFromWindow(this._testApp.Handle, (int)Win32API.IACC.OBJID_CLIENT, ref Win32API.IACCUID, ref this._rootMSAAInterface);
-                    }
-                    else
-                    {
-                        Win32API.AccessibleObjectFromWindow(this._testBrowser.IEServerHandle, (int)Win32API.IACC.OBJID_CLIENT, ref Win32API.IACCUID, ref this._rootMSAAInterface);
-                    }
-                }
-
-                if (this._rootMSAAInterface == null)
-                {
-                    throw new CannotAttachAppException("Can not get MSAA interface.");
-                }
-
-                return _rootMSAAInterface;
-
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotAttachAppException("Can not get MSAA interface: " + ex.Message);
-            }
-        }
-
-        /* MSAATestObjectType GetObjectType(IAccessible iAcc) 
-         * return the acc object type.
-         */
-        private static MSAATestObjectType GetObjectType(IAccessible iAcc)
-        {
-            return GetObjectType(iAcc, _selfID);
-        }
-
-        private static MSAATestObjectType GetObjectType(IAccessible iAcc, int childID)
-        {
-            if (iAcc != null)
-            {
-                string role = MSAATestObject.GetRole(iAcc, childID);
-                string action = MSAATestObject.GetDefAction(iAcc, childID);
-                string state = MSAATestObject.GetState(iAcc, childID);
-
-                if (!String.IsNullOrEmpty(role))
-                {
-                    role = role.ToLower();
-
-                    if (role.IndexOf("push") >= 0 || role.IndexOf("button") >= 0)
-                    {
-                        return MSAATestObjectType.Button;
-                    }
-                    else if (role.IndexOf("editable") >= 0)
-                    {
-                        if (String.IsNullOrEmpty(action))
+                        for (int i = 0; i < childrenObj.Length; i++)
                         {
-                            if (state.IndexOf("read only", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                            try
                             {
-                                return MSAATestObjectType.Label;
+                                que.Enqueue(childrenObj[i]);
+                            }
+                            catch
+                            {
                             }
                         }
-                        else
-                        {
-                            if (action.IndexOf("Jump", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                            {
-                                return MSAATestObjectType.Link;
-                            }
-                        }
-
-                        return MSAATestObjectType.TextBox;
-                    }
-                    else if (role.IndexOf("combo") >= 0)
-                    {
-                        return MSAATestObjectType.ComboBox;
-                    }
-                    else if (role.IndexOf("radio") >= 0)
-                    {
-                        return MSAATestObjectType.RadioButton;
-                    }
-                    else if (role.IndexOf("check") >= 0)
-                    {
-                        return MSAATestObjectType.CheckBox;
-                    }
-                    else if (role.IndexOf("text") >= 0)
-                    {
-                        return MSAATestObjectType.Label;
-                    }
-                    else if (role.IndexOf("table") >= 0)
-                    {
-                        return MSAATestObjectType.Table;
-                    }
-                    else if (role.IndexOf("graphic") >= 0)
-                    {
-                        return MSAATestObjectType.Image;
-                    }
-                }
-
-                if (!String.IsNullOrEmpty(action))
-                {
-                    if (action.IndexOf("Press", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    {
-                        return MSAATestObjectType.Button;
-                    }
-                    else if (action.IndexOf("Collapse", StringComparison.CurrentCultureIgnoreCase) >= 0 || action.IndexOf("Expand", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    {
-                        return MSAATestObjectType.Tree;
-                    }
-                    else if (action.IndexOf("Jump", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                    {
-                        return MSAATestObjectType.Link;
                     }
                 }
             }
 
-            return MSAATestObjectType.Unknow;
-
-        }
-
-        private static MSAATestObjectType ConvertStrToMSAAType(string type)
-        {
-            if (String.IsNullOrEmpty(type))
-            {
-                return MSAATestObjectType.Unknow;
-            }
-
-            type = type.ToUpper().Replace(" ", "");
-
-            if (type == "BUTTON" || type == "BTN" || type == "B")
-            {
-                return MSAATestObjectType.Button;
-            }
-            else if (type == "LABEL" || type == "LB")
-            {
-                return MSAATestObjectType.Label;
-            }
-            else if (type == "TEXTBOX" || type == "TEXT" || type == "INPUTBOX" || type == "TXT" || type == "T")
-            {
-                return MSAATestObjectType.TextBox;
-            }
-            else if (type == "LINK" || type == "HYPERLINK" || type == "LK" || type == "A")
-            {
-                return MSAATestObjectType.Link;
-            }
-            else if (type == "IMAGE" || type == "IMG" || type == "PICTURE" || type == "PIC" || type == "I" || type == "P")
-            {
-                return MSAATestObjectType.Image;
-            }
-            else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN" || type == "CB")
-            {
-                return MSAATestObjectType.ComboBox;
-            }
-            else if (type == "LISTBOX" || type == "LIST" || type == "LST" || type == "LS")
-            {
-                return MSAATestObjectType.ListBox;
-            }
-            else if (type == "RADIOBOX" || type == "RADIOBUTTON" || type == "RADIO" || type == "RAD" || type == "R")
-            {
-                return MSAATestObjectType.RadioButton;
-            }
-            else if (type == "CHECKBOX" || type == "CHECK" || type == "CHK" || type == "CK")
-            {
-                return MSAATestObjectType.CheckBox;
-            }
-            else if (type == "FILEDIAGLOG" || type == "FILE" || type == "FOLDER" || type == "FOLDERDIALOG" || type == "F")
-            {
-                return MSAATestObjectType.FileDialog;
-            }
-            else if (type == "MSGBOX" || type == "MSG" || type == "MESSAGE" || type == "MESSAGEBOX" || type == "POPWINDOW" || type == "POPBOX" || type == "M")
-            {
-                return MSAATestObjectType.MsgBox;
-            }
-            else if (type == "TABLE" || type == "TBL" || type == "T")
-            {
-                return MSAATestObjectType.Table;
-            }
-            else
-            {
-                return MSAATestObjectType.Unknow;
-            }
-
-        }
-
-        /* string GetKey(string info)
-        * generate key for hash table cache.
-        */
-        private string GetKey(string info)
-        {
-            try
-            {
-                //clear last key.
-                if (_keySB.Length > 0)
-                {
-                    _keySB.Remove(0, _keySB.Length);
-                }
-
-                _keySB.Append(this._testBrowser.GetCurrentUrl());
-                _keySB.Append(_keySplitter);
-                _keySB.Append(info);
-
-                return _keySB.ToString();
-            }
-            catch
-            {
-                return info;
-            }
-
+            return resultList;
         }
 
         #endregion

@@ -19,11 +19,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
+using System.IO;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
+using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.MSAAUtility;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.GUI
@@ -32,6 +36,16 @@ namespace Shrinerain.AutoTester.GUI
     {
 
         #region Fields
+
+        Regex _scriptReg = new Regex(@"(?<action>\w+) On *{(?<object>.*)}", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        Regex _nameReg = new Regex(@"name=(?<name>.*?),", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        string _scriptFile = @"Z:\TestScript.txt";
+        TextWriter _writer;
+
+        MSAATestApp app;
+        MSAATestObjectPool pool;
+        MSAAEventDispatcher dispatcher;
+
         //add message to rich text box.
         private delegate void AddLogDelegate(string m);
 
@@ -99,7 +113,7 @@ namespace Shrinerain.AutoTester.GUI
 
         private void InitEvent()
         {
-            OnStartClick += new ButtonActionDelegate(Start);
+            OnStartClick += new ButtonActionDelegate(Playback);
             OnStopClick += new ButtonActionDelegate(Stop);
             OnHighlightClick += new ButtonActionDelegate(HighLight);
             OnPauseClick += new ButtonActionDelegate(Pause);
@@ -112,7 +126,15 @@ namespace Shrinerain.AutoTester.GUI
             this.btnPause.Enabled = true;
         }
 
-        private void Start()
+        private void Record()
+        {
+            app = new MSAATestApp();
+            app.Find(null, "SciCalc");
+            dispatcher = (MSAAEventDispatcher)app.GetEventDispatcher();
+            dispatcher.OnClick += new TestObjectEventHandler(Recorder_OnClick);
+        }
+
+        private void Playback()
         {
             _started = true;
 
@@ -135,6 +157,12 @@ namespace Shrinerain.AutoTester.GUI
             _started = false;
 
             ChangeButtonStatus(true, false, false);
+
+            if (dispatcher != null)
+            {
+                dispatcher.Stop();
+                dispatcher = null;
+            }
 
             AddLog("Stop.");
         }
@@ -193,6 +221,11 @@ namespace Shrinerain.AutoTester.GUI
 
         #region event
 
+        private void recordBtn_Click(object sender, EventArgs e)
+        {
+            Record();
+        }
+
         private void btnStart_Click(object sender, EventArgs e)
         {
             OnStartClick();
@@ -224,5 +257,15 @@ namespace Shrinerain.AutoTester.GUI
         }
 
         #endregion
+
+        #region record
+
+        void Recorder_OnClick(TestObject sender, TestEventArgs args)
+        {
+            AddLog("Click on " + sender.ToString());
+        }
+
+        #endregion
+
     }
 }

@@ -218,7 +218,6 @@ namespace Shrinerain.AutoTester.Core
 
         #endregion
 
-
         #region private methods
 
         protected virtual string BuildConnStr(TestDataPoolType type)

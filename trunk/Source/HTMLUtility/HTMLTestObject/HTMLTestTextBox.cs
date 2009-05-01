@@ -286,7 +286,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
-        #region IShowInfo interface
+        #region IText interface
 
         public virtual string GetText()
         {
@@ -305,6 +305,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return "";
             }
+        }
+
+        public override string GetLabel()
+        {
+            return GetLabelForTextBox(this._sourceElement);
         }
 
         public virtual string GetFontFamily()
@@ -345,21 +350,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     for (int deepth = 1; deepth < 4; deepth++)
                     {
                         label = GetAroundCellText(element, currentDir, deepth);
-
                         if (!String.IsNullOrEmpty(label.Trim()))
                         {
-                            return label;//.Split(' ')[0];
+                            return label;
                         }
                     }
                 }
 
-                return null;
+                if (HTMLTestObject.TryGetProperty(element, "title", out label))
+                {
+                    return label;
+                }
             }
             catch
             {
-                return null;
             }
 
+            return "";
         }
 
         #endregion
@@ -405,15 +412,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //throw new CannotPerformActionException("Can not click above the text box: " + ex.Message);
             }
         }
-
-        /* string GetAroundText()
-         * return the text around textbox.
-         */
-        protected override string GetLabelText()
-        {
-            return GetLabelForTextBox(this._sourceElement);
-        }
-
         #endregion
 
         #endregion

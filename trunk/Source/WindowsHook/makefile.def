@@ -1,0 +1,5 @@
+LIBRARY	WindowsHook
+EXPORTS
+   MessageHookProc
+   LowLevelMouseProc
+   LowLevelKeyProc

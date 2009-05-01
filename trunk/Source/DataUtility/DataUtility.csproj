@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7AA7D5AC-69F1-41FA-A1EC-91E4CB0F9E98}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -56,10 +56,6 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
       <Name>Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interface\Interface.csproj">
-      <Project>{9B21D3ED-5BAC-4C66-BAB7-34CE7A076FFE}</Project>
-      <Name>Interface</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

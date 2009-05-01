@@ -24,7 +24,7 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestLabel : HTMLTestGUIObject, IShowInfo
+    public class HTMLTestLabel : HTMLTestGUIObject, IText
     {
 
         #region fields
@@ -38,7 +38,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //<font>
         protected IHTMLFontElement _fontElement;
 
-
+        protected string _labelText;
         protected string _styleStr;
         #endregion
 
@@ -88,11 +88,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
-        #region IShowInfo Members
+        #region IText Members
 
         public string GetText()
         {
             return _labelText;
+        }
+
+        public override string GetLabel()
+        {
+            return GetText();
         }
 
         public string GetFontFamily()
