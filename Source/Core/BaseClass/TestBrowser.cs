@@ -104,11 +104,6 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region Sync Event
-        //sync event is to mark the important event.
-
-        //start download happened we the browser start to load a web page.
-        //protected AutoResetEvent _startDownload = new AutoResetEvent(false);
-
         //document load complete happened when the web page is loaded, then we can start to 
         //search the HTML object.
         protected AutoResetEvent _documentLoadComplete = new AutoResetEvent(false);
@@ -978,8 +973,8 @@ namespace Shrinerain.AutoTester.Core
                 }
 
                 //sleep for 3 seconds, find again.
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
             }
 
             throw new BrowserNotFoundException();
@@ -1028,8 +1023,8 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
-                    Thread.Sleep(_interval * 1000);
-                    times += _interval;
+                    Thread.Sleep(Interval * 1000);
+                    times += Interval;
                 }
             }
 
@@ -1082,8 +1077,8 @@ namespace Shrinerain.AutoTester.Core
                     }
                 }
 
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
             }
 
             throw new CannotAttachBrowserException("Browser: " + ieHandle + " does not exist.");
