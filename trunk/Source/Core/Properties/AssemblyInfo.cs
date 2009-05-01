@@ -9,9 +9,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Core")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("shrinerain")]
-[assembly: AssemblyProduct("Core")]
-[assembly: AssemblyCopyright("版权所有 (C) shrinerain 2007")]
+[assembly: AssemblyCompany("Shrinerain")]
+[assembly: AssemblyProduct("AutoTester.Core")]
+[assembly: AssemblyCopyright("版权所有 (C) Shrinerain 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
