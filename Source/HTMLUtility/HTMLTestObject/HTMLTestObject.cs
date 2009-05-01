@@ -35,20 +35,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Label,
         Button,
         CheckBox,
-        RadioButton,
+        RadioBox,
         TextBox,
         ComboBox,
         ListBox,
         Table,
         Image,
         Link,
-        MsgBox,
-        FileDialog,
         ActiveX
     }
 
     #region html object base class
-    public class HTMLTestObject : TestObject, IDisposable
+    public class HTMLTestObject : TestObject, IDisposable, IStatus
     {
         #region fields
 
@@ -365,6 +363,64 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return false;
             }
         }
+
+        #region IStatus Members
+
+        /* object GetCurrentStatus()
+         * get the readystate of element. 
+         */
+        public virtual object GetCurrentStatus()
+        {
+            try
+            {
+                if (_sourceElement != null)
+                {
+                    return ((IHTMLElement2)_sourceElement).readyState;
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get status: " + ex.Message);
+            }
+        }
+
+        /* bool IsReady()
+         * return true if the object is ready.
+         */
+        public virtual bool IsReady()
+        {
+            try
+            {
+                if (_sourceElement != null)
+                {
+                    string readyS = ((IHTMLElement2)_sourceElement).readyState.ToString();
+
+                    return readyS == null || readyS == "interactive" || readyS == "complete";
+                }
+                else
+                {
+                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
+            }
+        }
+
+        #endregion
 
         #endregion
 

@@ -144,15 +144,12 @@ namespace Shrinerain.AutoTester.GUI
 
         private void RunFramework()
         {
-            if (this._projectConfigFile == null)
-            {
-                AutoTesterErrorMsgBox("Error: No project config file found.");
-            }
-            else
+            StartMonitor();
+
+            if (this._projectConfigFile != null)
             {
                 try
                 {
-                    StartMonitor();
                     _testJobThread = new Thread(new ThreadStart(StartTestJob));
                     _testJobThread.Start();
                 }

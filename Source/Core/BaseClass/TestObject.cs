@@ -19,12 +19,22 @@
 
 namespace Shrinerain.AutoTester.Core
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Runtime.Serialization;
+
+    [Serializable]
     public class TestObject
     {
         #region fields
 
-        //domain means the object type, eg: HTML
+        protected TestApp _parentApp;
+
+        //domain means the object type, eg: Win32
         protected string _domain;
+
+        protected const string _visibleProperty = "VisibleProperty";
 
         #endregion
 
@@ -35,9 +45,36 @@ namespace Shrinerain.AutoTester.Core
             get { return this._domain; }
         }
 
+        public TestApp ParentApp
+        {
+            get { return _parentApp; }
+            set { _parentApp = value; }
+        }
+
+        public static string VisibleProperty
+        {
+            get { return _visibleProperty; }
+        }
+
         #endregion
 
         #region public methods
+
+        public TestObject()
+            : this(null)
+        {
+        }
+
+        public TestObject(TestApp app)
+            : this(app, "Unknow")
+        {
+        }
+
+        public TestObject(TestApp app, String domain)
+        {
+            this._parentApp = app;
+            this._domain = domain;
+        }
 
         #region public method
 
@@ -46,7 +83,7 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual object GetProperty(string propertyName)
         {
-            throw new PropertyNotFoundException("Can not find the property: " + propertyName);
+            return null;
         }
 
         /* bool SetProperty(string propertyName, object value)
@@ -54,7 +91,33 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual bool SetProperty(string propertyName, object value)
         {
-            throw new PropertyNotFoundException("Can not find the property: " + propertyName);
+            return false;
+        }
+
+        //these properties is used to identify an object.
+        //we will record these properties, and when playing back, use these properties to find an object.
+        public virtual List<TestProperty> GetIdenProperties()
+        {
+            return null;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("{Domain=" + this._domain);
+
+            List<TestProperty> properties = GetIdenProperties();
+            if (properties != null && properties.Count > 0)
+            {
+                foreach (TestProperty tp in properties)
+                {
+                    sb.Append("," + tp.Name + "=" + tp.Value);
+                }
+            }
+
+            sb.Append("}");
+
+            return sb.ToString();
         }
 
         #endregion
@@ -67,6 +130,15 @@ namespace Shrinerain.AutoTester.Core
         #region parent and children
 
         #endregion
+
+        #endregion
+
+        #region ISerializable Members
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+
+        }
 
         #endregion
     }

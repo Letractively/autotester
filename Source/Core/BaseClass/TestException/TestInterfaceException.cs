@@ -16,8 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using Shrinerain.AutoTester.Interface;
-
 namespace Shrinerain.AutoTester.Core
 {
     public class TestInterfaceException : TestException

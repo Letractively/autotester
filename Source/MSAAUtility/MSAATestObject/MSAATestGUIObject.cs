@@ -21,7 +21,6 @@ using System.Threading;
 using Accessibility;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
@@ -43,7 +42,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
         //then we will not see the mouse move.
-        protected bool _sendMsgOnly = false;
+        protected bool _sendMsgOnly = true;
 
         #endregion
 
@@ -170,17 +169,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region IVisible Members
 
-        public virtual Point GetCenterPoint()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         public virtual Rectangle GetRectOnScreen()
         {
             if (this.IAcc != null)
             {
                 int left, top, width, height;
-                this.IAcc.accLocation(out left, out top, out width, out height, SelfID);
+                this.IAcc.accLocation(out left, out top, out width, out height, _childID);
 
                 if (width < 1 || height < 1)
                 {
@@ -206,10 +200,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public virtual void Hover()
         {
-            if (!_sendMsgOnly)
-            {
-                MouseOp.MoveTo(_centerPoint);
-            }
+            MouseOp.MoveTo(_centerPoint);
+        }
+
+        public virtual string GetLabel()
+        {
+            return "";
         }
 
         public virtual bool IsVisible()

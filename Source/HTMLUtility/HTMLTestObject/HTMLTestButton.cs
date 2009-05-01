@@ -34,9 +34,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Unknow = 4
     }
 
-    public class HTMLTestButton : HTMLTestGUIObject, IClickable, IShowInfo, IStatus
+    public class HTMLTestButton : HTMLTestGUIObject, IClickable, IText, IStatus
     {
-
         #region fields
 
         //the text on the button, like "Login"
@@ -129,16 +128,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //wait last action finished.
                 _actionFinished.WaitOne();
 
-                //move the mouse to the center point of button.
-                // see the definition in HTMLGUiTestObject.cs
-                Hover();
-
                 if (this._sendMsgOnly)
                 {
                     this._sourceElement.click();
                 }
                 else
                 {
+                    //move the mouse to the center point of button.
+                    // see the definition in HTMLGUiTestObject.cs
+                    Hover();
                     MouseOp.Click();
                 }
 
@@ -171,7 +169,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Hover();
-
                 MouseOp.DoubleClick();
 
                 if (_isDelayAfterAction)
@@ -201,7 +198,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Hover();
-
                 MouseOp.RightClick();
 
                 if (_isDelayAfterAction)
@@ -256,80 +252,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
-        #region IStatus Members
-
-        /* object GetCurrentStatus()
-         * get the readystate of input element. 
-         */
-        public virtual object GetCurrentStatus()
-        {
-            try
-            {
-                if (_inputElement != null)
-                {
-                    return _inputElement.readyState;
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not get status: Element can not be null.");
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not get status: " + ex.Message);
-            }
-        }
-
-        /* bool IsReady()
-         * return true if the object is ready.
-         */
-        public virtual bool IsReady()
-        {
-            try
-            {
-                if (_inputElement != null)
-                {
-                    return _inputElement.readyState == null ||
-                        _inputElement.readyState == "interactive" ||
-                        _inputElement.readyState == "complete";
-                }
-                else if (_buttonElement != null)
-                {
-                    return true;
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
-            }
-        }
-
-        #endregion
-
-        #region IShowInfo methods
+        #region IText methods
 
         public virtual string GetText()
         {
             return this._currentStr;
         }
 
+        public override string GetLabel()
+        {
+            return GetText();
+        }
+
         public virtual string GetFontFamily()
         {
             throw new PropertyNotFoundException();
         }
-        
+
         public string GetFontSize()
         {
             throw new Exception("The method or operation is not implemented.");
@@ -374,7 +313,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual string GetCustomMethodName()
         {
-            string methodName="";
+            string methodName = "";
             if (HTMLTestObject.TryGetProperty(this._sourceElement, "onclick", out methodName))
             {
                 return methodName;
@@ -392,11 +331,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotPerformActionException("Button is not enabled.");
             }
 
-            if (!_sendMsgOnly)
-            {
-                base.Hover();
-            }
-
+            base.Hover();
         }
         #endregion
 

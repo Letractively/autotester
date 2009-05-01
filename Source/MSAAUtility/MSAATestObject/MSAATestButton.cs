@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public class MSAATestButton : MSAATestGUIObject, IClickable, IShowInfo
+    public class MSAATestButton : MSAATestGUIObject, IClickable, IText
     {
 
         #region fields
@@ -88,8 +88,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                _actionFinished.WaitOne();
-
                 if (!_sendMsgOnly)
                 {
                     Hover();
@@ -97,11 +95,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 }
                 else
                 {
-                    IAcc.accDoDefaultAction(SelfID);
+                    IAcc.accDoDefaultAction(ChildID);
                 }
-
-                _actionFinished.Set();
-
             }
             catch (TestException)
             {
@@ -149,9 +144,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #endregion
 
-        #region IShowInfo Members
+        #region IText Members
 
         public string GetText()
+        {
+            return GetName();
+        }
+
+        public override string GetLabel()
         {
             return GetName();
         }
@@ -177,6 +177,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region private methods
 
+        protected override void GetMSAAInfo()
+        {
+            this._type = Type.Button;
+            base.GetMSAAInfo();
+        }
 
         #endregion
 

@@ -53,6 +53,12 @@ namespace Shrinerain.AutoTester.Win32
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
+            public POINT(int xx, int yy)
+            {
+                x = xx;
+                y = yy;
+            }
+
             public int x;
             public int y;
         }
@@ -72,10 +78,6 @@ namespace Shrinerain.AutoTester.Win32
             public UInt32 ExtraInfo;
         }
 
-        /// <summary>
-        /// 键盘钩子事件结构定义
-        /// </summary>
-        /// <remarks>详细说明请参考MSDN中关于 KBDLLHOOKSTRUCT 的说明</remarks>
         [StructLayout(LayoutKind.Sequential)]
         public struct KeyboardHookStruct
         {
@@ -202,6 +204,7 @@ namespace Shrinerain.AutoTester.Win32
             HSHELL_LANGUAGE = 8,
             HSHELL_ACCESSIBILITYSTATE = 11
         }
+
         public enum WM_MOUSE : int
         {
             /// <summary>
@@ -1046,6 +1049,16 @@ namespace Shrinerain.AutoTester.Win32
             WS_OVERLAPPEDWINDOW = (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)
         }
 
+        public enum WindowsEvent : uint
+        {
+            SYS_DIALOGSTART = 0x10,
+            OBJ_CREATE = 0x8000,
+            OBJ_SHOW = 0x8002,
+            OBJ_FOCUS = 0x8005,
+            OBJ_STATECHANGE = 0x800A,
+            OBJ_VALUECHANGE = 0x800E
+        }
+
         public struct WindowInfo
         {
             public int size;
@@ -1142,8 +1155,11 @@ namespace Shrinerain.AutoTester.Win32
         [DllImport("Oleacc.dll")]
         public static extern int AccessibleChildren(IAccessible paccContainer, int iChildStart, int cChildren, [Out] object[] rgvarChildren, out int pcObtained);
 
+        [DllImport("oleacc.dll")]
+        public static extern uint AccessibleObjectFromEvent(IntPtr hwnd, uint dwObjectID, uint dwChildID, out IAccessible iAccessible, [MarshalAs(UnmanagedType.Struct)] out object pvarChild);
+
         [DllImport("oleacc.dll", PreserveSig = false)]
-        [return: MarshalAs(UnmanagedType.Interface)] 
+        [return: MarshalAs(UnmanagedType.Interface)]
         public static extern object ObjectFromLresult(UIntPtr lResult,
              [MarshalAs(UnmanagedType.LPStruct)] Guid refiid, IntPtr wParam);
 
@@ -1185,9 +1201,34 @@ namespace Shrinerain.AutoTester.Win32
 
         [DllImport("User32.dll")]
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+        public static String GetClassName(IntPtr handle)
+        {
+            if (handle != IntPtr.Zero)
+            {
+                StringBuilder sb = new StringBuilder(128);
+                if (GetClassName(handle, sb, 128) > 0)
+                {
+                    return sb.ToString();
+                }
+            }
+            return "";
+        }
+
 
         [DllImport("User32.dll")]
         public static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+        public static String GetWindowText(IntPtr handle)
+        {
+            if (handle != IntPtr.Zero)
+            {
+                StringBuilder sb = new StringBuilder(512);
+                if (GetWindowText(handle, sb, 512) > 0)
+                {
+                    return sb.ToString();
+                }
+            }
+            return "";
+        }
 
         [DllImport("User32.dll")]
         public static extern WindowStyles GetWindowLong(IntPtr hWnd, int index);

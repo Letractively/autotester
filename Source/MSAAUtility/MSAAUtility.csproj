@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C752F3C5-6FD8-4B36-AD5C-73393537A773}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -40,14 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MSAATestApp.cs" />
+    <Compile Include="MSAATestEventDispatcher.cs" />
     <Compile Include="MSAATestObjectPool.cs" />
     <Compile Include="MSAATestObject\MSAATestButton.cs" />
     <Compile Include="MSAATestObject\MSAATestCheckBox.cs" />
     <Compile Include="MSAATestObject\MSAATestComboBox.cs" />
     <Compile Include="MSAATestObject\MSAATestGUIObject.cs" />
     <Compile Include="MSAATestObject\MSAATestObject.cs" />
+    <Compile Include="MSAATestObjectFactory.cs" />
+    <Compile Include="MSAATestObject\MSAATestObjectInfo.cs" />
     <Compile Include="MSAATestObject\MSAATestRadioButton.cs" />
     <Compile Include="MSAATestObject\MSAATestTextBox.cs" />
+    <Compile Include="MSAATestSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -55,17 +60,13 @@
       <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Helper\Helper.csproj">
-      <Project>{1A9ED92E-938E-4085-9FE8-A47A1D16DA95}</Project>
-      <Name>Helper</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interface\Interface.csproj">
-      <Project>{9B21D3ED-5BAC-4C66-BAB7-34CE7A076FFE}</Project>
-      <Name>Interface</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Win32API\Win32API.csproj">
       <Project>{C27330C3-8F5D-46C6-9601-CDD96134E717}</Project>
       <Name>Win32API</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WindowsHook\WindowsHook.vcproj">
+      <Project>{0D7B20EE-75C3-47AC-8644-C452E8E3C57B}</Project>
+      <Name>WindowsHook</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

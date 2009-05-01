@@ -28,7 +28,7 @@ namespace Shrinerain.AutoTester.Win32
 
         #region fields
 
-        private static bool _sendMessageOnly = false;
+        private static bool _sendMessageOnly = true;
 
         public static bool SendMessageOnly
         {
@@ -178,6 +178,15 @@ namespace Shrinerain.AutoTester.Win32
 
             MoveTo(p.x + shiftX, p.y + shiftY);
         }
+
+        public static Point GetMousePos()
+        {
+            Win32API.POINT p = new Win32API.POINT();
+            Win32API.GetCursorPos(ref p);
+
+            return new Point(p.x, p.y);
+        }
+
         #endregion
     }
 }

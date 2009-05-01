@@ -25,7 +25,6 @@ using System.Text;
 using System.Threading;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Interface;
 
 namespace Shrinerain.AutoTester.Framework
 {
@@ -408,12 +407,12 @@ namespace Shrinerain.AutoTester.Framework
                     if (!String.IsNullOrEmpty(url) && (url.ToUpper().StartsWith("HTTP://")) || url.ToUpper().StartsWith("HTTPS://"))
                     {
 
-                        _testBrowser.Load(url);
+                        _testBrowser.Load(url, false);
                     }
                 }
                 else if (action == "LOAD")
                 {
-                    _testBrowser.Load(step._testData);
+                    _testBrowser.Load(step._testData, false);
                 }
                 else if (action == "FIND")
                 {
@@ -430,21 +429,9 @@ namespace Shrinerain.AutoTester.Framework
                     }
                     else
                     {
-                        if (data == "NEXTPAGE")
+                        if (data == "NEWPAGE")
                         {
-                            _testBrowser.WaitForNextPage();
-                        }
-                        else if (data == "POPWINDOW")
-                        {
-                            _testBrowser.WaitForPopWindow();
-                        }
-                        else if (data == "NEWWINDOW")
-                        {
-                            _testBrowser.WaitForNewWindow();
-                        }
-                        else if (data == "NEWTAB")
-                        {
-                            _testBrowser.WaitForNewTab();
+                            _testBrowser.WaitForPage();
                         }
                         else
                         {
@@ -454,7 +441,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 else if (action == "MAXSIZE")
                 {
-                    _testBrowser.MaxSize();
+                    _testBrowser.Max();
                 }
                 else if (action == "CLOSE")
                 {

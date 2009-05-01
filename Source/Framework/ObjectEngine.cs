@@ -20,7 +20,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.Framework
@@ -104,23 +103,19 @@ namespace Shrinerain.AutoTester.Framework
                     }
                     else if (property.ToUpper() == ".NAME")
                     {
-                        tmp = (TestObject)_objPool.GetObjectByName(item);
+                        tmp = (TestObject)_objPool.GetObjectsByName(item)[0];
                     }
                     else
                     {
-                        tmp = (TestObject)_objPool.GetObjectByProperty(property, item);
+                       // tmp = (TestObject)_objPool.GetObjectsByProperties(property, item)[0];
                     }
                 }
                 else
                 {
                     //if not started with "." , treat it as a type.
-                    tmp = (TestObject)_objPool.GetObjectByType(property, item, 0);
+                   // tmp = (TestObject)_objPool.GetObjectByType(property, item, 0);
                 }
 
-            }
-            else
-            {
-                tmp = (TestObject)_objPool.GetObjectByAI(item);
             }
 
             return tmp;

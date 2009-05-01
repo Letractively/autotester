@@ -15,6 +15,7 @@
 *********************************************************************/
 
 using System;
+using System.Collections.Generic;
 
 using mshtml;
 
@@ -26,6 +27,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         #region Fileds
 
+        private HTMLTestObjectPool _pool;
+
+        private IHTMLElement[] _allElements;
+        private bool needRefresh = false;
+
         #endregion
 
         #region Properties
@@ -36,7 +42,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public HTMLTestBrowser()
         {
-            _browserName = "Internet Explorer";
         }
 
         ~HTMLTestBrowser()
@@ -52,21 +57,46 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetAllObjects()
          * return all element of HTML DOM.
          */
-        public IHTMLElementCollection GetAllObjects()
+        public IHTMLElement[] GetAllHTMLElements()
         {
-            if (_HTMLDom == null)
+            if (_rootDocument == null)
             {
                 throw new BrowserNotFoundException();
             }
             try
             {
-                return (IHTMLElementCollection)_HTMLDom.body.all;
+                if (needRefresh || _allElements == null)
+                {
+                    needRefresh = false;
+
+                    List<IHTMLElement> allObjectList = new List<IHTMLElement>();
+                    HTMLDocument[] allDocs = GetAllDocuments();
+                    foreach (HTMLDocument doc in allDocs)
+                    {
+                        try
+                        {
+                            foreach (IHTMLElement ele in (IHTMLElementCollection)doc.body.all)
+                            {
+                                if (ele != null)
+                                {
+                                    allObjectList.Add(ele);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    _allElements = allObjectList.ToArray();
+                }
+
+                return _allElements;
             }
             catch (Exception ex)
             {
                 throw new ObjectNotFoundException("Can not get all objects: " + ex.Message);
             }
-
         }
 
         /* IHTMLElement GetObjectByID(string id)
@@ -78,13 +108,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new PropertyNotFoundException("ID can not be null.");
             }
-            if (_HTMLDom == null)
+            if (_rootDocument == null)
             {
                 throw new BrowserNotFoundException();
             }
             try
             {
-                return _HTMLDom.getElementById(id);
+                return _rootDocument.getElementById(id);
             }
             catch (Exception ex)
             {
@@ -96,21 +126,39 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetObjectsByName(string name)
          * return elements by .name property.
          */
-        public IHTMLElementCollection GetObjectsByName(string name)
+        public IHTMLElement[] GetObjectsByName(string name)
         {
             if (String.IsNullOrEmpty(name))
             {
                 throw new PropertyNotFoundException("Name can not be null.");
             }
 
-            if (_HTMLDom == null)
+            if (_rootDocument == null)
             {
                 throw new BrowserNotFoundException();
             }
 
             try
             {
-                return _HTMLDom.getElementsByName(name);
+                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
+                HTMLDocument[] allDocs = GetAllDocuments();
+                foreach (HTMLDocument doc in allDocs)
+                {
+                    try
+                    {
+                        foreach (IHTMLElement ele in doc.getElementsByName(name))
+                        {
+                            if (ele != null)
+                            {
+                                allObjectList.Add(ele);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+                return allObjectList.ToArray();
             }
             catch (Exception ex)
             {
@@ -121,21 +169,39 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetObjectsByTagName(string name)
          * return elements by tag, eg: <a> will return all link.
          */
-        public IHTMLElementCollection GetObjectsByTagName(string name)
+        public IHTMLElement[] GetObjectsByTagName(string name)
         {
             if (String.IsNullOrEmpty(name))
             {
                 throw new PropertyNotFoundException("Tag name can not be null.");
             }
 
-            if (_HTMLDom == null)
+            if (_rootDocument == null)
             {
                 throw new BrowserNotFoundException();
             }
 
             try
             {
-                return _HTMLDom.getElementsByTagName(name);
+                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
+                HTMLDocument[] allDocs = GetAllDocuments();
+                foreach (HTMLDocument doc in allDocs)
+                {
+                    try
+                    {
+                        foreach (IHTMLElement ele in doc.getElementsByTagName(name))
+                        {
+                            if (ele != null)
+                            {
+                                allObjectList.Add(ele);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+                return allObjectList.ToArray();
             }
             catch (Exception ex)
             {
@@ -150,12 +216,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                return _HTMLDom.elementFromPoint(x, y);
+                return _rootDocument.elementFromPoint(x, y);
             }
             catch (Exception ex)
             {
                 throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + ex.Message);
             }
+        }
+
+        public override ITestObjectPool GetObjectPool()
+        {
+            if (_pool == null)
+            {
+                _pool = new HTMLTestObjectPool(this);
+            }
+
+            return _pool;
         }
 
         #endregion
@@ -169,12 +245,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
-
-            //when document loaded, tell the htmlobjectpool to reload all objects.
-
-            HTMLTestObjectPool.DocumentRefreshed();
-
+            needRefresh = true;
             base.OnDocumentLoadComplete(pDesp, ref pUrl);
+        }
+
+        protected override void OnDownloadComplete()
+        {
+            needRefresh = true;
+            base.OnDownloadComplete();
         }
 
         #endregion

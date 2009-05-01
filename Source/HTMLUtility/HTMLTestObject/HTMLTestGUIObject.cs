@@ -31,7 +31,6 @@ using System.Text.RegularExpressions;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Helper;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
@@ -51,9 +50,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //sync event to ensure action is finished before next step.
         protected static AutoResetEvent _actionFinished = new AutoResetEvent(true);
 
-        //we may have some string around the control.
-        protected string _labelText;
-
         //reg to match <>, html tag.
         protected static Regex _regHtml = new Regex("<[^>]+?>", RegexOptions.Compiled);
 
@@ -67,7 +63,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
         //then we will not see the mouse move.
-        protected bool _sendMsgOnly = false;
+        protected bool _sendMsgOnly = true;
 
         //status of gui object.
         protected bool _isVisible = true;
@@ -147,21 +143,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get
             {
                 return this._browser;
-            }
-        }
-
-        public virtual string LabelText
-        {
-            get
-            {
-                //for performance issue, we won't get the label text at creator,
-                //we will get the label text on demand.
-                if (String.IsNullOrEmpty(_labelText))
-                {
-                    _labelText = GetLabelText();
-                }
-
-                return _labelText;
             }
         }
 
@@ -283,7 +264,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     // we will calculate the center point of this object.
                     CalCenterPoint(left, top, width, height);
-
                     this._rect = new Rectangle(left, top, width, height);
                 }
 
@@ -340,195 +320,190 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public virtual String GetLabel()
+        {
+            return "";
+        }
 
         /* GetAroundText(IHTMLElement element)
        * return the text around the control.
        */
         public static string GetAroundText(IHTMLElement element)
         {
-            try
+            if (element != null)
             {
-
-                if (element == null)
+                try
                 {
-                    return null;
-                }
-
-                string aroundText = null;
-
-                IHTMLElement parent = element.parentElement;
-
-                if (parent != null)
-                {
-                    string tag = parent.tagName;
-
-                    if (tag == "SPAN" || tag == "TD" || tag == "DIV" || tag == "LABEL" || tag == "FONT")
+                    string aroundText = null;
+                    IHTMLElement parent = element.parentElement;
+                    if (parent != null)
                     {
-                        if (HTMLTestObject.TryGetProperty(parent, "innerText", out aroundText))
+                        string tag = parent.tagName;
+                        if (tag == "SPAN" || tag == "TD" || tag == "DIV" || tag == "LABEL" || tag == "FONT")
                         {
-
-                            IHTMLElementCollection brotherElements = (IHTMLElementCollection)parent.children;
-
-                            if (brotherElements.length > 1)
+                            if (HTMLTestObject.TryGetProperty(parent, "innerText", out aroundText) && !String.IsNullOrEmpty(aroundText.Trim()))
                             {
-                                int currentObjIndex = 0;
-
-                                object name;
-                                object index;
-
-                                string myHTML = element.outerHTML;
-                                string parentHTML = parent.innerHTML;
-
-                                //we guess the position of the control by checking it's HTML code index.
-                                int curPos = parentHTML.IndexOf(myHTML);
-                                if (curPos > parentHTML.Length / 2)
+                                IHTMLElementCollection brotherElements = (IHTMLElementCollection)parent.children;
+                                if (brotherElements.length > 1)
                                 {
-                                    for (int i = brotherElements.length - 1; i >= 0; i--)
-                                    {
-                                        name = (object)i;
-                                        index = (object)i;
+                                    int currentObjIndex = 0;
 
-                                        if (element == brotherElements.item(name, index))
+                                    string myHTML = element.outerHTML;
+                                    string parentHTML = parent.innerHTML;
+
+                                    //we guess the position of the control by checking it's HTML code index.
+                                    int curPos = parentHTML.IndexOf(myHTML);
+                                    if (curPos > parentHTML.Length / 2)
+                                    {
+                                        for (int i = brotherElements.length - 1; i >= 0; i--)
                                         {
-                                            currentObjIndex = i;
-                                            break;
+                                            if (element == brotherElements.item((object)i, (object)i))
+                                            {
+                                                currentObjIndex = i;
+                                                break;
+                                            }
                                         }
                                     }
+                                    else
+                                    {
+                                        for (int i = 0; i < brotherElements.length; i++)
+                                        {
+                                            if (element == brotherElements.item((object)i, (object)i))
+                                            {
+                                                currentObjIndex = i;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    //try to get the left element.
+                                    IHTMLElement prevElement = null;
+                                    if (currentObjIndex > 0)
+                                    {
+                                        int prevIndex = currentObjIndex;
+                                        while (true)
+                                        {
+                                            prevIndex--;
+                                            if (prevIndex < 0)
+                                            {
+                                                prevElement = null;
+                                                break;
+                                            }
+
+                                            prevElement = (IHTMLElement)brotherElements.item((object)prevIndex, (object)prevIndex);
+                                            if (prevElement.tagName == "FONT" || prevElement.tagName == "SPAN")
+                                            {
+                                                continue;
+                                            }
+
+                                            if (ShouldBreak(prevElement))
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    //try to get the right element.
+                                    IHTMLElement nextElement = null;
+                                    if (brotherElements.length - 1 > currentObjIndex)
+                                    {
+                                        int nextIndex = currentObjIndex;
+                                        while (true)
+                                        {
+                                            nextIndex++;
+                                            if (nextIndex >= brotherElements.length)
+                                            {
+                                                nextElement = null;
+                                                break;
+                                            }
+
+                                            nextElement = (IHTMLElement)brotherElements.item((object)nextIndex, (object)nextIndex);
+                                            if (nextElement.tagName == "FONT" || nextElement.tagName == "SPAN")
+                                            {
+                                                continue;
+                                            }
+
+                                            if (ShouldBreak(nextElement))
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    string leftStr = "";
+                                    int posLeft = 0;
+                                    if (prevElement != null)
+                                    {
+                                        string prevHTML = prevElement.outerHTML;
+                                        posLeft = parentHTML.IndexOf(prevHTML) + prevHTML.Length;
+                                    }
+
+                                    string leftHTML = parentHTML.Substring(posLeft, curPos - posLeft);
+                                    //remove html tag and decode html code, eg: &nbsp; to a blank.
+                                    leftStr = System.Web.HttpUtility.HtmlDecode(_regHtml.Replace(leftHTML, ""));
+
+                                    string rightStr = "";
+                                    int posRight = parentHTML.Length;
+                                    if (nextElement != null)
+                                    {
+                                        string nextHTML = nextElement.outerHTML;
+                                        posRight = parentHTML.IndexOf(nextHTML);
+                                    }
+
+                                    string rightHTML = parentHTML.Substring(curPos + myHTML.Length, posRight - curPos - myHTML.Length);
+                                    //remove html tag.
+                                    rightStr = System.Web.HttpUtility.HtmlDecode(_regHtml.Replace(rightHTML, ""));
+
+                                    aroundText = leftStr.Trim() + _labelSplitter + rightStr.Trim();
                                 }
                                 else
                                 {
-                                    for (int i = 0; i < brotherElements.length; i++)
+                                    string selfText;
+                                    if (HTMLTestObject.TryGetProperty(element, "innerText", out selfText) && !String.IsNullOrEmpty(selfText.Trim()))
                                     {
-                                        name = (object)i;
-                                        index = (object)i;
-
-                                        if (element == brotherElements.item(name, index))
-                                        {
-                                            currentObjIndex = i;
-                                            break;
-                                        }
+                                        aroundText = aroundText.Replace(selfText, "");
                                     }
                                 }
 
-
-                                //try to get the left element.
-                                IHTMLElement prevElement = null;
-                                if (currentObjIndex > 0)
-                                {
-                                    int prevIndex = currentObjIndex;
-                                    while (true)
-                                    {
-                                        prevIndex--;
-
-                                        if (prevIndex < 0)
-                                        {
-                                            prevElement = null;
-                                            break;
-                                        }
-
-                                        prevElement = (IHTMLElement)brotherElements.item((object)prevIndex, (object)prevIndex);
-
-                                        if (prevElement.tagName == "FONT" || prevElement.tagName == "SPAN")
-                                        {
-                                            continue;
-                                        }
-
-                                        if (prevElement == null
-                                            || prevElement.tagName == "A"
-                                            || prevElement.tagName == "INPUT"
-                                            || prevElement.tagName == "BUTTON"
-                                            || !HTMLTestObject.TryGetProperty(prevElement, "innerText"))
-                                        {
-                                            break;
-                                        }
-
-                                    }
-
-                                }
-
-
-                                //try to get the right element.
-                                IHTMLElement nextElement = null;
-                                if (brotherElements.length - 1 > currentObjIndex)
-                                {
-                                    int nextIndex = currentObjIndex;
-                                    while (true)
-                                    {
-                                        nextIndex++;
-
-                                        if (nextIndex >= brotherElements.length)
-                                        {
-                                            nextElement = null;
-                                            break;
-                                        }
-
-                                        nextElement = (IHTMLElement)brotherElements.item((object)nextIndex, (object)nextIndex);
-
-                                        if (nextElement.tagName == "FONT" || nextElement.tagName == "SPAN")
-                                        {
-                                            continue;
-                                        }
-
-                                        if (nextElement == null
-                                            || nextElement.tagName == "A"
-                                            || nextElement.tagName == "INPUT"
-                                            || nextElement.tagName == "BUTTON"
-                                            || !HTMLTestObject.TryGetProperty(nextElement, "innerText"))
-                                        {
-                                            break;
-                                        }
-
-                                    }
-                                }
-
-                                string leftStr = "";
-                                int posLeft = 0;
-                                if (prevElement != null)
-                                {
-                                    string prevHTML = prevElement.outerHTML;
-                                    posLeft = parentHTML.IndexOf(prevHTML) + prevHTML.Length;
-                                }
-
-                                string leftHTML = parentHTML.Substring(posLeft, curPos - posLeft);
-                                //remove html tag and decode html code, eg: &nbsp; to a blank.
-                                leftStr = System.Web.HttpUtility.HtmlDecode(_regHtml.Replace(leftHTML, ""));
-
-                                string rightStr = "";
-                                int posRight = parentHTML.Length;
-                                if (nextElement != null)
-                                {
-                                    string nextHTML = nextElement.outerHTML;
-                                    posRight = parentHTML.IndexOf(nextHTML);
-                                }
-
-                                string rightHTML = parentHTML.Substring(curPos + myHTML.Length, posRight - curPos - myHTML.Length);
-                                //remove html tag.
-                                rightStr = System.Web.HttpUtility.HtmlDecode(_regHtml.Replace(rightHTML, ""));
-
-                                aroundText = leftStr.Trim() + _labelSplitter + rightStr.Trim();
-
+                                return aroundText.Trim();
                             }
-                            else
-                            {
-                                string selfText;
-                                if (HTMLTestObject.TryGetProperty(element, "innerText", out selfText))
-                                {
-                                    aroundText = aroundText.Replace(selfText, "");
-                                }
-                            }
-
-                            return aroundText.Trim();
                         }
                     }
                 }
-
-                return "";
+                catch
+                {
+                }
             }
-            catch
+
+            return "";
+        }
+
+        private static bool ShouldBreak(IHTMLElement element)
+        {
+            string type = null;
+            HTMLTestObject.TryGetProperty(element, "type", out type);
+            if (element == null || element.tagName == "A" || (element.tagName == "INPUT" && String.Compare(type, "hidden", true) != 0)
+                || element.tagName == "BUTTON" || !HTMLTestObject.TryGetProperty(element, "innerText"))
             {
-                return "";
+                return true;
             }
 
+            return false;
+        }
+
+        private static bool ShouldCheckCell(IHTMLElement element)
+        {
+            IHTMLElementCollection childrenElements = (IHTMLElementCollection)element.children;
+            for (int i = 0; i < childrenElements.length; i++)
+            {
+                IHTMLElement curEle = (IHTMLElement)childrenElements.item((object)i, (object)i);
+                if (ShouldBreak(curEle))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /* string GetAroundCellText(int direction)
@@ -560,7 +535,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 string label = null;
 
                 IHTMLElement parentElement = element.parentElement;
-
                 if (parentElement != null && parentElement.tagName == "TD")
                 {
                     //current cell, <td>
@@ -582,71 +556,101 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         if (rowId - deepth >= 0)
                         {
-                            //get the up cell.
-                            index = (object)(rowId - deepth);
-                            IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+                            for (int i = 1; i <= deepth; i++)
+                            {
+                                //get the up cell.
+                                index = (object)(rowId - i);
+                                IHTMLTableRow upRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
 
-                            index = (object)cellId;
-                            IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
+                                index = (object)cellId;
+                                IHTMLElement upCellElement = (IHTMLElement)upRowElement.cells.item(index, index);
 
-                            searchedElement = upCellElement;
+                                searchedElement = upCellElement;
 
+                                if (!ShouldCheckCell(searchedElement))
+                                {
+                                    searchedElement = null;
+                                    break;
+                                }
+                            }
                         }
                     }
                     else if (direction == 1)
                     {
                         if (cellId + deepth < parentRowElement.cells.length)
                         {
-                            index = (object)(cellId + deepth);
+                            for (int i = 1; i <= deepth; i++)
+                            {
+                                index = (object)(cellId + i);
 
-                            //get the right cell.
-                            IHTMLElement rightElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+                                //get the right cell.
+                                IHTMLElement rightElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+                                searchedElement = rightElement;
 
-                            searchedElement = rightElement;
+                                if (!ShouldCheckCell(searchedElement))
+                                {
+                                    searchedElement = null;
+                                    break;
+                                }
+                            }
                         }
                     }
                     else if (direction == 2)
                     {
                         if (rowId + deepth < tableSecElement.rows.length)
                         {
-                            //get the down cell.
-                            index = (object)(rowId + deepth);
-                            IHTMLTableRow downRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
+                            for (int i = 1; i <= deepth; i++)
+                            {
+                                //get the down cell.
+                                index = (object)(rowId + i);
+                                IHTMLTableRow downRowElement = (IHTMLTableRow)tableSecElement.rows.item(index, index);
 
-                            index = (object)cellId;
-                            IHTMLElement downCellElement = (IHTMLElement)downRowElement.cells.item(index, index);
+                                index = (object)cellId;
+                                IHTMLElement downCellElement = (IHTMLElement)downRowElement.cells.item(index, index);
 
-                            searchedElement = downCellElement;
+                                searchedElement = downCellElement;
+
+                                if (!ShouldCheckCell(searchedElement))
+                                {
+                                    searchedElement = null;
+                                    break;
+                                }
+                            }
                         }
                     }
                     else if (direction == 3)
                     {
-
                         if (cellId - deepth >= 0)
                         {
-                            index = (object)(cellId - deepth);
+                            for (int i = 1; i <= deepth; i++)
+                            {
+                                index = (object)(cellId - i);
 
-                            //get the left cell.
-                            IHTMLElement leftElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+                                //get the left cell.
+                                IHTMLElement leftElement = (IHTMLElement)parentRowElement.cells.item(index, index);
+                                searchedElement = leftElement;
 
-                            searchedElement = leftElement;
+                                if (!ShouldCheckCell(searchedElement))
+                                {
+                                    searchedElement = null;
+                                    break;
+                                }
+                            }
                         }
                     }
 
                     //try get the "innerText" property, it is the text in the cell.
-                    if (HTMLTestObject.TryGetProperty(searchedElement, "innerText", out label))
+                    if (searchedElement != null && HTMLTestObject.TryGetProperty(searchedElement, "innerText", out label) && !String.IsNullOrEmpty(label.Trim()))
                     {
                         return label;
                     }
-
                 }
-
-                return null;
             }
             catch
             {
-                return null;
             }
+
+            return "";
         }
 
         /* void Hover()
@@ -663,20 +667,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     throw new CannotPerformActionException("Object is not visible.");
                 }
 
-                if (!_sendMsgOnly)
-                {
-                    this._browser.Active();
+                this._browser.Active();
 
-                    //if the object is not visible, then move it.
-                    ScrollIntoView();
+                //if the object is not visible, then move it.
+                ScrollIntoView();
 
-                    //get the center point of the object, and move mouse to it.
-                    MouseOp.MoveTo(_centerPoint);
+                //get the center point of the object, and move mouse to it.
+                MouseOp.MoveTo(_centerPoint);
 
-                    //after move mouse to the control, wait for 0.2s, make it looks like human action.
-                    Thread.Sleep(200 * 1);
-                }
-
+                //after move mouse to the control, wait for 0.2s, make it looks like human action.
+                Thread.Sleep(200 * 1);
             }
             catch (TestException)
             {
@@ -696,9 +696,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _actionFinished.WaitOne();
-
                 ThreadPool.QueueUserWorkItem(HighLightRectCallback, null);
-
             }
             catch (TestException)
             {
@@ -772,7 +770,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-
         #endregion
 
         #region private methods
@@ -830,10 +827,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (right > currentWidth || buttom > currentHeight)
             {
                 this._sourceElement.scrollIntoView(false);
-
-                //int times = 0;
-                //while (times <= 10)
-                //{
                 if (oriTop == _browser.ScrollTop && oriLeft == _browser.ScrollLeft)
                 {
                     //!!!need update here!!!
@@ -850,10 +843,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     //re-calculate the position, because we had move it.
                     GetRectOnScreen();
-
-                    // break;
                 }
-                //  }
             }
             else if (this._rect.Top < this._browser.ScrollTop || this._rect.Left < this._browser.ScrollLeft)
             {
@@ -942,14 +932,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             _centerPoint.Y = top + height / 2;
 
             return _centerPoint;
-        }
-
-        /* string GetLabelText()
-         * return the text around this control.
-         */
-        protected virtual string GetLabelText()
-        {
-            return GetAroundText(this._sourceElement);
         }
 
         #endregion

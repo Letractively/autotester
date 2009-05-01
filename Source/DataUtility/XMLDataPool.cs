@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-using Shrinerain.AutoTester.Interface;
 using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.DataUtility

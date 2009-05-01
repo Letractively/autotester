@@ -242,11 +242,11 @@
       <FileName>Interface\ISelectable.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="Shrinerain.AutoTester.Function.Interface.IShowInfo" Collapsed="true">
+  <Interface Name="Shrinerain.AutoTester.Function.Interface.IText" Collapsed="true">
     <Position X="6.25" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAIAAAAAAAAABAAAAAAAAAAAgAAAAA=</HashCode>
-      <FileName>Interface\IShowInfo.cs</FileName>
+      <FileName>Interface\IText.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="Shrinerain.AutoTester.Function.Interface.IVisible" Collapsed="true">
