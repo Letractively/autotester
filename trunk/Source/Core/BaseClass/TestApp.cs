@@ -47,8 +47,8 @@ namespace Shrinerain.AutoTester.Core
         protected int _height;
 
         //max wait time is 120s.
-        protected int _maxWaitSeconds = 120;
-        protected int _interval = 3;
+        protected int _maxWaitSeconds = 60;
+        protected const int Interval = 3;
 
         //sync event
         protected AutoResetEvent _appStartEvent = new AutoResetEvent(false);
@@ -413,8 +413,8 @@ namespace Shrinerain.AutoTester.Core
                     }
                     else
                     {
-                        Thread.Sleep(_interval * 1000);
-                        times += _interval;
+                        Thread.Sleep(Interval * 1000);
+                        times += Interval;
                     }
                 }
 
@@ -449,8 +449,8 @@ namespace Shrinerain.AutoTester.Core
                     }
                     else
                     {
-                        Thread.Sleep(_interval * 1000);
-                        times += _interval;
+                        Thread.Sleep(Interval * 1000);
+                        times += Interval;
                     }
                 }
 

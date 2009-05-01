@@ -41,7 +41,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         private int _maxWaitSeconds = 15;
 
         //very time we sleep for 3 seconds, and find again.
-        private const int _interval = 3;
+        private const int Interval = 3;
 
         //buf to store the key for cache. 
         private static StringBuilder _keySB = new StringBuilder(128);
@@ -96,8 +96,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     else
                     {
                         //not found, sleep for 3 seconds, then try again.
-                        times += _interval;
-                        Thread.Sleep(_interval * 1000);
+                        times += Interval;
+                        Thread.Sleep(Interval * 1000);
                     }
                 }
                 catch (CannotBuildObjectException)
@@ -111,8 +111,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             //not found, sleep for 3 seconds, then try again.
-            times += _interval;
-            Thread.Sleep(_interval * 1000);
+            times += Interval;
+            Thread.Sleep(Interval * 1000);
 
             throw new ObjectNotFoundException("Can not find object by properties.");
         }
@@ -168,8 +168,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     else
                     {
                         //not found, sleep for 3 seconds, then try again.
-                        times += _interval;
-                        Thread.Sleep(_interval * 1000);
+                        times += Interval;
+                        Thread.Sleep(Interval * 1000);
                     }
 
                 }
@@ -227,8 +227,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     else
                     {
                         //not found, sleep for 3 seconds, then try again.
-                        times += _interval;
-                        Thread.Sleep(_interval * 1000);
+                        times += Interval;
+                        Thread.Sleep(Interval * 1000);
                     }
                 }
                 catch (CannotBuildObjectException)
@@ -242,8 +242,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             //not found, sleep for 3 seconds, then try again.
-            times += _interval;
-            Thread.Sleep(_interval * 1000);
+            times += Interval;
+            Thread.Sleep(Interval * 1000);
 
             throw new ObjectNotFoundException("Can not find object by type [" + type.ToString() + "]");
 
@@ -291,8 +291,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 }
 
                 //not found, sleep for 3 seconds, then try again.
-                times += _interval;
-                Thread.Sleep(_interval * 1000);
+                times += Interval;
+                Thread.Sleep(Interval * 1000);
             }
 
             throw new ObjectNotFoundException("Can not find object at Point:[" + x + "," + y + "]");
