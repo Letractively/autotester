@@ -77,7 +77,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private TestObject _cacheObj;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
-        private int _maxWaitSeconds = 30;
+        private int _maxWaitSeconds = 15;
         //very time we sleep for 3 seconds, and find again.
         private const int Interval = 3;
 
@@ -680,7 +680,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                         return _testObj;
                     }
-
                 }
                 catch (CannotBuildObjectException)
                 {
@@ -832,6 +831,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public TestObject GetLastObject()
         {
             return _testObj;
+        }
+
+        public void SetTimeout(int seconds)
+        {
+            if (seconds >= 0)
+            {
+                this._maxWaitSeconds = seconds;
+            }
+        }
+
+        public int GetTimeout()
+        {
+            return this._maxWaitSeconds;
         }
         #endregion
 

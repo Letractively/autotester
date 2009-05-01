@@ -24,9 +24,9 @@ namespace Shrinerain.AutoTester.Core
 
         //key for cache.
         private const string _keySplitter = "__shrinerainmap__";
-
         private TestObject _lastObject;
 
+        private const int Timeout = 5;
         #endregion
 
         #region properties
@@ -342,15 +342,26 @@ namespace Shrinerain.AutoTester.Core
 
             if (properties != null)
             {
+                int oriTimeout = this._objPool.GetTimeout();
                 try
                 {
+                    this._objPool.SetTimeout(Timeout);
                     obj = this._objPool.GetObjectsByProperties(properties)[0];
+                    return true;
+                }
+                catch (ObjectNotFoundException)
+                {
+                    obj = new TestFakeObject();
                     return true;
                 }
                 catch (TestException ex)
                 {
                     exception = ex;
                     return false;
+                }
+                finally
+                {
+                    this._objPool.SetTimeout(oriTimeout);
                 }
             }
 
@@ -364,15 +375,26 @@ namespace Shrinerain.AutoTester.Core
 
             if (!String.IsNullOrEmpty(text) && !String.IsNullOrEmpty(type))
             {
+                int oriTimeout = this._objPool.GetTimeout();
                 try
                 {
+                    this._objPool.SetTimeout(Timeout);
                     obj = this._objPool.GetObjectsByType(type, new TestProperty[] { new TestProperty(TestObject.VisibleProperty, text) })[0];
+                    return true;
+                }
+                catch (ObjectNotFoundException)
+                {
+                    obj = new TestFakeObject();
                     return true;
                 }
                 catch (TestException ex)
                 {
                     exception = ex;
                     return false;
+                }
+                finally
+                {
+                    this._objPool.SetTimeout(oriTimeout);
                 }
             }
 
@@ -387,11 +409,22 @@ namespace Shrinerain.AutoTester.Core
         {
             if (!String.IsNullOrEmpty(type))
             {
-                return this._objPool.GetObjectsByType(type, null)[0];
+                int oriTimeout = this._objPool.GetTimeout();
+                try
+                {
+                    this._objPool.SetTimeout(Timeout);
+                    return this._objPool.GetObjectsByType(type, null)[0];
+                }
+                catch (ObjectNotFoundException)
+                {
+                }
+                finally
+                {
+                    this._objPool.SetTimeout(oriTimeout);
+                }
             }
 
-            throw new ObjectNotFoundException("Type can not be empty.");
-
+            return new TestFakeObject();
         }
 
         private String BuildKey(string feed)
