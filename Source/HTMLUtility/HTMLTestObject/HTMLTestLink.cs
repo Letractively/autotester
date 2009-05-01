@@ -98,7 +98,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the image of link: " + ex.Message);
+                //throw new CannotBuildObjectException("Can not get the image of link: " + ex.Message);
             }
 
             try
