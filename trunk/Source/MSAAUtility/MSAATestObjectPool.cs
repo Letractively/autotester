@@ -38,7 +38,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         private TestObject _testObj;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
-        private int _maxWaitSeconds = 30;
+        private int _maxWaitSeconds = 15;
 
         //very time we sleep for 3 seconds, and find again.
         private const int _interval = 3;
@@ -315,6 +315,18 @@ namespace Shrinerain.AutoTester.MSAAUtility
             throw new NotImplementedException();
         }
 
+        public void SetTimeout(int seconds)
+        {
+            if (seconds >= 0)
+            {
+                this._maxWaitSeconds = seconds;
+            }
+        }
+
+        public int GetTimeout()
+        {
+            return this._maxWaitSeconds;
+        }
 
         #endregion
 

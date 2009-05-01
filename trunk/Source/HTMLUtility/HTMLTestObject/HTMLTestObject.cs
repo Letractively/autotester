@@ -126,7 +126,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestObject(IHTMLElement element)
             : base()
         {
-
             if (element == null)
             {
                 throw new CannotBuildObjectException("Element is null.");

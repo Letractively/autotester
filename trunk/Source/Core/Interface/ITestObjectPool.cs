@@ -76,7 +76,9 @@ namespace Shrinerain.AutoTester.Core
          * set desktop application inder test.
          */
         void SetTestApp(ITestApp testApp);
-
         void SetTestBrowser(ITestBrowser browser);
+
+        void SetTimeout(int seconds);
+        int GetTimeout();
     }
 }
