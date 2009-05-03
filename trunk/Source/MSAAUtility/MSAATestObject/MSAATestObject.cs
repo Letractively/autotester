@@ -52,13 +52,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public IAccessible IAcc
         {
             get { return _iAcc; }
-            set { _iAcc = value; }
         }
 
         public int ChildID
         {
             get { return _childID; }
-            set { _childID = value; }
         }
 
         public RoleType Role
@@ -66,11 +64,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
             get { return _role; }
         }
 
-
         public String State
         {
             get { return _state; }
-            set { _state = value; }
         }
 
         public int ChildCount
@@ -205,9 +201,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     {
                         this._handle = hwnd;
                         this._childID = (int)var;
-                    }
 
-                    GetMSAAInfo();
+                        GetMSAAInfo();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -240,6 +236,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
          */
         public override object GetProperty(string propertyName)
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             if (String.IsNullOrEmpty(propertyName))
             {
                 throw new PropertyNotFoundException("Property name can not be null.");
@@ -321,15 +322,19 @@ namespace Shrinerain.AutoTester.MSAAUtility
          */
         public override bool SetProperty(string propertyName, object value)
         {
-            try
+            if (this._iAcc != null && !String.IsNullOrEmpty(propertyName) && value != null)
             {
-                this._iAcc.set_accValue(_childID, value.ToString());
-                return true;
+                try
+                {
+                    this._iAcc.set_accValue(_childID, value.ToString());
+                    return true;
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return false;
-            }
+
+            return false;
         }
 
 
@@ -360,6 +365,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public Rectangle GetRect()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 //get location.
@@ -376,6 +386,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public virtual Point GetCenterPoint()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 //get location.
@@ -395,6 +410,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public RoleType GetRole()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 int roleType = (int)this._iAcc.get_accRole(_childID);
@@ -408,6 +428,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public String GetValue()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 return this._iAcc.get_accValue(_childID).ToString();
@@ -420,6 +445,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public String GetName()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 return this._iAcc.get_accName(_childID).ToString();
@@ -432,6 +462,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public String GetDefAction()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 return this._iAcc.get_accDefaultAction(_childID).ToString();
@@ -444,6 +479,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public String GetDesc()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 return this._iAcc.get_accDescription(_childID).ToString();
@@ -456,10 +496,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public String GetState()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 int stateID = (int)this._iAcc.get_accState(_childID);
-
                 return GetStateText(stateID);
             }
             catch
@@ -470,8 +514,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public MSAATestObject[] GetChildren()
         {
-            List<MSAATestObject> res = new List<MSAATestObject>();
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
 
+            List<MSAATestObject> res = new List<MSAATestObject>();
             IAccessible[] childrenObj = GetChildrenIAcc(this._iAcc);
             if (childrenObj != null)
             {
@@ -501,6 +549,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public MSAATestObject GetChild(int childID)
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 IAccessible child = GetChildIAcc(this._iAcc, childID);
@@ -520,6 +573,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public int GetChildCount()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             try
             {
                 if (this._childID == 0)
@@ -539,6 +597,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public IntPtr GetHandle()
         {
+            if (this._iAcc == null)
+            {
+                throw new PropertyNotFoundException("IAcc interface can not be null.");
+            }
+
             if (this._handle == IntPtr.Zero)
             {
                 Point p = this.GetCenterPoint();
