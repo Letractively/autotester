@@ -192,7 +192,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #region get information
         public static Object GetProperty(IAccessible iAcc, int childID, String propertyName)
         {
-            if (!String.IsNullOrEmpty(propertyName))
+            if (iAcc != null && !String.IsNullOrEmpty(propertyName))
             {
                 if (propertyName.StartsWith("."))
                 {
@@ -262,142 +262,174 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public static Rectangle GetRect(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                //get location.
-                int left, top, width, height;
-                iAcc.accLocation(out left, out top, out width, out height, (object)childID);
+                try
+                {
+                    //get location.
+                    int left, top, width, height;
+                    iAcc.accLocation(out left, out top, out width, out height, (object)childID);
 
-                return new Rectangle(left, top, width, height);
+                    return new Rectangle(left, top, width, height);
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return new Rectangle(0, 0, 0, 0);
-            }
+
+            return new Rectangle(0, 0, 0, 0);
         }
 
         public static Point GetCenterPoint(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                //get location.
-                int left, top, width, height;
-                iAcc.accLocation(out left, out top, out width, out height, (object)childID);
+                try
+                {
+                    //get location.
+                    int left, top, width, height;
+                    iAcc.accLocation(out left, out top, out width, out height, (object)childID);
 
-                int x = left + width / 2;
-                int y = top + height / 2;
+                    int x = left + width / 2;
+                    int y = top + height / 2;
 
-                return new Point(x, y);
+                    return new Point(x, y);
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return new Point(0, 0);
-            }
+
+            return new Point(0, 0);
         }
 
         public static RoleType GetRole(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                int roleType = (int)iAcc.get_accRole((object)childID);
-                return GetRole(roleType);
+                try
+                {
+                    int roleType = (int)iAcc.get_accRole((object)childID);
+                    return GetRole(roleType);
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return RoleType.None;
-            }
+
+            return RoleType.None;
         }
 
         public static String GetValue(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                return iAcc.get_accValue((object)childID).ToString();
+                try
+                {
+                    return iAcc.get_accValue((object)childID).ToString();
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
         }
 
         public static String GetName(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                return iAcc.get_accName((object)childID).ToString();
+                try
+                {
+                    return iAcc.get_accName((object)childID).ToString();
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
         }
 
         public static String GetDefAction(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                return iAcc.get_accDefaultAction((object)childID).ToString();
+                try
+                {
+                    return iAcc.get_accDefaultAction((object)childID).ToString();
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return "";
-            }
+            return "";
         }
 
         public static String GetDesc(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                return iAcc.get_accDescription((object)childID).ToString();
+                try
+                {
+                    return iAcc.get_accDescription((object)childID).ToString();
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return "";
-            }
+
+            return "";
         }
 
         public static String GetState(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                int stateID = (int)iAcc.get_accState((object)childID);
-
-                return GetStateText(stateID);
+                try
+                {
+                    int stateID = (int)iAcc.get_accState((object)childID);
+                    return GetStateText(stateID);
+                }
+                catch
+                {
+                }
             }
-            catch
-            {
-                return "";
-            }
+            return "";
         }
 
         public static IAccessible GetChildIAcc(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null && childID >= 0)
             {
-                IAccessible childIAcc = null;
                 try
                 {
-                    childIAcc = (IAccessible)iAcc.get_accChild((object)childID);
+                    IAccessible childIAcc = null;
+                    try
+                    {
+                        childIAcc = (IAccessible)iAcc.get_accChild((object)childID);
+                    }
+                    catch
+                    {
+
+                    }
+
+                    if (childIAcc == null)
+                    {
+                        IAccessible[] childrenObj = new IAccessible[1];
+                        int count = 0;
+                        Win32API.AccessibleChildren(iAcc, childID, 1, childrenObj, out count);
+
+                        childIAcc = childrenObj[0];
+                    }
+
+                    return childIAcc;
+
                 }
                 catch
                 {
-
                 }
-
-                if (childIAcc == null)
-                {
-                    IAccessible[] childrenObj = new IAccessible[1];
-                    int count = 0;
-                    Win32API.AccessibleChildren(iAcc, childID, 1, childrenObj, out count);
-
-                    childIAcc = childrenObj[0];
-                }
-
-                return childIAcc;
-
-            }
-            catch
-            {
             }
 
             return null;
@@ -405,26 +437,29 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public static IAccessible[] GetChildrenIAcc(IAccessible iAcc)
         {
-            int childCount = iAcc.accChildCount;
-            if (childCount > 0)
+            if (iAcc != null)
             {
-                IAccessible[] childrenObj = new IAccessible[childCount];
-                int count = 0;
-                Win32API.AccessibleChildren(iAcc, 0, childCount, childrenObj, out count);
-
-                if (count > 0)
+                int childCount = iAcc.accChildCount;
+                if (childCount > 0)
                 {
-                    for (int i = 0; i < count; i++)
+                    IAccessible[] childrenObj = new IAccessible[childCount];
+                    int count = 0;
+                    Win32API.AccessibleChildren(iAcc, 0, childCount, childrenObj, out count);
+
+                    if (count > 0)
                     {
-                        IAccessible child;
-                        if (GetValidObjectFromWindow(childrenObj[i], out child))
+                        for (int i = 0; i < count; i++)
                         {
-                            childrenObj[i] = child;
+                            IAccessible child;
+                            if (GetValidObjectFromWindow(childrenObj[i], out child))
+                            {
+                                childrenObj[i] = child;
+                            }
                         }
                     }
-                }
 
-                return childrenObj;
+                    return childrenObj;
+                }
             }
 
             return null;
@@ -432,37 +467,44 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public static int GetChildCount(IAccessible iAcc, int childID)
         {
-            try
+            if (iAcc != null)
             {
-                if (iAcc != null && childID == 0)
+                try
                 {
-                    return iAcc.accChildCount;
+                    if (childID == 0)
+                    {
+                        return iAcc.accChildCount;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
                 }
-                else
+                catch
                 {
-                    return 0;
                 }
             }
-            catch
-            {
-                return 0;
-            }
+
+            return 0;
         }
 
         private static bool GetValidObjectFromWindow(IAccessible iAcc, out IAccessible childIAcc)
         {
             childIAcc = null;
 
-            try
+            if (iAcc != null)
             {
-                if (iAcc.accChildCount == 7 && MSAATestObject.GetRole(iAcc, 0) == MSAATestObject.RoleType.Window && !IsValidObject(iAcc, 0))
+                try
                 {
-                    childIAcc = MSAATestObject.GetChildIAcc(iAcc, 3);
-                    return true;
+                    if (iAcc.accChildCount == 7 && MSAATestObject.GetRole(iAcc, 0) == MSAATestObject.RoleType.Window && !IsValidObject(iAcc, 0))
+                    {
+                        childIAcc = MSAATestObject.GetChildIAcc(iAcc, 3);
+                        return true;
+                    }
                 }
-            }
-            catch
-            {
+                catch
+                {
+                }
             }
 
             return false;
@@ -470,6 +512,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public static bool IsValidObject(IAccessible iAcc, int childID)
         {
+            if (iAcc != null || childID >= 0)
+            {
+                return false;
+            }
+
             String state = MSAATestObject.GetState(iAcc, childID);
 
             if (state.IndexOf("Invisible") >= 0 || state.IndexOf("Unavailable") >= 0)
