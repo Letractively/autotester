@@ -195,6 +195,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
             MouseOp.MoveTo(_centerPoint);
         }
 
+        public virtual void MouseClick()
+        {
+            Hover();
+            MouseOp.Click();
+        }
+
         public virtual string GetLabel()
         {
             return "";

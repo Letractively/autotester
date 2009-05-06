@@ -688,6 +688,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public virtual void MouseClick()
+        {
+            if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
+            {
+                MouseOp.Click(this._centerPoint);
+            }
+        }
+
         /*  void HighLight()
          *  Highlight the object, we will see a red rect around the object.
          */

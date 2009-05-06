@@ -266,9 +266,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                //String state = GetState();
-                //return state.IndexOf("checked", StringComparison.CurrentCultureIgnoreCase) >= 0;
-
                 String defAction = GetAction();
                 return String.Compare(defAction, "uncheck", true) == 0;
             }
