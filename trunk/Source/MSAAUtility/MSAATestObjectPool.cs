@@ -468,6 +468,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
                         }
                     }
 
+                    if (MSAATestObject.GetRole(curObj, 0) == MSAATestObject.RoleType.ComboBox)
+                    {
+                        continue;
+                    }
+
                     IAccessible[] childrenObj = MSAATestObject.GetChildrenIAcc(curObj);
                     if (childrenObj != null)
                     {

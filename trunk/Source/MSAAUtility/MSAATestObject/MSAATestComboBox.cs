@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public class MSAATestComboBox : MSAATestGUIObject, ISelectable, IText
+    public class MSAATestComboBox : MSAATestGUIObject, ISelectable, IText, IInputable
     {
 
         #region fields
@@ -174,7 +174,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     }
                 }
 
-                throw new ItemNotFoundException("Can not get items of combo box.");
+                return null;
             }
             catch (TestException)
             {
@@ -204,7 +204,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-
                 if (parameter != null)
                 {
                     string value = parameter.ToString();
@@ -256,6 +255,35 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public string GetFontColor()
         {
             throw new Exception("The method or operation is not implemented.");
+        }
+
+        #endregion
+
+
+        #region IInputable Members
+
+        public void Input(string values)
+        {
+            if (!_sendMsgOnly)
+            {
+                Hover();
+                MouseOp.Click();
+                KeyboardOp.SendChars(values);
+            }
+            else
+            {
+                SetProperty("value", values.ToString());
+            }
+        }
+
+        public void InputKeys(string keys)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

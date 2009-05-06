@@ -71,6 +71,10 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 return new MSAATestRadioButton(iAcc, childID);
             }
+            else if (type == MSAATestObject.Type.ComboBox)
+            {
+                return new MSAATestComboBox(iAcc, childID);
+            }
 
             return new MSAATestObject(iAcc, childID);
         }

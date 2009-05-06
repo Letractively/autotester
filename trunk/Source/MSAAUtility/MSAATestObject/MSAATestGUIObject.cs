@@ -136,10 +136,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                this._isEnable = IsEnable();
-                this._isVisible = IsVisible();
-                this._isReadonly = IsReadonly();
-                GetRectOnScreen();
+                GetGUIInfo();
             }
             catch (Exception ex)
             {
@@ -152,10 +149,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                this._isEnable = IsEnable();
-                this._isVisible = IsVisible();
-                this._isReadonly = IsReadonly();
-                GetRectOnScreen();
+                GetGUIInfo();
             }
             catch (Exception ex)
             {
@@ -171,21 +165,19 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public virtual Rectangle GetRectOnScreen()
         {
-            if (this.IAcc != null)
+            if (this._iAcc != null)
             {
                 int left, top, width, height;
-                this.IAcc.accLocation(out left, out top, out width, out height, _childID);
+                this._iAcc.accLocation(out left, out top, out width, out height, _childID);
 
                 if (width < 1 || height < 1)
                 {
-                    throw new CannotGetObjectPositionException("Can not get width and height information.");
+                    this._isVisible = false;
                 }
-                else
-                {
-                    CalCenterPoint(left, top, width, height);
 
-                    return new Rectangle(left, top, width, height);
-                }
+                CalCenterPoint(left, top, width, height);
+                this._rect = new Rectangle(left, top, width, height);
+                return this._rect;
             }
             else
             {
@@ -211,41 +203,23 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public virtual bool IsVisible()
         {
             string state = GetState();
-
-            if (String.IsNullOrEmpty(state))
-            {
-                return true;
-            }
-            else
-            {
-                return state.IndexOf("invisible") < 0;
-            }
+            return state.IndexOf("Invisible") < 0;
         }
 
         public virtual bool IsEnable()
         {
             string state = GetState();
-
-            if (String.IsNullOrEmpty(state))
-            {
-                return true;
-            }
-            else
-            {
-                return state.IndexOf("unavailable") < 0;
-            }
+            return state.IndexOf("Unavailable") < 0;
         }
 
         public virtual bool IsReadonly()
         {
             string state = GetState();
-
-            return true;
+            return state.IndexOf("ReadOnly") >= 0;
         }
 
         public virtual void HighLight()
         {
-
         }
 
         #endregion
@@ -253,6 +227,15 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #endregion
 
         #region private methods
+
+        protected virtual void GetGUIInfo()
+        {
+            String state = GetState();
+            this._isEnable = state.IndexOf("Unavailable") < 0;
+            this._isVisible = state.IndexOf("Invisible") < 0;
+            this._isReadonly = state.IndexOf("ReadOnly") >= 0;
+            GetRectOnScreen();
+        }
 
         protected virtual Point CalCenterPoint(int left, int top, int width, int height)
         {
