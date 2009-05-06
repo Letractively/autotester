@@ -78,12 +78,11 @@ namespace Shrinerain.AutoTester.Win32
                 structInput[0].ki.wScan = structInput[1].ki.wScan = str[i];
                 //key up
                 structInput[1].ki.dwFlags = 2;
-
                 //send the character
                 Win32API.SendInput(2, structInput, Marshal.SizeOf(*structInput));
 
                 //sleep for 0.05 second, make it looks like human actions
-                //System.Threading.Thread.Sleep(50 * 1);
+                System.Threading.Thread.Sleep(50 * 1);
             }
         }
 

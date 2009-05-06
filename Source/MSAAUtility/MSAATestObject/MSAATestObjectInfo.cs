@@ -181,7 +181,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
             Table,    //a matrix.
             Image,
             Link,     //navigate to other controls.
-            MsgBox, //MsgBox is so common, I treat it as a single control.
             Menu,
             Tab, //MDI, like IE7, you can have more than 1 tab.
             Tree,
@@ -512,7 +511,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public static bool IsValidObject(IAccessible iAcc, int childID)
         {
-            if (iAcc != null || childID >= 0)
+            if (iAcc == null || childID < 0)
             {
                 return false;
             }
@@ -525,6 +524,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             if (MSAATestObject.GetRole(iAcc, childID) == RoleType.Window)
+            {
+                return false;
+            }
+
+            Rectangle rect = MSAATestObject.GetRect(iAcc, childID);
+            if (rect == null || rect.Width < 1 || rect.Height < 1)
             {
                 return false;
             }

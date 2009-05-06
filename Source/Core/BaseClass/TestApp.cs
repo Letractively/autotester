@@ -46,8 +46,8 @@ namespace Shrinerain.AutoTester.Core
         protected int _width;
         protected int _height;
 
-        //max wait time is 120s.
-        protected int _maxWaitSeconds = 60;
+        //max wait time is 30.
+        protected int _maxWaitSeconds = 30;
         protected const int Interval = 3;
 
         //sync event

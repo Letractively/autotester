@@ -305,7 +305,7 @@ namespace Shrinerain.AutoTester.Core
 
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
-                ieExistT.Start(TestConstants.IE_BlankPage_Title);
+                ieExistT.Start("");
                 //wait until the internet explorer started.
                 _browserExisted.WaitOne(_maxWaitSeconds * 1000, true);
 
@@ -328,6 +328,16 @@ namespace Shrinerain.AutoTester.Core
                 throw new CannotStartBrowserException("Can not start Internet explorer: " + ex.Message);
             }
 
+        }
+
+        public override void Start(string appFullPath)
+        {
+            Start();
+            Load(appFullPath, true);
+        }
+
+        public override void Start(string appFullPath, string parameters)
+        {
         }
 
         /*  void Find(object browserTitle)
@@ -946,7 +956,15 @@ namespace Shrinerain.AutoTester.Core
                 Process[] pArr = Process.GetProcessesByName(TestConstants.IE_Process_Name);
                 foreach (Process p in pArr)
                 {
-                    if (p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    //if title is empty, find by process id.
+                    if (String.IsNullOrEmpty(title))
+                    {
+                        if (_appProcess != null && _appProcess.Id == p.Id)
+                        {
+                            browserFound = true;
+                        }
+                    }
+                    else if (p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
                         browserFound = true;
                     }
@@ -978,7 +996,6 @@ namespace Shrinerain.AutoTester.Core
             }
 
             throw new BrowserNotFoundException();
-
         }
 
         protected virtual void WaitForBrowserExist()

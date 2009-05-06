@@ -99,11 +99,17 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 if (!_sendMsgOnly)
                 {
+                    _actionFinished.WaitOne();
                     Hover();
                     MouseOp.Click();
+                    KeyboardOp.SendKey(values);
+                    _actionFinished.Set();
+                }
+                else
+                {
+                    SetProperty("value", values.ToString());
                 }
 
-                //Keyboard.SendChars(GetHandle(), values);
                 _text = values;
             }
             catch (Exception ex)
@@ -121,14 +127,28 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                if (!SetProperty("value", ""))
+                if (!_sendMsgOnly)
                 {
-                    throw new CannotPerformActionException("Can not clear text in text box");
+                    Hover();
+                    MouseOp.Click();
+
+                    int length = this._text.Length;
+                    if (length == 0)
+                    {
+                        length = 32;
+                    }
+                    int i = 0;
+                    while (i < length)
+                    {
+                        KeyboardOp.PressBackspace();
+                        i++;
+                    }
                 }
                 else
                 {
-                    _text = "";
+                    SetProperty("value", "");
                 }
+                _text = "";
             }
             catch (TestException)
             {
@@ -194,7 +214,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #endregion
 
-
         #endregion
 
         #region private methods
@@ -202,6 +221,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             this._type = Type.TextBox;
             base.GetMSAAInfo();
+
+            if (this._state.IndexOf("Protected") >= 0)
+            {
+                this._sendMsgOnly = false;
+            }
         }
 
         #endregion
