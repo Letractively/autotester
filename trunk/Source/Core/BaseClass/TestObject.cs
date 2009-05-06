@@ -223,6 +223,11 @@ namespace Shrinerain.AutoTester.Core
 
         #region IVisible Members
 
+        public void MouseClick()
+        {
+            throw new ObjectNotFoundException();
+        }
+
         public string GetLabel()
         {
             throw new ObjectNotFoundException();
