@@ -54,6 +54,7 @@ namespace Shrinerain.AutoTester.Core
         //HTML dom, we use HTML dom to get the HTML object.
         protected HTMLDocument _rootDocument;
         protected object _rootDisp;
+        protected object _lastNavigateDisp;
 
         //timespan to store the response time.
         //the time is the interval between starting download and downloading finish.
@@ -1636,13 +1637,15 @@ namespace Shrinerain.AutoTester.Core
             {
                 ie.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(OnBeforeNavigate2);
                 //ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
-                //ie.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(OnNavigateComplete2);
+                ie.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(OnNavigateComplete2);
             }
             catch (Exception ex)
             {
                 throw new CannotAttachBrowserException("Can not register navigate event: " + ex.Message);
             }
         }
+
+
 
         #region callback functions for each event
 
@@ -1692,6 +1695,12 @@ namespace Shrinerain.AutoTester.Core
                 _rootDisp = pDisp;
             }
         }
+
+        protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
+        {
+            _lastNavigateDisp = pDisp;
+        }
+
         /* void OnDownloadBegin()
          * the callback function to handle the browser starting download a web page.
          */
@@ -1718,18 +1727,12 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
-            try
+            if ((_rootDisp != null && _rootDisp == pDesp) || (_lastNavigateDisp != null && pDesp != _lastNavigateDisp))
             {
-                if (_rootDisp != null && _rootDisp == pDesp)
+                _rootDisp = null;
+
+                try
                 {
-                    _rootDisp = null;
-
-                    string locationName = _ie.LocationName;
-                    if (locationName.IndexOf("HTTP 404") >= 0)
-                    {
-                        throw new CannotNavigateException("Can not load url: " + _ie.LocationURL);
-                    }
-
                     string key = GetCurrentUrl();
                     _endTime = GetCurrentSeconds();
                     _responseTime = _endTime - _startTime;
@@ -1741,16 +1744,15 @@ namespace Shrinerain.AutoTester.Core
 
                     _documentLoadComplete.Set();
                 }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotAttachBrowserException("Error OnDocumentLoadComplete: " + ex.Message);
+                }
             }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotAttachBrowserException("Error OnDocumentLoadComplete: " + ex.Message);
-            }
-
         }
 
         /* void OnRectChanged(int size)

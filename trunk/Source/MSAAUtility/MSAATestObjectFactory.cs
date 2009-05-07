@@ -10,7 +10,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
     {
         #region fields
 
-        private static Dictionary<String, MSAATestObject.RoleType> _objectTypeTable = new Dictionary<string, MSAATestObject.RoleType>();
+        private static Dictionary<String, MSAATestObject.RoleType[]> _objectTypeTable = new Dictionary<string, MSAATestObject.RoleType[]>();
 
         #endregion
 
@@ -25,27 +25,21 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         private static void Init()
         {
-            _objectTypeTable.Add("BUTTON", MSAATestObject.RoleType.PushButton);
-            _objectTypeTable.Add("LABEL", MSAATestObject.RoleType.StaticText);
-            _objectTypeTable.Add("TEXTBOX", MSAATestObject.RoleType.Text);
-            _objectTypeTable.Add("LINK", MSAATestObject.RoleType.Link);
-            _objectTypeTable.Add("IMAGE", MSAATestObject.RoleType.Graphic);
-            _objectTypeTable.Add("COMBOBOX", MSAATestObject.RoleType.ComboBox);
-            _objectTypeTable.Add("LISTBOX", MSAATestObject.RoleType.List);
-            _objectTypeTable.Add("RADIOBOX", MSAATestObject.RoleType.RadioButton);
-            _objectTypeTable.Add("RADIOBUTTON", MSAATestObject.RoleType.RadioButton);
-            _objectTypeTable.Add("CHECKBOX", MSAATestObject.RoleType.CheckButton);
-            _objectTypeTable.Add("CHECKBUTTON", MSAATestObject.RoleType.CheckButton);
-            _objectTypeTable.Add("TABLE", MSAATestObject.RoleType.Table);
+            _objectTypeTable.Add("BUTTON", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.PushButton, MSAATestObject.RoleType.SpinButton, MSAATestObject.RoleType.SplitButton });
+            _objectTypeTable.Add("LABEL", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.StaticText });
+            _objectTypeTable.Add("TEXTBOX", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.Text });
+            _objectTypeTable.Add("LINK", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.Link });
+            _objectTypeTable.Add("IMAGE", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.Graphic });
+            _objectTypeTable.Add("COMBOBOX", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.ComboBox });
+            _objectTypeTable.Add("LISTBOX", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.List });
+            _objectTypeTable.Add("RADIOBOX", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.RadioButton });
+            _objectTypeTable.Add("RADIOBUTTON", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.RadioButton });
+            _objectTypeTable.Add("CHECKBOX", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.CheckButton });
+            _objectTypeTable.Add("CHECKBUTTON", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.CheckButton });
+            _objectTypeTable.Add("TABLE", new MSAATestObject.RoleType[] { MSAATestObject.RoleType.Table });
         }
 
         #endregion
-
-        public static MSAATestObject BuildObject(MSAATestObject obj)
-        {
-            MSAATestObject.Type type = GetObjectType(obj);
-            return BuildObjectByType(obj.IAcc, obj.ChildID, type);
-        }
 
         public static MSAATestObject BuildObject(IAccessible iAcc, int childID)
         {
@@ -79,18 +73,20 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return new MSAATestObject(iAcc, childID);
         }
 
-
-        public static MSAATestObject.Type GetObjectType(MSAATestObject obj)
+        /* MSAATestObject.Type GetObjectType(IAccessible iAcc) 
+         * return the acc object type.
+         */
+        public static MSAATestObject.Type GetObjectType(IAccessible iAcc, int childID)
         {
-            if (obj != null)
+            if (iAcc != null && childID >= 0)
             {
-                MSAATestObject.RoleType role = obj.Role;
-                string action = obj.GetDefAction();
-                string state = obj.GetState();
+                MSAATestObject.RoleType role = MSAATestObject.GetRole(iAcc, childID);
+                string action = MSAATestObject.GetDefAction(iAcc, childID);
+                string state = MSAATestObject.GetState(iAcc, childID);
 
                 if (role != MSAATestObject.RoleType.None)
                 {
-                    if (role == MSAATestObject.RoleType.PushButton)
+                    if (role == MSAATestObject.RoleType.PushButton || role == MSAATestObject.RoleType.SplitButton || role == MSAATestObject.RoleType.SpinButton)
                     {
                         return MSAATestObject.Type.Button;
                     }
@@ -154,27 +150,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             return MSAATestObject.Type.Unknow;
         }
-        /* MSAATestObject.Type GetObjectType(IAccessible iAcc) 
-         * return the acc object type.
-         */
-        public static MSAATestObject.Type GetObjectType(IAccessible iAcc)
-        {
-            return GetObjectType(iAcc, 0);
-        }
 
-        public static MSAATestObject.Type GetObjectType(IAccessible iAcc, int childID)
-        {
-            if (iAcc != null && childID >= 0)
-            {
-                MSAATestObject obj = new MSAATestObject(iAcc, childID);
-                return GetObjectType(obj);
-            }
-
-            return MSAATestObject.Type.Unknow;
-
-        }
-
-        public static MSAATestObject.RoleType GetMSAATypeByString(string type)
+        public static MSAATestObject.RoleType[] GetMSAATypeByString(string type)
         {
             if (!String.IsNullOrEmpty(type))
             {
@@ -183,9 +160,13 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     return _objectTypeTable[type];
                 }
+                else
+                {
+                    return new MSAATestObject.RoleType[] { MSAATestObject.GetRole(type) };
+                }
             }
 
-            return MSAATestObject.RoleType.None;
+            return new MSAATestObject.RoleType[] { MSAATestObject.RoleType.None };
         }
 
         #region private

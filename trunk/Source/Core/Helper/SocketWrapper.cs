@@ -77,7 +77,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public string ReadMessage()
+        private string ReadMessage()
         {
             if (_isConnected)
             {
@@ -98,10 +98,10 @@ namespace Shrinerain.AutoTester.Core
 
         private void CheckMessage()
         {
-            if (OnNewMessage != null)
+            string newMsg;
+            while ((newMsg = ReadMessage()) != null)
             {
-                string newMsg;
-                while ((newMsg = ReadMessage()) != null)
+                if (OnNewMessage != null)
                 {
                     OnNewMessage(newMsg);
                 }
@@ -123,9 +123,6 @@ namespace Shrinerain.AutoTester.Core
                 _messageWriter.Close();
                 _messageWriter = null;
                 _client = null;
-            }
-            catch
-            {
             }
             finally
             {
