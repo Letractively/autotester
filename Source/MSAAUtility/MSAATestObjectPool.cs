@@ -454,9 +454,10 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     while (que.Count > 0)
                     {
                         IAccessible curObj = que.Dequeue();
-                        if (MSAATestObject.IsValidObject(curObj, 0))
+                        //check if object is valid.
+                        if (MSAATestObject.IsValidObject(curObj, 0) && rootRect.Contains(MSAATestObject.GetRect(curObj, 0)))
                         {
-                            if (objType == MSAATestObject.RoleType.None)
+                            if (objType == MSAATestObject.RoleType.None || MSAATestObject.GetRole(curObj, 0) == objType)
                             {
                                 if (properties == null || checkObjDelegate(curObj, 0, properties))
                                 {
