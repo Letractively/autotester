@@ -12,6 +12,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
     //this partial class defines some helper method to get information from MSAATestObject
     public partial class MSAATestObject
     {
+        #region cache
+
+        private const int CacheSize = 32;
+        private static Dictionary<IAccessible, Rectangle> _positionCache = new Dictionary<IAccessible, Rectangle>(10);
+        private static Dictionary<IAccessible, MSAATestObject.RoleType> _roleCache = new Dictionary<IAccessible, RoleType>();
+
+        #endregion
+
         #region state
         private const int COUNT = 34;
         private static int[] _stateArr = new int[]{
@@ -281,11 +289,31 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 try
                 {
+                    if (_positionCache.Count > CacheSize)
+                    {
+                        _positionCache.Clear();
+                    }
+
+                    Rectangle tmp;
+                    if (childID == 0)
+                    {
+                        if (_positionCache.TryGetValue(iAcc, out tmp))
+                        {
+                            return tmp;
+                        }
+                    }
+
                     //get location.
                     int left, top, width, height;
                     iAcc.accLocation(out left, out top, out width, out height, (object)childID);
+                    tmp = new Rectangle(left, top, width, height);
 
-                    return new Rectangle(left, top, width, height);
+                    if (childID == 0)
+                    {
+                        _positionCache.Add(iAcc, tmp);
+                    }
+
+                    return tmp;
                 }
                 catch
                 {
@@ -324,8 +352,29 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 try
                 {
+                    if (_roleCache.Count > CacheSize)
+                    {
+                        _roleCache.Clear();
+                    }
+
+                    RoleType tmp = RoleType.None;
+                    if (childID == 0)
+                    {
+                        if (_roleCache.TryGetValue(iAcc, out tmp))
+                        {
+                            return tmp;
+                        }
+                    }
+
                     int roleType = (int)iAcc.get_accRole((object)childID);
-                    return GetRole(roleType);
+                    tmp = GetRole(roleType);
+
+                    if (childID == 0)
+                    {
+                        _roleCache.Add(iAcc, tmp);
+                    }
+
+                    return tmp;
                 }
                 catch
                 {
@@ -511,7 +560,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 try
                 {
-                    if (iAcc.accChildCount == 7 && MSAATestObject.GetRole(iAcc, 0) == MSAATestObject.RoleType.Window && IsValidObject(iAcc, 0))
+                    if (iAcc.accChildCount == 7 && MSAATestObject.GetRole(iAcc, 0) == MSAATestObject.RoleType.Window)
                     {
                         childIAcc = MSAATestObject.GetChildIAcc(iAcc, 3);
                         return true;
