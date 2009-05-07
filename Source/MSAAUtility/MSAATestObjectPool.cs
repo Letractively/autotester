@@ -88,7 +88,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 try
                 {
                     //check object by type
-                    List<MSAATestObject> res = CheckAllElements(MSAATestObject.RoleType.None, properties, CheckElementProperties, false);
+                    List<MSAATestObject> res = CheckAllElements(new MSAATestObject.RoleType[] { MSAATestObject.RoleType.None }, properties, CheckElementProperties, false);
                     if (res != null)
                     {
                         return res.ToArray();
@@ -160,7 +160,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 try
                 {
                     //check object by name
-                    List<MSAATestObject> res = CheckAllElements(MSAATestObject.RoleType.None, new TestProperty[] { new TestProperty(name) }, CheckObjectByName, true);
+                    List<MSAATestObject> res = CheckAllElements(new MSAATestObject.RoleType[] { MSAATestObject.RoleType.None }, new TestProperty[] { new TestProperty(name) }, CheckObjectByName, true);
                     if (res != null)
                     {
                         return res.ToArray();
@@ -205,9 +205,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             //convert the TYPE text to valid internal type.
             // eg: "button" to MSAATestObject.Type.Button
-            MSAATestObject.RoleType typeValue = MSAATestObjectFactory.GetMSAATypeByString(type);
+            MSAATestObject.RoleType[] typeValue = MSAATestObjectFactory.GetMSAATypeByString(type);
 
-            if (typeValue == MSAATestObject.RoleType.None)
+            if (typeValue[0] == MSAATestObject.RoleType.None)
             {
                 throw new ObjectNotFoundException("Unknow MSAA object type.");
             }
@@ -425,65 +425,69 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return totalResult > 0;
         }
 
-        private List<MSAATestObject> CheckAllElements(MSAATestObject.RoleType objType, TestProperty[] properties, CheckObjectDelegate checkObjDelegate, bool onlyOne)
+        private List<MSAATestObject> CheckAllElements(MSAATestObject.RoleType[] objTypes, TestProperty[] properties, CheckObjectDelegate checkObjDelegate, bool onlyOne)
         {
             List<MSAATestObject> resultList = new List<MSAATestObject>();
 
-            if (objType != MSAATestObject.RoleType.None || (properties != null && properties.Length > 0 && checkObjDelegate != null))
+            foreach (MSAATestObject.RoleType objType in objTypes)
             {
-                if (properties != null)
+                if (objType != MSAATestObject.RoleType.None || (properties != null && properties.Length > 0 && checkObjDelegate != null))
                 {
-                    List<TestProperty> newProperties = new List<TestProperty>();
-                    TestProperty typeProperty = new TestProperty("RoleType", objType, false, 100);
-                    newProperties.Add(typeProperty);
-                    foreach (TestProperty tp in properties)
+                    if (properties != null)
                     {
-                        newProperties.Add(tp);
-                    }
-                    properties = newProperties.ToArray();
-                }
-
-                Queue<IAccessible> que = new Queue<IAccessible>();
-                MSAATestObject rootObj = this._testApp.RootObject;
-                que.Enqueue(rootObj.IAcc);
-
-                //BFS
-                while (que.Count > 0)
-                {
-                    IAccessible curObj = que.Dequeue();
-                    if (MSAATestObject.IsValidObject(curObj, 0))
-                    {
-                        if (objType == MSAATestObject.RoleType.None || MSAATestObject.GetRole(curObj, 0) == objType)
+                        List<TestProperty> newProperties = new List<TestProperty>();
+                        TestProperty typeProperty = new TestProperty("RoleType", objType, false, 100);
+                        newProperties.Add(typeProperty);
+                        foreach (TestProperty tp in properties)
                         {
-                            if (properties == null || checkObjDelegate(curObj, 0, properties))
-                            {
-                                MSAATestObject resObj = MSAATestObjectFactory.BuildObject(curObj, 0);
-                                resultList.Add(resObj);
+                            newProperties.Add(tp);
+                        }
+                        properties = newProperties.ToArray();
+                    }
 
-                                if (onlyOne)
+                    Queue<IAccessible> que = new Queue<IAccessible>();
+                    MSAATestObject rootObj = this._testApp.RootObject;
+                    System.Drawing.Rectangle rootRect = rootObj.GetRect();
+                    que.Enqueue(rootObj.IAcc);
+
+                    //BFS
+                    while (que.Count > 0)
+                    {
+                        IAccessible curObj = que.Dequeue();
+                        if (MSAATestObject.IsValidObject(curObj, 0))
+                        {
+                            if (objType == MSAATestObject.RoleType.None)
+                            {
+                                if (properties == null || checkObjDelegate(curObj, 0, properties))
                                 {
-                                    break;
+                                    MSAATestObject resObj = MSAATestObjectFactory.BuildObject(curObj, 0);
+                                    resultList.Add(resObj);
+
+                                    if (onlyOne)
+                                    {
+                                        break;
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    if (MSAATestObject.GetRole(curObj, 0) == MSAATestObject.RoleType.ComboBox)
-                    {
-                        continue;
-                    }
-
-                    IAccessible[] childrenObj = MSAATestObject.GetChildrenIAcc(curObj);
-                    if (childrenObj != null)
-                    {
-                        for (int i = 0; i < childrenObj.Length; i++)
+                        if (MSAATestObject.GetRole(curObj, 0) == MSAATestObject.RoleType.ComboBox)
                         {
-                            try
+                            continue;
+                        }
+
+                        IAccessible[] childrenObj = MSAATestObject.GetChildrenIAcc(curObj);
+                        if (childrenObj != null)
+                        {
+                            for (int i = 0; i < childrenObj.Length; i++)
                             {
-                                que.Enqueue(childrenObj[i]);
-                            }
-                            catch
-                            {
+                                try
+                                {
+                                    que.Enqueue(childrenObj[i]);
+                                }
+                                catch
+                                {
+                                }
                             }
                         }
                     }

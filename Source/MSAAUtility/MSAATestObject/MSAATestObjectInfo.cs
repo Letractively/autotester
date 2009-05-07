@@ -165,6 +165,22 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return (RoleType)roleType;
         }
 
+        public static RoleType GetRole(string roleTypeStr)
+        {
+            if (!String.IsNullOrEmpty(roleTypeStr))
+            {
+                for (int i = 0; i < ROLES_COUNT; i++)
+                {
+                    if (String.Compare(_roles[i], roleTypeStr, true) == 0)
+                    {
+                        return (RoleType)i;
+                    }
+                }
+            }
+
+            return RoleType.None;
+        }
+
         #endregion
 
         #region type
@@ -495,7 +511,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 try
                 {
-                    if (iAcc.accChildCount == 7 && MSAATestObject.GetRole(iAcc, 0) == MSAATestObject.RoleType.Window && !IsValidObject(iAcc, 0))
+                    if (iAcc.accChildCount == 7 && MSAATestObject.GetRole(iAcc, 0) == MSAATestObject.RoleType.Window && IsValidObject(iAcc, 0))
                     {
                         childIAcc = MSAATestObject.GetChildIAcc(iAcc, 3);
                         return true;
@@ -517,8 +533,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             String state = MSAATestObject.GetState(iAcc, childID);
-
-            if (state.IndexOf("Invisible") >= 0 || state.IndexOf("Unavailable") >= 0)
+            if (state.IndexOf("Offscreen") >= 0 || state.IndexOf("Invisible") >= 0 ||
+                state.IndexOf("Unavailable") >= 0)
             {
                 return false;
             }
@@ -529,7 +545,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             Rectangle rect = MSAATestObject.GetRect(iAcc, childID);
-            if (rect == null || rect.Width < 1 || rect.Height < 1)
+            if (rect.Width < 1 || rect.Height < 1)
             {
                 return false;
             }
