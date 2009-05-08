@@ -1088,9 +1088,16 @@ namespace Shrinerain.AutoTester.Core
                     for (int i = 0; i < allBrowsers.Length; i++)
                     {
                         InternetExplorer tempIE = allBrowsers[i];
-                        if (tempIE != null && (int)ieHandle == tempIE.HWND)
+                        try
                         {
-                            return tempIE;
+                            if (tempIE != null && (int)ieHandle == tempIE.HWND)
+                            {
+                                return tempIE;
+                            }
+                        }
+                        catch
+                        {
+                            continue;
                         }
                     }
                 }

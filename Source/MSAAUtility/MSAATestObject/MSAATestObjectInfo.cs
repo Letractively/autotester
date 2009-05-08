@@ -14,9 +14,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
     {
         #region cache
 
-        private const int CacheSize = 32;
-        private static Dictionary<IAccessible, Rectangle> _positionCache = new Dictionary<IAccessible, Rectangle>(10);
-        private static Dictionary<IAccessible, MSAATestObject.RoleType> _roleCache = new Dictionary<IAccessible, RoleType>();
+        private const int CacheSize = 64;
+        private static Dictionary<IAccessible, Rectangle> _positionCache = new Dictionary<IAccessible, Rectangle>(131);
+        private static Dictionary<IAccessible, MSAATestObject.RoleType> _roleCache = new Dictionary<IAccessible, RoleType>(131);
 
         #endregion
 

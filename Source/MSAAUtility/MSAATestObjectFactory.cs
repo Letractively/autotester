@@ -10,7 +10,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
     {
         #region fields
 
-        private static Dictionary<String, MSAATestObject.RoleType[]> _objectTypeTable = new Dictionary<string, MSAATestObject.RoleType[]>();
+        private static Dictionary<String, MSAATestObject.RoleType[]> _objectTypeTable = new Dictionary<string, MSAATestObject.RoleType[]>(37);
 
         #endregion
 

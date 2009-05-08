@@ -427,69 +427,77 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         private List<MSAATestObject> CheckAllElements(MSAATestObject.RoleType[] objTypes, TestProperty[] properties, CheckObjectDelegate checkObjDelegate, bool onlyOne)
         {
+
             List<MSAATestObject> resultList = new List<MSAATestObject>();
 
-            foreach (MSAATestObject.RoleType objType in objTypes)
+            Dictionary<MSAATestObject.RoleType, TestProperty[]> propertiesTable = new Dictionary<MSAATestObject.RoleType, TestProperty[]>(13);
+
+            if (objTypes == null || objTypes.Length == 0)
             {
-                if (objType != MSAATestObject.RoleType.None || (properties != null && properties.Length > 0 && checkObjDelegate != null))
+                objTypes = new MSAATestObject.RoleType[] { MSAATestObject.RoleType.None };
+            }
+
+            Queue<IAccessible> que = new Queue<IAccessible>();
+            MSAATestObject rootObj = this._testApp.RootObject;
+            System.Drawing.Rectangle rootRect = rootObj.GetRect();
+            que.Enqueue(rootObj.IAcc);
+
+            //BFS
+            while (que.Count > 0)
+            {
+                IAccessible curObj = que.Dequeue();
+                //check if object is valid.
+                if (MSAATestObject.IsValidObject(curObj, 0) && rootRect.Contains(MSAATestObject.GetRect(curObj, 0)))
                 {
-                    if (properties != null)
+                    foreach (MSAATestObject.RoleType objType in objTypes)
                     {
-                        List<TestProperty> newProperties = new List<TestProperty>();
-                        TestProperty typeProperty = new TestProperty("RoleType", objType, false, 100);
-                        newProperties.Add(typeProperty);
-                        foreach (TestProperty tp in properties)
+                        if (properties != null && properties.Length > 0)
                         {
-                            newProperties.Add(tp);
+                            if (!propertiesTable.TryGetValue(objType, out properties))
+                            {
+                                List<TestProperty> newProperties = new List<TestProperty>();
+                                TestProperty typeProperty = new TestProperty("RoleType", objType, false, 100);
+                                newProperties.Add(typeProperty);
+                                foreach (TestProperty tp in properties)
+                                {
+                                    newProperties.Add(tp);
+                                }
+                                propertiesTable.Add(objType, newProperties.ToArray());
+                            }
                         }
-                        properties = newProperties.ToArray();
+
+                        if (objType == MSAATestObject.RoleType.None || MSAATestObject.GetRole(curObj, 0) == objType)
+                        {
+                            if (properties == null || checkObjDelegate(curObj, 0, properties))
+                            {
+                                MSAATestObject resObj = MSAATestObjectFactory.BuildObject(curObj, 0);
+                                resultList.Add(resObj);
+
+                                if (onlyOne)
+                                {
+                                    break;
+                                }
+                            }
+                        }
                     }
+                }
 
-                    Queue<IAccessible> que = new Queue<IAccessible>();
-                    MSAATestObject rootObj = this._testApp.RootObject;
-                    System.Drawing.Rectangle rootRect = rootObj.GetRect();
-                    que.Enqueue(rootObj.IAcc);
+                if (MSAATestObject.GetRole(curObj, 0) == MSAATestObject.RoleType.ComboBox)
+                {
+                    continue;
+                }
 
-                    //BFS
-                    while (que.Count > 0)
+                IAccessible[] childrenObj = MSAATestObject.GetChildrenIAcc(curObj);
+                if (childrenObj != null)
+                {
+                    for (int i = 0; i < childrenObj.Length; i++)
                     {
-                        IAccessible curObj = que.Dequeue();
-                        //check if object is valid.
-                        if (MSAATestObject.IsValidObject(curObj, 0) && rootRect.Contains(MSAATestObject.GetRect(curObj, 0)))
+                        try
                         {
-                            if (objType == MSAATestObject.RoleType.None || MSAATestObject.GetRole(curObj, 0) == objType)
-                            {
-                                if (properties == null || checkObjDelegate(curObj, 0, properties))
-                                {
-                                    MSAATestObject resObj = MSAATestObjectFactory.BuildObject(curObj, 0);
-                                    resultList.Add(resObj);
-
-                                    if (onlyOne)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
+                            que.Enqueue(childrenObj[i]);
                         }
-
-                        if (MSAATestObject.GetRole(curObj, 0) == MSAATestObject.RoleType.ComboBox)
+                        catch
                         {
-                            continue;
-                        }
-
-                        IAccessible[] childrenObj = MSAATestObject.GetChildrenIAcc(curObj);
-                        if (childrenObj != null)
-                        {
-                            for (int i = 0; i < childrenObj.Length; i++)
-                            {
-                                try
-                                {
-                                    que.Enqueue(childrenObj[i]);
-                                }
-                                catch
-                                {
-                                }
-                            }
                         }
                     }
                 }
