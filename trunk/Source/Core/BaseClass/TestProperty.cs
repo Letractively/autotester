@@ -195,7 +195,7 @@ namespace Shrinerain.AutoTester.Core
         * Parse the text like "id=btnG", return the properties array and values array.
         * eg: properties=new string[]{"id"} , values=new string[]{"btnG"}.
         */
-        public static bool GetProperties(string str, out TestProperty[] properties)
+        public static bool TryGetProperties(string str, out TestProperty[] properties)
         {
             bool res = false;
             properties = null;

@@ -71,6 +71,7 @@
     <Compile Include="ObjectInterface\ICheckable.cs" />
     <Compile Include="ObjectInterface\IHTML.cs" />
     <Compile Include="ObjectInterface\IPicture.cs" />
+    <Compile Include="ObjectInterface\IProperty.cs" />
     <Compile Include="ObjectInterface\ITable.cs" />
     <Compile Include="ObjectInterface\IPath.cs" />
     <Compile Include="ObjectInterface\IStatus.cs" />

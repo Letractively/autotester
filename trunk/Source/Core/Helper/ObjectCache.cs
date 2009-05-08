@@ -92,7 +92,6 @@ namespace Shrinerain.AutoTester.Core
                 }
 
                 return _testObjectCache.TryGetValue(key, out testObj);
-
             }
             else
             {

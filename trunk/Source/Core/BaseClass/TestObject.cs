@@ -25,7 +25,7 @@ namespace Shrinerain.AutoTester.Core
     using System.Runtime.Serialization;
 
     [Serializable]
-    public class TestObject
+    public class TestObject : IProperty
     {
         #region fields
 
