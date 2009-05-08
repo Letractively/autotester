@@ -355,11 +355,6 @@ namespace Shrinerain.AutoTester.Core
             else
             {
                 title = browserTitle.ToString();
-                //add standard title to the string.
-                if (!title.EndsWith(TestConstants.IE_TitleTail))
-                {
-                    title += TestConstants.IE_TitleTail;
-                }
             }
 
             try
