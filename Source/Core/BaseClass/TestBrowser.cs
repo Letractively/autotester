@@ -1706,10 +1706,16 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
-                    IHTMLWindow2 curWindow = ((pDesp as IWebBrowser2).Document as IHTMLDocument2).parentWindow;
-                    if (_rootDocument != null && curWindow != null && _rootDocument.parentWindow == curWindow)
+                    try
                     {
-                        allDocsFinish = true;
+                        IHTMLWindow2 curWindow = ((pDesp as IWebBrowser2).Document as IHTMLDocument2).parentWindow;
+                        if (_rootDocument != null && curWindow != null && _rootDocument.parentWindow == curWindow)
+                        {
+                            allDocsFinish = true;
+                        }
+                    }
+                    catch
+                    {
                     }
                 }
 
