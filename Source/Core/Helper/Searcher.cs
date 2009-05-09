@@ -219,6 +219,15 @@ namespace Shrinerain.AutoTester.Core
             //result array.
             int[] order = new int[highBound - lowerBound + 1];
 
+            if (startIndex <= 0)
+            {
+                for (int i = 0; i < order.Length; i++)
+                {
+                    order[i] = i;
+                }
+                return order;
+            }
+
             fixed (int* p = order)
             {
                 if (lowerBound == highBound)

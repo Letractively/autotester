@@ -178,6 +178,24 @@ namespace Shrinerain.AutoTester.Core
             return totalWeight > 0;
         }
 
+        public static bool TryGetIDValue(TestProperty[] properties, out string id)
+        {
+            id = "";
+
+            if (properties == null || properties.Length == 0)
+            {
+                foreach (TestProperty tp in properties)
+                {
+                    if (String.Compare(tp._name, "id", true) == 0)
+                    {
+                        id = tp.Value.ToString();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
 
         public override string ToString()
         {
