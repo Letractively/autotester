@@ -76,6 +76,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private TestObject _testObj;
         private TestObject _cacheObj;
 
+        private static Dictionary<HTMLTestObjectType, string[]> _objectTagsTable = new Dictionary<HTMLTestObjectType, string[]>(59);
+        private static Dictionary<string, HTMLTestObjectType> _objectTypeTable = new Dictionary<string, HTMLTestObjectType>(59);
+
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
         private int _maxWaitSeconds = 15;
         //very time we sleep for 3 seconds, and find again.
@@ -371,7 +374,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             throw new ObjectNotFoundException("Can not get object by index:" + index);
-
         }
 
 
@@ -410,52 +412,70 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
-                //get all HTML objects.
-                GetAllElements();
-                List<TestObject> result = new List<TestObject>();
-
-                //if we have too many objects, we will try to find it's possible position to improve performance.
-                int possibleStartIndex = Searcher.GetPossibleStartIndex(this._allElements.Length, _htmlReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
-                int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, this._allElements.Length - 1);
-                // check object one by one, start from the possible position.
-                // the "|" means the start position, the "--->" means the search direction.            
-                //  -----------------------------------------------------------------------
-                //  step 1:                          |--->
-                //  step 2:                      <---|
-                //  step 3:                          |    --->
-                //  ...                      <---    |
-                foreach (int currentObjIndex in searchOrder)
+                IHTMLElement[] candidateElements = null;
+                string id;
+                if (TestProperty.TryGetIDValue(properties, out id))
                 {
-                    try
+                    IHTMLElement element = _htmlTestBrowser.GetObjectByID(id);
+                    if (element != null)
                     {
-                        //get element by index.
-                        _tempElement = (IHTMLElement)_allElements[currentObjIndex];
-
-                        //if it is not an interactive object or the property is not found. 
-                        if (IsVisible(_tempElement))
-                        {
-                            if (CheckObjectProperties(_tempElement, HTMLTestObjectType.Unknow, properties, out _testObj))
-                            {
-                                if (OnObjectFound != null)
-                                {
-                                    OnObjectFound(_testObj, null);
-                                }
-                                result.Add(_testObj);
-                            }
-                        }
-                    }
-                    catch (CannotBuildObjectException)
-                    {
-                        throw;
-                    }
-                    catch
-                    {
+                        candidateElements = new IHTMLElement[] { element };
                     }
                 }
-
-                if (result.Count > 0)
+                else
                 {
-                    return result.ToArray();
+                    //get all HTML objects.
+                    GetAllElements();
+                    candidateElements = _allElements;
+                }
+
+                if (candidateElements != null || candidateElements.Length > 0)
+                {
+                    List<TestObject> result = new List<TestObject>();
+
+                    //if we have too many objects, we will try to find it's possible position to improve performance.
+                    int possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
+                    int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
+                    // check object one by one, start from the possible position.
+                    // the "|" means the start position, the "--->" means the search direction.            
+                    //  -----------------------------------------------------------------------
+                    //  step 1:                          |--->
+                    //  step 2:                      <---|
+                    //  step 3:                          |    --->
+                    //  ...                      <---    |
+                    foreach (int currentObjIndex in searchOrder)
+                    {
+                        try
+                        {
+                            //get element by index.
+                            _tempElement = (IHTMLElement)candidateElements[currentObjIndex];
+
+                            //if it is not an interactive object or the property is not found. 
+                            if (IsVisible(_tempElement))
+                            {
+                                if (CheckObjectProperties(_tempElement, HTMLTestObjectType.Unknow, properties, out _testObj))
+                                {
+                                    if (OnObjectFound != null)
+                                    {
+                                        OnObjectFound(_testObj, null);
+                                    }
+                                    result.Add(_testObj);
+                                }
+                            }
+                        }
+                        catch (CannotBuildObjectException)
+                        {
+                            throw;
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    if (result.Count > 0)
+                    {
+                        return result.ToArray();
+                    }
                 }
 
                 times += Interval;
@@ -504,7 +524,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //convert the TYPE text to valid internal type.
             // eg: "button" to HTMLTestObjectType.Button
             HTMLTestObjectType typeValue = ConvertStrToHTMLType(type);
-
             if (typeValue == HTMLTestObjectType.Unknow)
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
@@ -513,14 +532,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //convert the type to HTML tags.
             //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
             string[] tags = GetObjectTags(typeValue);
-
             if (tags == null)
             {
                 throw new ObjectNotFoundException("Tags can not be empty.");
             }
-
-            //if the expected value is number like, we think it is stand for the index of the object, not text on it.
-            // eg: we can use type="textbox", values="1" to find the first textbox.
 
             //the similar percent to find an object.
             int simPercent = _defaultPercent;
@@ -543,13 +558,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 List<TestObject> result = new List<TestObject>();
 
+                IHTMLElement[] candidateElements = null;
+                string id;
+                if (TestProperty.TryGetIDValue(properties, out id))
+                {
+                    IHTMLElement element = _htmlTestBrowser.GetObjectByID(id);
+                    if (element != null)
+                    {
+                        candidateElements = new IHTMLElement[] { element };
+                    }
+                }
+
                 //because we may convert one type to multi tags, so check them one by one.
                 //eg: Button to <input> and <button>
                 foreach (string tag in tags)
                 {
-                    //find the object by tag.
-                    IHTMLElement[] tagElementCol = _htmlTestBrowser.GetObjectsByTagName(tag);
-                    if (tagElementCol != null && tagElementCol.Length > 0)
+                    if (candidateElements == null)
+                    {
+                        candidateElements = _htmlTestBrowser.GetObjectsByTagName(tag);
+                    }
+
+                    if (candidateElements != null && candidateElements.Length > 0)
                     {
                         int possibleStartIndex = 0;
                         if (properties != null && properties.Length > 0)
@@ -562,9 +591,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 _regCache.Add(tag, tagReg);
                             }
                             //if we have too many objects, we will try to find it's possible position to improve performance.
-                            possibleStartIndex = Searcher.GetPossibleStartIndex(tagElementCol.Length, tagReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
+                            possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
                         }
-                        int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, tagElementCol.Length - 1);
+                        int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
                         // check object one by one, start from the possible position.
                         // the "|" means the start position, the "--->" means the search direction.            
                         //  -----------------------------------------------------------------------
@@ -576,7 +605,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             try
                             {
-                                _tempElement = tagElementCol[currentObjIndex];
+                                _tempElement = candidateElements[currentObjIndex];
                                 // check if it is a interactive object.
                                 if (IsVisible(_tempElement))
                                 {
@@ -614,6 +643,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             }
                         }
                     }
+
+                    candidateElements = null;
                 }
 
                 if (result.Count > 0)
@@ -1635,55 +1666,60 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return HTMLTestObjectType.Unknow;
             }
 
+            HTMLTestObjectType htmlType = HTMLTestObjectType.Unknow;
+            if (_objectTypeTable.TryGetValue(type, out htmlType))
+            {
+                return htmlType;
+            }
+
             type = type.ToUpper().Replace(" ", "");
             if (type == "BUTTON" || type == "BTN" || type == "B")
             {
-                return HTMLTestObjectType.Button;
+                htmlType = HTMLTestObjectType.Button;
             }
             else if (type == "LABEL" || type == "LB")
             {
-                return HTMLTestObjectType.Label;
+                htmlType = HTMLTestObjectType.Label;
             }
             else if (type == "TEXTBOX" || type == "TEXT" || type == "INPUTBOX" || type == "TXT" || type == "T")
             {
-                return HTMLTestObjectType.TextBox;
+                htmlType = HTMLTestObjectType.TextBox;
             }
             else if (type == "LINK" || type == "HYPERLINK" || type == "LK" || type == "A")
             {
-                return HTMLTestObjectType.Link;
+                htmlType = HTMLTestObjectType.Link;
             }
             else if (type == "IMAGE" || type == "IMG" || type == "PICTURE" || type == "PIC" || type == "I" || type == "P")
             {
-                return HTMLTestObjectType.Image;
+                htmlType = HTMLTestObjectType.Image;
             }
             else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN" || type == "CB")
             {
-                return HTMLTestObjectType.ComboBox;
+                htmlType = HTMLTestObjectType.ComboBox;
             }
             else if (type == "LISTBOX" || type == "LIST" || type == "LST" || type == "LS")
             {
-                return HTMLTestObjectType.ListBox;
+                htmlType = HTMLTestObjectType.ListBox;
             }
             else if (type == "RADIOBOX" || type == "RADIOBUTTON" || type == "RADIO" || type == "RAD" || type == "R")
             {
-                return HTMLTestObjectType.RadioBox;
+                htmlType = HTMLTestObjectType.RadioBox;
             }
             else if (type == "CHECKBOX" || type == "CHECK" || type == "CHK" || type == "CK")
             {
-                return HTMLTestObjectType.CheckBox;
+                htmlType = HTMLTestObjectType.CheckBox;
             }
             else if (type == "ACTIVEX")
             {
-                return HTMLTestObjectType.ActiveX;
+                htmlType = HTMLTestObjectType.ActiveX;
             }
             else if (type == "TABLE" || type == "TBL" || type == "T")
             {
-                return HTMLTestObjectType.Table;
+                htmlType = HTMLTestObjectType.Table;
             }
-            else
-            {
-                return HTMLTestObjectType.Unknow;
-            }
+
+            _objectTypeTable.Add(type, htmlType);
+            return htmlType;
         }
 
 
@@ -1692,35 +1728,57 @@ namespace Shrinerain.AutoTester.HTMLUtility
         */
         private static string[] GetObjectTags(HTMLTestObjectType type)
         {
+            string[] res = null;
+            if (_objectTagsTable.TryGetValue(type, out res))
+            {
+                return res;
+            }
+
             switch (type)
             {
                 case HTMLTestObjectType.Label:
-                    return new string[] { "label", "span", "font" };
+                    res = new string[] { "label", "span", "font" };
+                    break;
                 case HTMLTestObjectType.Link:
-                    return new string[] { "a" };
+                    res = new string[] { "a" };
+                    break;
                 case HTMLTestObjectType.Button:
-                    return new string[] { "input", "button" };
+                    res = new string[] { "input", "button" };
+                    break;
                 case HTMLTestObjectType.TextBox:
-                    return new string[] { "input", "textarea" };
+                    res = new string[] { "input", "textarea" };
+                    break;
                 case HTMLTestObjectType.Image:
-                    return new string[] { "img" };
+                    res = new string[] { "img" };
+                    break;
                 case HTMLTestObjectType.CheckBox:
-                    return new string[] { "input", "label" };
+                    res = new string[] { "input", "label" };
+                    break;
                 case HTMLTestObjectType.RadioBox:
-                    return new string[] { "input", "label" };
+                    res = new string[] { "input", "label" };
+                    break;
                 case HTMLTestObjectType.ComboBox:
-                    return new string[] { "select" };
+                    res = new string[] { "select" };
+                    break;
                 case HTMLTestObjectType.ListBox:
-                    return new string[] { "select" };
+                    res = new string[] { "select" };
+                    break;
                 case HTMLTestObjectType.Table:
-                    return new string[] { "table" };
+                    res = new string[] { "table" };
+                    break;
                 case HTMLTestObjectType.ActiveX:
-                    return new string[] { "object" };
+                    res = new string[] { "object" };
+                    break;
                 case HTMLTestObjectType.Unknow:
-                    return new string[] { };
+                    res = new string[] { };
+                    break;
                 default:
-                    return new string[] { };
+                    res = new string[] { };
+                    break;
             }
+
+            _objectTagsTable.Add(type, res);
+            return res;
         }
 
         /*  private static HTMLTestObjectType GetObjectType(IHTMLElement element)

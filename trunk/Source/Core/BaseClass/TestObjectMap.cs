@@ -405,7 +405,7 @@ namespace Shrinerain.AutoTester.Core
 
         private bool TryGetObjectsFromPool(TestProperty[] properties, out TestObject[] obj, out TestException exception)
         {
-            obj = new TestObject[] { new TestFakeObject() };
+            obj = null;
             exception = null;
 
             if (properties != null)
@@ -419,6 +419,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (ObjectNotFoundException ex)
                 {
+                    obj = new TestObject[] { new TestFakeObject() };
                     exception = ex;
                     return true;
                 }
@@ -438,7 +439,7 @@ namespace Shrinerain.AutoTester.Core
 
         private bool TryGetObjectsFromPool(string text, string type, out TestObject[] obj, out TestException exception)
         {
-            obj = new TestObject[] { new TestFakeObject() };
+            obj = null;
             exception = null;
 
             if (!String.IsNullOrEmpty(type))
@@ -457,6 +458,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (ObjectNotFoundException ex)
                 {
+                    obj = new TestObject[] { new TestFakeObject() };
                     exception = ex;
                     return true;
                 }

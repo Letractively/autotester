@@ -54,7 +54,6 @@ namespace Shrinerain.AutoTester.Core
         //HTML dom, we use HTML dom to get the HTML object.
         protected HTMLDocument _rootDocument;
         protected object _rootDisp;
-        protected object _lastNavigateDisp;
 
         //timespan to store the response time.
         //the time is the interval between starting download and downloading finish.
@@ -64,7 +63,7 @@ namespace Shrinerain.AutoTester.Core
 
         //hash table to store the response time for each URL.
         //the key is URL, the value is response time.
-        protected Dictionary<string, float> _performanceTimeHT = new Dictionary<string, float>();
+        protected Dictionary<string, float> _performanceTimeHT = new Dictionary<string, float>(37);
 
         //the version of browser, eg 7.0
         protected string _version;
@@ -99,8 +98,6 @@ namespace Shrinerain.AutoTester.Core
 
         //flag to show wether the browser is downloading sth.
         protected bool _isDownloading = false;
-
-        protected bool _sendMsgOnly = false;
 
         #endregion
 
@@ -245,12 +242,6 @@ namespace Shrinerain.AutoTester.Core
             get { return GetAllBrowsers(); }
         }
 
-        public bool SendMsgOnly
-        {
-            get { return _sendMsgOnly; }
-            set { _sendMsgOnly = value; }
-        }
-
         #endregion
 
         #region Methods
@@ -318,7 +309,6 @@ namespace Shrinerain.AutoTester.Core
                 {
                     throw new CannotStartBrowserException("Can not start test browser.");
                 }
-
             }
             catch (TestException)
             {
@@ -328,7 +318,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotStartBrowserException("Can not start Internet explorer: " + ex.Message);
             }
-
         }
 
         public override void Start(string appFullPath)
@@ -347,21 +336,16 @@ namespace Shrinerain.AutoTester.Core
          */
         public override void Find(string browserTitle)
         {
-            string title;
-            if (browserTitle == null || String.IsNullOrEmpty(browserTitle.ToString()))
+            if (String.IsNullOrEmpty(browserTitle))
             {
                 throw new CannotAttachBrowserException("Browser title can not be empty.");
-            }
-            else
-            {
-                title = browserTitle.ToString();
             }
 
             try
             {
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
-                ieExistT.Start(title);
+                ieExistT.Start(browserTitle);
 
                 //wait until the internet explorer is found.
                 _browserExisted.WaitOne(this._maxWaitSeconds * 1000, true);
@@ -374,7 +358,6 @@ namespace Shrinerain.AutoTester.Core
                 {
                     throw new CannotAttachBrowserException("Can not find test browser.");
                 }
-
             }
             catch (TestException)
             {
@@ -459,7 +442,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotNavigateException("Can not go back: " + ex.Message);
             }
-
         }
 
         /* void Forward()
@@ -500,7 +482,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotNavigateException("Can not go home: " + ex.Message);
             }
-
         }
 
         /* void Refresh()
@@ -593,10 +574,8 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
-                    Win32API.SendMessage(this._dialogHandle, (int)Win32API.WindowMessages.WM_CLOSE, 0, 0);
-
+                    AsstFunctions.CloseWindow(_dialogHandle);
                     this._dialogHandle = IntPtr.Zero;
-
                     SetBrowser(this._ie);
                 }
                 catch (TestException)
@@ -736,7 +715,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotGetBrowserInfoException("Can not get the full screen status: " + ex.Message);
             }
-
         }
 
         /*  bool IsModelessDialog()
@@ -784,7 +762,6 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual float GetLoadSeconds()
         {
-
             int times = 0;
             while (times < this._maxWaitSeconds)
             {
@@ -929,7 +906,6 @@ namespace Shrinerain.AutoTester.Core
             }
 
             _documentLoadComplete.WaitOne(seconds * 1000, true);
-
         }
 
         /* void WaitForBrowser(int seconds.)
@@ -963,10 +939,6 @@ namespace Shrinerain.AutoTester.Core
                     else if (p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
                         browserFound = true;
-                    }
-                    else
-                    {
-                        continue;
                     }
 
                     if (browserFound)
@@ -1042,7 +1014,6 @@ namespace Shrinerain.AutoTester.Core
             }
 
             this._isDownloading = false;
-
             this._browserExisted.Set();
         }
 
@@ -1131,7 +1102,6 @@ namespace Shrinerain.AutoTester.Core
             }
 
             return null;
-
         }
 
         /* InternetExplorer[] GetAllBrowsers()
@@ -1647,8 +1617,6 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-
-
         #region callback functions for each event
 
         /* void OnNewWindow2(ref object ppDisp, ref bool Cancel)
@@ -1692,15 +1660,14 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void OnBeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
         {
-            if (_rootDisp == null)
-            {
-                _rootDisp = pDisp;
-            }
         }
 
         protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
         {
-            _lastNavigateDisp = pDisp;
+            if (_rootDisp == null)
+            {
+                _rootDisp = pDisp;
+            }
         }
 
         /* void OnDownloadBegin()
@@ -1729,12 +1696,26 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
-            if ((_rootDisp != null && _rootDisp == pDesp) || (_lastNavigateDisp != null && pDesp != _lastNavigateDisp))
+            try
             {
-                _rootDisp = null;
-
-                try
+                bool allDocsFinish = false;
+                if (_rootDisp != null && _rootDisp == pDesp)
                 {
+                    allDocsFinish = true;
+                }
+                else
+                {
+                    IHTMLWindow2 curWindow = ((pDesp as IWebBrowser2).Document as IHTMLDocument2).parentWindow;
+                    if (_rootDocument != null && curWindow != null && _rootDocument.parentWindow == curWindow)
+                    {
+                        allDocsFinish = true;
+                    }
+                }
+
+                if (allDocsFinish)
+                {
+                    _rootDisp = null;
+
                     string key = GetCurrentUrl();
                     _endTime = GetCurrentSeconds();
                     _responseTime = _endTime - _startTime;
@@ -1746,14 +1727,14 @@ namespace Shrinerain.AutoTester.Core
 
                     _documentLoadComplete.Set();
                 }
-                catch (TestException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    throw new CannotAttachBrowserException("Error OnDocumentLoadComplete: " + ex.Message);
-                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotAttachBrowserException("Error OnDocumentLoadComplete: " + ex.Message);
             }
         }
 
