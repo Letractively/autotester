@@ -10,14 +10,14 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Shrinerain")]
 [assembly: AssemblyProduct("MSAAUtility")]
-[assembly: AssemblyCopyright("Copyright © shrinerain 2008")]
+[assembly: AssemblyCopyright("Copyright © Shrinerain 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: ComVisible(true)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("87a4b6d2-39ff-4b69-a78f-51ec14ae98fd")]
