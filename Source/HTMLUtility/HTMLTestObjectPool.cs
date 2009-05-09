@@ -1666,13 +1666,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return HTMLTestObjectType.Unknow;
             }
 
+            type = type.ToUpper().Replace(" ", "");
+
             HTMLTestObjectType htmlType = HTMLTestObjectType.Unknow;
             if (_objectTypeTable.TryGetValue(type, out htmlType))
             {
                 return htmlType;
             }
-
-            type = type.ToUpper().Replace(" ", "");
+    
             if (type == "BUTTON" || type == "BTN" || type == "B")
             {
                 htmlType = HTMLTestObjectType.Button;
