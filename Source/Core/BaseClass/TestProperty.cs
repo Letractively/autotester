@@ -181,8 +181,7 @@ namespace Shrinerain.AutoTester.Core
         public static bool TryGetIDValue(TestProperty[] properties, out string id)
         {
             id = "";
-
-            if (properties == null || properties.Length == 0)
+            if (properties != null && properties.Length > 0)
             {
                 foreach (TestProperty tp in properties)
                 {
