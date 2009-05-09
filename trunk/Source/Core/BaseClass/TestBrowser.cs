@@ -300,7 +300,6 @@ namespace Shrinerain.AutoTester.Core
                 ieExistT.Start("");
                 //wait until the internet explorer started.
                 _browserExisted.WaitOne(_maxWaitSeconds * 1000, true);
-
                 if (_ie != null)
                 {
                     SetBrowser(_ie);
@@ -834,14 +833,6 @@ namespace Shrinerain.AutoTester.Core
         public virtual HTMLDocument GetRootDocument()
         {
             _rootDocument = (HTMLDocument)_ie.Document;
-            try
-            {
-                IHTMLFramesCollection2 frames = _rootDocument.frames;
-            }
-            catch (InvalidCastException)
-            {
-                _rootDocument = COMUtil.GetHTMLDocFromHandle(this._ieServerHandle);
-            }
             return _rootDocument;
         }
 
@@ -1664,6 +1655,11 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
         {
+            if (URL != null && String.Compare(URL.ToString(), TestConstants.IE_BlankPage_Url, true) == 0)
+            {
+                return;
+            }
+
             if (_rootDisp == null)
             {
                 _rootDisp = pDisp;
@@ -1698,6 +1694,11 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
+                if (pUrl != null && String.Compare(pUrl.ToString(), TestConstants.IE_BlankPage_Url, true) == 0)
+                {
+                    return;
+                }
+
                 bool allDocsFinish = false;
                 if (_rootDisp != null && _rootDisp == pDesp)
                 {
