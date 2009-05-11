@@ -213,7 +213,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             tmpElement = (IHTMLElement)cellChildren.item(name, index);
 
-                            tmpObjects[i] = _htmlObjPool.BuildObjectByType(tmpElement);
+                            tmpObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject(tmpElement, this._browser, this._pool);
                         }
                         catch
                         {

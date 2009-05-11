@@ -137,8 +137,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             set
             {
-                this._browser = value;
-                GetRectOnScreen();
+                if (value != null)
+                {
+                    this._browser = value;
+                    GetRectOnScreen();
+                }
             }
             get
             {

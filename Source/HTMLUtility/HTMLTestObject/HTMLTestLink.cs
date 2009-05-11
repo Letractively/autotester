@@ -96,7 +96,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     _linkImgElement = (IHTMLImgElement)_acnchorElement.firstChild;
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 //throw new CannotBuildObjectException("Can not get the image of link: " + ex.Message);
             }

@@ -13,6 +13,7 @@ namespace Shrinerain.AutoTester.Core
         protected ITestObjectPool _pool;
         protected TestObjectMap _map;
         protected ITestCheckPoint _cp;
+        protected ITestEventDispatcher _dispatcher;
 
         #endregion
 
@@ -63,6 +64,15 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        public ITestEventDispatcher EventDispatcher
+        {
+            get
+            {
+                Init();
+                return _dispatcher;
+            }
+        }
+
         public ITestCheckPoint CheckPoint
         {
             get
@@ -100,12 +110,15 @@ namespace Shrinerain.AutoTester.Core
                 if (this._app != null)
                 {
                     this._pool = _app.GetObjectPool();
+                    this._dispatcher = _app.GetEventDispatcher();
                 }
 
                 if (this._browser != null)
                 {
                     this._pool = _browser.GetObjectPool();
+                    this._dispatcher = _browser.GetEventDispatcher();
                 }
+
                 this._map = new TestObjectMap(this._pool);
             }
         }

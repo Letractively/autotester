@@ -15,7 +15,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         private static MouseHook _mouseHook;
         private static EventHook _msaaHook;
-        private static MSAAEventDispatcher _instance;
+        private static MSAAEventDispatcher _instance = new MSAAEventDispatcher();
 
         //cache
         private MSAATestObject _lastMSAAObj;
@@ -31,16 +31,10 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         private MSAAEventDispatcher()
         {
-
         }
 
         public static MSAAEventDispatcher GetInstance()
         {
-            if (_instance == null)
-            {
-                _instance = new MSAAEventDispatcher();
-            }
-
             return _instance;
         }
 

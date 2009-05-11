@@ -832,8 +832,13 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual HTMLDocument GetRootDocument()
         {
-            _rootDocument = (HTMLDocument)_ie.Document;
-            return _rootDocument;
+            if (_ie != null)
+            {
+                _rootDocument = _ie.Document as HTMLDocument;
+                return _rootDocument;
+            }
+
+            return null;
         }
 
         //return all documents, include frames.

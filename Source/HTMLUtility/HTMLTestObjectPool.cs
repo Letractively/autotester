@@ -74,18 +74,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //current object used.
         private TestObject _testObj;
-        private TestObject _cacheObj;
-
-        private static Dictionary<HTMLTestObjectType, string[]> _objectTagsTable = new Dictionary<HTMLTestObjectType, string[]>(59);
-        private static Dictionary<string, HTMLTestObjectType> _objectTypeTable = new Dictionary<string, HTMLTestObjectType>(59);
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
         private int _maxWaitSeconds = 15;
         //very time we sleep for 3 seconds, and find again.
         private const int Interval = 3;
-
-        //buf to store the key for cache. 
-        private static StringBuilder _keySB = new StringBuilder(128);
 
         //regex to match tag
         private static Regex _htmlReg = new Regex("<[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
@@ -219,13 +212,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             id = id.Trim();
 
-            //first, we will try get object from cache --- a hash table.
-            string key = GetKey(id);
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
             //we will try 30 seconds to find an object.
             int times = 0;
             while (times <= _maxWaitSeconds)
@@ -237,8 +223,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (_tempElement != null)
                     {
                         //build actual test object.
-                        _testObj = BuildObjectByType(_tempElement);
-                        ObjectCache.InsertObjectToCache(key, _testObj);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
                         return _testObj;
                     }
                 }
@@ -287,12 +272,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     for (int i = 0; i < nameObjectsCol.Length; i++)
                     {
                         _tempElement = (IHTMLElement)nameObjectsCol[i];
-                        if (!IsVisible(_tempElement))
+                        if (!HTMLTestObjectFactory.IsVisible(_tempElement))
                         {
                             continue;
                         }
 
-                        _testObj = BuildObjectByType(_tempElement);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
                         if (OnObjectFound != null)
                         {
                             OnObjectFound(_testObj, null);
@@ -335,13 +320,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 index = 0;
             }
 
-            string key = GetKey(index.ToString());
-
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
@@ -350,14 +328,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     GetAllElements();
 
                     _tempElement = _allElements[index];
-                    if (IsVisible(_tempElement))
+                    if (HTMLTestObjectFactory.IsVisible(_tempElement))
                     {
-                        _testObj = BuildObjectByType(_tempElement);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
                         if (OnObjectFound != null)
                         {
                             OnObjectFound(_testObj, null);
                         }
-                        ObjectCache.InsertObjectToCache(key, _testObj);
                         return _testObj;
                     }
                 }
@@ -451,7 +428,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             _tempElement = (IHTMLElement)candidateElements[currentObjIndex];
 
                             //if it is not an interactive object or the property is not found. 
-                            if (IsVisible(_tempElement))
+                            if (HTMLTestObjectFactory.IsVisible(_tempElement))
                             {
                                 if (CheckObjectProperties(_tempElement, HTMLTestObjectType.Unknow, properties, out _testObj))
                                 {
@@ -523,7 +500,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //convert the TYPE text to valid internal type.
             // eg: "button" to HTMLTestObjectType.Button
-            HTMLTestObjectType typeValue = ConvertStrToHTMLType(type);
+            HTMLTestObjectType typeValue = HTMLTestObjectFactory.ConvertStrToHTMLType(type);
             if (typeValue == HTMLTestObjectType.Unknow)
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
@@ -531,7 +508,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //convert the type to HTML tags.
             //eg: convert Image to <img>, Button to <input type="button">,<input type="submit">...
-            string[] tags = GetObjectTags(typeValue);
+            string[] tags = HTMLTestObjectFactory.GetObjectTags(typeValue);
             if (tags == null)
             {
                 throw new ObjectNotFoundException("Tags can not be empty.");
@@ -607,15 +584,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             {
                                 _tempElement = candidateElements[currentObjIndex];
                                 // check if it is a interactive object.
-                                if (IsVisible(_tempElement))
+                                if (HTMLTestObjectFactory.IsVisible(_tempElement))
                                 {
                                     //check object by type
-                                    if (GetObjectType(_tempElement) == typeValue)
+                                    if (HTMLTestObjectFactory.GetObjectType(_tempElement) == typeValue)
                                     {
                                         bool found = false;
                                         if (properties == null)
                                         {
-                                            _testObj = BuildObjectByType(_tempElement, typeValue);
+                                            _testObj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(_tempElement, typeValue, this._htmlTestBrowser, this);
                                             found = true;
                                         }
                                         else if (CheckObjectProperties(_tempElement, typeValue, properties, out _testObj))
@@ -685,12 +662,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
-            string key = GetKey(x.ToString() + " " + y.ToString());
-            if (ObjectCache.TryGetObjectFromCache(key, out _cacheObj))
-            {
-                return _testObj = (TestObject)_cacheObj;
-            }
-
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
@@ -698,16 +669,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
 
-                    if (IsVisible(_tempElement))
+                    if (HTMLTestObjectFactory.IsVisible(_tempElement))
                     {
-                        _testObj = BuildObjectByType(_tempElement);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
 
                         if (OnObjectFound != null)
                         {
                             OnObjectFound(_testObj, null);
                         }
-
-                        ObjectCache.InsertObjectToCache(key, _testObj);
 
                         return _testObj;
                     }
@@ -742,7 +711,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("The width and height of rect can not be 0.");
             }
 
-            HTMLTestObjectType type = ConvertStrToHTMLType(typeStr);
+            HTMLTestObjectType type = HTMLTestObjectFactory.ConvertStrToHTMLType(typeStr);
 
             if (type == HTMLTestObjectType.Unknow)
             {
@@ -850,7 +819,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //convert IHTMLELementCollection to an array.
             for (int i = 0; i < this._allElements.Length; i++)
             {
-                _allObjects[i] = this.BuildObjectByType((IHTMLElement)this._allElements[i]);
+                _allObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject((IHTMLElement)this._allElements[i], this._htmlTestBrowser, this);
             }
 
             return _allObjects;
@@ -926,7 +895,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         string visibleText = null;
                         try
                         {
-                            obj = this.BuildObjectByType(element, type);
+                            obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser, this);
                             visibleText = ((HTMLTestGUIObject)obj).GetLabel().Trim();
                         }
                         catch
@@ -1025,7 +994,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //get default property of each tag
             //eg: for a textbox, the property is .value
-            string propertyName = GetVisibleTextPropertyByTag(type, tag);
+            string propertyName = HTMLTestObjectFactory.GetVisibleTextPropertyByTag(type, tag);
             string propertyValue;
 
             if (String.IsNullOrEmpty(propertyName))
@@ -1076,13 +1045,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 //firstly, check value.
-                if (IsPropertyLike(element, "innerText", value, simPercent))
+                if (HTMLTestObjectFactory.IsPropertyLike(element, "innerText", value, simPercent))
                 {
                     return true;
                 }
 
                 //then check title
-                if (IsPropertyLike(element, "title", value, simPercent))
+                if (HTMLTestObjectFactory.IsPropertyLike(element, "title", value, simPercent))
                 {
                     return true;
                 }
@@ -1318,7 +1287,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     propertyName = "innerText";
                 }
 
-                return IsPropertyLike(element, propertyName, value, simPercent);
+                return HTMLTestObjectFactory.IsPropertyLike(element, propertyName, value, simPercent);
             }
             catch
             {
@@ -1393,7 +1362,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     propertyName = "innerText";
                 }
 
-                return IsPropertyLike(element, propertyName, value, simPercent);
+                return HTMLTestObjectFactory.IsPropertyLike(element, propertyName, value, simPercent);
             }
             catch
             {
@@ -1455,7 +1424,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return true;
                 }
 
-                return IsPropertyLike(element, propertyName, value, simPercent);
+                return HTMLTestObjectFactory.IsPropertyLike(element, propertyName, value, simPercent);
             }
             catch
             {
@@ -1561,445 +1530,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return Searcher.IsStringLike(propertyValue, value, simPercent);
-        }
-
-        #endregion
-
-        /* bool IsPropertyEqual(IHTMLElement element, string propertyName, string value, int simPercent)
-         * check if the property == value with the expected similar percent.
-         */
-        private static bool IsPropertyLike(IHTMLElement element, string propertyName, string value, int simPercent)
-        {
-            string actualValue;
-
-            if (HTMLTestObject.TryGetProperty(element, propertyName, out actualValue))
-            {
-                return Searcher.IsStringLike(actualValue, value, simPercent);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /*  string GetVisibleTextPropertyByTag(HTMLTestObjectType type, string tag)
-         *  get the visible property by tag.
-         *  eg: for a button, it's tag is <Input type="button">, it's visible property,
-         *  means the text on the button, is ".value"
-         */
-        private static string GetVisibleTextPropertyByTag(HTMLTestObjectType type, string tag)
-        {
-            //default is ".innerText".
-            string property = "innerText";
-
-            string tagValue = tag.ToUpper();
-            if (tagValue == "INPUT")
-            {
-                switch (type)
-                {
-                    case HTMLTestObjectType.Button:
-                        property = "value";
-                        break;
-                    case HTMLTestObjectType.TextBox:
-                        property = "value";
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if (tagValue == "SELECT")
-            {
-                property = "innerHTML";
-            }
-
-            return property;
-        }
-
-        /* bool IsInteractive(IHTMLElement element)
-         * check the object if it is visible, and it can interactive with users.
-         */
-        private static bool IsVisible(IHTMLElement element)
-        {
-            if (element == null)
-            {
-                return false;
-            }
-            else if (element.offsetWidth < 1 || element.offsetHeight < 1)
-            {
-                return false;
-            }
-
-            string tag = element.tagName;
-
-            if (String.IsNullOrEmpty(tag))
-            {
-                return false;
-            }
-
-            string value;
-
-            if (tag == "INPUT")
-            {
-                //return false, if the it is a hidden object.
-                if (HTMLTestObject.TryGetProperty(element, "type", out value))
-                {
-                    return String.Compare(value, "HIDDEN", true) != 0;
-                }
-            }
-            else if (HTMLTestObject.TryGetProperty(element, "visibility", out value))
-            {
-                //return false if it is hidden.
-                return String.Compare(value, "HIDDEN", true) != 0;
-            }
-
-            return true;
-        }
-
-        /* HTMLTestObjectType ConvertStrToHTMLType(string type)
-         * convert the type text to html type enum. 
-         * eg: button to HTMLTestObjectType.Button
-         */
-        public static HTMLTestObjectType ConvertStrToHTMLType(string type)
-        {
-            if (String.IsNullOrEmpty(type))
-            {
-                return HTMLTestObjectType.Unknow;
-            }
-
-            type = type.ToUpper().Replace(" ", "");
-
-            HTMLTestObjectType htmlType = HTMLTestObjectType.Unknow;
-            if (_objectTypeTable.TryGetValue(type, out htmlType))
-            {
-                return htmlType;
-            }
-    
-            if (type == "BUTTON" || type == "BTN" || type == "B")
-            {
-                htmlType = HTMLTestObjectType.Button;
-            }
-            else if (type == "LABEL" || type == "LB")
-            {
-                htmlType = HTMLTestObjectType.Label;
-            }
-            else if (type == "TEXTBOX" || type == "TEXT" || type == "INPUTBOX" || type == "TXT" || type == "T")
-            {
-                htmlType = HTMLTestObjectType.TextBox;
-            }
-            else if (type == "LINK" || type == "HYPERLINK" || type == "LK" || type == "A")
-            {
-                htmlType = HTMLTestObjectType.Link;
-            }
-            else if (type == "IMAGE" || type == "IMG" || type == "PICTURE" || type == "PIC" || type == "I" || type == "P")
-            {
-                htmlType = HTMLTestObjectType.Image;
-            }
-            else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN" || type == "CB")
-            {
-                htmlType = HTMLTestObjectType.ComboBox;
-            }
-            else if (type == "LISTBOX" || type == "LIST" || type == "LST" || type == "LS")
-            {
-                htmlType = HTMLTestObjectType.ListBox;
-            }
-            else if (type == "RADIOBOX" || type == "RADIOBUTTON" || type == "RADIO" || type == "RAD" || type == "R")
-            {
-                htmlType = HTMLTestObjectType.RadioBox;
-            }
-            else if (type == "CHECKBOX" || type == "CHECK" || type == "CHK" || type == "CK")
-            {
-                htmlType = HTMLTestObjectType.CheckBox;
-            }
-            else if (type == "ACTIVEX")
-            {
-                htmlType = HTMLTestObjectType.ActiveX;
-            }
-            else if (type == "TABLE" || type == "TBL" || type == "T")
-            {
-                htmlType = HTMLTestObjectType.Table;
-            }
-
-            _objectTypeTable.Add(type, htmlType);
-            return htmlType;
-        }
-
-
-        /*  string[] GetObjectTags(HTMLTestObjectType type)
-        *  convert HTMLTestObjectType to HTML tags.
-        */
-        private static string[] GetObjectTags(HTMLTestObjectType type)
-        {
-            string[] res = null;
-            if (_objectTagsTable.TryGetValue(type, out res))
-            {
-                return res;
-            }
-
-            switch (type)
-            {
-                case HTMLTestObjectType.Label:
-                    res = new string[] { "label", "span", "font" };
-                    break;
-                case HTMLTestObjectType.Link:
-                    res = new string[] { "a" };
-                    break;
-                case HTMLTestObjectType.Button:
-                    res = new string[] { "input", "button" };
-                    break;
-                case HTMLTestObjectType.TextBox:
-                    res = new string[] { "input", "textarea" };
-                    break;
-                case HTMLTestObjectType.Image:
-                    res = new string[] { "img" };
-                    break;
-                case HTMLTestObjectType.CheckBox:
-                    res = new string[] { "input", "label" };
-                    break;
-                case HTMLTestObjectType.RadioBox:
-                    res = new string[] { "input", "label" };
-                    break;
-                case HTMLTestObjectType.ComboBox:
-                    res = new string[] { "select" };
-                    break;
-                case HTMLTestObjectType.ListBox:
-                    res = new string[] { "select" };
-                    break;
-                case HTMLTestObjectType.Table:
-                    res = new string[] { "table" };
-                    break;
-                case HTMLTestObjectType.ActiveX:
-                    res = new string[] { "object" };
-                    break;
-                case HTMLTestObjectType.Unknow:
-                    res = new string[] { };
-                    break;
-                default:
-                    res = new string[] { };
-                    break;
-            }
-
-            _objectTagsTable.Add(type, res);
-            return res;
-        }
-
-        /*  private static HTMLTestObjectType GetObjectType(IHTMLElement element)
-         *  Get the HTMLTestObjectType from element's tag name.
-         */
-        private static HTMLTestObjectType GetObjectType(IHTMLElement element)
-        {
-            string tag = element.tagName;
-
-            if (string.IsNullOrEmpty(tag))
-            {
-                return HTMLTestObjectType.Unknow;
-            }
-            else if (tag == "A")
-            {
-                return HTMLTestObjectType.Link;
-            }
-            else if (tag == "SPAN" || tag == "LABEL" || tag == "FONT")
-            {
-                return HTMLTestObjectType.Label;
-            }
-            else if (tag == "IMG")
-            {
-                string value;
-
-                if (HTMLTestObject.TryGetProperty(element, "onclick", out value))
-                {
-                    return HTMLTestObjectType.Button;
-                }
-                else
-                {
-                    return HTMLTestObjectType.Image;
-                }
-            }
-            else if (tag == "BUTTON")
-            {
-                return HTMLTestObjectType.Button;
-            }
-            else if (tag == "INPUT")
-            {
-                string inputType;
-
-                if (!HTMLTestObject.TryGetProperty(element, "type", out inputType))
-                {
-                    return HTMLTestObjectType.TextBox;
-                }
-
-                inputType = inputType.ToUpper();
-                if (inputType == "TEXT" || inputType == "PASSWORD")
-                {
-                    return HTMLTestObjectType.TextBox;
-                }
-                else if (inputType == "BUTTON" || inputType == "SUBMIT" || inputType == "RESET"
-                      || inputType == "FILE" || inputType == "IMAGE")
-                {
-                    return HTMLTestObjectType.Button;
-                }
-                else if (inputType == "CHECKBOX")
-                {
-                    return HTMLTestObjectType.CheckBox;
-                }
-                else if (inputType == "RADIO")
-                {
-                    return HTMLTestObjectType.RadioBox;
-                }
-            }
-            else if (tag == "TEXTAREA")
-            {
-                return HTMLTestObjectType.TextBox;
-            }
-            else if (tag == "TABLE")
-            {
-                return HTMLTestObjectType.Table;
-            }
-            else if (tag == "SELECT")
-            {
-                string selectValue;
-
-                if (!HTMLTestObject.TryGetProperty(element, "size", out selectValue))
-                {
-                    return HTMLTestObjectType.ComboBox;
-                }
-                else
-                {
-                    int selectSize = int.Parse(selectValue);
-
-                    if (selectSize < 2)
-                    {
-                        return HTMLTestObjectType.ComboBox;
-                    }
-                    else
-                    {
-                        return HTMLTestObjectType.ListBox;
-                    }
-                }
-
-            }
-            else if (tag == "OBJECT")
-            {
-                return HTMLTestObjectType.ActiveX;
-            }
-
-            return HTMLTestObjectType.Unknow;
-        }
-
-        /* HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
-         * build the actual test object by an IHTMLElement for different type.
-         * It will call the actual constructor of each test object.
-         */
-        public HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
-        {
-            if (element == null)
-            {
-                throw new CannotBuildObjectException("Element can not be null.");
-            }
-
-            HTMLTestObjectType type = GetObjectType(element);
-
-            return BuildObjectByType(element, type);
-        }
-
-        public HTMLTestGUIObject BuildObjectByType(IHTMLElement element, HTMLTestObjectType type)
-        {
-            if (element == null || type == HTMLTestObjectType.Unknow)
-            {
-                throw new CannotBuildObjectException("Element and type can not be null.");
-            }
-
-            HTMLTestGUIObject tmp;
-
-            switch (type)
-            {
-                case HTMLTestObjectType.Label:
-                    tmp = new HTMLTestLabel(element);
-                    break;
-                case HTMLTestObjectType.Button:
-                    tmp = new HTMLTestButton(element);
-                    break;
-                case HTMLTestObjectType.TextBox:
-                    tmp = new HTMLTestTextBox(element);
-                    break;
-                case HTMLTestObjectType.ListBox:
-                    tmp = new HTMLTestListBox(element);
-                    break;
-                case HTMLTestObjectType.Link:
-                    tmp = new HTMLTestLink(element);
-                    break;
-                case HTMLTestObjectType.ComboBox:
-                    tmp = new HTMLTestComboBox(element);
-                    break;
-                case HTMLTestObjectType.Image:
-                    tmp = new HTMLTestImage(element);
-                    break;
-                case HTMLTestObjectType.RadioBox:
-                    tmp = new HTMLTestRadioBox(element);
-                    break;
-                case HTMLTestObjectType.CheckBox:
-                    tmp = new HTMLTestCheckBox(element);
-                    break;
-                case HTMLTestObjectType.Table:
-                    tmp = new HTMLTestTable(element);
-                    break;
-                default:
-                    tmp = null;
-                    break;
-            }
-
-            if (tmp != null)
-            {
-                try
-                {
-                    tmp.Browser = _htmlTestBrowser;
-                    tmp.HTMLTestObjPool = this;
-                    return tmp;
-                }
-                catch (CannotGetObjectPositionException ex)
-                {
-                    throw new CannotBuildObjectException("Can not get object position: " + ex.Message);
-                }
-                catch (TestException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    throw new CannotBuildObjectException(ex.Message);
-                }
-            }
-            else
-            {
-                throw new CannotBuildObjectException();
-            }
-        }
-
-        #region object cache
-
-        /* string GetKey(string info)
-         * generate key for hash table cache.
-         */
-        private string GetKey(string info)
-        {
-            try
-            {
-                //clear last key.
-                if (_keySB.Length > 0)
-                {
-                    _keySB.Remove(0, _keySB.Length);
-                }
-
-                _keySB.Append(this._htmlTestBrowser.GetCurrentUrl());
-                _keySB.Append(_keySplitter);
-                _keySB.Append(info);
-
-                return _keySB.ToString();
-            }
-            catch
-            {
-                return info;
-            }
-
         }
 
         #endregion
