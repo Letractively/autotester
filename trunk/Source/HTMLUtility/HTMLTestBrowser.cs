@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 
 using mshtml;
+using SHDocVw;
 
 using Shrinerain.AutoTester.Core;
 
@@ -28,6 +29,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region Fileds
 
         private HTMLTestObjectPool _pool;
+        private HTMLTestEventDispatcher _dispatcher;
 
         private IHTMLElement[] _allElements;
         private bool needRefresh = false;
@@ -234,6 +236,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return _pool;
         }
 
+        public override ITestEventDispatcher GetEventDispatcher()
+        {
+            if (_dispatcher == null)
+            {
+                _dispatcher = HTMLTestEventDispatcher.GetInstance();
+                _dispatcher.Start(this);
+            }
+
+            return _dispatcher;
+        }
+
         #endregion
 
         #endregion
@@ -245,6 +258,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
+            if (_dispatcher != null)
+            {
+                string url = pUrl.ToString();
+                if (!String.IsNullOrEmpty(url) && String.Compare(url, TestConstants.IE_BlankPage_Url, true) != 0)
+                {
+                    IHTMLDocument2 doc2 = (pDesp as IWebBrowser2).Document as IHTMLDocument2;
+                    _dispatcher.RegisterEvents(doc2);
+                }
+            }
             needRefresh = true;
             base.OnDocumentLoadComplete(pDesp, ref pUrl);
         }

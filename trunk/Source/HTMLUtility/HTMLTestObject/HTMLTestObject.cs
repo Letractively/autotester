@@ -64,7 +64,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected HTMLTestBrowser _browser;
 
         //object pool of this object.
-        protected HTMLTestObjectPool _htmlObjPool;
+        protected HTMLTestObjectPool _pool;
 
         protected AutoResetEvent _stateChanged = new AutoResetEvent(false);
 
@@ -106,8 +106,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual HTMLTestObjectPool HTMLTestObjPool
         {
-            get { return _htmlObjPool; }
-            set { _htmlObjPool = value; }
+            get { return _pool; }
+            set { _pool = value; }
         }
 
 

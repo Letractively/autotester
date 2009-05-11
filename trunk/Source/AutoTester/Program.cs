@@ -95,8 +95,9 @@ namespace Shrinerain.AutoTester
             //Google.Test();
             //Other.Test();
             //Qidian.Test();
-            CSDN.Test();
+            //CSDN.Test();
             // QQ.Test();
+            FCKEditor.Test();
         }
     }
 }

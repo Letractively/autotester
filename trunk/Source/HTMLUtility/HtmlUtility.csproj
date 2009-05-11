@@ -50,7 +50,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HTMLEventDispatcher.cs" />
+    <Compile Include="HTMLTestEventDispatcher.cs" />
+    <Compile Include="HTMLTestObjectFactory.cs" />
     <Compile Include="HTMLTestObject\HTMLTestActiveXObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestGUIObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestButton.cs" />
