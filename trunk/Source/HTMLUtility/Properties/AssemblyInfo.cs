@@ -9,9 +9,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HtmlUtility")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("shrinerain")]
+[assembly: AssemblyCompany("Shrinerain")]
 [assembly: AssemblyProduct("HtmlUtility")]
-[assembly: AssemblyCopyright("版权所有 (C) shrinerain 2007")]
+[assembly: AssemblyCopyright("版权所有 (C) Shrinerain 2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

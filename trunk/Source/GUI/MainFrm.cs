@@ -39,14 +39,14 @@ namespace Shrinerain.AutoTester.GUI
 
         private Thread _testJobThread;
 
-        private static Monitor _monitor;
+        private static MonitorFrm _monitor;
 
 
         #endregion
 
         #region Properties
 
-        public static Monitor Monitor
+        public static MonitorFrm Monitor
         {
             get { return MainFrm._monitor; }
         }
@@ -67,7 +67,7 @@ namespace Shrinerain.AutoTester.GUI
         {
             // this.Hide();
 
-            _monitor = new Monitor();
+            _monitor = new MonitorFrm();
             RegMonitorEvent();
             _monitor.Show();
 
@@ -81,10 +81,10 @@ namespace Shrinerain.AutoTester.GUI
 
         private void RegMonitorEvent()
         {
-            _monitor.OnStartClick += new Monitor.ButtonActionDelegate(MonitorStart);
-            _monitor.OnStopClick += new Monitor.ButtonActionDelegate(MonitorStop);
-            _monitor.OnPauseClick += new Monitor.ButtonActionDelegate(MonitorPause);
-            _monitor.OnHighlightClick += new Monitor.ButtonActionDelegate(MonitorHighlight);
+            _monitor.OnStartClick += new MonitorFrm.ButtonActionDelegate(MonitorStart);
+            _monitor.OnStopClick += new MonitorFrm.ButtonActionDelegate(MonitorStop);
+            _monitor.OnPauseClick += new MonitorFrm.ButtonActionDelegate(MonitorPause);
+            _monitor.OnHighlightClick += new MonitorFrm.ButtonActionDelegate(MonitorHighlight);
         }
 
         private void MonitorStart()

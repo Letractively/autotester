@@ -14,8 +14,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region fields
 
         private static HTMLTestEventDispatcher _instance = new HTMLTestEventDispatcher();
-
         private HTMLTestBrowser _browser;
+
         #endregion
 
         #region methods
@@ -39,8 +39,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (doc != null)
             {
+                HTMLTestEventWrapper eventWrapper = new HTMLTestEventWrapper(doc);
+                eventWrapper.DHTMLEventHandler += new HTMLTestEventWrapper.DHTMLEvent(CheckClick);
+                doc.onkeydown = eventWrapper;
                 HTMLDocumentEvents2_Event event2 = doc as HTMLDocumentEvents2_Event;
-                event2.onclick += new HTMLDocumentEvents2_onclickEventHandler(CheckClick);
+                // event2.onkeydown += new HTMLDocumentEvents2_onkeydownEventHandler(CheckClick);
             }
         }
 
@@ -48,7 +51,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        private bool CheckClick(IHTMLEventObj pEvtObj)
+        private void CheckClick(IHTMLEventObj pEvtObj)
         {
             if (OnClick != null)
             {
@@ -60,8 +63,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     OnClick(obj, null);
                 }
             }
-
-            return true;
         }
 
         #endregion
@@ -75,7 +76,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (app != null && app is HTMLTestBrowser)
             {
                 this._browser = app as HTMLTestBrowser;
-                RegisterEvents(this._browser.GetRootDocument() as IHTMLDocument2);
+                RegisterEvents(this._browser.GetDocument() as IHTMLDocument2);
                 return true;
             }
             else
@@ -124,11 +125,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
     }
 
-    public delegate void DHTMLEvent(IHTMLEventObj e);
-
     public class HTMLTestEventWrapper
     {
-        public DHTMLEvent m_DHTMLEventHandler;
+        public delegate void DHTMLEvent(IHTMLEventObj e);
+        public event DHTMLEvent DHTMLEventHandler;
+
         private IHTMLDocument2 m_Document;
 
         public HTMLTestEventWrapper(IHTMLDocument2 doc)
@@ -139,7 +140,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         [DispId(0)]
         public void FireEvent()
         {
-            m_DHTMLEventHandler(m_Document.parentWindow.@event);
+            DHTMLEventHandler(m_Document.parentWindow.@event);
         }
     }
 }

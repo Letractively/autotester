@@ -349,7 +349,6 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 bool found = false;
-
                 TestException exception = null;
 
                 if (!String.IsNullOrEmpty(type))
