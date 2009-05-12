@@ -1,6 +1,6 @@
 namespace Shrinerain.AutoTester.GUI
 {
-    partial class Monitor
+    partial class MonitorFrm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@ namespace Shrinerain.AutoTester.GUI
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Monitor));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MonitorFrm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.actionBox = new System.Windows.Forms.RichTextBox();
             this.btnStart = new System.Windows.Forms.Button();
@@ -144,7 +144,7 @@ namespace Shrinerain.AutoTester.GUI
             this.btnRecord.Name = "btnRecord";
             this.btnRecord.Size = new System.Drawing.Size(25, 27);
             this.btnRecord.TabIndex = 7;
-            this.btnRecord.Text = "7";
+            this.btnRecord.Text = "O";
             this.btnRecord.UseVisualStyleBackColor = true;
             this.btnRecord.Click += new System.EventHandler(this.recordBtn_Click);
             // 

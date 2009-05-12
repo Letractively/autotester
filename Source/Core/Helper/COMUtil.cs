@@ -55,39 +55,41 @@ namespace Shrinerain.AutoTester.Core
                 }
                 return (HTMLDocument)Win32API.ObjectFromLresult(lRes, typeof(HTMLDocument).GUID, IntPtr.Zero);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
         public static HTMLDocument GetFrameDocument(IHTMLWindow2 frameWindow)
         {
-            HTMLDocument doc = null;
-            try
+            if (frameWindow != null)
             {
-                doc = frameWindow.document as HTMLDocument;
-            }
-            catch
-            {
-            }
-
-            if (doc == null)
-            {
+                bool ex = false;
                 try
                 {
-                    IWebBrowser2 browser = HTMLWindowToWebBrowser(frameWindow);
-                    if (browser != null)
-                    {
-                        doc = browser.Document as HTMLDocument;
-                    }
+                    return frameWindow.document as HTMLDocument;
                 }
                 catch
                 {
+                    ex = true;
+                }
+
+                if (ex)
+                {
+                    try
+                    {
+                        IWebBrowser2 browser = HTMLWindowToWebBrowser(frameWindow);
+                        if (browser != null)
+                        {
+                            return browser.Document as HTMLDocument;
+                        }
+                    }
+                    catch
+                    {
+                    }
                 }
             }
 
-            return doc;
+            return null;
         }
 
         public static IWebBrowser2 HTMLWindowToWebBrowser(IHTMLWindow2 spWindow)

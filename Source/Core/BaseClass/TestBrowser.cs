@@ -830,7 +830,7 @@ namespace Shrinerain.AutoTester.Core
             return sb.ToString();
         }
 
-        public virtual HTMLDocument GetRootDocument()
+        public virtual HTMLDocument GetDocument()
         {
             if (_ie != null)
             {
@@ -844,7 +844,7 @@ namespace Shrinerain.AutoTester.Core
         //return all documents, include frames.
         public virtual HTMLDocument[] GetAllDocuments()
         {
-            GetRootDocument();
+            GetDocument();
             return GetAllDocuments(_rootDocument);
         }
 

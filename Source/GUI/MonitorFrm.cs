@@ -28,11 +28,12 @@ using System.Windows.Forms;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.MSAAUtility;
+using Shrinerain.AutoTester.HTMLUtility;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.GUI
 {
-    public partial class Monitor : Form
+    public partial class MonitorFrm : Form
     {
 
         #region Fields
@@ -80,7 +81,7 @@ namespace Shrinerain.AutoTester.GUI
 
         #region ctor
 
-        public Monitor()
+        public MonitorFrm()
         {
             InitializeComponent();
 
@@ -128,10 +129,16 @@ namespace Shrinerain.AutoTester.GUI
 
         private void Record()
         {
-            app = new MSAATestApp();
-            app.Find(null, "SciCalc");
-            dispatcher = (MSAAEventDispatcher)app.GetEventDispatcher();
-            dispatcher.OnClick += new TestObjectEventHandler(Recorder_OnClick);
+            string url = @"http://www.baidu.com/";
+            TestSession test = new HTMLTestSession();
+            test.Browser.Start();
+            test.Browser.Load(url, true);
+            test.Event.OnClick += new TestObjectEventHandler(Recorder_OnClick);
+
+            //app = new MSAATestApp();
+            //app.Find(null, "SciCalc");
+            //dispatcher = (MSAAEventDispatcher)app.GetEventDispatcher();
+            //dispatcher.OnClick += new TestObjectEventHandler(Recorder_OnClick);
         }
 
         private void Playback()

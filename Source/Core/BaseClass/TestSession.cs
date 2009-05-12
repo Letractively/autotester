@@ -64,7 +64,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public ITestEventDispatcher EventDispatcher
+        public ITestEventDispatcher Event
         {
             get
             {
@@ -90,6 +90,7 @@ namespace Shrinerain.AutoTester.Core
         #region ctor
 
         public TestSession()
+            : this(null)
         {
         }
 
