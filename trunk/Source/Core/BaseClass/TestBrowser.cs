@@ -53,7 +53,6 @@ namespace Shrinerain.AutoTester.Core
 
         //HTML dom, we use HTML dom to get the HTML object.
         protected HTMLDocument _rootDocument;
-        protected object _rootDisp;
 
         //timespan to store the response time.
         //the time is the interval between starting download and downloading finish.
@@ -112,24 +111,6 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region Properties
-
-        public InternetExplorer InternalBrowser
-        {
-            get { return this._ie; }
-            set
-            {
-                this._ie = value;
-            }
-        }
-
-        public int BrowserCount
-        {
-            get
-            {
-                InternetExplorer[] curIEs = GetAllBrowsers();
-                return curIEs == null ? 0 : curIEs.Length;
-            }
-        }
 
         public int MaxWaitSeconds
         {
@@ -219,27 +200,10 @@ namespace Shrinerain.AutoTester.Core
             get { return _ieServerHandle; }
         }
 
-        public IntPtr DialogHandle
-        {
-            get { return _dialogHandle; }
-        }
-
-        //response time of current page.
-        public float ResponseTime
-        {
-            get { return _responseTime; }
-            set { _responseTime = value; }
-        }
-
         //property to show if the browser is downloading sth.
         public bool IsBusy
         {
             get { return _isDownloading || _ie.Busy; }
-        }
-
-        public InternetExplorer[] AllBrowsers
-        {
-            get { return GetAllBrowsers(); }
         }
 
         #endregion
@@ -1664,11 +1628,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 return;
             }
-
-            if (_rootDisp == null)
-            {
-                _rootDisp = pDisp;
-            }
         }
 
         /* void OnDownloadBegin()
@@ -1699,46 +1658,27 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-                if (pUrl != null && String.Compare(pUrl.ToString(), TestConstants.IE_BlankPage_Url, true) == 0)
+                if (pUrl == null || String.Compare(pUrl.ToString(), TestConstants.IE_BlankPage_Url, true) == 0)
                 {
                     return;
                 }
 
-                bool allDocsFinish = false;
-                if (_rootDisp != null && _rootDisp == pDesp)
+                HTMLDocument rootDoc = _ie.Document as HTMLDocument;
+                HTMLDocument curDoc = ((pDesp as IWebBrowser2).Document as HTMLDocument);
+                if (rootDoc != null && (rootDoc == curDoc || rootDoc.parentWindow == curDoc.parentWindow))
                 {
-                    allDocsFinish = true;
-                }
-                else
-                {
-                    try
-                    {
-                        IHTMLWindow2 curWindow = ((pDesp as IWebBrowser2).Document as IHTMLDocument2).parentWindow;
-                        if (_rootDocument != null && curWindow != null && _rootDocument.parentWindow == curWindow)
-                        {
-                            allDocsFinish = true;
-                        }
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                if (allDocsFinish)
-                {
-                    _rootDisp = null;
-
                     string key = GetCurrentUrl();
                     _endTime = GetCurrentSeconds();
                     _responseTime = _endTime - _startTime;
                     _performanceTimeHT.Add(key, _responseTime);
 
-                    _rootDocument = (HTMLDocument)_ie.Document;
+                    _rootDocument = rootDoc;
 
                     GetSize();
 
                     _documentLoadComplete.Set();
                 }
+
             }
             catch (TestException)
             {
