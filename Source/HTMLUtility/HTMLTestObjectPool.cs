@@ -411,7 +411,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     List<TestObject> result = new List<TestObject>();
 
                     //if we have too many objects, we will try to find it's possible position to improve performance.
-                    int possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
+                    int possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, _htmlTestBrowser.GetHTMLContent(), properties[0].Value.ToString());
                     int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
                     // check object one by one, start from the possible position.
                     // the "|" means the start position, the "--->" means the search direction.            
@@ -568,7 +568,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 _regCache.Add(tag, tagReg);
                             }
                             //if we have too many objects, we will try to find it's possible position to improve performance.
-                            possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, _htmlTestBrowser.GetHTML(), properties[0].Value.ToString());
+                            possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, _htmlTestBrowser.GetHTMLContent(), properties[0].Value.ToString());
                         }
                         int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
                         // check object one by one, start from the possible position.
