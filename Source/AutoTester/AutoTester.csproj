@@ -49,6 +49,7 @@
     <Compile Include="Test\CSDN.cs" />
     <Compile Include="Test\FCKEditor.cs" />
     <Compile Include="Test\Google.cs" />
+    <Compile Include="Test\Netyi.cs" />
     <Compile Include="Test\Other.cs" />
     <Compile Include="Test\Qidian.cs" />
     <Compile Include="Test\QQ.cs" />

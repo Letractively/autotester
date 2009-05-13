@@ -75,6 +75,11 @@ namespace Shrinerain.AutoTester.Core
 
         #region public methods
 
+        public static bool IsNeedCalPossibleStartIndex(int elementsCount)
+        {
+            return elementsCount > VibrationPercent * 2;
+        }
+
         public static int GetPossibleStartIndex(int elementsCount, Regex reg, String content, string searchValue)
         {
             int possibleStartIndex = 0;
@@ -110,6 +115,16 @@ namespace Shrinerain.AutoTester.Core
             }
 
             return possibleStartIndex;
+        }
+
+        public static int GetPossibleStartIndex(int elementsCount, string regStr, String content, string searchValue)
+        {
+            if (elementsCount > VibrationPercent * 2 && regStr != null && !String.IsNullOrEmpty(content) && !String.IsNullOrEmpty(searchValue))
+            {
+                Regex reg = new Regex(regStr, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                return GetPossibleStartIndex(elementsCount, reg, content, searchValue);
+            }
+            return 0;
         }
 
         /* bool IsStringEqual(string str1, string str2)

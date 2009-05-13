@@ -411,7 +411,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     List<TestObject> result = new List<TestObject>();
 
                     //if we have too many objects, we will try to find it's possible position to improve performance.
-                    int possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, _htmlTestBrowser.GetHTMLContent(), properties[0].Value.ToString());
+                    int possibleStartIndex = 0;
+                    if (Searcher.IsNeedCalPossibleStartIndex(candidateElements.Length))
+                    {
+                        possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, _htmlTestBrowser.GetHTMLContent(), properties[0].Value.ToString());
+                    }
                     int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
                     // check object one by one, start from the possible position.
                     // the "|" means the start position, the "--->" means the search direction.            
@@ -558,7 +562,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (candidateElements != null && candidateElements.Length > 0)
                     {
                         int possibleStartIndex = 0;
-                        if (properties != null && properties.Length > 0)
+                        if (properties != null && properties.Length > 0 && Searcher.IsNeedCalPossibleStartIndex(candidateElements.Length))
                         {
                             Regex tagReg;
                             if (!_regCache.TryGetValue(tag, out tagReg))
@@ -935,7 +939,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
-                return totalResult > 0;
+                if (totalResult > 0)
+                {
+                    obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser, this);
+                    return true;
+                }
+
+                return false;
             }
         }
 

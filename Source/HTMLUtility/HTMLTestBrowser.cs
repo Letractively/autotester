@@ -116,13 +116,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                return _rootDocument.getElementById(id);
+                IHTMLElement element = _rootDocument.getElementById(id);
+                if (element == null)
+                {
+                    HTMLDocument[] allDocs = GetAllDocuments();
+                    foreach (HTMLDocument doc in allDocs)
+                    {
+                        element = doc.getElementById(id);
+                        if (element != null)
+                        {
+                            return element;
+                        }
+                    }
+                }
+
+                return element;
             }
             catch (Exception ex)
             {
                 throw new ObjectNotFoundException("Can not found test object by id:" + id + ": " + ex.Message);
             }
-
         }
 
         /* IHTMLElementCollection GetObjectsByName(string name)
