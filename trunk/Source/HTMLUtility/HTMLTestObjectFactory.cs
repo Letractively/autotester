@@ -175,16 +175,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (tag == "IMG")
             {
-                string value;
-
-                if (HTMLTestObject.TryGetProperty(element, "onclick", out value))
-                {
-                    return HTMLTestObjectType.Button;
-                }
-                else
-                {
-                    return HTMLTestObjectType.Image;
-                }
+                return HTMLTestObjectType.Image;
             }
             else if (tag == "BUTTON")
             {
@@ -288,9 +279,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, HTMLTestObjectType type, HTMLTestBrowser browser, HTMLTestObjectPool pool)
         {
-            if (element == null || type == HTMLTestObjectType.Unknow)
+            if (element == null)
             {
                 throw new CannotBuildObjectException("Element and type can not be null.");
+            }
+
+            if (type == HTMLTestObjectType.Unknow)
+            {
+                type = GetObjectType(element);
             }
 
             HTMLTestGUIObject tmp;
