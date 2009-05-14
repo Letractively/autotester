@@ -216,7 +216,7 @@ namespace Shrinerain.AutoTester.Core
         {
             bool res = false;
             properties = null;
-            if (str != null && !String.IsNullOrEmpty(str.Trim()))
+            if (str != null && !String.IsNullOrEmpty(str.Trim()) && str.IndexOf("=") > 0)
             {
                 //properties is splitted by ";"
                 //eg: "id=btnG;name=google".
@@ -256,7 +256,7 @@ namespace Shrinerain.AutoTester.Core
 
         public static TestProperty[] GetProperties(string str)
         {
-            if (str != null && !String.IsNullOrEmpty(str.Trim()))
+            if (str != null && !String.IsNullOrEmpty(str.Trim()) && str.IndexOf("=") > 0)
             {
                 //properties is splitted by ";"
                 //eg: "id=btnG;name=google".

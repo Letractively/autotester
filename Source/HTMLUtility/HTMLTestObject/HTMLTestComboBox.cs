@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
+using System.Threading;
 
 using mshtml;
 
@@ -198,7 +199,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-
                 _actionFinished.WaitOne();
 
                 if (_sendMsgOnly)
@@ -221,7 +221,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (_isDelayAfterAction)
                 {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                    Thread.Sleep(_delayTime * 1000);
                 }
 
                 _actionFinished.Set();
@@ -411,10 +411,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ItemNotFoundException("Can not find the position of item at index:" + index.ToString());
             }
 
-
             //find the center point of the first item.
             int itemX = this._rect.Left + this._rect.Width / 2;
-
             int itemY = this._rect.Top;
 
             //var to indicate if scroll bar exist.
@@ -429,7 +427,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             bool isDownward = true;
 
             int listHeight = 0;
-
             if (this._allValues.Length > 30)
             {
                 listHeight = this._itemHeight * 30;
@@ -463,9 +460,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else
             {
                 //we need to move the scroll bar.
-
             }
-
 
             return new Point(itemX, itemY);
         }

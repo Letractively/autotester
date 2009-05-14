@@ -223,13 +223,12 @@ namespace Shrinerain.AutoTester.Core
 
                         if (index < 0)
                         {
-                            break;
+                            Find(handle);
+                            return;
                         }
                     }
                 }
             }
-
-            Find(handle);
         }
 
         public virtual void Find(String title)
@@ -274,7 +273,6 @@ namespace Shrinerain.AutoTester.Core
             return this._parent;
         }
 
-
         public virtual void Move(int x, int y)
         {
             if (this._rootHandle == IntPtr.Zero)
@@ -290,7 +288,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotMoveAppException("Can not move window: " + ex.Message);
             }
-
         }
 
         public virtual void Resize(int left, int top, int width, int height)
@@ -309,7 +306,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotResizeAppException("Can not resize application to " + left.ToString() + "," + top.ToString() + "," + width.ToString() + "," + height.ToString() + ": " + ex.Message);
             }
-
         }
 
         public virtual void Max()
@@ -336,7 +332,6 @@ namespace Shrinerain.AutoTester.Core
                 throw new CannotResizeAppException("Handle can not be 0.");
             }
 
-
             throw new NotImplementedException();
         }
 
@@ -355,7 +350,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotResizeAppException("Can not restore window: " + ex.Message);
             }
-
         }
 
         public virtual void Active()
@@ -428,7 +422,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new AppNotFoundExpcetion("Can not find test app: " + ex.Message);
             }
-
         }
 
         public virtual void WaitForClose()
@@ -766,6 +759,5 @@ namespace Shrinerain.AutoTester.Core
         {
             return null;
         }
-
     }
 }

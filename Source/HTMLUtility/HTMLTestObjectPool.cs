@@ -77,8 +77,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
         private int _maxWaitSeconds = 15;
-        //very time we sleep for 3 seconds, and find again.
-        private const int Interval = 3;
+        //very time we sleep for 2 seconds, and find again.
+        private const int Interval = 2;
 
         //regex to match tag
         private static Regex _htmlReg = new Regex("<[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
