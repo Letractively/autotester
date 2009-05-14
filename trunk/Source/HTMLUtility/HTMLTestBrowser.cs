@@ -163,10 +163,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         foreach (IHTMLElement ele in doc.getElementsByName(name))
                         {
-                            if (ele != null)
-                            {
-                                allObjectList.Add(ele);
-                            }
+                            allObjectList.Add(ele);
                         }
                     }
                     catch
@@ -206,10 +203,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         foreach (IHTMLElement ele in doc.getElementsByTagName(name))
                         {
-                            if (ele != null)
-                            {
-                                allObjectList.Add(ele);
-                            }
+                            allObjectList.Add(ele);
                         }
                     }
                     catch

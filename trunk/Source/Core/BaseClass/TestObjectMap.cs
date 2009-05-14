@@ -266,7 +266,6 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-
         public ISelectable ListBox()
         {
             return ListBoxs()[0];
@@ -353,8 +352,7 @@ namespace Shrinerain.AutoTester.Core
 
                 if (!String.IsNullOrEmpty(type))
                 {
-                    string key = BuildKey(type.ToString() + name);
-
+                    string key = BuildKey(type + name);
                     TestObject cacheObj;
                     if (!String.IsNullOrEmpty(name) && ObjectCache.TryGetObjectFromCache(key, out cacheObj))
                     {
@@ -382,7 +380,14 @@ namespace Shrinerain.AutoTester.Core
                         }
                     }
 
-                    if (!found)
+                    if (found)
+                    {
+                        if (_lastObjects[0].IsExist())
+                        {
+                            ObjectCache.InsertObjectToCache(key, _lastObjects[0]);
+                        }
+                    }
+                    else
                     {
                         throw new ObjectNotFoundException(exception.Message);
                     }

@@ -889,44 +889,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-
                 int left = this._rect.Left;
                 int top = this._rect.Top;
                 int width = this._rect.Width;
                 int height = this._rect.Height;
 
-                IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
-
                 //if the control is not a windows standard control,we need to minus the browser top and left.
                 //because if it is NOT a windows control, then we consider it is a HTML control, when we get the handle,
                 //the handle is belonged to "Internet Explorer_Server", it not include the menu bar...
                 //so we need to minus the menu bar height and top to get the actual position.
-
                 if (!isWindowsControl)
                 {
                     left -= _browser.ClientLeft;
                     top -= _browser.ClientTop;
                 }
 
-                IntPtr hDC = Win32API.GetWindowDC(handle);
-                using (Pen pen = new Pen(Color.Red, 2))
-                {
-                    using (Graphics g = Graphics.FromHdc(hDC))
-                    {
-                        g.DrawRectangle(pen, left, top, width, height);
-                    }
-                }
-                Win32API.ReleaseDC(handle, hDC);
-
-                // the red rect last for 1 seconds.
-                Thread.Sleep(1000 * 1);
-
-                //refresh the window
-                Win32API.InvalidateRect(handle, IntPtr.Zero, 1);
-                Win32API.UpdateWindow(handle);
-                Win32API.RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, Win32API.RDW_FRAME | Win32API.RDW_INVALIDATE | Win32API.RDW_UPDATENOW | Win32API.RDW_ALLCHILDREN);
-
-                _actionFinished.Set();
+                ScreenCaptruer.HighlightScreenRect(left, top, width, height, 1000);
             }
             catch (Exception ex)
             {

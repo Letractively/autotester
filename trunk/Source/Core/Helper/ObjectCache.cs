@@ -26,10 +26,10 @@ namespace Shrinerain.AutoTester.Core
         #region fields
 
         //flag to specify if we will use cache.
-        private static bool _useCache = false;
+        private static bool _useCache = true;
 
         //we use a hashtable to store our test objects.
-        private static Dictionary<String, TestObject> _testObjectCache = new Dictionary<string, TestObject>();
+        private static Dictionary<String, TestObject> _testObjectCache = new Dictionary<string, TestObject>(101);
 
         #endregion
 
@@ -84,7 +84,6 @@ namespace Shrinerain.AutoTester.Core
 
             if (_useCache)
             {
-
                 if (String.IsNullOrEmpty(key))
                 {
                     return false;

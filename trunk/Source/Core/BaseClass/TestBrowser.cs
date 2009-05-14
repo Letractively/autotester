@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Net;
+using System.Runtime.InteropServices;
 
 using mshtml;
 using SHDocVw;
@@ -37,7 +38,7 @@ namespace Shrinerain.AutoTester.Core
         #region Fileds
 
         //stack to save the browser status.
-        protected Stack<InternetExplorer> _browserStack = new Stack<InternetExplorer>(5);
+        protected Stack<InternetExplorer> _browserStack = new Stack<InternetExplorer>(16);
         //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
         protected InternetExplorer _browser;
 
@@ -1574,16 +1575,14 @@ namespace Shrinerain.AutoTester.Core
                     return;
                 }
 
-                HTMLDocument rootDoc = _browser.Document as HTMLDocument;
-                HTMLDocument curDoc = ((pDesp as IWebBrowser2).Document as HTMLDocument);
-                if (rootDoc != null && (rootDoc == curDoc || rootDoc.parentWindow == curDoc.parentWindow))
+                if (_browser != null && _browser.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE && Marshal.GetIDispatchForObject(pDesp) == Marshal.GetIDispatchForObject(_browser))
                 {
                     string key = GetUrl();
                     _endTime = GetPerformanceTime();
                     _responseTime = _endTime - _startTime;
                     _performanceTimeHT.Add(key, _responseTime);
 
-                    _rootDocument = rootDoc;
+                    _rootDocument = _browser.Document as HTMLDocument;
 
                     GetSize();
 
