@@ -338,7 +338,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 catch (CannotGetObjectPositionException ex)
                 {
-                    throw new CannotBuildObjectException("Can not get object position: " + ex.Message);
+                    throw new CannotBuildObjectException("Can not get object position: " + ex.ToString());
                 }
                 catch (TestException)
                 {
@@ -346,7 +346,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotBuildObjectException(ex.Message);
+                    throw new CannotBuildObjectException(ex.ToString());
                 }
             }
             else

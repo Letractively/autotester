@@ -87,7 +87,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert IHTMLElement to IHTMLSelectElement: " + ex.Message);
+                throw new CannotBuildObjectException("Can not convert IHTMLElement to IHTMLSelectElement: " + ex.ToString());
             }
             try
             {
@@ -95,7 +95,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the list values: " + ex.Message);
+                throw new CannotBuildObjectException("Can not get the list values: " + ex.ToString());
             }
             try
             {
@@ -232,7 +232,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform select action on Combobox: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform select action on Combobox: " + ex.ToString());
             }
 
         }
@@ -269,7 +269,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #endregion
-
 
         #region IText methods
 
@@ -322,7 +321,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get windows caption: " + ex.Message);
+                throw new PropertyNotFoundException("Can not get windows caption: " + ex.ToString());
             }
         }
 

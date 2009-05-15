@@ -107,7 +107,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.ToString());
             }
 
         }
@@ -136,7 +136,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.ToString());
             }
 
         }
@@ -157,7 +157,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.ToString());
             }
         }
 
@@ -180,7 +180,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.ToString());
             }
         }
 
@@ -207,7 +207,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.Message);
+                    throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.ToString());
                 }
             }
         }
@@ -312,7 +312,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get property [" + propertyName + "]: " + ex.Message);
+                throw new PropertyNotFoundException("Can not get property [" + propertyName + "]: " + ex.ToString());
             }
         }
 

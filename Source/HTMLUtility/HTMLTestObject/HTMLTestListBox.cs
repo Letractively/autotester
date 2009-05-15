@@ -99,7 +99,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("HTML source element can not be null: " + ex.Message);
+                throw new CannotBuildObjectException("HTML source element can not be null: " + ex.ToString());
             }
 
             try
@@ -108,7 +108,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the list values: " + ex.Message);
+                throw new CannotBuildObjectException("Can not get the list values: " + ex.ToString());
             }
 
             try
@@ -126,7 +126,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get size of list box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not get size of list box: " + ex.ToString());
             }
 
             try
@@ -168,7 +168,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             //}
             catch //(Exception ex)
             {
-                // throw new CannotBuildObjectException("Can not get windows handle of list box: " + ex.Message);
+                // throw new CannotBuildObjectException("Can not get windows handle of list box: " + ex.ToString());
             }
 
             try
@@ -223,7 +223,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             SelectByIndex(index);
-
         }
 
         /* void SelectByIndex(int index)
@@ -280,9 +279,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not select by index: " + index.ToString() + ": " + ex.Message);
+                throw new CannotPerformActionException("Can not select by index: " + index.ToString() + ": " + ex.ToString());
             }
-
         }
 
         /* void SelectMulti(string[] values)
@@ -340,7 +338,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not select multi stings: " + values.ToString() + ": " + ex.Message);
+                throw new CannotPerformActionException("Can not select multi stings: " + values.ToString() + ": " + ex.ToString());
             }
         }
 
@@ -349,12 +347,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public String[] GetAllValues()
         {
-
             string[] values = new string[_htmlSelectElement.length];
 
             // 2008/01/10 wan,yu update change HTMLOptionElementClass to IHTMLOptionElement
             IHTMLOptionElement optionElement;
-
             try
             {
                 for (int i = 0; i < _htmlSelectElement.length; i++)
@@ -368,7 +364,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-
         }
 
         #region IWindows Interface
@@ -394,7 +389,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get windows caption: " + ex.Message);
+                throw new PropertyNotFoundException("Can not get windows caption: " + ex.ToString());
             }
         }
 
@@ -424,7 +419,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 Select(para.ToString());
             }
-
         }
 
         #endregion
@@ -484,7 +478,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return "";
             }
-
         }
 
         /* Point GetItemPosition(int index)
@@ -552,7 +545,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return new Point(itemX, itemY);
-
         }
 
         /* int GetTopIndex()
@@ -568,7 +560,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new PropertyNotFoundException("Can not get the first visible item.");
             }
-
         }
 
         /* int[] GetIndexByString(string[] value)
@@ -614,7 +605,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return res;
-
         }
 
         /* void HighLightRectCallback(object obj)
@@ -629,9 +619,5 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #endregion
-
-
-
     }
-
 }

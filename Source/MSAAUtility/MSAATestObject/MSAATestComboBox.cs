@@ -56,7 +56,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build combo box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build combo box: " + ex.ToString());
             }
         }
 
@@ -73,7 +73,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build combo box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build combo box: " + ex.ToString());
             }
         }
 
@@ -130,9 +130,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not select by value: " + ex.Message);
+                throw new CannotPerformActionException("Can not select by value: " + ex.ToString());
             }
-
         }
 
         public void SelectMulti(string[] strs)
@@ -182,7 +181,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new ItemNotFoundException("Can not get items of combo box: " + ex.Message);
+                throw new ItemNotFoundException("Can not get items of combo box: " + ex.ToString());
             }
         }
 
@@ -224,7 +223,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform action: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform action: " + ex.ToString());
             }
         }
 

@@ -26,7 +26,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 {
     public class MSAATestTextBox : MSAATestGUIObject, IInputable
     {
-
         #region fields
 
         protected String _text;
@@ -70,7 +69,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build Text Box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build Text Box: " + ex.ToString());
             }
         }
 
@@ -83,7 +82,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build Text Box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build Text Box: " + ex.ToString());
             }
         }
 
@@ -114,7 +113,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not input string: " + ex.Message);
+                throw new CannotPerformActionException("Can not input string: " + ex.ToString());
             }
         }
 
@@ -156,9 +155,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not clear text in text box: " + ex.Message);
+                throw new CannotPerformActionException("Can not clear text in text box: " + ex.ToString());
             }
-
         }
 
         #endregion
@@ -231,6 +229,5 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #endregion
 
         #endregion
-
     }
 }

@@ -83,7 +83,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build  Check Box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build  Check Box: " + ex.ToString());
             }
         }
 
@@ -97,7 +97,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build Check Box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build Check Box: " + ex.ToString());
             }
         }
 
@@ -127,7 +127,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click button: " + ex.Message);
+                throw new CannotPerformActionException("Can not click button: " + ex.ToString());
             }
         }
 
@@ -186,7 +186,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform action: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform action: " + ex.ToString());
             }
         }
 
@@ -238,9 +238,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not check checkbox: " + ex.Message);
+                throw new CannotPerformActionException("Can not check checkbox: " + ex.ToString());
             }
-
         }
 
         public void UnCheck()
@@ -258,7 +257,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not uncheck checkbox: " + ex.Message);
+                throw new CannotPerformActionException("Can not uncheck checkbox: " + ex.ToString());
             }
         }
 
@@ -273,7 +272,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 return false;
             }
-
         }
 
         #endregion

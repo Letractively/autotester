@@ -67,7 +67,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAddMapObjectException("Can not add object[" + name + "] to map: " + ex.Message);
+                throw new CannotAddMapObjectException("Can not add object[" + name + "] to map: " + ex.ToString());
             }
         }
 
@@ -393,7 +393,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetMapObjectException("Can not get object from map: " + ex.Message);
+                throw new CannotGetMapObjectException("Can not get object from map: " + ex.ToString());
             }
         }
 

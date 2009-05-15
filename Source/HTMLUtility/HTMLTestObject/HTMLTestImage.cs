@@ -31,7 +31,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public class HTMLTestImage : HTMLTestGUIObject, IClickable, IPicture
     {
-
         #region fields
 
         // the src of the image, eg: http://www.google.com/111.jpg
@@ -62,7 +61,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert to IHTMLImgElement: " + ex.Message);
+                throw new CannotBuildObjectException("Can not convert to IHTMLImgElement: " + ex.ToString());
             }
 
             try
@@ -72,7 +71,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get the source of image: " + ex.Message);
+                throw new CannotBuildObjectException("Can not get the source of image: " + ex.ToString());
             }
         }
 
@@ -97,7 +96,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotSaveControlPrintException("Can not get image print: " + ex.Message);
+                throw new CannotSaveControlPrintException("Can not get image print: " + ex.ToString());
             }
         }
 
@@ -151,7 +150,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click an image: " + ex.Message);
+                throw new CannotPerformActionException("Can not click an image: " + ex.ToString());
             }
         }
 

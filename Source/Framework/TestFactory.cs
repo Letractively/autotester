@@ -124,7 +124,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception ex)
             {
-                throw new CannotLoadDllException("Can not create instance of test app: " + ex.Message);
+                throw new CannotLoadDllException("Can not create instance of test app: " + ex.ToString());
             }
 
             if (_app == null)
@@ -159,7 +159,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception ex)
             {
-                throw new CannotLoadDllException("Can not create instance of Test Browser: " + ex.Message);
+                throw new CannotLoadDllException("Can not create instance of Test Browser: " + ex.ToString());
             }
 
             if (_browser == null)
@@ -189,7 +189,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception ex)
             {
-                throw new CannotLoadDllException("Can not create instance of test object pool: " + ex.Message);
+                throw new CannotLoadDllException("Can not create instance of test object pool: " + ex.ToString());
             }
             if (_objPool == null)
             {
@@ -218,7 +218,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception ex)
             {
-                throw new CannotLoadDllException("Can not create instance of test VP: " + ex.Message);
+                throw new CannotLoadDllException("Can not create instance of test VP: " + ex.ToString());
             }
             if (_testVP == null)
             {
@@ -333,7 +333,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotLoadDllException("Can not find the dll path: " + ex.Message);
+                    throw new CannotLoadDllException("Can not find the dll path: " + ex.ToString());
                 }
             }
         }

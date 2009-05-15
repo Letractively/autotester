@@ -97,7 +97,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not get all objects: " + ex.Message);
+                throw new ObjectNotFoundException("Can not get all objects: " + ex.ToString());
             }
         }
 
@@ -134,7 +134,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found test object by id:" + id + ": " + ex.Message);
+                throw new ObjectNotFoundException("Can not found test object by id:" + id + ": " + ex.ToString());
             }
         }
 
@@ -174,7 +174,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found test object by name:" + name + ":" + ex.Message);
+                throw new ObjectNotFoundException("Can not found test object by name:" + name + ":" + ex.ToString());
             }
         }
 
@@ -214,7 +214,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found test object by tag name:" + name + ":" + ex.Message);
+                throw new ObjectNotFoundException("Can not found test object by tag name:" + name + ":" + ex.ToString());
             }
         }
 
@@ -229,7 +229,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + ex.Message);
+                throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + ex.ToString());
             }
         }
 

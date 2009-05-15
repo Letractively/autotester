@@ -67,21 +67,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert to ITHMLTable element: " + ex.Message);
+                throw new CannotBuildObjectException("Can not convert to ITHMLTable element: " + ex.ToString());
             }
 
             try
             {
                 //get row count
                 _rowCount = _tableElement.rows.length;
-
                 //get col count of the first row.
                 _tableRowElement = (IHTMLTableRow)_tableElement.rows.item((object)0, (object)0);
                 _colCount = _tableRowElement.cells.length;
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get row count and/or col count: " + ex.Message);
+                throw new CannotBuildObjectException("Can not get row count and/or col count: " + ex.ToString());
             }
         }
 
@@ -113,7 +112,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get row count of column: " + ex.Message);
+                throw new PropertyNotFoundException("Can not get row count of column: " + ex.ToString());
             }
         }
 
@@ -129,7 +128,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get column count of row:" + row.ToString() + ": " + ex.Message);
+                throw new PropertyNotFoundException("Can not get column count of row:" + row.ToString() + ": " + ex.ToString());
             }
         }
 
@@ -157,7 +156,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get text of cell:[" + row.ToString() + "," + col.ToString() + "]: " + ex.Message);
+                throw new PropertyNotFoundException("Can not get text of cell:[" + row.ToString() + "," + col.ToString() + "]: " + ex.ToString());
             }
         }
 
@@ -175,7 +174,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         return (HTMLTestGUIObject)i;
                     }
-
                 }
             }
 
@@ -189,30 +187,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-
                 IHTMLElement cellChild = (IHTMLElement)GetElementByCell(row, col);
-
                 IHTMLElementCollection cellChildren = (IHTMLElementCollection)cellChild.all;
-
-
                 if (cellChildren.length > 0)
                 {
                     HTMLTestGUIObject[] tmpObjects = new HTMLTestGUIObject[cellChildren.length];
-
-                    object name;
-                    object index;
-
                     IHTMLElement tmpElement;
 
                     for (int i = 0; i < cellChildren.length; i++)
                     {
-                        name = (object)i;
-                        index = (object)i;
-
+                        object index = (object)i;
                         try
                         {
-                            tmpElement = (IHTMLElement)cellChildren.item(name, index);
-
+                            tmpElement = (IHTMLElement)cellChildren.item(index, index);
                             tmpObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject(tmpElement, this._browser, this._pool);
                         }
                         catch
@@ -227,7 +214,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     throw new ObjectNotFoundException("Can not get objects by cell[" + row.ToString() + "],[" + col.ToString() + "].");
                 }
-
             }
             catch (ObjectNotFoundException)
             {
@@ -235,9 +221,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not get objects by cell[" + row.ToString() + "],[" + col.ToString() + "]: " + ex.Message);
+                throw new ObjectNotFoundException("Can not get objects by cell[" + row.ToString() + "],[" + col.ToString() + "]: " + ex.ToString());
             }
-
         }
 
         #endregion
@@ -323,21 +308,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 //get the expected row.
                 _tableRowElement = (IHTMLTableRow)_tableElement.rows.item((object)row, (object)row);
-
                 //return the expected cell.
                 return (IHTMLElement)_tableRowElement.cells.item((object)col, (object)col);
             }
             catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not get element by cell[" + row.ToString() + "," + col.ToString() + "]: " + ex.Message);
+                throw new ObjectNotFoundException("Can not get element by cell[" + row.ToString() + "," + col.ToString() + "]: " + ex.ToString());
             }
 
         }
 
-
         #endregion
 
         #endregion
-
     }
 }

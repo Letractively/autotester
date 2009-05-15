@@ -140,7 +140,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build GUI object: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build GUI object: " + ex.ToString());
             }
         }
 
@@ -153,7 +153,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build GUI object: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build GUI object: " + ex.ToString());
             }
         }
 

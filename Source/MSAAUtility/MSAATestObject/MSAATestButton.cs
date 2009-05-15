@@ -61,7 +61,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build Button: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build Button: " + ex.ToString());
             }
         }
 
@@ -74,7 +74,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build Button: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build Button: " + ex.ToString());
             }
         }
 
@@ -104,7 +104,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click button: " + ex.Message);
+                throw new CannotPerformActionException("Can not click button: " + ex.ToString());
             }
         }
 

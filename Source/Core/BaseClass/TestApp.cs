@@ -257,7 +257,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotStopAppException("Can not stop test application: " + ex.Message);
+                    throw new CannotStopAppException("Can not stop test application: " + ex.ToString());
                 }
             }
         }
@@ -286,7 +286,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotMoveAppException("Can not move window: " + ex.Message);
+                throw new CannotMoveAppException("Can not move window: " + ex.ToString());
             }
         }
 
@@ -304,7 +304,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotResizeAppException("Can not resize application to " + left.ToString() + "," + top.ToString() + "," + width.ToString() + "," + height.ToString() + ": " + ex.Message);
+                throw new CannotResizeAppException("Can not resize application to " + left.ToString() + "," + top.ToString() + "," + width.ToString() + "," + height.ToString() + ": " + ex.ToString());
             }
         }
 
@@ -321,7 +321,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotMaxAppException("Can not max size test application: " + ex.Message);
+                throw new CannotMaxAppException("Can not max size test application: " + ex.ToString());
             }
         }
 
@@ -348,7 +348,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotResizeAppException("Can not restore window: " + ex.Message);
+                throw new CannotResizeAppException("Can not restore window: " + ex.ToString());
             }
         }
 
@@ -365,7 +365,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotActiveAppException("Can not active test application: " + ex.Message);
+                throw new CannotActiveAppException("Can not active test application: " + ex.ToString());
             }
         }
 
@@ -385,7 +385,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotWaitAppException("Can not wait test application: " + ex.Message);
+                throw new CannotWaitAppException("Can not wait test application: " + ex.ToString());
             }
         }
 
@@ -420,7 +420,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new AppNotFoundExpcetion("Can not find test app: " + ex.Message);
+                throw new AppNotFoundExpcetion("Can not find test app: " + ex.ToString());
             }
         }
 
@@ -455,7 +455,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotStopAppException("Test app is still existed: " + ex.Message);
+                throw new CannotStopAppException("Test app is still existed: " + ex.ToString());
             }
         }
 
@@ -478,7 +478,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.Message);
+                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.ToString());
             }
         }
 
@@ -497,7 +497,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.Message);
+                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.ToString());
             }
         }
 
@@ -514,7 +514,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.Message);
+                throw new CannotGetAppStatusException("Can not determine if test app is active: " + ex.ToString());
             }
         }
 
@@ -538,7 +538,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetAppInfoException("Can not get size of test app: " + ex.Message);
+                throw new CannotGetAppInfoException("Can not get size of test app: " + ex.ToString());
             }
         }
 

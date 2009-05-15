@@ -142,7 +142,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 catch (Exception ex)
                 {
-                    throw new NullObjectPoolException(ex.Message);
+                    throw new NullObjectPoolException(ex.ToString());
                 }
             }
         }
