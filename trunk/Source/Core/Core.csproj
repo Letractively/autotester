@@ -86,7 +86,6 @@
     <Compile Include="ObjectInterface\IText.cs" />
     <Compile Include="ObjectInterface\IVisible.cs" />
     <Compile Include="ObjectInterface\IWindows.cs" />
-    <Compile Include="Interface\ITestAction.cs" />
     <Compile Include="Interface\ITestApp.cs" />
     <Compile Include="Interface\ITestBrowser.cs" />
     <Compile Include="Interface\ITestCheckPoint.cs" />

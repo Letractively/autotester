@@ -23,11 +23,7 @@ namespace Shrinerain.AutoTester.Framework
 {
     public sealed class ActionEngine
     {
-
         #region fields
-
-        //interface to perform real action.
-        private ITestAction _testAction;
 
         #endregion
 
@@ -42,7 +38,6 @@ namespace Shrinerain.AutoTester.Framework
 
         public ActionEngine()
         {
-            LoadPlugin();
         }
 
         #endregion
@@ -67,7 +62,7 @@ namespace Shrinerain.AutoTester.Framework
 
             if (action == "CLICK")
             {
-                _testAction.Click(obj);
+                (obj as IClickable).Click();
             }
             else if (action == "INPUT")
             {
@@ -76,16 +71,7 @@ namespace Shrinerain.AutoTester.Framework
                     throw new CannotPerformActionException("Input data can not be empty.");
                 }
 
-                _testAction.Input(obj, data);
-            }
-            else if (action == "INPUTKEYS")
-            {
-                if (isDataNull)
-                {
-                    throw new CannotPerformActionException("Inputkeys can not input empty data.");
-                }
-
-                _testAction.InputKeys(obj, data);
+                (obj as IInputable).Input(data);
             }
             else if (action == "SELECT")
             {
@@ -96,7 +82,7 @@ namespace Shrinerain.AutoTester.Framework
                 }
                 else
                 {
-                    _testAction.Select(obj, data);
+                    (obj as ISelectable).Select(data);
                 }
             }
             else if (action == "SELECTINDEX")
@@ -105,23 +91,24 @@ namespace Shrinerain.AutoTester.Framework
                 {
                     data = "0";
                 }
-                _testAction.SelectIndex(obj, int.Parse(data));
+
+                (obj as ISelectable).SelectByIndex(int.Parse(data));
             }
             else if (action == "CHECK")
             {
-                _testAction.Check(obj);
+                (obj as ICheckable).Check();
             }
             else if (action == "UNCHECK")
             {
-                _testAction.UnCheck(obj);
+                (obj as ICheckable).UnCheck();
             }
             else if (action == "CLEAR")
             {
-                _testAction.Clear(obj);
+                (obj as IInputable).Clear();
             }
             else if (action == "HOVER")
             {
-                _testAction.Hover(obj);
+                (obj as IVisible).Hover();
             }
             else
             {
@@ -133,15 +120,6 @@ namespace Shrinerain.AutoTester.Framework
         #endregion
 
         #region private methods
-
-        /* void LoadPlugin()
-         * Load ITestAction interface to perform actions.
-         * 
-         */
-        private void LoadPlugin()
-        {
-            _testAction = TestFactory.CreateTestAction();
-        }
 
         #endregion
 

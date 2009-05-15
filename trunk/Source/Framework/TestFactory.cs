@@ -60,7 +60,6 @@ namespace Shrinerain.AutoTester.Framework
         private static ITestBrowser _browser;
         private static ITestApp _app;
         private static ITestObjectPool _objPool;
-        private static ITestAction _actionPool;
         private static ITestCheckPoint _testVP;
 
         //the dll path
@@ -199,36 +198,6 @@ namespace Shrinerain.AutoTester.Framework
             else
             {
                 return _objPool;
-            }
-
-        }
-
-        /* ITestAction CreateTestAction()
-         * return ITestAction interface.
-         * This interface is used to perform actions on test object.
-         */
-        public static ITestAction CreateTestAction()
-        {
-            if (String.IsNullOrEmpty(_testActionDLL))
-            {
-                throw new CannotLoadDllException("Test action dll can not be null.");
-            }
-            try
-            {
-                _actionPool = (ITestAction)LoadDll(_testActionDLL, _testActionClassName);
-            }
-            catch (Exception ex)
-            {
-                throw new CannotLoadDllException("Can not create instance of test action: " + ex.Message);
-            }
-
-            if (_actionPool == null)
-            {
-                throw new CannotLoadDllException("Can not create instance of test action.");
-            }
-            else
-            {
-                return _actionPool;
             }
 
         }

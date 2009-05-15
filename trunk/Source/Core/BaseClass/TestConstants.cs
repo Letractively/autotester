@@ -25,9 +25,7 @@ namespace Shrinerain.AutoTester.Core
         public const string IE_EXE = "iexplore.exe";
         public const string IE_Process_Name = "iexplore";
         public const string IE_Reg_Path = @"Software\Microsoft\Internet Explorer";
-        public const string IE_TitleTail = " - Windows Internet Explorer";
         public const string IE_BlankPage_Url = "about:blank";
-        public const string IE_BlankPage_Title = "Blank Page";
 
         #endregion
     }
