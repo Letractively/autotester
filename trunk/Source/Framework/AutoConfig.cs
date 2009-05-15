@@ -272,7 +272,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception ex)
             {
-                throw new CannotOpenConfigFileException(ex.Message);
+                throw new CannotOpenConfigFileException(ex.ToString());
             }
 
             try

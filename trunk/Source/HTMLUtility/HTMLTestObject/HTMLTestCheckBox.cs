@@ -27,7 +27,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public class HTMLTestCheckBox : HTMLTestGUIObject, ICheckable, IText, IStatus
     {
-
         #region fields
 
         //the HTML element of HTMLTestCheckBox.
@@ -56,7 +55,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get IHTMLInputElement: " + ex.Message);
+                throw new CannotBuildObjectException("Can not get IHTMLInputElement: " + ex.ToString());
             }
 
         }
@@ -83,7 +82,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform Check action on checkbox: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform Check action on checkbox: " + ex.ToString());
             }
 
         }
@@ -103,7 +102,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform UnCheck action on checkbox: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform UnCheck action on checkbox: " + ex.ToString());
             }
         }
 
@@ -115,7 +114,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not get status of checkbox: " + ex.Message);
+                throw new CannotPerformActionException("Can not get status of checkbox: " + ex.ToString());
             }
         }
 
@@ -157,7 +156,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click on the checkbox: " + ex.Message);
+                throw new CannotPerformActionException("Can not click on the checkbox: " + ex.ToString());
             }
         }
 
@@ -275,6 +274,5 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #endregion
-
     }
 }

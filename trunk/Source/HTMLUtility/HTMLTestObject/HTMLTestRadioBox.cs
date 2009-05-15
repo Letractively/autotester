@@ -47,7 +47,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
 
             this._type = HTMLTestObjectType.RadioBox;
-
             this._isDelayAfterAction = false;
 
             try
@@ -56,7 +55,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert to IHTMLInputElement: " + ex.Message);
+                throw new CannotBuildObjectException("Can not convert to IHTMLInputElement: " + ex.ToString());
             }
         }
 
@@ -81,9 +80,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform Check action on radio button: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform Check action on radio button: " + ex.ToString());
             }
-
         }
 
         public virtual void UnCheck()
@@ -101,7 +99,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform UnCheck action on radio button: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform UnCheck action on radio button: " + ex.ToString());
             }
         }
 
@@ -113,7 +111,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not get status of radio button: " + ex.Message);
+                throw new CannotPerformActionException("Can not get status of radio button: " + ex.ToString());
             }
         }
 
@@ -155,7 +153,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not click on the radio button: " + ex.Message);
+                throw new CannotPerformActionException("Can not click on the radio button: " + ex.ToString());
             }
         }
 
@@ -187,7 +185,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not focus on radiobox: " + ex.Message);
+                throw new CannotPerformActionException("Can not focus on radiobox: " + ex.ToString());
             }
         }
 
@@ -257,7 +255,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
-
                 //we will search right cell and up cell.
                 int[] searchDirs = new int[] { 1, 3, 0 };
                 foreach (int currentDir in searchDirs)
@@ -273,14 +270,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
-
                 return null;
             }
             catch
             {
                 return null;
             }
-
         }
         #endregion
 

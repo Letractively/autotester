@@ -344,7 +344,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new Exception("Can not send email: " + ex.Message);
+                throw new Exception("Can not send email: " + ex.ToString());
             }
             finally
             {
@@ -391,7 +391,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new Exception("Can not create a new mail: " + ex.Message);
+                throw new Exception("Can not create a new mail: " + ex.ToString());
             }
 
         }

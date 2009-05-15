@@ -278,7 +278,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotGetObjectPositionException("Can not get object position: " + ex.Message);
+                throw new CannotGetObjectPositionException("Can not get object position: " + ex.ToString());
             }
         }
 
@@ -299,7 +299,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotSaveControlPrintException("Can not get control print: " + ex.Message);
+                throw new CannotSaveControlPrintException("Can not get control print: " + ex.ToString());
             }
         }
 
@@ -319,7 +319,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotSaveControlPrintException("Can not save control print to a jpg file: " + ex.Message);
+                throw new CannotSaveControlPrintException("Can not save control print to a jpg file: " + ex.ToString());
             }
         }
 
@@ -687,7 +687,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform Hover action:" + ex.Message);
+                throw new CannotPerformActionException("Can not perform Hover action:" + ex.ToString());
             }
         }
 
@@ -715,7 +715,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotHighlightObjectException("Can not highlight the object: " + ex.Message);
+                throw new CannotHighlightObjectException("Can not highlight the object: " + ex.ToString());
             }
 
         }
@@ -908,7 +908,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotHighlightObjectException("Can not high light object: " + ex.Message);
+                throw new CannotHighlightObjectException("Can not high light object: " + ex.ToString());
             }
         }
 

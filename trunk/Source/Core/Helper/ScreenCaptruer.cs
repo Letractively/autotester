@@ -59,7 +59,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new Exception("Can not save control print: " + ex.Message);
+                throw new Exception("Can not save control print: " + ex.ToString());
             }
         }
 
@@ -75,7 +75,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new Exception("Can not save screen area: " + ex.Message);
+                throw new Exception("Can not save screen area: " + ex.ToString());
             }
         }
 
@@ -96,7 +96,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new Exception("Can not save screen print file: " + fileName + "," + ex.Message);
+                throw new Exception("Can not save screen print file: " + fileName + "," + ex.ToString());
             }
         }
 
@@ -180,7 +180,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new Exception(ex.ToString());
             }
         }
 
@@ -210,7 +210,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new Exception("Can not capture rect: " + ex.Message);
+                throw new Exception("Can not capture rect: " + ex.ToString());
             }
         }
 

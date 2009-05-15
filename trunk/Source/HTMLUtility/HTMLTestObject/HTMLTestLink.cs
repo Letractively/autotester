@@ -75,7 +75,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert to HTMLAnchorElement: " + ex.Message);
+                throw new CannotBuildObjectException("Can not convert to HTMLAnchorElement: " + ex.ToString());
             }
 
             try
@@ -98,7 +98,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                //throw new CannotBuildObjectException("Can not get the image of link: " + ex.Message);
+                //throw new CannotBuildObjectException("Can not get the image of link: " + ex.ToString());
             }
 
             try
@@ -108,7 +108,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not get href of link: " + ex.Message);
+                throw new CannotBuildObjectException("Can not get href of link: " + ex.ToString());
             }
         }
 
@@ -152,9 +152,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform click action of link.");
+                throw new CannotPerformActionException("Can not perform click action of link: " + ex.ToString());
             }
         }
 
@@ -192,7 +192,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not focus: " + ex.Message);
+                throw new CannotPerformActionException("Can not focus: " + ex.ToString());
             }
 
         }
@@ -239,14 +239,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
-
-        /* HTMLTestObject[] GetLinkChildren()
-         * Return the children object of link
-         */
-        //protected virtual HTMLTestObject[] GetLinkChildren()
-        //{
-        //    return GetChildren();
-        //}
 
         /* bool IsImage()
          * Return true if the link is an image link.

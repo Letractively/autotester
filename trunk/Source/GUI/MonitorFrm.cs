@@ -199,7 +199,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.ToString());
             }
 
         }
@@ -212,7 +212,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.ToString());
             }
 
         }

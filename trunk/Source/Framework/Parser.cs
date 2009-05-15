@@ -374,7 +374,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception ex)
             {
-                throw new BadFormatDriverFileException("Can not get main test steps: " + ex.Message);
+                throw new BadFormatDriverFileException("Can not get main test steps: " + ex.ToString());
             }
             finally
             {
@@ -454,7 +454,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception ex)
             {
-                throw new BadFormatDriverFileException("Can not get test subs: " + ex.Message);
+                throw new BadFormatDriverFileException("Can not get test subs: " + ex.ToString());
             }
             finally
             {
@@ -523,7 +523,7 @@ namespace Shrinerain.AutoTester.Framework
             }
             catch (Exception ex)
             {
-                throw new BadFormatDriverFileException("Can not get test data pool: " + ex.Message);
+                throw new BadFormatDriverFileException("Can not get test data pool: " + ex.ToString());
             }
             finally
             {

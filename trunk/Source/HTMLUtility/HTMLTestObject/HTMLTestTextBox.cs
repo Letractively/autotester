@@ -101,7 +101,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build text box: " + ex.Message);
+                throw new CannotBuildObjectException("Can not build text box: " + ex.ToString());
             }
 
         }
@@ -115,20 +115,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void Input(string value)
         {
-
-            if (value == null)
-            {
-                value = "";
-            }
-
+            value = (value == null ? "" : value);
             try
             {
                 _actionFinished.WaitOne();
 
-                string originText = GetText();
-
                 Focus();
 
+                string originText = GetText();
                 if (_sendMsgOnly)
                 {
                     string curStr = originText + value;
@@ -144,7 +138,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-
                     //or send the chars by keyboard
                     KeyboardOp.SendChars(value);
 
@@ -161,7 +154,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 _actionFinished.Set();
-
             }
             catch (TestException)
             {
@@ -169,7 +161,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform Input action: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform Input action: " + ex.ToString());
             }
         }
 
@@ -186,7 +178,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     Focus();
                     KeyboardOp.SendKey(keys);
-
                     if (_isDelayAfterAction)
                     {
                         System.Threading.Thread.Sleep(_delayTime * 1000);
@@ -200,7 +191,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotPerformActionException("Can not input keys: " + keys + " to textbox :" + ex.Message);
+                    throw new CannotPerformActionException("Can not input keys: " + keys + " to textbox :" + ex.ToString());
                 }
             }
         }
@@ -241,7 +232,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform clear action: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform clear action: " + ex.ToString());
             }
         }
 
@@ -269,7 +260,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not perform focus action: " + ex.Message);
+                throw new CannotPerformActionException("Can not perform focus action: " + ex.ToString());
             }
         }
 
@@ -408,7 +399,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-                //throw new CannotPerformActionException("Can not click above the text box: " + ex.Message);
+                //throw new CannotPerformActionException("Can not click above the text box: " + ex.ToString());
             }
         }
         #endregion

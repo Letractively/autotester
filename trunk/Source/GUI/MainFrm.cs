@@ -95,7 +95,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception ex)
             {
-                AutoTesterErrorMsgBox("Error: Can not start testing: " + ex.Message);
+                AutoTesterErrorMsgBox("Error: Can not start testing: " + ex.ToString());
             }
         }
 
@@ -120,7 +120,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception ex)
             {
-                AutoTesterErrorMsgBox("Error: Can not pause testing: " + ex.Message);
+                AutoTesterErrorMsgBox("Error: Can not pause testing: " + ex.ToString());
 
             }
         }
@@ -219,7 +219,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception ex)
             {
-                AutoTesterErrorMsgBox("Error: Can not parse config file: " + ex.Message);
+                AutoTesterErrorMsgBox("Error: Can not parse config file: " + ex.ToString());
             }
 
         }
@@ -326,7 +326,7 @@ namespace Shrinerain.AutoTester.GUI
                 }
                 catch (Exception ex)
                 {
-                    AutoTesterErrorMsgBox("Can not save config file: " + ex.Message);
+                    AutoTesterErrorMsgBox("Can not save config file: " + ex.ToString());
                 }
             }
         }
@@ -377,7 +377,7 @@ namespace Shrinerain.AutoTester.GUI
             }
             catch (Exception ex)
             {
-                AutoTesterErrorMsgBox(ex.Message);
+                AutoTesterErrorMsgBox(ex.ToString());
             }
 
         }

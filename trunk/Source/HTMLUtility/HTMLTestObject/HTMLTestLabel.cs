@@ -73,7 +73,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert to Label element: " + ex.Message);
+                throw new CannotBuildObjectException("Can not convert to Label element: " + ex.ToString());
             }
 
             //get text of the label.
@@ -122,7 +122,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get font family: " + ex.Message);
+                throw new PropertyNotFoundException("Can not get font family: " + ex.ToString());
             }
         }
 
@@ -148,7 +148,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get font size: " + ex.Message);
+                throw new PropertyNotFoundException("Can not get font size: " + ex.ToString());
             }
         }
 
@@ -174,7 +174,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new PropertyNotFoundException("Can not get font color: " + ex.Message);
+                throw new PropertyNotFoundException("Can not get font color: " + ex.ToString());
             }
         }
 

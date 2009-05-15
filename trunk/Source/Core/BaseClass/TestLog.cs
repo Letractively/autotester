@@ -415,7 +415,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotWriteLogException(ex.Message);
+                    throw new CannotWriteLogException(ex.ToString());
                 }
             }
 
@@ -482,7 +482,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotWriteLogException(ex.Message);
+                throw new CannotWriteLogException(ex.ToString());
             }
 
         }
@@ -507,7 +507,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotWriteLogException(ex.Message);
+                throw new CannotWriteLogException(ex.ToString());
             }
         }
 
@@ -529,7 +529,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotWriteLogException(ex.Message);
+                throw new CannotWriteLogException(ex.ToString());
             }
         }
 
@@ -632,7 +632,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotWriteLogException("Can not write property+ " + propertyName + " : " + ex.Message);
+                throw new CannotWriteLogException("Can not write property+ " + propertyName + " : " + ex.ToString());
             }
 
         }

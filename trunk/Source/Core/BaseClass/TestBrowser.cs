@@ -279,7 +279,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotStartBrowserException("Can not start Internet explorer: " + ex.Message);
+                throw new CannotStartBrowserException("Can not start Internet explorer: " + ex.ToString());
             }
         }
 
@@ -329,7 +329,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not find test browser: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not find test browser: " + ex.ToString());
             }
         }
 
@@ -348,7 +348,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotStopBrowserException("Can not close browser: " + ex.Message);
+                throw new CannotStopBrowserException("Can not close browser: " + ex.ToString());
             }
         }
 
@@ -377,7 +377,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotLoadUrlException("Can not load url: " + url + " : " + ex.Message);
+                throw new CannotLoadUrlException("Can not load url: " + url + " : " + ex.ToString());
             }
 
             //wait until the HTML web page is loaded successfully.
@@ -404,7 +404,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotNavigateException("Can not go back: " + ex.Message);
+                throw new CannotNavigateException("Can not go back: " + ex.ToString());
             }
         }
 
@@ -424,7 +424,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotNavigateException("Can not go forward: " + ex.Message);
+                throw new CannotNavigateException("Can not go forward: " + ex.ToString());
             }
         }
 
@@ -444,7 +444,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotNavigateException("Can not go home: " + ex.Message);
+                throw new CannotNavigateException("Can not go home: " + ex.ToString());
             }
         }
 
@@ -464,7 +464,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotNavigateException("Can not refresh: " + ex.Message);
+                throw new CannotNavigateException("Can not refresh: " + ex.ToString());
             }
         }
 
@@ -523,7 +523,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotStopBrowserException("Can not close dialog: " + ex.Message);
+                    throw new CannotStopBrowserException("Can not close dialog: " + ex.ToString());
                 }
             }
         }
@@ -549,7 +549,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the current url: " + ex.Message);
+                throw new CannotGetBrowserInfoException("Can not get the current url: " + ex.ToString());
             }
         }
 
@@ -569,7 +569,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the current url: " + ex.Message);
+                throw new CannotGetBrowserInfoException("Can not get the current url: " + ex.ToString());
             }
         }
 
@@ -589,7 +589,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the status text: " + ex.Message);
+                throw new CannotGetBrowserInfoException("Can not get the status text: " + ex.ToString());
             }
         }
 
@@ -610,7 +610,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the menu status: " + ex.Message);
+                throw new CannotGetBrowserInfoException("Can not get the menu status: " + ex.ToString());
             }
         }
 
@@ -631,7 +631,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the resize status: " + ex.Message);
+                throw new CannotGetBrowserInfoException("Can not get the resize status: " + ex.ToString());
             }
         }
 
@@ -652,7 +652,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetBrowserInfoException("Can not get the full screen status: " + ex.Message);
+                throw new CannotGetBrowserInfoException("Can not get the full screen status: " + ex.ToString());
             }
         }
 
@@ -919,7 +919,7 @@ namespace Shrinerain.AutoTester.Core
                     }
                     catch (Exception ex)
                     {
-                        throw new BrowserNotFoundException(ex.Message);
+                        throw new BrowserNotFoundException(ex.ToString());
                     }
                 }
                 else
@@ -1096,7 +1096,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch (Exception ex)
                 {
-                    throw new CannotAttachBrowserException("Can not set browser: " + ex.Message);
+                    throw new CannotAttachBrowserException("Can not set browser: " + ex.ToString());
                 }
                 finally
                 {
@@ -1120,7 +1120,7 @@ namespace Shrinerain.AutoTester.Core
                 catch (Exception ex)
                 {
                     this._browser = null;
-                    throw new CannotAttachBrowserException("Can not get previous handle: " + ex.Message);
+                    throw new CannotAttachBrowserException("Can not get previous handle: " + ex.ToString());
                 }
             }
         }
@@ -1180,7 +1180,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not get the rect: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not get the rect: " + ex.ToString());
             }
         }
 
@@ -1249,7 +1249,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not get client size of test browser: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not get client size of test browser: " + ex.ToString());
             }
         }
 
@@ -1274,7 +1274,7 @@ namespace Shrinerain.AutoTester.Core
             //    }
             //    catch (Exception ex)
             //    {
-            //        throw new CannotAttachBrowserException("Can not get scroll size: " + ex.Message);
+            //        throw new CannotAttachBrowserException("Can not get scroll size: " + ex.ToString());
             //    }
             //}
         }
@@ -1422,7 +1422,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not register Quit event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register Quit event: " + ex.ToString());
             }
         }
 
@@ -1435,7 +1435,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not register Downloadbegin event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register Downloadbegin event: " + ex.ToString());
             }
         }
 
@@ -1448,7 +1448,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not register new window event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register new window event: " + ex.ToString());
             }
         }
 
@@ -1460,7 +1460,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not register document complete event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register document complete event: " + ex.ToString());
             }
         }
 
@@ -1475,7 +1475,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not register Rect change event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register Rect change event: " + ex.ToString());
             }
         }
 
@@ -1489,7 +1489,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not register navigate event: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not register navigate event: " + ex.ToString());
             }
         }
 
@@ -1511,7 +1511,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Can not attach new window: " + ex.Message);
+                throw new CannotAttachBrowserException("Can not attach new window: " + ex.ToString());
             }
         }
 
@@ -1530,7 +1530,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException(ex.Message);
+                throw new CannotAttachBrowserException(ex.ToString());
             }
         }
 
@@ -1553,7 +1553,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Error OnDownLoadBegin: " + ex.Message);
+                throw new CannotAttachBrowserException("Error OnDownLoadBegin: " + ex.ToString());
             }
         }
 
@@ -1595,7 +1595,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Error OnDocumentLoadComplete: " + ex.Message);
+                throw new CannotAttachBrowserException("Error OnDocumentLoadComplete: " + ex.ToString());
             }
         }
 
@@ -1615,7 +1615,7 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotAttachBrowserException("Error OnRectChanged: " + ex.Message);
+                throw new CannotAttachBrowserException("Error OnRectChanged: " + ex.ToString());
             }
         }
 

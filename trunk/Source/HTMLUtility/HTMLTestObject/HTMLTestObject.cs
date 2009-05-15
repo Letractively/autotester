@@ -137,7 +137,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not convert element to IHTMLElement: " + ex.Message);
+                throw new CannotBuildObjectException("Can not convert element to IHTMLElement: " + ex.ToString());
             }
 
             try
@@ -148,7 +148,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not find tag name: " + ex.Message);
+                throw new CannotBuildObjectException("Can not find tag name: " + ex.ToString());
             }
 
             try
@@ -158,7 +158,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("ID is not found of element " + element.ToString() + ": " + ex.Message);
+                throw new CannotBuildObjectException("ID is not found of element " + element.ToString() + ": " + ex.ToString());
             }
 
             try
@@ -177,7 +177,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._name = "";
             }
-
         }
 
         ~HTMLTestObject()
@@ -211,7 +210,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public override object GetProperty(string propertyName)
         {
             string value;
-
             if (TryGetProperty(this._sourceElement, propertyName, out value))
             {
                 return value;
@@ -220,7 +218,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new PropertyNotFoundException("Property " + propertyName + " not found.");
             }
-
         }
 
         /* bool SetPropertyByName(string propertyName, object value)
@@ -254,14 +251,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 IHTMLElement tmpElement = (IHTMLElement)element;
-
                 return TryGetProperty(tmpElement, propertyName, out value);
             }
             catch
             {
                 return false;
             }
-
         }
 
 
@@ -336,7 +331,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
-
         }
 
         /* bool TrySetValueByProperty(IHTMLElement element, string propertyName, object value)
@@ -354,7 +348,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 element.setAttribute(propertyName, value, 0);
-
                 return true;
             }
             catch
@@ -387,7 +380,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not get status: " + ex.Message);
+                throw new CannotPerformActionException("Can not get status: " + ex.ToString());
             }
         }
 
@@ -415,7 +408,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotPerformActionException("Can not get ready status: " + ex.Message);
+                throw new CannotPerformActionException("Can not get ready status: " + ex.ToString());
             }
         }
 
