@@ -31,7 +31,6 @@ namespace Shrinerain.AutoTester.Core
 {
     public class TestLog : IDisposable
     {
-
         #region fields
 
         //log writer
