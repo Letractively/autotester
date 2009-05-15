@@ -414,7 +414,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     int possibleStartIndex = 0;
                     if (Searcher.IsNeedCalPossibleStartIndex(candidateElements.Length))
                     {
-                        possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, _htmlTestBrowser.GetHTMLContent(), properties[0].Value.ToString());
+                        string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
+                        //if we have too many objects, we will try to find it's possible position to improve performance.             
+                        possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, _htmlTestBrowser.GetHTMLContent(), searchVal);
                     }
                     int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
                     // check object one by one, start from the possible position.
@@ -571,8 +573,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
                                 _regCache.Add(tag, tagReg);
                             }
+                            string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
                             //if we have too many objects, we will try to find it's possible position to improve performance.
-                            possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, _htmlTestBrowser.GetHTMLContent(), properties[0].Value.ToString());
+                            possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, _htmlTestBrowser.GetHTMLContent(), searchVal);
                         }
                         int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
                         // check object one by one, start from the possible position.
