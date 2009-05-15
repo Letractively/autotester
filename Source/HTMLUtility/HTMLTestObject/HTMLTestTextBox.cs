@@ -39,7 +39,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
     public class HTMLTestTextBox : HTMLTestGUIObject, IInputable
     {
-
         #region fields
 
         //the text in the textbox currently.

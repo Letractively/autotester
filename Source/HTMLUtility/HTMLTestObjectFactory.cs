@@ -38,7 +38,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return HTMLTestObjectType.Unknow;
             }
 
-            type = type.ToUpper().Replace(" ", "");
+            type = type.ToUpper().Trim();
 
             HTMLTestObjectType htmlType = HTMLTestObjectType.Unknow;
             if (_objectTypeTable.TryGetValue(type, out htmlType))

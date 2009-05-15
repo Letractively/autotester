@@ -15,6 +15,7 @@ namespace Shrinerain.AutoTester.Core
         private const string _keySplitter = "__shrinerainmap__";
         private TestObject[] _lastObjects;
 
+        private bool _useCache = false;
         private const int Timeout = 5;
         #endregion
 
@@ -350,51 +351,40 @@ namespace Shrinerain.AutoTester.Core
                 bool found = false;
                 TestException exception = null;
 
-                if (!String.IsNullOrEmpty(type))
+                type = (type == null ? "" : type);
+                string key = BuildKey(type + name);
+                TestObject cacheObj;
+                if (_useCache && !String.IsNullOrEmpty(name) && ObjectCache.TryGetObjectFromCache(key, out cacheObj))
                 {
-                    string key = BuildKey(type + name);
-                    TestObject cacheObj;
-                    if (!String.IsNullOrEmpty(name) && ObjectCache.TryGetObjectFromCache(key, out cacheObj))
+                    _lastObjects = new TestObject[] { cacheObj };
+                    found = true;
+                }
+                else
+                {
+                    //parse the description text.
+                    //if the format is like "id=1", we think it is a property=value pair. 
+                    TestProperty[] properties = null;
+                    if (!TestProperty.TryGetProperties(name, out properties) && !String.IsNullOrEmpty(name))
                     {
-                        _lastObjects = new TestObject[] { cacheObj };
-                        found = true;
-                    }
-                    else
-                    {
-                        TestProperty[] properties = null;
-                        //parse the description text.
-                        //if the format is like "id=1", we think it is a property=value pair. 
-                        if (TestProperty.TryGetProperties(name, out properties))
-                        {
-                            if (TryGetObjectsFromPool(properties, out _lastObjects, out exception))
-                            {
-                                found = true;
-                            }
-                        }
-                        else
-                        {
-                            if (TryGetObjectsFromPool(name, type.ToString(), out _lastObjects, out exception))
-                            {
-                                found = true;
-                            }
-                        }
+                        properties = new TestProperty[] { new TestProperty(TestObject.VisibleProperty, name) };
                     }
 
-                    if (found)
+                    if (TryGetObjectsFromPool(type, properties, out _lastObjects, out exception))
                     {
-                        if (_lastObjects[0].IsExist())
-                        {
-                            ObjectCache.InsertObjectToCache(key, _lastObjects[0]);
-                        }
+                        found = true;
                     }
-                    else
+                }
+
+                if (found)
+                {
+                    if (_useCache && _lastObjects[0].IsExist())
                     {
-                        throw new ObjectNotFoundException(exception.Message);
+                        ObjectCache.InsertObjectToCache(key, _lastObjects[0]);
                     }
                 }
                 else
                 {
-                    throw new CannotGetMapObjectException("Unkown object type.");
+                    throw new ObjectNotFoundException(exception.Message);
                 }
             }
             catch (TestException)
@@ -407,77 +397,40 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        private bool TryGetObjectsFromPool(TestProperty[] properties, out TestObject[] obj, out TestException exception)
+        private bool TryGetObjectsFromPool(string type, TestProperty[] properties, out TestObject[] obj, out TestException exception)
         {
             obj = null;
             exception = null;
 
-            if (properties != null)
+            int oriTimeout = this._objPool.GetTimeout();
+            this._objPool.SetTimeout(Timeout);
+            try
             {
-                int oriTimeout = this._objPool.GetTimeout();
-                try
+                if (String.IsNullOrEmpty(type))
                 {
-                    this._objPool.SetTimeout(Timeout);
                     obj = this._objPool.GetObjectsByProperties(properties);
-                    return true;
                 }
-                catch (ObjectNotFoundException ex)
+                else
                 {
-                    obj = new TestObject[] { new TestFakeObject() };
-                    exception = ex;
-                    return true;
-                }
-                catch (TestException ex)
-                {
-                    exception = ex;
-                    return false;
-                }
-                finally
-                {
-                    this._objPool.SetTimeout(oriTimeout);
-                }
-            }
-
-            return false;
-        }
-
-        private bool TryGetObjectsFromPool(string text, string type, out TestObject[] obj, out TestException exception)
-        {
-            obj = null;
-            exception = null;
-
-            if (!String.IsNullOrEmpty(type))
-            {
-                int oriTimeout = this._objPool.GetTimeout();
-                try
-                {
-                    this._objPool.SetTimeout(Timeout);
-                    TestProperty[] properties = null;
-                    if (!String.IsNullOrEmpty(text))
-                    {
-                        properties = new TestProperty[] { new TestProperty(TestObject.VisibleProperty, text) };
-                    }
                     obj = this._objPool.GetObjectsByType(type, properties);
-                    return true;
                 }
-                catch (ObjectNotFoundException ex)
-                {
-                    obj = new TestObject[] { new TestFakeObject() };
-                    exception = ex;
-                    return true;
-                }
-                catch (TestException ex)
-                {
-                    exception = ex;
-                    return false;
-                }
-                finally
-                {
-                    this._objPool.SetTimeout(oriTimeout);
-                }
+                return true;
             }
-
-            return false;
+            catch (ObjectNotFoundException ex)
+            {
+                obj = new TestObject[] { new TestFakeObject() };
+                exception = ex;
+                return true;
+            }
+            catch (TestException ex)
+            {
+                exception = ex;
+                return false;
+            }
+            finally
+            {
+                this._objPool.SetTimeout(oriTimeout);
+            }
         }
 
         private void AddTypeObjectToMap(string methodName, string[] paras, TestObject obj)
