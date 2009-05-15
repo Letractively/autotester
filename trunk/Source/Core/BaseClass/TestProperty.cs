@@ -11,9 +11,11 @@ namespace Shrinerain.AutoTester.Core
         #region fields
 
         private static Regex _testProRegex = new Regex("name=(?<name>.*),value=(?<value>.*),isregex=(?<isregex>.*),weight=(?<weight>.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private const string RegFlag = "@";
 
         private String _name;
         private Object _value;
+        private Regex _regValue;
         private bool _isRegex;
         //weight of the property, should between 0 and 100.
         //more bigger, more important.
@@ -58,6 +60,11 @@ namespace Shrinerain.AutoTester.Core
             this._value = value;
             this._isRegex = isReg;
 
+            if (isReg)
+            {
+                _regValue = new Regex(value.ToString(), RegexOptions.Compiled);
+            }
+
             if (weight < 0)
             {
                 this._weight = 0;
@@ -87,8 +94,13 @@ namespace Shrinerain.AutoTester.Core
                     this._name = m.Groups["name"].Value;
                     this._value = m.Groups["value"].Value;
                     this._isRegex = Convert.ToBoolean(m.Groups["isregex"].Value);
-                    this._weight = int.Parse(m.Groups["weight"].Value);
 
+                    if (_isRegex)
+                    {
+                        _regValue = new Regex(this._value.ToString(), RegexOptions.Compiled);
+                    }
+
+                    this._weight = int.Parse(m.Groups["weight"].Value);
                     if (this._weight < 0)
                     {
                         this._weight = 0;
@@ -121,6 +133,20 @@ namespace Shrinerain.AutoTester.Core
                    this._isRegex == other._isRegex && this._weight == other._weight;
         }
 
+        public bool IsMatch(TestObject obj)
+        {
+            if (obj != null)
+            {
+                object actualValObj = obj.GetProperty(this._name);
+                if (actualValObj != null)
+                {
+                    return IsValueMatch(actualValObj.ToString());
+                }
+            }
+
+            return false;
+        }
+
         public bool IsNameMatch(TestProperty other)
         {
             return String.Compare(this._name, other._name, true) == 0;
@@ -129,6 +155,23 @@ namespace Shrinerain.AutoTester.Core
         public bool IsValueMatch(TestProperty other)
         {
             return this._value == other._value && this._isRegex == other._isRegex;
+        }
+
+        public bool IsValueMatch(String actualValue)
+        {
+            if (actualValue != null)
+            {
+                if (!_isRegex)
+                {
+                    return String.Compare(actualValue, this._value.ToString()) == 0;
+                }
+                else
+                {
+                    return this._regValue.IsMatch(actualValue);
+                }
+            }
+
+            return false;
         }
 
         //compare wether the source list match the des condition.
@@ -218,37 +261,15 @@ namespace Shrinerain.AutoTester.Core
             properties = null;
             if (str != null && !String.IsNullOrEmpty(str.Trim()) && str.IndexOf("=") > 0)
             {
-                //properties is splitted by ";"
-                //eg: "id=btnG;name=google".
-                string[] propPairs = str.Split(';');
-
-                List<TestProperty> propertiesList = new List<TestProperty>(propPairs.Length);
-                for (int i = 0; i < propPairs.Length; i++)
+                try
                 {
-                    string p = propPairs[i];
-                    if (!String.IsNullOrEmpty(p))
-                    {
-                        int ePos = p.LastIndexOf("=");
-                        if (ePos > 0)
-                        {
-                            //get property name, before "="
-                            string prop = p.Substring(0, ePos);
-                            string val = "";
-                            if (ePos < p.Length - 1)
-                            {
-                                //get value , after "="
-                                val = p.Substring(ePos + 1, p.Length - ePos - 1);
-                            }
-
-                            propertiesList.Add(new TestProperty(prop, val));
-
-                            //we found property/value pair, set the result to true.
-                            res = true;
-                        }
-                    }
+                    properties = GetProperties(str);
+                    return properties != null;
                 }
-
-                properties = propertiesList.ToArray();
+                catch
+                {
+                    res = false;
+                }
             }
 
             return res;
@@ -279,7 +300,14 @@ namespace Shrinerain.AutoTester.Core
                                 val = p.Substring(ePos + 1, p.Length - ePos - 1);
                             }
 
-                            properties.Add(new TestProperty(prop, val));
+                            bool isReg = false;
+                            if (val.StartsWith(RegFlag))
+                            {
+                                isReg = true;
+                                val = val.Remove(0, 1);
+                            }
+
+                            properties.Add(new TestProperty(prop, val, isReg));
                         }
                     }
                 }
