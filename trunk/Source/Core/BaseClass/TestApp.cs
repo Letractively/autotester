@@ -48,7 +48,7 @@ namespace Shrinerain.AutoTester.Core
 
         //max wait time is 30.
         protected int _maxWaitSeconds = 30;
-        protected const int Interval = 3;
+        protected const int Interval = 2;
 
         //sync event
         protected AutoResetEvent _appStartEvent = new AutoResetEvent(false);
@@ -317,7 +317,7 @@ namespace Shrinerain.AutoTester.Core
 
             try
             {
-                Win32API.PostMessage(this.Handle, Convert.ToInt32(Win32API.WindowMessages.WM_SYSCOMMAND), Convert.ToInt32(Win32API.WindowMenuMessage.SC_MAXIMIZE), 0);
+                Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_SHOWMAXIMIZED);
             }
             catch (Exception ex)
             {
@@ -332,7 +332,14 @@ namespace Shrinerain.AutoTester.Core
                 throw new CannotResizeAppException("Handle can not be 0.");
             }
 
-            throw new NotImplementedException();
+            try
+            {
+                Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_SHOWMINIMIZED);
+            }
+            catch (Exception ex)
+            {
+                throw new CannotMaxAppException("Can not max size test application: " + ex.ToString());
+            }
         }
 
         public virtual void Restore()
@@ -362,6 +369,7 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 Win32API.SetForegroundWindow(this._rootHandle);
+                Win32API.SetActiveWindow(this._rootHandle);
             }
             catch (Exception ex)
             {
