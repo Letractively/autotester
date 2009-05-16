@@ -416,15 +416,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (Searcher.IsNeedCalPossibleStartIndex(candidateElements.Length))
                     {
                         string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
-                        string htmlContent = _htmlTestBrowser.GetHTMLContent();
-                        int startPos = htmlContent.IndexOf(searchVal);
-                        if (startPos > 0)
+                        if (!String.IsNullOrEmpty(searchVal))
                         {
-                            //if we have too many objects, we will try to find it's possible position to improve performance.             
-                            possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, htmlContent, searchVal);
-                            if (startPos == htmlContent.LastIndexOf(searchVal))
+                            string htmlContent = _htmlTestBrowser.GetHTMLContent();
+                            int startPos = htmlContent.IndexOf(searchVal);
+                            if (startPos > 0)
                             {
-                                isOnlyOneObject = true;
+                                //if we have too many objects, we will try to find it's possible position to improve performance.             
+                                possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, htmlContent, searchVal);
+                                if (startPos == htmlContent.LastIndexOf(searchVal))
+                                {
+                                    isOnlyOneObject = true;
+                                }
                             }
                         }
                     }
@@ -581,25 +584,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         int possibleStartIndex = 0;
                         if (properties != null && properties.Length > 0 && Searcher.IsNeedCalPossibleStartIndex(candidateElements.Length))
                         {
-                            Regex tagReg;
-                            if (!_regCache.TryGetValue(tag, out tagReg))
-                            {
-                                //create new regex to match objects from HTML code.
-                                tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-                                _regCache.Add(tag, tagReg);
-                            }
-
                             string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
-                            string htmlContent = _htmlTestBrowser.GetHTMLContent();
-
-                            int startPos = htmlContent.IndexOf(searchVal);
-                            if (startPos > 0)
+                            if (!String.IsNullOrEmpty(searchVal))
                             {
-                                //if we have too many objects, we will try to find it's possible position to improve performance.             
-                                possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, htmlContent, searchVal);
-                                if (startPos == htmlContent.LastIndexOf(searchVal))
+                                Regex tagReg;
+                                if (!_regCache.TryGetValue(tag, out tagReg))
                                 {
-                                    isOnlyOneObject = true;
+                                    //create new regex to match objects from HTML code.
+                                    tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                                    _regCache.Add(tag, tagReg);
+                                }
+
+                                string htmlContent = _htmlTestBrowser.GetHTMLContent();
+                                int startPos = htmlContent.IndexOf(searchVal);
+                                if (startPos > 0)
+                                {
+                                    //if we have too many objects, we will try to find it's possible position to improve performance.             
+                                    possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, htmlContent, searchVal);
+                                    if (startPos == htmlContent.LastIndexOf(searchVal))
+                                    {
+                                        isOnlyOneObject = true;
+                                    }
                                 }
                             }
                         }
