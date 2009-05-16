@@ -116,6 +116,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.WaitOne();
 
+                Hover();
                 if (_sendMsgOnly)
                 {
                     //we can not click on an image without mouse action.
@@ -133,7 +134,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    Hover();
                     MouseOp.Click();
                 }
 

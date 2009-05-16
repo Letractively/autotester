@@ -130,13 +130,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.WaitOne();
 
+                Hover();
                 if (_sendMsgOnly)
                 {
                     this._radioElement.@checked = true;
                 }
                 else
                 {
-                    Hover();
                     MouseOp.Click();
                 }
 

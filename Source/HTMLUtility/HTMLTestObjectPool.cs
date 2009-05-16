@@ -375,7 +375,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             //get element by index.
                             _tempElement = (IHTMLElement)candidateElements[currentObjIndex];
-
                             //if it is not an interactive object or the property is not found. 
                             if (HTMLTestObjectFactory.IsVisible(_tempElement))
                             {
@@ -549,18 +548,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                     //check object by type
                                     if (HTMLTestObjectFactory.GetObjectType(_tempElement) == typeValue)
                                     {
-                                        bool found = false;
-                                        if (properties == null)
-                                        {
-                                            _testObj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(_tempElement, typeValue, this._htmlTestBrowser, this);
-                                            found = true;
-                                        }
-                                        else if (CheckObjectProperties(_tempElement, typeValue, properties, simPercent, out _testObj))
-                                        {
-                                            found = true;
-                                        }
-
-                                        if (found)
+                                        if (CheckObjectProperties(_tempElement, typeValue, properties, simPercent, out _testObj))
                                         {
                                             AfterObjectFound(_testObj);
                                             result.Add(_testObj);
@@ -841,70 +829,96 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private bool CheckObjectProperties(IHTMLElement element, HTMLTestObjectType type, TestProperty[] properties, int simPercent, out TestObject obj)
         {
             obj = null;
+            int totalResult = 0;
             if (properties == null)
             {
+                totalResult = 100;
+            }
+            else
+            {
+                foreach (TestProperty tp in properties)
+                {
+                    bool isCurrentPropertyMatch = false;
+                    if (String.Compare(tp.Name, "tag", true) == 0)
+                    {
+                        isCurrentPropertyMatch = tp.IsValueMatch(element.tagName);
+                    }
+                    else if (String.Compare(tp.Name, TestObject.VisibleProperty, true) == 0)
+                    {
+                        isCurrentPropertyMatch = CheckVisibleProperty(element, type, tp, simPercent, out obj);
+                    }
+                    else
+                    {
+                        //get property value
+                        string propertyValue;
+                        if (HTMLTestObject.TryGetProperty(element, tp.Name, out propertyValue))
+                        {
+                            isCurrentPropertyMatch = tp.IsValueMatch(propertyValue, simPercent);
+                        }
+                    }
+
+                    if (isCurrentPropertyMatch)
+                    {
+                        totalResult += tp.Weight;
+                    }
+                    else
+                    {
+                        totalResult -= tp.Weight;
+                    }
+                }
+            }
+
+            if (totalResult > 0)
+            {
+                if (obj == null)
+                {
+                    obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser, this);
+                }
+
                 return true;
             }
             else
             {
-                int totalResult = 0;
-                foreach (TestProperty tp in properties)
-                {
-                    //get property value
-                    string propertyValue;
-                    if (String.Compare(tp.Name, TestObject.VisibleProperty, true) == 0)
-                    {
-                        string visibleText = null;
-                        try
-                        {
-                            obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser, this);
-                            visibleText = ((HTMLTestGUIObject)obj).GetLabel().Trim();
-                        }
-                        catch
-                        {
-                            return false;
-                        }
-
-                        if (String.IsNullOrEmpty(visibleText) && HTMLTestObject.TryGetProperty(element, "innerText", out propertyValue))
-                        {
-                            visibleText = propertyValue;
-                        }
-
-                        if (!String.IsNullOrEmpty(visibleText))
-                        {
-                            return tp.IsValueMatch(visibleText, simPercent);
-                        }
-                        else
-                        {
-                            return HTMLTestGUIObject.GetAroundText(element).IndexOf(tp.Value.ToString()) >= 0;
-                        }
-                    }
-                    else if (String.Compare(tp.Name, "tag", true) == 0)
-                    {
-                        return tp.IsValueMatch(element.tagName);
-                    }
-                    else if (HTMLTestObject.TryGetProperty(element, tp.Name, out propertyValue))
-                    {
-                        //if equal, means we found it.
-                        if (tp.IsValueMatch(propertyValue, simPercent))
-                        {
-                            totalResult += tp.Weight;
-                        }
-                        else
-                        {
-                            totalResult -= tp.Weight;
-                        }
-                    }
-                }
-
-                if (totalResult > 0)
-                {
-                    obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser, this);
-                    return true;
-                }
-
                 return false;
             }
+        }
+
+        private bool CheckVisibleProperty(IHTMLElement element, HTMLTestObjectType type, TestProperty property, int simPercent, out TestObject obj)
+        {
+            obj = null;
+
+            try
+            {
+                string visibleText = null;
+                if (type == HTMLTestObjectType.Link || type == HTMLTestObjectType.Label)
+                {
+                    visibleText = element.innerText;
+                }
+                else if (type == HTMLTestObjectType.ComboBox || type == HTMLTestObjectType.ListBox)
+                {
+                    visibleText = ((IHTMLOptionElement)(element as IHTMLSelectElement).item(0, 0)).text;
+                }
+                else
+                {
+                    obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser, this);
+                    visibleText = ((HTMLTestGUIObject)obj).GetLabel().Trim();
+                    string propertyValue;
+                    if (String.IsNullOrEmpty(visibleText) && HTMLTestObject.TryGetProperty(element, "innerText", out propertyValue))
+                    {
+                        visibleText = propertyValue;
+                    }
+                }
+
+                if (!String.IsNullOrEmpty(visibleText))
+                {
+                    return property.IsValueMatch(visibleText, simPercent);
+                }
+            }
+            catch
+            {
+            }
+
+            return false;
         }
 
         #endregion

@@ -670,16 +670,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     throw new CannotPerformActionException("Object is not visible.");
                 }
 
-                this._browser.Active();
+                if (_sendMsgOnly)
+                {
+                    FireEvent(this._sourceElement as IHTMLElement3, "onmouseover");
+                }
+                else
+                {
+                    this._browser.Active();
 
-                //if the object is not visible, then move it.
-                ScrollIntoView();
+                    //if the object is not visible, then move it.
+                    ScrollIntoView();
 
-                //get the center point of the object, and move mouse to it.
-                MouseOp.MoveTo(_centerPoint);
+                    //get the center point of the object, and move mouse to it.
+                    MouseOp.MoveTo(_centerPoint);
 
-                //after move mouse to the control, wait for 0.2s, make it looks like human action.
-                Thread.Sleep(200 * 1);
+                    //after move mouse to the control, wait for 0.2s, make it looks like human action.
+                    Thread.Sleep(200 * 1);
+                }
             }
             catch (TestException)
             {

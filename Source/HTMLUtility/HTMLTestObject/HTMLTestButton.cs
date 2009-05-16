@@ -128,6 +128,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //wait last action finished.
                 _actionFinished.WaitOne();
 
+                Hover();
                 if (this._sendMsgOnly)
                 {
                     this._sourceElement.click();
@@ -136,7 +137,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     //move the mouse to the center point of button.
                     // see the definition in HTMLGUiTestObject.cs
-                    Hover();
                     MouseOp.Click();
                 }
 

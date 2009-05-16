@@ -133,13 +133,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.WaitOne();
 
+                Hover();
                 if (_sendMsgOnly)
                 {
                     this._checkBoxElement.@checked = !this._checkBoxElement.@checked;
                 }
                 else
                 {
-                    Hover();
                     MouseOp.Click();
                 }
 

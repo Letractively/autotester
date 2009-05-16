@@ -130,10 +130,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (this._tag == "INPUT")
                     {
                         this._textInputElement.value = curStr;
+                        FireEvent(this._textInputElement as IHTMLElement3, "onchange");
                     }
                     else
                     {
                         this._textAreaElement.value = curStr;
+                        FireEvent(this._textAreaElement as IHTMLElement3, "onchange");
                     }
                 }
                 else
@@ -250,7 +252,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     Hover();
                     MouseOp.Click();
-
                     System.Threading.Thread.Sleep(500 * 1);
                 }
             }
