@@ -328,6 +328,10 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return this._maxWaitSeconds;
         }
 
+        public void EnableFuzzySearch(bool isEnable)
+        {
+        }
+
         #endregion
 
         #endregion

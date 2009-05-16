@@ -80,5 +80,7 @@ namespace Shrinerain.AutoTester.Core
 
         void SetTimeout(int seconds);
         int GetTimeout();
+
+        void EnableFuzzySearch(bool isEnableFuzzySearch);
     }
 }

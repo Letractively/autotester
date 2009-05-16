@@ -184,7 +184,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else if (tag == "INPUT")
             {
                 string inputType;
-
                 if (!HTMLTestObject.TryGetProperty(element, "type", out inputType))
                 {
                     return HTMLTestObjectType.TextBox;
@@ -238,7 +237,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         return HTMLTestObjectType.ListBox;
                     }
                 }
-
             }
             else if (tag == "OBJECT")
             {
@@ -255,26 +253,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element)
         {
-            if (element == null)
-            {
-                throw new CannotBuildObjectException("Element can not be null.");
-            }
+            return BuildHTMLTestObject(element, null);
+        }
 
-            HTMLTestObjectType type = GetObjectType(element);
-
-            return BuildHTMLTestObjectByType(element, type, null, null);
+        public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element, HTMLTestBrowser browser)
+        {
+            return BuildHTMLTestObject(element, browser, browser.GetObjectPool() as HTMLTestObjectPool);
         }
 
         public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element, HTMLTestBrowser browser, HTMLTestObjectPool pool)
         {
-            if (element == null)
-            {
-                throw new CannotBuildObjectException("Element can not be null.");
-            }
-
-            HTMLTestObjectType type = GetObjectType(element);
-
-            return BuildHTMLTestObjectByType(element, type, browser, pool);
+            return BuildHTMLTestObjectByType(element, HTMLTestObjectType.Unknow, browser, pool);
         }
 
         public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, HTMLTestObjectType type, HTMLTestBrowser browser, HTMLTestObjectPool pool)
@@ -290,7 +279,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             HTMLTestGUIObject tmp;
-
             switch (type)
             {
                 case HTMLTestObjectType.Label:
@@ -355,79 +343,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        /* bool IsPropertyEqual(IHTMLElement element, string propertyName, string value, int simPercent)
-       * check if the property == value with the expected similar percent.
-       */
-        public static bool IsPropertyLike(IHTMLElement element, string propertyName, string value, int simPercent)
-        {
-            string actualValue;
-
-            if (HTMLTestObject.TryGetProperty(element, propertyName, out actualValue))
-            {
-                return Searcher.IsStringLike(actualValue, value, simPercent);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /*  string GetVisibleTextPropertyByTag(HTMLTestObjectType type, string tag)
-         *  get the visible property by tag.
-         *  eg: for a button, it's tag is <Input type="button">, it's visible property,
-         *  means the text on the button, is ".value"
-         */
-        public static string GetVisibleTextPropertyByTag(HTMLTestObjectType type, string tag)
-        {
-            //default is ".innerText".
-            string property = "innerText";
-
-            string tagValue = tag.ToUpper();
-            if (tagValue == "INPUT")
-            {
-                switch (type)
-                {
-                    case HTMLTestObjectType.Button:
-                        property = "value";
-                        break;
-                    case HTMLTestObjectType.TextBox:
-                        property = "value";
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if (tagValue == "SELECT")
-            {
-                property = "innerHTML";
-            }
-
-            return property;
-        }
-
         /* bool IsInteractive(IHTMLElement element)
          * check the object if it is visible, and it can interactive with users.
          */
         public static bool IsVisible(IHTMLElement element)
         {
-            if (element == null)
-            {
-                return false;
-            }
-            else if (element.offsetWidth < 1 || element.offsetHeight < 1)
+            if (element == null || element.offsetWidth < 1 || element.offsetHeight < 1)
             {
                 return false;
             }
 
             string tag = element.tagName;
-
             if (String.IsNullOrEmpty(tag))
             {
                 return false;
             }
 
             string value;
-
             if (tag == "INPUT")
             {
                 //return false, if the it is a hidden object.
@@ -446,6 +378,5 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #endregion
-
     }
 }

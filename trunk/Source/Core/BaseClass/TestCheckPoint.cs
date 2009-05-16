@@ -32,11 +32,11 @@ namespace Shrinerain.AutoTester.Core
 
         #region event
 
-        public delegate void _beforeCheckDelegate(String methodName, object[] paras, CheckType type);
-        public event _beforeCheckDelegate OnBeforeCheck;
+        public delegate void BeforeCheckHandler(String methodName, object[] paras, CheckType type);
+        public event BeforeCheckHandler OnBeforeCheck;
 
-        public delegate void _afterCheckDelegate(bool checkResult, object actualValue, String methodName, object[] paras, CheckType type);
-        public event _afterCheckDelegate OnAfterCheck;
+        public delegate void AfterCheckHandler(bool checkResult, object actualValue, String methodName, object[] paras, CheckType type);
+        public event AfterCheckHandler OnAfterCheck;
 
         #endregion
 

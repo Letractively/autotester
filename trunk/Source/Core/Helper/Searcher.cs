@@ -37,7 +37,7 @@ namespace Shrinerain.AutoTester.Core
 
         //default percent of similarity
         private static int _defaultPercent = 100;
-        private static bool _autoAdjustLowerBound = false;
+        private static bool _autoAdjustLowerBound = true;
         //each percent is a group, for vibration search.
         private const int VibrationPercent = 10;
 
@@ -148,6 +148,11 @@ namespace Shrinerain.AutoTester.Core
             if (percent > 100 || percent < 1)
             {
                 return false;
+            }
+
+            if (percent == 100)
+            {
+                return String.Compare(str1, str2, ignoreCase) == 0;
             }
 
             if (compressBlank)

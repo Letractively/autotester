@@ -47,6 +47,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public void UnregisterEvents(IHTMLDocument2 doc)
+        {
+            if (doc != null)
+            {
+            }
+        }
+
         #endregion
 
         #region private methods
