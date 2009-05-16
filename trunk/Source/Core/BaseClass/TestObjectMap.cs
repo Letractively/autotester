@@ -219,7 +219,6 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-
         public IText Label()
         {
             return Labels()[0];
@@ -242,7 +241,6 @@ namespace Shrinerain.AutoTester.Core
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
-
 
         public IClickable Link()
         {
@@ -338,6 +336,29 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
+        public IVisible AnyObject()
+        {
+            return AnyObjects()[0];
+        }
+
+        public IVisible[] AnyObjects()
+        {
+            return AnyObjects(null);
+        }
+
+        public IVisible AnyObject(String name)
+        {
+            return AnyObjects(name)[0];
+        }
+
+        public IVisible[] AnyObjects(String name)
+        {
+            GetMapObjects(name, null);
+            IVisible[] tmp = new IVisible[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
         #endregion
 
         #endregion
@@ -406,14 +427,22 @@ namespace Shrinerain.AutoTester.Core
             this._objPool.SetTimeout(Timeout);
             try
             {
-                if (String.IsNullOrEmpty(type))
+                if (String.IsNullOrEmpty(type) && (properties == null || properties.Length == 0))
                 {
-                    obj = this._objPool.GetObjectsByProperties(properties);
+                    obj = this._objPool.GetAllObjects();
                 }
                 else
                 {
-                    obj = this._objPool.GetObjectsByType(type, properties);
+                    if (String.IsNullOrEmpty(type))
+                    {
+                        obj = this._objPool.GetObjectsByProperties(properties);
+                    }
+                    else
+                    {
+                        obj = this._objPool.GetObjectsByType(type, properties);
+                    }
                 }
+
                 return true;
             }
             catch (ObjectNotFoundException ex)
