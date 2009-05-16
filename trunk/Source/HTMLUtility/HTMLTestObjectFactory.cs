@@ -348,29 +348,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public static bool IsVisible(IHTMLElement element)
         {
-            if (element == null || element.offsetWidth < 1 || element.offsetHeight < 1)
+            if (element == null || element.offsetWidth < 2 || element.offsetHeight < 2)
             {
                 return false;
             }
 
-            string tag = element.tagName;
-            if (String.IsNullOrEmpty(tag))
-            {
-                return false;
-            }
-
+            //return false, if the it is a hidden object.
             string value;
-            if (tag == "INPUT")
+            if (HTMLTestObject.TryGetProperty(element, "type", out value))
             {
-                //return false, if the it is a hidden object.
-                if (HTMLTestObject.TryGetProperty(element, "type", out value))
-                {
-                    return String.Compare(value, "HIDDEN", true) != 0;
-                }
+                return String.Compare(value, "HIDDEN", true) != 0;
             }
-            else if (HTMLTestObject.TryGetProperty(element, "visibility", out value))
+            if (HTMLTestObject.TryGetProperty(element, "visibility", out value))
             {
-                //return false if it is hidden.
                 return String.Compare(value, "HIDDEN", true) != 0;
             }
 

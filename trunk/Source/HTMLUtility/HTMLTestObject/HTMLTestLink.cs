@@ -130,13 +130,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 _actionFinished.WaitOne();
 
+                Hover();
                 if (_sendMsgOnly)
                 {
                     _acnchorElement.click();
                 }
                 else
                 {
-                    Hover();
                     MouseOp.Click();
                 }
 

@@ -418,6 +418,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
+        //fire correct event after action.
+        protected virtual void FireEvent(IHTMLElement3 element, string eventName)
+        {
+            if (element != null && !String.IsNullOrEmpty(eventName))
+            {
+                try
+                {
+                    object eventObject = null;
+                    (this._sourceElement.document as IHTMLDocument4).CreateEventObject(ref eventObject);
+                    element.FireEvent(eventName, ref eventObject);
+                }
+                catch
+                {
+                }
+            }
+        }
+
         #endregion
 
         #endregion

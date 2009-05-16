@@ -62,7 +62,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{47B6A9CA-605F-4FB6-A5E6-31F04B7241E5}</Project>
-      <Name>Function</Name>
+      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Framework\Framework.csproj">
       <Project>{3554AFF5-0D9A-43A8-B048-D38C8C9F0C1D}</Project>

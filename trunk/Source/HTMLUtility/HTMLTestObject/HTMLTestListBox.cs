@@ -250,13 +250,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _actionFinished.WaitOne();
 
+                Hover();
                 if (_sendMsgOnly)
                 {
                     this._htmlSelectElement.selectedIndex = index;
+                    FireEvent(this._htmlSelectElement as IHTMLElement3, "onchange");
                 }
                 else
                 {
-                    Hover();
                     //get the actual position on the screen.
                     Point itemPosition = GetItemPosition(index);
                     MouseOp.Click(itemPosition);
