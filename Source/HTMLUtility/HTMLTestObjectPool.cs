@@ -81,7 +81,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private const int Interval = 2;
 
         //regex to match tag
-        private static Regex _htmlReg = new Regex("<[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static Regex _htmlReg = new Regex("< *[a-z]+[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Regex _tagReg = new Regex("<[a-zA-Z]+ ", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static Regex _scriptReg = new Regex("<script.*?</script>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static Dictionary<string, Regex> _regCache = new Dictionary<string, Regex>(17);
@@ -410,13 +410,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     List<TestObject> result = new List<TestObject>();
 
+                    bool isOnlyOneObject = false;
                     //if we have too many objects, we will try to find it's possible position to improve performance.
                     int possibleStartIndex = 0;
                     if (Searcher.IsNeedCalPossibleStartIndex(candidateElements.Length))
                     {
                         string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
-                        //if we have too many objects, we will try to find it's possible position to improve performance.             
-                        possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, _htmlTestBrowser.GetHTMLContent(), searchVal);
+                        string htmlContent = _htmlTestBrowser.GetHTMLContent();
+                        int startPos = htmlContent.IndexOf(searchVal);
+                        if (startPos > 0)
+                        {
+                            //if we have too many objects, we will try to find it's possible position to improve performance.             
+                            possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, htmlContent, searchVal);
+                            if (startPos == htmlContent.LastIndexOf(searchVal))
+                            {
+                                isOnlyOneObject = true;
+                            }
+                        }
                     }
                     int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
                     // check object one by one, start from the possible position.
@@ -443,6 +453,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                         OnObjectFound(_testObj, null);
                                     }
                                     result.Add(_testObj);
+                                    if (isOnlyOneObject)
+                                    {
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -552,6 +566,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
+                bool isOnlyOneObject = false;
                 //because we may convert one type to multi tags, so check them one by one.
                 //eg: Button to <input> and <button>
                 foreach (string tag in tags)
@@ -573,9 +588,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
                                 _regCache.Add(tag, tagReg);
                             }
+
                             string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
-                            //if we have too many objects, we will try to find it's possible position to improve performance.
-                            possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, _htmlTestBrowser.GetHTMLContent(), searchVal);
+                            string htmlContent = _htmlTestBrowser.GetHTMLContent();
+
+                            int startPos = htmlContent.IndexOf(searchVal);
+                            if (startPos > 0)
+                            {
+                                //if we have too many objects, we will try to find it's possible position to improve performance.             
+                                possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, htmlContent, searchVal);
+                                if (startPos == htmlContent.LastIndexOf(searchVal))
+                                {
+                                    isOnlyOneObject = true;
+                                }
+                            }
                         }
                         int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
                         // check object one by one, start from the possible position.
@@ -614,6 +640,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                                 OnObjectFound(_testObj, null);
                                             }
                                             result.Add(_testObj);
+
+                                            if (isOnlyOneObject)
+                                            {
+                                                break;
+                                            }
                                         }
                                     }
                                 }
@@ -626,6 +657,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             {
                             }
                         }
+                    }
+
+                    if (result.Count > 0 && isOnlyOneObject)
+                    {
+                        break;
                     }
 
                     candidateElements = null;
