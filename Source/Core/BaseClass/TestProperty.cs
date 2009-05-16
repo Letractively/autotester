@@ -159,11 +159,16 @@ namespace Shrinerain.AutoTester.Core
 
         public bool IsValueMatch(String actualValue)
         {
+            return IsValueMatch(actualValue, 100);
+        }
+
+        public bool IsValueMatch(String actualValue, int simPercent)
+        {
             if (actualValue != null)
             {
                 if (!_isRegex)
                 {
-                    return String.Compare(actualValue, this._value.ToString()) == 0;
+                    return Searcher.IsStringLike(actualValue, this._value.ToString(), simPercent);
                 }
                 else
                 {

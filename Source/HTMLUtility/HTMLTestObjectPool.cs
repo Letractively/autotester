@@ -28,7 +28,7 @@
 *                                    10 times faster than before.
 *          2008/02/13 wan,yu update, add event OnNewObjectFound. 
 *          2008/02/18 wan,yu udpate, add event OnBeforeNewObjectFound.
-*                                       
+*          2009/05/16 wan,yu update, lots of code clean.                             
 *
 *********************************************************************/
 
@@ -53,10 +53,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private HTMLTestBrowser _htmlTestBrowser;
 
-        //we use a hashtable as the cache, the key is generated from Method Name + _keySplitter+parameter.
-        private bool _useCache = true;
-        private const string _keySplitter = "__shrinerain__";
-
         //the default similar pencent to  find an object, if 100, that means we should make sure 100% match. 
         private bool _useFuzzySearch = false;
         private bool _autoAdjustSimilarPercent = true;
@@ -64,7 +60,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private int _similarPercentUpBound = 100;
         private int _similarPercentLowBound = 70;
         private int _similarPercentStep = 10;
-        private int _customSimilarPercent = _defaultPercent;
 
         //IHTMLElement is the interface for mshtml html object. We build actual test object on IHTMLElement.
         private IHTMLElement _tempElement;
@@ -83,11 +78,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //regex to match tag
         private static Regex _htmlReg = new Regex("< *[a-z]+[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Regex _tagReg = new Regex("<[a-zA-Z]+ ", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static Regex _scriptReg = new Regex("<script.*?</script>", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static Dictionary<string, Regex> _regCache = new Dictionary<string, Regex>(17);
-
-        //if this flag set to ture, we will ignore the table whose "border" < 1.
-        private static bool _ignoreBorderlessTable = false;
 
         public event TestObjectEventHandler OnObjectFound;
 
@@ -99,62 +90,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestBrowser TestBrower
         {
             get { return _htmlTestBrowser; }
-            set
-            {
-                _htmlTestBrowser = value;
-            }
-        }
-
-        //flag to determin if we should use cache to store test object.
-        public bool UseCache
-        {
-            get { return _useCache; }
-            set { _useCache = value; }
+            set { _htmlTestBrowser = value; }
         }
 
         public int MaxWaitSeconds
         {
             get { return _maxWaitSeconds; }
             set { _maxWaitSeconds = value; }
-        }
-
-        public bool UseFuzzySearch
-        {
-            get { return _useFuzzySearch; }
-            set { _useFuzzySearch = value; }
-        }
-
-        //set the custom similary percent.
-        public int SimilarPercent
-        {
-            get { return _customSimilarPercent; }
-            set
-            {
-                _useFuzzySearch = true;
-                _autoAdjustSimilarPercent = false;
-                _customSimilarPercent = value;
-                Searcher.DefaultPercent = value;
-            }
-        }
-
-        public bool AutoAdjustSimilarPercent
-        {
-            get { return _autoAdjustSimilarPercent; }
-            set
-            {
-                if (value)
-                {
-                    _useFuzzySearch = true;
-                }
-                _autoAdjustSimilarPercent = value;
-            }
-        }
-
-
-        public bool IgnoreBorderlessTable
-        {
-            get { return _ignoreBorderlessTable; }
-            set { _ignoreBorderlessTable = value; }
         }
 
         #endregion
@@ -224,6 +166,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         //build actual test object.
                         _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
+                        AfterObjectFound(_testObj);
                         return _testObj;
                     }
                 }
@@ -272,17 +215,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     for (int i = 0; i < nameObjectsCol.Length; i++)
                     {
                         _tempElement = (IHTMLElement)nameObjectsCol[i];
-                        if (!HTMLTestObjectFactory.IsVisible(_tempElement))
+                        if (HTMLTestObjectFactory.IsVisible(_tempElement))
                         {
-                            continue;
+                            _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
+                            AfterObjectFound(_testObj);
+                            result.Add(_testObj);
                         }
-
-                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
-                        if (OnObjectFound != null)
-                        {
-                            OnObjectFound(_testObj, null);
-                        }
-                        result.Add(_testObj);
                     }
 
                     if (result.Count > 0)
@@ -331,10 +269,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (HTMLTestObjectFactory.IsVisible(_tempElement))
                     {
                         _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
-                        if (OnObjectFound != null)
-                        {
-                            OnObjectFound(_testObj, null);
-                        }
+                        AfterObjectFound(_testObj);
                         return _testObj;
                     }
                 }
@@ -372,16 +307,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             //the similar percent to find an object.
             int simPercent = _defaultPercent;
-
             if (_useFuzzySearch)
             {
                 if (_autoAdjustSimilarPercent)
                 {
                     simPercent = _similarPercentUpBound;
-                }
-                else
-                {
-                    simPercent = _customSimilarPercent;
                 }
             }
 
@@ -449,12 +379,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             //if it is not an interactive object or the property is not found. 
                             if (HTMLTestObjectFactory.IsVisible(_tempElement))
                             {
-                                if (CheckObjectProperties(_tempElement, HTMLTestObjectType.Unknow, properties, out _testObj))
+                                if (CheckObjectProperties(_tempElement, HTMLTestObjectType.Unknow, properties, simPercent, out _testObj))
                                 {
-                                    if (OnObjectFound != null)
-                                    {
-                                        OnObjectFound(_testObj, null);
-                                    }
+                                    AfterObjectFound(_testObj);
                                     result.Add(_testObj);
                                     if (isOnlyOneObject)
                                     {
@@ -539,16 +466,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //the similar percent to find an object.
             int simPercent = _defaultPercent;
-
             if (_useFuzzySearch)
             {
                 if (_autoAdjustSimilarPercent)
                 {
                     simPercent = _similarPercentUpBound;
-                }
-                else
-                {
-                    simPercent = _customSimilarPercent;
                 }
             }
 
@@ -633,19 +555,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                             _testObj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(_tempElement, typeValue, this._htmlTestBrowser, this);
                                             found = true;
                                         }
-                                        else if (CheckObjectProperties(_tempElement, typeValue, properties, out _testObj))
+                                        else if (CheckObjectProperties(_tempElement, typeValue, properties, simPercent, out _testObj))
                                         {
                                             found = true;
                                         }
 
                                         if (found)
                                         {
-                                            if (OnObjectFound != null)
-                                            {
-                                                OnObjectFound(_testObj, null);
-                                            }
+                                            AfterObjectFound(_testObj);
                                             result.Add(_testObj);
-
                                             if (isOnlyOneObject)
                                             {
                                                 break;
@@ -664,7 +582,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         }
                     }
 
-                    if (result.Count > 0 && isOnlyOneObject)
+                    if (isOnlyOneObject && result.Count > 0)
                     {
                         break;
                     }
@@ -716,15 +634,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
-
                     if (HTMLTestObjectFactory.IsVisible(_tempElement))
                     {
                         _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser, this);
-
-                        if (OnObjectFound != null)
-                        {
-                            OnObjectFound(_testObj, null);
-                        }
+                        AfterObjectFound(_testObj);
 
                         return _testObj;
                     }
@@ -828,11 +741,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (tmpObj[i] != null && tmpObj[i].Type == type)
                     {
                         _testObj = tmpObj[i];
-
-                        if (OnObjectFound != null)
-                        {
-                            OnObjectFound(_testObj, null);
-                        }
+                        AfterObjectFound(_testObj);
 
                         return _testObj;
                     }
@@ -861,7 +770,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //firstly, get all IHTMLElement from the browser
             GetAllElements();
-
             _allObjects = new TestObject[this._allElements.Length];
 
             //convert IHTMLELementCollection to an array.
@@ -893,6 +801,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             return this._maxWaitSeconds;
         }
+
+        public void EnableFuzzySearch(bool isEnable)
+        {
+            this._useFuzzySearch = isEnable;
+        }
+
         #endregion
 
         #endregion
@@ -924,7 +838,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region check test object
 
-        private bool CheckObjectProperties(IHTMLElement element, HTMLTestObjectType type, TestProperty[] properties, out TestObject obj)
+        private bool CheckObjectProperties(IHTMLElement element, HTMLTestObjectType type, TestProperty[] properties, int simPercent, out TestObject obj)
         {
             obj = null;
             if (properties == null)
@@ -958,7 +872,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                         if (!String.IsNullOrEmpty(visibleText))
                         {
-                            return tp.IsValueMatch(visibleText);
+                            return tp.IsValueMatch(visibleText, simPercent);
                         }
                         else
                         {
@@ -967,12 +881,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else if (String.Compare(tp.Name, "tag", true) == 0)
                     {
-                        return Searcher.IsStringLike(element.tagName, tp.Value.ToString());
+                        return tp.IsValueMatch(element.tagName);
                     }
                     else if (HTMLTestObject.TryGetProperty(element, tp.Name, out propertyValue))
                     {
                         //if equal, means we found it.
-                        if (tp.IsValueMatch(propertyValue))
+                        if (tp.IsValueMatch(propertyValue, simPercent))
                         {
                             totalResult += tp.Weight;
                         }
@@ -995,21 +909,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
-        /* void BeforeSearch(string method, string[] paras)
-         * callback method when we want to search an object.
-         */
-        private void BeforeSearch(string method, string[] paras)
+        private void AfterObjectFound(TestObject obj)
         {
-            if (_htmlTestBrowser != null)
+            if (OnObjectFound != null)
             {
-                bool needWait = true;
-                int times = 0;
-                while (needWait && times <= _htmlTestBrowser.MaxWaitSeconds && _htmlTestBrowser.IsBusy)
-                {
-                    //browser is busy, sleep for 1 second.
-                    System.Threading.Thread.Sleep(1 * 1000);
-                    times += 1;
-                }
+                OnObjectFound(_testObj, null);
             }
         }
 
