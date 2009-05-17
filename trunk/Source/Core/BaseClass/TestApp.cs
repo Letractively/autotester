@@ -273,6 +273,31 @@ namespace Shrinerain.AutoTester.Core
             return this._parent;
         }
 
+        public ITestApp GetWindow(int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITestApp GetWindow(IntPtr handle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITestApp GetWindow(string title)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITestApp GetWindow(string title, string className)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITestApp GetMostRecentWindow()
+        {
+            throw new NotImplementedException();
+        }
+
         public virtual void Move(int x, int y)
         {
             if (this._rootHandle == IntPtr.Zero)

@@ -38,7 +38,7 @@ namespace Shrinerain.AutoTester.Core
         #region Fileds
 
         //stack to save the browser status.
-        protected Stack<InternetExplorer> _browserStack = new Stack<InternetExplorer>(16);
+        protected static Stack<InternetExplorer> _browserStack = new Stack<InternetExplorer>(16);
         //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
         protected InternetExplorer _browser;
 
@@ -58,15 +58,13 @@ namespace Shrinerain.AutoTester.Core
         //the time is the interval between starting download and downloading finish.
         protected float _startTime;
         protected float _endTime;
-        protected float _responseTime;
-
         //hash table to store the response time for each URL.
         //the key is URL, the value is response time.
         protected Dictionary<string, float> _performanceTimeHT = new Dictionary<string, float>(37);
 
         //the version of browser, eg 7.0
-        protected string _version;
-        protected int _majorVersion;
+        protected static string _version;
+        protected static int _majorVersion;
         //the name of browser, eg Internet Explorer.
         protected string _browserName;
 
@@ -258,7 +256,6 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 _appProcess = Process.Start(TestConstants.IE_EXE, TestConstants.IE_BlankPage_Url);
-
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
                 ieExistT.Start("");
@@ -310,7 +307,6 @@ namespace Shrinerain.AutoTester.Core
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
                 ieExistT.Start(browserTitle);
-
                 //wait until the internet explorer is found.
                 _browserExisted.WaitOne(this._maxWaitSeconds * 1000, true);
 
@@ -468,20 +464,6 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        //use the top most browser.
-        public virtual bool SetTopBrowser()
-        {
-            try
-            {
-                SetBrowser(GetTopmostBrowser());
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
         /* void WaitForNextPage()
          * wait until the browser load a new page.
          * eg: in google.com, you input something, then you click search button, you need to wait the browser to refresh,
@@ -495,13 +477,6 @@ namespace Shrinerain.AutoTester.Core
             }
 
             WaitDocumentLoadComplete();
-        }
-
-        /* void Print(String printerName)
-         * print current page.
-         */
-        public virtual void Print(String printerName, int copies)
-        {
         }
 
         /* void CloseDialog()
@@ -801,6 +776,42 @@ namespace Shrinerain.AutoTester.Core
             return null;
         }
 
+        public ITestBrowser GetPage(int index)
+        {
+            if (index > 0)
+            {
+            }
+
+            return this;
+        }
+
+        public ITestBrowser GetPage(string title, string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITestBrowser GetMostRecentPage()
+        {
+            try
+            {
+                InternetExplorer topMostBrowser = GetTopmostBrowser();
+                if (topMostBrowser != null && topMostBrowser != this._browser)
+                {
+                    SetBrowser(topMostBrowser);
+                }
+
+                return this;
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotAttachBrowserException("Can not get most recent browser: " + ex.ToString());
+            }
+        }
+
         #endregion
 
         #region SYNC
@@ -897,11 +908,9 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void WaitForNewBrowserSync()
         {
-
             this._isDownloading = true;
 
             int times = 0;
-
             while (times < this._maxWaitSeconds)
             {
                 InternetExplorer ie = GetTopmostBrowser();
@@ -1122,32 +1131,6 @@ namespace Shrinerain.AutoTester.Core
                     this._browser = null;
                     throw new CannotAttachBrowserException("Can not get previous handle: " + ex.ToString());
                 }
-            }
-        }
-
-        /* bool IsConnected(string url)
-         * return true if the url is online.
-         */
-        protected virtual bool IsOnline(string url)
-        {
-            if (String.IsNullOrEmpty(url))
-            {
-                return false;
-            }
-
-            try
-            {
-                HttpWebRequest wReq = (HttpWebRequest)WebRequest.Create(url);
-                wReq.AllowAutoRedirect = true;
-                wReq.Timeout = this._maxWaitSeconds;
-
-                HttpWebResponse wResp = (HttpWebResponse)wReq.GetResponse();
-
-                return wReq.HaveResponse;
-            }
-            catch
-            {
-                return false;
             }
         }
 
@@ -1395,6 +1378,14 @@ namespace Shrinerain.AutoTester.Core
             return IntPtr.Zero;
         }
 
+        protected void CalPerformanceTime()
+        {
+            string key = GetUrl();
+            _endTime = GetPerformanceTime();
+            _performanceTimeHT.Add(key, _endTime - _startTime);
+            _startTime = _endTime = 0;
+        }
+
         #endregion
 
         #endregion
@@ -1406,12 +1397,17 @@ namespace Shrinerain.AutoTester.Core
         */
         protected virtual void RegBrowserEvent(InternetExplorer ie)
         {
-            RegDownloadEvent(ie);
-            RegDocumentCompleteEvent(ie);
-            RegNavigateEvent(ie);
-            RegRectChangeEvent(ie);
-            RegNewWindowEvent(ie);
-            RegQuitEvent(ie);
+            object isRegistered = ie.GetProperty(TestConstants.IE_ALREADY_REGISTERED);
+            if (isRegistered == null)
+            {
+                RegDownloadEvent(ie);
+                RegDocumentCompleteEvent(ie);
+                RegNavigateEvent(ie);
+                RegRectChangeEvent(ie);
+                RegNewWindowEvent(ie);
+                RegQuitEvent(ie);
+                ie.PutProperty(TestConstants.IE_ALREADY_REGISTERED, true);
+            }
         }
 
         protected virtual void RegQuitEvent(InternetExplorer ie)
@@ -1536,6 +1532,17 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void OnBeforeNavigate2(object pDisp, ref object URL, ref object Flags, ref object TargetFrameName, ref object PostData, ref object Headers, ref bool Cancel)
         {
+            try
+            {
+                if (_startTime == 0)
+                {
+                    _startTime = GetPerformanceTime();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new CannotAttachBrowserException("Error OnBeforeNavigate2: " + ex.ToString());
+            }
         }
 
         protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
@@ -1547,19 +1554,10 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void OnDownloadBegin()
         {
-            try
-            {
-                _startTime = GetPerformanceTime();
-            }
-            catch (Exception ex)
-            {
-                throw new CannotAttachBrowserException("Error OnDownLoadBegin: " + ex.ToString());
-            }
         }
 
         protected virtual void OnDownloadComplete()
         {
-            //throw new NotImplementedException();
         }
 
         /* void OnDocumentLoadComplete(object pDesp, ref object pUrl)
@@ -1577,15 +1575,9 @@ namespace Shrinerain.AutoTester.Core
 
                 if (_browser != null && _browser.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE && Marshal.GetIDispatchForObject(pDesp) == Marshal.GetIDispatchForObject(_browser))
                 {
-                    string key = GetUrl();
-                    _endTime = GetPerformanceTime();
-                    _responseTime = _endTime - _startTime;
-                    _performanceTimeHT.Add(key, _responseTime);
-
                     _rootDocument = _browser.Document as HTMLDocument;
-
                     GetSize();
-
+                    CalPerformanceTime();
                     _documentLoadComplete.Set();
                 }
             }

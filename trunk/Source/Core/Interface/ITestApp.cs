@@ -48,16 +48,22 @@ namespace Shrinerain.AutoTester.Core
         void AfterStart();
         void BeforeFound();
         void Find(IntPtr handle);
-        void Find(String caption, String className);
-        void Find(String processName, int index);
         void Find(String title);
+        void Find(String title, String className);
+        void Find(String processName, int index);
         void AfterFound();
         void BoforeClose();
         void Close();
         void AfterClose();
 
+        //find sub windows.
         ITestApp[] GetChildren();
         ITestApp GetParent();
+        ITestApp GetWindow(int index);
+        ITestApp GetWindow(IntPtr handle);
+        ITestApp GetWindow(String title);
+        ITestApp GetWindow(String title, String className);
+        ITestApp GetMostRecentWindow();
 
         void Move(int x, int y);
         void Resize(int left, int top, int width, int height);
