@@ -34,5 +34,10 @@ namespace Shrinerain.AutoTester.Core
         //Browser information
         string GetBrowserName(); //get the  browser name, eg: Internet Explorer
         string GetBrowserVersion(); //get the browser version, eg: 7.0
+
+        //find sub pages/tabs
+        ITestBrowser GetPage(int index);
+        ITestBrowser GetPage(String title, String url);
+        ITestBrowser GetMostRecentPage();
     }
 }
