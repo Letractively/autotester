@@ -121,20 +121,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _actionFinished.WaitOne();
 
                 Focus();
-
-                string originText = GetText();
                 if (_sendMsgOnly)
                 {
-                    string curStr = originText + value;
                     //set the text directly.
                     if (this._tag == "INPUT")
                     {
-                        this._textInputElement.value = curStr;
+                        this._textInputElement.value = value;
                         FireEvent(this._textInputElement as IHTMLElement3, "onchange");
                     }
                     else
                     {
-                        this._textAreaElement.value = curStr;
+                        this._textAreaElement.value = value;
                         FireEvent(this._textAreaElement as IHTMLElement3, "onchange");
                     }
                 }
@@ -346,6 +343,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             return label;
                         }
                     }
+                }
+
+                if (HTMLTestObject.TryGetProperty(element, "value", out label))
+                {
+                    return label;
                 }
 
                 if (HTMLTestObject.TryGetProperty(element, "title", out label))
