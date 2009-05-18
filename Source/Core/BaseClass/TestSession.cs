@@ -8,18 +8,18 @@ namespace Shrinerain.AutoTester.Core
     {
         #region fields
 
-        protected ITestApp _app;
-        protected ITestBrowser _browser;
-        protected ITestObjectPool _pool;
+        protected TestApp _app;
+        protected TestBrowser _browser;
         protected TestObjectMap _map;
-        protected ITestCheckPoint _cp;
+        protected TestCheckPoint _cp;
+        protected ITestObjectPool _pool;
         protected ITestEventDispatcher _dispatcher;
 
         #endregion
 
         #region properties
 
-        public ITestApp App
+        public TestApp App
         {
             get
             {
@@ -32,7 +32,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public ITestBrowser Browser
+        public TestBrowser Browser
         {
             get
             {
@@ -73,7 +73,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public ITestCheckPoint CheckPoint
+        public TestCheckPoint CheckPoint
         {
             get
             {
@@ -94,12 +94,12 @@ namespace Shrinerain.AutoTester.Core
         {
         }
 
-        public TestSession(ITestApp application)
+        public TestSession(TestApp application)
         {
             this._app = application;
         }
 
-        public TestSession(ITestBrowser browser)
+        public TestSession(TestBrowser browser)
         {
             this._browser = browser;
         }
