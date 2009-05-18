@@ -778,48 +778,80 @@ namespace Shrinerain.AutoTester.Core
 
         public ITestBrowser GetPage(int index)
         {
-            if (index < 0 || index >= _browserList.Count)
+            try
             {
-                return null;
-            }
-            else if (index >= 0)
-            {
-                InternetExplorer ie = _browserList[index];
-                SetBrowser(ie);
-            }
+                if (index < 0)
+                {
+                    index = 0;
+                }
+                //we will try 30s to find an object.
+                int times = 0;
+                while (times <= _maxWaitSeconds)
+                {
+                    if (index >= 0 && index < _browserList.Count)
+                    {
+                        InternetExplorer ie = _browserList[index];
+                        SetBrowser(ie);
+                        return this;
+                    }
 
-            return this;
+                    Thread.Sleep(Interval * 1000);
+                    times += Interval;
+                }
+
+                throw new BrowserNotFoundException("Can not find page by index: " + index);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new BrowserNotFoundException("Can not find page by index: " + index + " with exception: " + ex.ToString());
+            }
         }
 
         public ITestBrowser GetPage(string title, string url)
         {
-            String curTitle = this.GetTitle();
-            String curUrl = this.GetUrl();
-
-            bool found = false;
-            if (_browserList.Count > 0)
+            try
             {
-                foreach (InternetExplorer ie in _browserList)
+                if (String.IsNullOrEmpty(title) && String.IsNullOrEmpty(url))
                 {
-                    curTitle = ie.LocationName;
-                    curUrl = ie.LocationURL;
-                    if ((String.IsNullOrEmpty(title) || String.Compare(curTitle, title, true) == 0) &&
-                        (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
-                    {
-                        found = true;
-                        SetBrowser(ie);
-                        break;
-                    }
+                    throw new BrowserNotFoundException("Page title and url can not both be empty.");
                 }
-            }
 
-            if (found)
-            {
-                return this;
+                //we will try 30s to find an object.
+                int times = 0;
+                while (times <= _maxWaitSeconds)
+                {
+                    if (_browserList.Count > 0)
+                    {
+                        foreach (InternetExplorer ie in _browserList)
+                        {
+                            String curTitle = ie.LocationName;
+                            String curUrl = ie.LocationURL;
+                            if ((String.IsNullOrEmpty(title) || String.Compare(curTitle, title, true) == 0) &&
+                                (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
+                            {
+                                SetBrowser(ie);
+                                return this;
+                            }
+                        }
+                    }
+
+                    Thread.Sleep(Interval * 1000);
+                    times += Interval;
+                }
+
+                throw new BrowserNotFoundException("Can not find page by title: " + title + " and url: " + url);
             }
-            else
+            catch (TestException)
             {
-                return null;
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new BrowserNotFoundException("Can not find page by title: " + title + " and url: " + url + " with exception: " + ex.ToString());
             }
         }
 
