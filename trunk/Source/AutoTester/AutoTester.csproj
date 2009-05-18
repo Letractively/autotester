@@ -50,6 +50,7 @@
     <Compile Include="Test\FCKEditor.cs" />
     <Compile Include="Test\Google.cs" />
     <Compile Include="Test\gougou.cs" />
+    <Compile Include="Test\Mitbbs.cs" />
     <Compile Include="Test\Netyi.cs" />
     <Compile Include="Test\Other.cs" />
     <Compile Include="Test\Qidian.cs" />
