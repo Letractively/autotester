@@ -38,7 +38,7 @@ namespace Shrinerain.AutoTester.Core
         #region Fileds
 
         //stack to save the browser status.
-        protected static Stack<InternetExplorer> _browserStack = new Stack<InternetExplorer>(16);
+        protected static List<InternetExplorer> _browserList = new List<InternetExplorer>(16);
         //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
         protected InternetExplorer _browser;
 
@@ -778,8 +778,14 @@ namespace Shrinerain.AutoTester.Core
 
         public ITestBrowser GetPage(int index)
         {
-            if (index > 0)
+            if (index < 0 || index >= _browserList.Count)
             {
+                return null;
+            }
+            else if (index >= 0)
+            {
+                InternetExplorer ie = _browserList[index];
+                SetBrowser(ie);
             }
 
             return this;
@@ -787,19 +793,42 @@ namespace Shrinerain.AutoTester.Core
 
         public ITestBrowser GetPage(string title, string url)
         {
-            throw new NotImplementedException();
+            String curTitle = this.GetTitle();
+            String curUrl = this.GetUrl();
+
+            bool found = false;
+            if (_browserList.Count > 0)
+            {
+                foreach (InternetExplorer ie in _browserList)
+                {
+                    curTitle = ie.LocationName;
+                    curUrl = ie.LocationURL;
+                    if ((String.IsNullOrEmpty(title) || String.Compare(curTitle, title, true) == 0) &&
+                        (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
+                    {
+                        found = true;
+                        SetBrowser(ie);
+                        break;
+                    }
+                }
+            }
+
+            if (found)
+            {
+                return this;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public ITestBrowser GetMostRecentPage()
         {
             try
             {
-                InternetExplorer topMostBrowser = GetTopmostBrowser();
-                if (topMostBrowser != null && topMostBrowser != this._browser)
-                {
-                    SetBrowser(topMostBrowser);
-                }
-
+                InternetExplorer ie = _browserList[_browserList.Count - 1];
+                SetBrowser(ie);
                 return this;
             }
             catch (TestException)
@@ -914,22 +943,10 @@ namespace Shrinerain.AutoTester.Core
             while (times < this._maxWaitSeconds)
             {
                 InternetExplorer ie = GetTopmostBrowser();
-
-                if (this._browser != ie)
+                if (this.GetPrevBrowser() != ie)
                 {
-                    try
-                    {
-                        SetBrowser(ie);
-                        break;
-                    }
-                    catch (TestException)
-                    {
-                        throw;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new BrowserNotFoundException(ex.ToString());
-                    }
+                    _browserList.Add(ie);
+                    break;
                 }
                 else
                 {
@@ -1070,9 +1087,6 @@ namespace Shrinerain.AutoTester.Core
                 try
                 {
                     this._isDownloading = true;
-
-                    InternetExplorer tmp = _browser;
-
                     this._browser = ie;
                     this._rootHandle = (IntPtr)ie.HWND;
                     try
@@ -1086,17 +1100,9 @@ namespace Shrinerain.AutoTester.Core
                     RegBrowserEvent(ie);
                     GetSize();
 
-                    if (tmp != null && tmp != ie)
+                    if (!_browserList.Contains(ie))
                     {
-                        InternetExplorer[] allBrowsers = GetAllBrowsers();
-                        foreach (InternetExplorer i in allBrowsers)
-                        {
-                            if (i == tmp)
-                            {
-                                _browserStack.Push(tmp);
-                                break;
-                            }
-                        }
+                        _browserList.Add(ie);
                     }
                 }
                 catch (TestException)
@@ -1117,21 +1123,14 @@ namespace Shrinerain.AutoTester.Core
         /* void GetPrevTestBrowserStatus()
          * Get previous browser status. eg: when pop up window disapper, we need to return to the main window.
          */
-        protected virtual void GetPrevBrowser()
+        protected virtual InternetExplorer GetPrevBrowser()
         {
-            if (_browserStack.Count > 0)
+            if (_browserList.Count > 0)
             {
-                try
-                {
-                    //get the previous status from stack.
-                    SetBrowser(_browserStack.Pop());
-                }
-                catch (Exception ex)
-                {
-                    this._browser = null;
-                    throw new CannotAttachBrowserException("Can not get previous handle: " + ex.ToString());
-                }
+                return _browserList[_browserList.Count - 1];
             }
+
+            return this._browser;
         }
 
         #region get size
@@ -1617,7 +1616,12 @@ namespace Shrinerain.AutoTester.Core
         protected virtual void OnQuit()
         {
             //get the prev test browser.
-            GetPrevBrowser();
+            _browserList.Remove(this._browser);
+            if (_browserList.Count > 0)
+            {
+                InternetExplorer ie = _browserList[0];
+                SetBrowser(ie);
+            }
         }
 
         #endregion
