@@ -94,11 +94,12 @@ namespace Shrinerain.AutoTester
             //Baidu.Test();
             //Google.Test();
             //Other.Test();
-            Qidian.Test();
+            //Qidian.Test();
             //CSDN.Test();
             // QQ.Test();
             //FCKEditor.Test();
             //Netyi.Test();
+            gougou.Test();
         }
     }
 }

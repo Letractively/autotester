@@ -4,19 +4,22 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class TestObjectMap
+    public class TestObjectMap : ITestObjectMap
     {
         #region fields
 
         //object pool for this map.
-        private ITestObjectPool _objPool;
+        protected ITestObjectPool _objPool;
+        protected ITestApp _app;
+        protected ITestBrowser _browser;
 
         //key for cache.
-        private const string _keySplitter = "__shrinerainmap__";
-        private TestObject[] _lastObjects;
+        protected const string _keySplitter = "__shrinerainmap__";
+        protected TestObject[] _lastObjects;
 
-        private bool _useCache = false;
-        private const int Timeout = 5;
+        protected bool _useCache = false;
+        protected const int Timeout = 5;
+
         #endregion
 
         #region properties
@@ -27,9 +30,26 @@ namespace Shrinerain.AutoTester.Core
 
         #region ctor
 
-        public TestObjectMap(ITestObjectPool pool)
+        public TestObjectMap()
         {
-            this._objPool = pool;
+        }
+
+        public TestObjectMap(ITestApp testApp)
+        {
+            if (testApp != null)
+            {
+                _app = testApp;
+                _objPool = _app.GetObjectPool();
+            }
+        }
+
+        public TestObjectMap(ITestBrowser testBrowser)
+        {
+            if (testBrowser != null)
+            {
+                _browser = testBrowser;
+                _objPool = testBrowser.GetObjectPool();
+            }
         }
 
         #endregion
@@ -99,6 +119,88 @@ namespace Shrinerain.AutoTester.Core
         }
 
         #region test object
+
+        #region page and window
+
+        public TestPage Page(int index)
+        {
+            if (index >= 0)
+            {
+                ITestBrowser browser = _browser.GetPage(index);
+                if (browser != null)
+                {
+                    return new TestPage(browser);
+                }
+            }
+
+            throw new BrowserNotFoundException("Can not get page by index: " + index);
+        }
+
+        public TestPage Page(string title, string url)
+        {
+            if (!String.IsNullOrEmpty(title) || !String.IsNullOrEmpty(url))
+            {
+                ITestBrowser browser = _browser.GetPage(title, url);
+                if (browser != null)
+                {
+                    return new TestPage(browser);
+                }
+            }
+
+            throw new BrowserNotFoundException("Can not get page by title: " + title + ", url: " + url);
+        }
+
+        public TestPage NewPage()
+        {
+            ITestBrowser browser = _browser.GetMostRecentPage();
+            if (browser != null)
+            {
+                return new TestPage(browser);
+            }
+
+            throw new BrowserNotFoundException("Can not get new page.");
+        }
+
+        public TestWindow Window(int index)
+        {
+            if (index >= 0)
+            {
+                ITestApp app = _app.GetWindow(index);
+                if (app != null)
+                {
+                    return new TestWindow(app);
+                }
+            }
+
+            throw new AppNotFoundExpcetion("Can not find window by index: " + index);
+        }
+
+        public TestWindow Window(string title, string className)
+        {
+            if (!String.IsNullOrEmpty(title) || !String.IsNullOrEmpty(className))
+            {
+                ITestApp app = _app.GetWindow(title, className);
+                if (app != null)
+                {
+                    return new TestWindow(app);
+                }
+            }
+
+            throw new AppNotFoundExpcetion("Can not find window by title: " + title + ", className: " + className);
+        }
+
+        public TestWindow NewWindow()
+        {
+            ITestApp app = _app.GetMostRecentWindow();
+            if (app != null)
+            {
+                return new TestWindow(app);
+            }
+
+            throw new AppNotFoundExpcetion("Can not find new window.");
+        }
+
+        #endregion
 
         public IClickable Button()
         {
@@ -359,6 +461,46 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
+        public IClickable Menu()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IClickable[] Menus()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IClickable Menu(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IClickable[] Menus(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IClickable Tab()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IClickable[] Tabs()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IClickable Tab(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IClickable[] Tabs(string name)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #endregion
@@ -478,7 +620,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        private String BuildKey(string feed)
+        private static String BuildKey(string feed)
         {
             return _keySplitter + feed;
         }
@@ -486,5 +628,29 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #endregion
+    }
+
+    public class TestPage : TestObjectMap
+    {
+        public TestPage(ITestBrowser testBrowser)
+        {
+            if (testBrowser != null)
+            {
+                _browser = testBrowser;
+                _objPool = testBrowser.GetObjectPool();
+            }
+        }
+    }
+
+    public class TestWindow : TestObjectMap
+    {
+        public TestWindow(ITestApp testApp)
+        {
+            if (testApp != null)
+            {
+                _app = testApp;
+                _objPool = testApp.GetObjectPool();
+            }
+        }
     }
 }
