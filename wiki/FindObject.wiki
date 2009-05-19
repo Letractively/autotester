@@ -8,7 +8,9 @@ This wiki page will show you how to find an object.
 Common used objects like "Button", "Textbox" ect. you can find it by it's visible text or properties.
 
 For example: the "Google Search" button, it's HTML code is like this 
-{{{<input name=btnG type=submit value="Google Search">.}}}
+{{{
+<input name=btnG type=submit value="Google Search">.
+}}}
 
 To find the "Google Search" button, you can find it by it's visible text:
 {{{
