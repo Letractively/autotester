@@ -8,10 +8,14 @@ Fuzzy Search is a powerful function to let you fina an object.
 In common situation, if you want to find an object, your need to pass the correct properties to API.
 
 For example, if you try to find the "Google Search" button, you need to write code like this: 
-{{{  test.Objects.Button("Google Search").Click(); // work well.}}}
+{{{  
+test.Objects.Button("Google Search").Click(); // work well.
+}}}
 
 But because of your careless, you write code like this:
-{{{  test.Objects.Button("Google Searc").Click(); //can not work!!!}}}
+{{{  
+test.Objects.Button("Google Searc").Click(); //can not work!!!
+}}}
 Of coz, you can not get anything because the button is "Google Search" not "Google Searc".
 
 Fuzzy Search can make it work for you, after you enable Fuzzy search, AutoTester.net will find an object even it is not 100% match. It will return the most similar object to you.
