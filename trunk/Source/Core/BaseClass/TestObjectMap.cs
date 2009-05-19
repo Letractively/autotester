@@ -18,11 +18,23 @@ namespace Shrinerain.AutoTester.Core
         protected TestObject[] _lastObjects;
 
         protected bool _useCache = false;
-        protected const int Timeout = 5;
+        protected static int _timeout = 5;
+
 
         #endregion
 
         #region properties
+
+        public ITestObjectPool ObjectPool
+        {
+            get { return _objPool; }
+        }
+
+        public int Timeout
+        {
+            get { return TestObjectMap._timeout; }
+            set { TestObjectMap._timeout = value; }
+        }
 
         #endregion
 
@@ -119,88 +131,6 @@ namespace Shrinerain.AutoTester.Core
         }
 
         #region test object
-
-        #region page and window
-
-        public TestPage Page(int index)
-        {
-            if (index >= 0)
-            {
-                ITestBrowser browser = _browser.GetPage(index);
-                if (browser != null)
-                {
-                    return new TestPage(browser);
-                }
-            }
-
-            throw new BrowserNotFoundException("Can not get page by index: " + index);
-        }
-
-        public TestPage Page(string title, string url)
-        {
-            if (!String.IsNullOrEmpty(title) || !String.IsNullOrEmpty(url))
-            {
-                ITestBrowser browser = _browser.GetPage(title, url);
-                if (browser != null)
-                {
-                    return new TestPage(browser);
-                }
-            }
-
-            throw new BrowserNotFoundException("Can not get page by title: " + title + ", url: " + url);
-        }
-
-        public TestPage NewPage()
-        {
-            ITestBrowser browser = _browser.GetMostRecentPage();
-            if (browser != null)
-            {
-                return new TestPage(browser);
-            }
-
-            throw new BrowserNotFoundException("Can not get new page.");
-        }
-
-        public TestWindow Window(int index)
-        {
-            if (index >= 0)
-            {
-                ITestApp app = _app.GetWindow(index);
-                if (app != null)
-                {
-                    return new TestWindow(app);
-                }
-            }
-
-            throw new AppNotFoundExpcetion("Can not find window by index: " + index);
-        }
-
-        public TestWindow Window(string title, string className)
-        {
-            if (!String.IsNullOrEmpty(title) || !String.IsNullOrEmpty(className))
-            {
-                ITestApp app = _app.GetWindow(title, className);
-                if (app != null)
-                {
-                    return new TestWindow(app);
-                }
-            }
-
-            throw new AppNotFoundExpcetion("Can not find window by title: " + title + ", className: " + className);
-        }
-
-        public TestWindow NewWindow()
-        {
-            ITestApp app = _app.GetMostRecentWindow();
-            if (app != null)
-            {
-                return new TestWindow(app);
-            }
-
-            throw new AppNotFoundExpcetion("Can not find new window.");
-        }
-
-        #endregion
 
         public IClickable Button()
         {
@@ -414,7 +344,6 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-
         public ITable Table()
         {
             return Tables()[0];
@@ -566,7 +495,7 @@ namespace Shrinerain.AutoTester.Core
             exception = null;
 
             int oriTimeout = this._objPool.GetTimeout();
-            this._objPool.SetTimeout(Timeout);
+            this._objPool.SetTimeout(_timeout);
             try
             {
                 if (String.IsNullOrEmpty(type) && (properties == null || properties.Length == 0))
@@ -628,29 +557,5 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #endregion
-    }
-
-    public class TestPage : TestObjectMap
-    {
-        public TestPage(ITestBrowser testBrowser)
-        {
-            if (testBrowser != null)
-            {
-                _browser = testBrowser;
-                _objPool = testBrowser.GetObjectPool();
-            }
-        }
-    }
-
-    public class TestWindow : TestObjectMap
-    {
-        public TestWindow(ITestApp testApp)
-        {
-            if (testApp != null)
-            {
-                _app = testApp;
-                _objPool = testApp.GetObjectPool();
-            }
-        }
     }
 }
