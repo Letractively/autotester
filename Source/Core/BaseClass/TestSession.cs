@@ -10,9 +10,8 @@ namespace Shrinerain.AutoTester.Core
 
         protected TestApp _app;
         protected TestBrowser _browser;
-        protected TestObjectMap _map;
+        protected TestObjectManager _objManager;
         protected TestCheckPoint _cp;
-        protected ITestObjectPool _pool;
         protected ITestEventDispatcher _dispatcher;
 
         #endregion
@@ -45,22 +44,12 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public ITestObjectPool ObjectPool
+        public TestObjectManager Objects
         {
             get
             {
                 Init();
-                return _pool;
-            }
-        }
-
-
-        public TestObjectMap ObjectMap
-        {
-            get
-            {
-                Init();
-                return _map;
+                return _objManager;
             }
         }
 
@@ -106,19 +95,17 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void Init()
         {
-            if ((this._app != null || this._browser != null) && this._pool == null)
+            if ((this._app != null || this._browser != null) && this._objManager == null)
             {
                 if (this._app != null)
                 {
-                    this._map = new TestObjectMap(this._app);
-                    this._pool = _app.GetObjectPool();
+                    this._objManager = new TestObjectManager(this._app);
                     this._dispatcher = _app.GetEventDispatcher();
                 }
 
                 if (this._browser != null)
                 {
-                    this._map = new TestObjectMap(this._browser);
-                    this._pool = _browser.GetObjectPool();
+                    this._objManager = new TestObjectManager(this._browser);
                     this._dispatcher = _browser.GetEventDispatcher();
                 }
             }

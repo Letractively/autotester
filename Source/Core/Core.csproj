@@ -57,6 +57,7 @@
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
     <Compile Include="BaseClass\TestCheckPoint.cs" />
     <Compile Include="BaseClass\TestObjectMap.cs" />
+    <Compile Include="BaseClass\TestObjectManager.cs" />
     <Compile Include="BaseClass\TestSession.cs" />
     <Compile Include="BaseClass\TestProperty.cs" />
     <Compile Include="Helper\AsstFunctions.cs" />
