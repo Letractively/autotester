@@ -27,7 +27,7 @@ To find an object by properties, you should pass a string parameter like "proper
 
 == Find any Object == 
 
-If you can not find an object by it's visible text and properties. AutoTester.net support any other API to find it. You can find these APIs in "TestSession.Objects.ObjectPool"
+If you can not find an object by it's visible text and properties. AutoTester.net support some other APIs to find an object. You can find these APIs in "TestSession.Objects.ObjectPool"
 
 {{{
  /* Object GetObjectByIndex(int index);
