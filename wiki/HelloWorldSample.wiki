@@ -26,8 +26,8 @@ namespace Shrinerain.AutoTester
         {
             TestSession ts = new HTMLTestSession();
             ts.Browser.Start("http://google.com"); //load google
-            ts.ObjectMap.TextBox().Input("shrinerain autotester"); //input something
-            ts.ObjectMap.Button("Google Search").Click(); //click the button
+            ts.Objects.TextBox().Input("shrinerain autotester"); //input something
+            ts.Objects.Button("Google Search").Click(); //click the button
         }
     }
 }
