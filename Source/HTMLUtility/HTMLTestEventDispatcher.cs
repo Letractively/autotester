@@ -9,12 +9,16 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
+    [ComVisible(true)]
     public class HTMLTestEventDispatcher : ITestEventDispatcher
     {
         #region fields
 
         private static HTMLTestEventDispatcher _instance = new HTMLTestEventDispatcher();
         private HTMLTestBrowser _browser;
+
+        private IHTMLElement _lastMouseDownElement;
+        private IHTMLElement _lastKeyDownElement;
 
         #endregion
 
@@ -35,22 +39,33 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public
 
-        public void RegisterEvents(IHTMLDocument2 doc)
+        public void RegisterEvents(IHTMLDocument2 doc2)
         {
-            if (doc != null)
+            if (doc2 != null)
             {
-                HTMLTestEventWrapper eventWrapper = new HTMLTestEventWrapper(doc);
-                eventWrapper.DHTMLEventHandler += new HTMLTestEventWrapper.DHTMLEvent(CheckClick);
-                doc.onkeydown = eventWrapper;
-                HTMLDocumentEvents2_Event event2 = doc as HTMLDocumentEvents2_Event;
-                // event2.onkeydown += new HTMLDocumentEvents2_onkeydownEventHandler(CheckClick);
+                IHTMLDocument3 doc3 = doc2 as IHTMLDocument3;
+                if (doc3 != null)
+                {
+                    doc3.attachEvent("onmousedown", this);
+                    doc3.attachEvent("onmouseup", this);
+                    doc3.attachEvent("onkeydown", this);
+                    doc3.attachEvent("onkeyup", this);
+                }
             }
         }
 
-        public void UnregisterEvents(IHTMLDocument2 doc)
+        public void UnregisterEvents(IHTMLDocument2 doc2)
         {
-            if (doc != null)
+            if (doc2 != null)
             {
+                IHTMLDocument3 doc3 = doc2 as IHTMLDocument3;
+                if (doc3 != null)
+                {
+                    doc3.detachEvent("onmousedown", this);
+                    doc3.detachEvent("onmouseup", this);
+                    doc3.detachEvent("onkeydown", this);
+                    doc3.detachEvent("onkeyup", this);
+                }
             }
         }
 
@@ -58,18 +73,96 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        private void CheckClick(IHTMLEventObj pEvtObj)
+        [DispId(0)]
+        public void HandleEvent(IHTMLEventObj pEvtObj)
+        {
+            String tp = pEvtObj.type;
+            IHTMLElement src = pEvtObj.srcElement;
+
+            if (CheckClick(pEvtObj))
+            {
+                HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser, null);
+                OnClick(obj, null);
+            }
+            else if (CheckInput(pEvtObj))
+            {
+                HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser, null);
+                OnTextChange(obj, null);
+            }
+        }
+
+        private bool CheckClick(IHTMLEventObj pEvtObj)
         {
             if (OnClick != null)
             {
+                String tp = pEvtObj.type;
                 IHTMLElement src = pEvtObj.srcElement;
-                if (src is IHTMLInputElement || src is IHTMLAnchorElement
-                    || src is IHTMLButtonElement || src is IHTMLImgElement)
+
+                if (String.Compare("mousedown", tp, true) == 0)
                 {
-                    HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser, null);
-                    OnClick(obj, null);
+                    _lastMouseDownElement = src;
+                }
+                else if (String.Compare("mouseup", tp, true) == 0)
+                {
+                    if (_lastMouseDownElement == src)
+                    {
+                        _lastMouseDownElement = null;
+                        if (src is IHTMLInputElement)
+                        {
+                            String type = null;
+                            if (HTMLTestObject.TryGetProperty(src, "type", out type))
+                            {
+                                if (String.Compare(type, "button", true) == 0 || String.Compare(type, "submit", true) == 0 ||
+                                    String.Compare(type, "reset", true) == 0 || String.Compare(type, "image", true) == 0)
+                                {
+                                    return true;
+                                }
+                            }
+                        }
+                        else if (src is IHTMLAnchorElement || src is IHTMLButtonElement || src is IHTMLImgElement)
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
+
+            return false;
+        }
+
+        private bool CheckInput(IHTMLEventObj pEvtObj)
+        {
+            if (OnTextChange != null)
+            {
+                String tp = pEvtObj.type;
+                IHTMLElement src = pEvtObj.srcElement;
+
+                if (String.Compare("keydown", tp, true) == 0)
+                {
+                    _lastKeyDownElement = src;
+                }
+                else if (String.Compare("keyup", tp, true) == 0)
+                {
+                    if (_lastKeyDownElement == src)
+                    {
+                        _lastKeyDownElement = null;
+                        if (src is IHTMLInputElement || src is IHTMLTextAreaElement)
+                        {
+                            String type = null;
+                            if (!HTMLTestObject.TryGetProperty(src, "type", out type))
+                            {
+                                return true;
+                            }
+                            else if (String.Compare(type, "text", true) == 0 || String.Compare(type, "password", true) == 0)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         #endregion
@@ -130,24 +223,5 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public event TestObjectEventHandler OnShow;
 
         #endregion
-    }
-
-    public class HTMLTestEventWrapper
-    {
-        public delegate void DHTMLEvent(IHTMLEventObj e);
-        public event DHTMLEvent DHTMLEventHandler;
-
-        private IHTMLDocument2 m_Document;
-
-        public HTMLTestEventWrapper(IHTMLDocument2 doc)
-        {
-            m_Document = doc;
-        }
-
-        [DispId(0)]
-        public void FireEvent()
-        {
-            DHTMLEventHandler(m_Document.parentWindow.@event);
-        }
     }
 }
