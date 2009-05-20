@@ -1604,7 +1604,7 @@ namespace Shrinerain.AutoTester.Core
                     return;
                 }
 
-                if (_browser != null && _browser.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE && Marshal.GetIDispatchForObject(pDesp) == Marshal.GetIDispatchForObject(_browser))
+                if (_browser != null && _browser.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE && Marshal.GetIUnknownForObject(pDesp) == Marshal.GetIUnknownForObject(_browser))
                 {
                     _rootDocument = _browser.Document as HTMLDocument;
                     GetSize();
