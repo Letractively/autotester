@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class SocketWrapper : IDisposable
+    public sealed class SocketWrapper : IDisposable
     {
         #region Fields
 

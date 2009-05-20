@@ -37,7 +37,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public class HTMLTestGUIObject : HTMLTestObject, IVisible
     {
-
         #region fields
 
         //the rectangle on screen of the object.
@@ -59,7 +58,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //when finish action, sleep for a moment.
         protected bool _isDelayAfterAction = true;
         protected const int _delayTime = 1;
-        protected bool _isUnderAction = false;
 
         //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
         //then we will not see the mouse move.
@@ -118,20 +116,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public bool IsUnderAction
-        {
-            get
-            {
-                return _isUnderAction;
-            }
-        }
-
-        public bool IsDelayAfterAction
-        {
-            get { return _isDelayAfterAction; }
-            set { _isDelayAfterAction = value; }
-        }
-
         //when set the html browser, we can start to calculate the position
         public override HTMLTestBrowser Browser
         {
@@ -164,8 +148,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestGUIObject()
             : base()
         {
-            //when init, get the position information.
-            //GetRectOnScreen();
         }
 
         public HTMLTestGUIObject(IHTMLElement element)
@@ -174,38 +156,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             this._isEnable = IsEnable();
             this._isReadonly = IsReadonly();
             this._isVisible = IsVisible();
-            //GetRectOnScreen();
-        }
-
-        ~HTMLTestGUIObject()
-        {
-            Dispose();
         }
 
         #endregion
 
         #region public methods
-
-        /* void Dispose()
-         * When GC, close AutoResetEvent
-         */
-        public override void Dispose()
-        {
-            try
-            {
-                if (_actionFinished != null)
-                {
-                    //_actionFinished.Close();
-                    //_actionFinished = null;
-                }
-                base.Dispose();
-                GC.SuppressFinalize(this);
-            }
-            catch
-            {
-
-            }
-        }
 
         /* Point GetCenterPoint()
          * Get the center point of the object.
@@ -216,7 +171,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             GetRectOnScreen();
             return _centerPoint;
         }
-
 
         /* Rectangle GetRectOnScreen()
          * Get the rectangle on screen of the object.
@@ -290,7 +244,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                //we need to add 2, then we can get the "right" print, don't ask me why, ask Microsoft...
                 return new Bitmap(ScreenCaptruer.CaptureScreenArea(_rect.Left + 2, _rect.Top + 2, _rect.Width, _rect.Height));
             }
             catch (TestException)

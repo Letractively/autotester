@@ -258,15 +258,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element, HTMLTestBrowser browser)
         {
-            return BuildHTMLTestObject(element, browser, browser.GetObjectPool() as HTMLTestObjectPool);
+            return BuildHTMLTestObject(element, browser);
         }
 
-        public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element, HTMLTestBrowser browser, HTMLTestObjectPool pool)
-        {
-            return BuildHTMLTestObjectByType(element, HTMLTestObjectType.Unknow, browser, pool);
-        }
-
-        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, HTMLTestObjectType type, HTMLTestBrowser browser, HTMLTestObjectPool pool)
+        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, HTMLTestObjectType type, HTMLTestBrowser browser)
         {
             if (element == null)
             {
@@ -312,7 +307,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     tmp = new HTMLTestTable(element);
                     break;
                 default:
-                    tmp = null;
+                    tmp = new HTMLTestGUIObject(element);
                     break;
             }
 
@@ -321,7 +316,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     tmp.Browser = browser;
-                    tmp.HTMLTestObjPool = pool;
                     return tmp;
                 }
                 catch (CannotGetObjectPositionException ex)

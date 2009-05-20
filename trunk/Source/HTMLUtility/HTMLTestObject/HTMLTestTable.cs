@@ -200,7 +200,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         try
                         {
                             tmpElement = (IHTMLElement)cellChildren.item(index, index);
-                            tmpObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject(tmpElement, this._browser, this._pool);
+                            tmpObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject(tmpElement, this._browser);
                         }
                         catch
                         {

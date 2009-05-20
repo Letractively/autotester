@@ -42,6 +42,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -51,6 +52,7 @@
     <Compile Include="BaseClass\TestException\TestAppException.cs" />
     <Compile Include="BaseClass\TestException\TestBrowserException.cs" />
     <Compile Include="BaseClass\TestException\TestDataExpception.cs" />
+    <Compile Include="BaseClass\TestException\TestEventException.cs" />
     <Compile Include="BaseClass\TestException\TestFrameworkException.cs" />
     <Compile Include="BaseClass\TestException\TestInterfaceException.cs" />
     <Compile Include="BaseClass\TestException\TestLogException.cs" />
@@ -62,6 +64,7 @@
     <Compile Include="BaseClass\TestProperty.cs" />
     <Compile Include="Helper\AsstFunctions.cs" />
     <Compile Include="Helper\COMUtil.cs" />
+    <Compile Include="Helper\HttpHandler.cs" />
     <Compile Include="Helper\Mail.cs" />
     <Compile Include="Helper\ObjectCache.cs" />
     <Compile Include="Helper\Printer.cs" />

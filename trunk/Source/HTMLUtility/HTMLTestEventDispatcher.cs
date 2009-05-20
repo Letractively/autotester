@@ -76,52 +76,122 @@ namespace Shrinerain.AutoTester.HTMLUtility
         [DispId(0)]
         public void HandleEvent(IHTMLEventObj pEvtObj)
         {
-            String tp = pEvtObj.type;
             IHTMLElement src = pEvtObj.srcElement;
+
+            HTMLTestObject obj = null;
+            CheckMouseKeyEvent(pEvtObj, out obj);
 
             if (CheckClick(pEvtObj))
             {
-                HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser, null);
+                if (obj == null)
+                {
+                    obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                }
                 OnClick(obj, null);
             }
             else if (CheckInput(pEvtObj))
             {
-                HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser, null);
+                if (obj == null)
+                {
+                    obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                }
                 OnTextChange(obj, null);
             }
+        }
+
+        private bool CheckMouseKeyEvent(IHTMLEventObj pEvtObj, out HTMLTestObject obj)
+        {
+            obj = null;
+            IHTMLElement src = pEvtObj.srcElement;
+            if (src != null)
+            {
+                String tp = pEvtObj.type;
+
+                try
+                {
+                    if (OnMouseDown != null)
+                    {
+                        if (String.Compare(tp, "mousedown", true) == 0)
+                        {
+                            obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            OnMouseDown(obj, null);
+                        }
+                    }
+
+                    if (OnMouseUp != null)
+                    {
+                        if (String.Compare(tp, "mouseup", true) == 0)
+                        {
+                            obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            OnMouseUp(obj, null);
+                        }
+                    }
+
+                    if (OnKeyDown != null)
+                    {
+                        if (String.Compare(tp, "keydown", true) == 0)
+                        {
+                            obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            OnKeyDown(obj, null);
+                        }
+                    }
+
+                    if (OnKeyUp != null)
+                    {
+                        if (String.Compare(tp, "keyup", true) == 0)
+                        {
+                            obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            OnKeyUp(obj, null);
+                        }
+                    }
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new TestEventException("Create event failed: " + ex.ToString());
+                }
+            }
+
+            return obj != null;
         }
 
         private bool CheckClick(IHTMLEventObj pEvtObj)
         {
             if (OnClick != null)
             {
-                String tp = pEvtObj.type;
                 IHTMLElement src = pEvtObj.srcElement;
+                if (src != null)
+                {
+                    String tp = pEvtObj.type;
 
-                if (String.Compare("mousedown", tp, true) == 0)
-                {
-                    _lastMouseDownElement = src;
-                }
-                else if (String.Compare("mouseup", tp, true) == 0)
-                {
-                    if (_lastMouseDownElement == src)
+                    if (String.Compare("mousedown", tp, true) == 0)
                     {
-                        _lastMouseDownElement = null;
-                        if (src is IHTMLInputElement)
+                        _lastMouseDownElement = src;
+                    }
+                    else if (String.Compare("mouseup", tp, true) == 0)
+                    {
+                        if (_lastMouseDownElement == src)
                         {
-                            String type = null;
-                            if (HTMLTestObject.TryGetProperty(src, "type", out type))
+                            _lastMouseDownElement = null;
+                            if (src is IHTMLInputElement)
                             {
-                                if (String.Compare(type, "button", true) == 0 || String.Compare(type, "submit", true) == 0 ||
-                                    String.Compare(type, "reset", true) == 0 || String.Compare(type, "image", true) == 0)
+                                String type = null;
+                                if (HTMLTestObject.TryGetProperty(src, "type", out type))
                                 {
-                                    return true;
+                                    if (String.Compare(type, "button", true) == 0 || String.Compare(type, "submit", true) == 0 ||
+                                        String.Compare(type, "reset", true) == 0 || String.Compare(type, "image", true) == 0)
+                                    {
+                                        return true;
+                                    }
                                 }
                             }
-                        }
-                        else if (src is IHTMLAnchorElement || src is IHTMLButtonElement || src is IHTMLImgElement)
-                        {
-                            return true;
+                            else if (src is IHTMLAnchorElement || src is IHTMLButtonElement || src is IHTMLImgElement)
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
@@ -134,28 +204,39 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (OnTextChange != null)
             {
-                String tp = pEvtObj.type;
                 IHTMLElement src = pEvtObj.srcElement;
+                if (src != null)
+                {
+                    String tp = pEvtObj.type;
 
-                if (String.Compare("keydown", tp, true) == 0)
-                {
-                    _lastKeyDownElement = src;
-                }
-                else if (String.Compare("keyup", tp, true) == 0)
-                {
-                    if (_lastKeyDownElement == src)
+                    if (String.Compare("keydown", tp, true) == 0)
                     {
-                        _lastKeyDownElement = null;
-                        if (src is IHTMLInputElement || src is IHTMLTextAreaElement)
+                        _lastKeyDownElement = src;
+                    }
+                    else if (String.Compare("keyup", tp, true) == 0)
+                    {
+                        if (_lastKeyDownElement == src)
                         {
-                            String type = null;
-                            if (!HTMLTestObject.TryGetProperty(src, "type", out type))
+                            _lastKeyDownElement = null;
+                            if (src is IHTMLInputElement || src is IHTMLTextAreaElement)
                             {
-                                return true;
+                                String type = null;
+                                if (!HTMLTestObject.TryGetProperty(src, "type", out type))
+                                {
+                                    return true;
+                                }
+                                else if (String.Compare(type, "text", true) == 0 || String.Compare(type, "password", true) == 0)
+                                {
+                                    return true;
+                                }
                             }
-                            else if (String.Compare(type, "text", true) == 0 || String.Compare(type, "password", true) == 0)
+                            else
                             {
-                                return true;
+                                String contentEditable = null;
+                                if (HTMLTestObject.TryGetProperty(src, "contentEditable", out contentEditable))
+                                {
+                                    return String.Compare(contentEditable, "true", true) == 0;
+                                }
                             }
                         }
                     }
