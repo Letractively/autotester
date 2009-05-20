@@ -16,7 +16,7 @@ test.Browser.Start("http://google.com"); //start browser then navigate to google
 If you already open a browser, you can find it by it's title or Url: 
 {{{
 TestSession test = new HTMLTestSession();
-test.Browser.Find("Google")
+test.Browser.Find("Google");
 }}}
 
 After a browser is started or found, you can navigate to any url you want.
