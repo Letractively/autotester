@@ -1,4 +1,4 @@
-= Operation on a Browser =
+= Operation on a browser =
 
 This wiki page will show you how to start/find/navigate browser.
 
