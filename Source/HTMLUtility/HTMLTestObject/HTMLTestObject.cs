@@ -46,7 +46,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     }
 
     #region html object base class
-    public class HTMLTestObject : TestObject, IDisposable, IStatus
+    public class HTMLTestObject : TestObject, IStatus
     {
         #region fields
 
@@ -62,11 +62,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the host browser of this object.
         protected HTMLTestBrowser _browser;
-
-        //object pool of this object.
-        protected HTMLTestObjectPool _pool;
-
-        protected AutoResetEvent _stateChanged = new AutoResetEvent(false);
 
         #endregion
 
@@ -104,13 +99,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             set { _browser = value; }
         }
 
-        public virtual HTMLTestObjectPool HTMLTestObjPool
-        {
-            get { return _pool; }
-            set { _pool = value; }
-        }
-
-
         #endregion
 
         #region methods
@@ -134,65 +122,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 this._sourceElement = element;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotBuildObjectException("Can not convert element to IHTMLElement: " + ex.ToString());
-            }
-
-            try
-            {
                 //get tag, like <A>, <Input>...
                 this._domain = "HTML";
                 this._tag = element.tagName;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotBuildObjectException("Can not find tag name: " + ex.ToString());
-            }
-
-            try
-            {
-                //get id, like <input id="btn1">
                 this._id = element.id;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotBuildObjectException("ID is not found of element " + element.ToString() + ": " + ex.ToString());
-            }
-
-            try
-            {
                 //get name, like <input name="btn2">
-                if (element.getAttribute("name", 0) == null || element.getAttribute("name", 0).GetType().ToString() == "System.DBNull")
+                if (!TryGetProperty(element, "name", out this._name))
                 {
                     this._name = "";
                 }
-                else
-                {
-                    this._name = element.getAttribute("name", 0).ToString().Trim();
-                }
             }
-            catch
+            catch (Exception ex)
             {
-                this._name = "";
+                throw new CannotBuildObjectException("Can not build HTML test object: " + ex.ToString());
             }
-        }
-
-        ~HTMLTestObject()
-        {
-            Dispose();
-        }
-
-        public virtual void Dispose()
-        {
-            if (this._stateChanged != null)
-            {
-                //this._stateChanged.Close();
-                //this._stateChanged = null;
-            }
-
-            GC.SuppressFinalize(this);
         }
 
         #endregion
