@@ -361,6 +361,60 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return true;
         }
 
+        public static bool TryGetIDValue(TestProperty[] properties, out string id)
+        {
+            id = "";
+            if (properties != null && properties.Length > 0)
+            {
+                foreach (TestProperty tp in properties)
+                {
+                    if (String.Compare(tp.Name, "id", true) == 0)
+                    {
+                        id = tp.Value.ToString();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static bool TryGetNameValue(TestProperty[] properties, out string name)
+        {
+            name = "";
+            if (properties != null && properties.Length > 0)
+            {
+                foreach (TestProperty tp in properties)
+                {
+                    if (String.Compare(tp.Name, "name", true) == 0)
+                    {
+                        name = tp.Value.ToString();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static bool TryGetTagValue(TestProperty[] properties, out string tag)
+        {
+            tag = "";
+            if (properties != null && properties.Length > 0)
+            {
+                foreach (TestProperty tp in properties)
+                {
+                    if (String.Compare(tp.Name, "tag", true) == 0 || String.Compare(tp.Name, "tagName", true) == 0)
+                    {
+                        tag = tp.Value.ToString();
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         #endregion
     }
 }

@@ -163,6 +163,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public override bool TryGetProperty(string propertyName, out object value)
+        {
+            value = null;
+            string strValue = null;
+            if (TryGetProperty(this._sourceElement, propertyName, out strValue))
+            {
+                value = strValue;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public override bool HasProperty(string propertyName)
+        {
+            return HasProperty(this._sourceElement, propertyName);
+        }
+
         /* bool SetPropertyByName(string propertyName, object value)
          * set the property value.
          * return true if success.
@@ -175,33 +195,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* bool TryGetValueByProperty(IHTMLElement element, string properyName)
          * return true if the property value is not null or empty.
          */
-        public static bool TryGetProperty(IHTMLElement element, string properyName)
+        public static bool HasProperty(IHTMLElement element, string properyName)
         {
             string value;
-
             return TryGetProperty(element, properyName, out value);
         }
-
-        public static bool TryGetProperty(object element, string propertyName, out string value)
-        {
-            value = null;
-
-            if (element == null)
-            {
-                return false;
-            }
-
-            try
-            {
-                IHTMLElement tmpElement = (IHTMLElement)element;
-                return TryGetProperty(tmpElement, propertyName, out value);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
 
         /* bool TryGetValueByProperty(IHTMLElement element, string propertyName, out object value)
          * return true if the property exist.
@@ -249,7 +247,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 else
                 {
                     //not common properties
-                    value = element.getAttribute(propertyName, 0).ToString();
+                    object valueObj = element.getAttribute(propertyName, 0);
+                    value = (valueObj == null ? "" : valueObj.ToString());
                 }
 
                 if (value == null)
@@ -259,11 +258,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    //if not blank string, trim.
-                    if (!String.IsNullOrEmpty(value.Trim()))
-                    {
-                        value = value.Trim();
-                    }
+                    value = (value.Trim() == "" ? value : value.Trim());
                 }
 
                 //if acceptEmpty is true, we will return true.

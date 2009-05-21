@@ -92,7 +92,7 @@ namespace Shrinerain.AutoTester
             //Test1.Test();
             //MSAA.Test();
             //Baidu.Test();
-            Google.Test();
+           // Google.Test();
             //Other.Test();
             //Qidian.Test();
             //CSDN.Test();
@@ -101,6 +101,7 @@ namespace Shrinerain.AutoTester
             //Netyi.Test();
            // gougou.Test();
            // Mitbbs.Test();
+            Xjflcp.Test();
         }
     }
 }

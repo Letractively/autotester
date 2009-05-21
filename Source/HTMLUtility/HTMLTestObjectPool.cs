@@ -319,17 +319,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
-                IHTMLElement[] candidateElements = null;
-                string id;
-                if (TestProperty.TryGetIDValue(properties, out id))
-                {
-                    IHTMLElement element = _htmlTestBrowser.GetObjectByID(id);
-                    if (element != null)
-                    {
-                        candidateElements = new IHTMLElement[] { element };
-                    }
-                }
-                else
+                IHTMLElement[] candidateElements = GetElementsByCommonProperty(properties);
+                if (candidateElements == null)
                 {
                     //get all HTML objects.
                     GetAllElements();
@@ -479,16 +470,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 List<TestObject> result = new List<TestObject>();
 
-                IHTMLElement[] candidateElements = null;
-                string id;
-                if (TestProperty.TryGetIDValue(properties, out id))
-                {
-                    IHTMLElement element = _htmlTestBrowser.GetObjectByID(id);
-                    if (element != null)
-                    {
-                        candidateElements = new IHTMLElement[] { element };
-                    }
-                }
+                IHTMLElement[] candidateElements = GetElementsByCommonProperty(properties);
 
                 bool isOnlyOneObject = false;
                 //because we may convert one type to multi tags, so check them one by one.
@@ -822,6 +804,44 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch
             {
             }
+        }
+
+        private IHTMLElement[] GetElementsByCommonProperty(TestProperty[] properties)
+        {
+            if (properties != null && properties.Length > 0)
+            {
+                string id;
+                if (HTMLTestObjectFactory.TryGetIDValue(properties, out id))
+                {
+                    IHTMLElement element = _htmlTestBrowser.GetObjectByID(id);
+                    if (element != null)
+                    {
+                        return new IHTMLElement[] { element };
+                    }
+                }
+
+                string name;
+                if (HTMLTestObjectFactory.TryGetNameValue(properties, out name))
+                {
+                    IHTMLElement[] tmp = _htmlTestBrowser.GetObjectsByName(name);
+                    if (tmp != null && tmp.Length > 0)
+                    {
+                        return tmp;
+                    }
+                }
+
+                string tagName;
+                if (HTMLTestObjectFactory.TryGetTagValue(properties, out tagName))
+                {
+                    IHTMLElement[] tmp = _htmlTestBrowser.GetObjectsByTagName(tagName);
+                    if (tmp != null && tmp.Length > 0)
+                    {
+                        return tmp;
+                    }
+                }
+            }
+
+            return null;
         }
 
         #region check test object

@@ -295,7 +295,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (parent != null)
                     {
                         string tag = parent.tagName;
-                        if (tag == "SPAN" || tag == "TD" || tag == "DIV" || tag == "LABEL" || tag == "FONT")
+                        if (tag == "SPAN" || tag == "TD" || tag == "DIV" || tag == "LABEL" || tag == "FONT" || tag == "LI")
                         {
                             if (HTMLTestObject.TryGetProperty(parent, "innerText", out aroundText) && !String.IsNullOrEmpty(aroundText.Trim()))
                             {
@@ -439,7 +439,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             string type = null;
             HTMLTestObject.TryGetProperty(element, "type", out type);
             if (element == null || element.tagName == "A" || (element.tagName == "INPUT" && String.Compare(type, "hidden", true) != 0)
-                || element.tagName == "BUTTON" || !HTMLTestObject.TryGetProperty(element, "innerText"))
+                || element.tagName == "BUTTON" || !HTMLTestObject.HasProperty(element, "innerText"))
             {
                 return true;
             }
@@ -507,7 +507,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     IHTMLElement searchedElement = null;
 
                     object index = null;
-
                     if (direction == 0)
                     {
                         if (rowId - deepth >= 0)
@@ -677,7 +676,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotHighlightObjectException("Can not highlight the object: " + ex.ToString());
             }
-
         }
 
         /* bool IsVisible()
@@ -886,6 +884,5 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #endregion
-
     }
 }

@@ -88,6 +88,26 @@ namespace Shrinerain.AutoTester.Core
             return null;
         }
 
+        public virtual bool HasProperty(string propertyName)
+        {
+            object val;
+            return TryGetProperty(propertyName, out val);
+        }
+
+        public virtual bool TryGetProperty(string propertyName, out object value)
+        {
+            try
+            {
+                value = GetProperty(propertyName);
+                return value != null;
+            }
+            catch
+            {
+                value = null;
+                return false;
+            }
+        }
+
         /* bool SetProperty(string propertyName, object value)
          * set the expected property, return true if successful.
          */
