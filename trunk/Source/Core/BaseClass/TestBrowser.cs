@@ -256,12 +256,12 @@ namespace Shrinerain.AutoTester.Core
             Start(null, null);
         }
 
-        public override void Start(string parameters)
+        public override void Start(string args)
         {
-            Start(null, parameters);
+            Start(null, args);
         }
 
-        public override void Start(string appFullPath, string parameters)
+        public override void Start(string appFullPath, string args)
         {
             try
             {
@@ -272,9 +272,9 @@ namespace Shrinerain.AutoTester.Core
                 {
                     psInfo.FileName = appFullPath;
                 }
-                if (!String.IsNullOrEmpty(parameters))
+                if (!String.IsNullOrEmpty(args))
                 {
-                    psInfo.Arguments = parameters;
+                    psInfo.Arguments = args;
                 }
                 _appProcess = Process.Start(psInfo);
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
