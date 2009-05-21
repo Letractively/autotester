@@ -77,6 +77,7 @@ namespace Shrinerain.AutoTester.Core
         // restore to the origin size.
         void Restore();
         void Active();
+        void Hide(bool hide);
 
         //get status of desktop application
         bool IsActive();
@@ -110,6 +111,5 @@ namespace Shrinerain.AutoTester.Core
         string GetVersion();
         string GetCompany();
         string GetAuthor();
-
     }
 }

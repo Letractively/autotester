@@ -68,31 +68,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestTextBox(IHTMLElement element)
             : base(element)
         {
-
             this._type = HTMLTestObjectType.TextBox;
-
             this._isDelayAfterAction = false;
-
             try
             {
                 if (this.Tag == "TEXTAREA")
                 {
                     _textAreaElement = (IHTMLTextAreaElement)element;
-
                     _currentStr = _textAreaElement.value;
-
                     this._textBoxType = HTMLTestTextBoxType.MultiLine;
                 }
                 else
                 {
                     _textInputElement = (IHTMLInputTextElement)element;
-
                     _currentStr = _textInputElement.value;
-
                     this._textBoxType = GetTextBoxType();
                 }
-
-
                 //for some exception issue, I change the null to "".
                 if (_currentStr == null)
                 {
@@ -103,7 +94,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("Can not build text box: " + ex.ToString());
             }
-
         }
 
         #endregion
@@ -324,7 +314,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 //firstly, try to get text in the same cell/span/div/label
                 string label = GetAroundText(element);
-
                 //for textbox, we think the text on the left is it's label.
                 if (!String.IsNullOrEmpty(label) && label.Split(new string[] { _labelSplitter }, StringSplitOptions.RemoveEmptyEntries).Length > 0)
                 {

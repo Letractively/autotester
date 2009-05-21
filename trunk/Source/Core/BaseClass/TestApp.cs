@@ -402,6 +402,30 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        public virtual void Hide(bool hide)
+        {
+            if (this._rootHandle == IntPtr.Zero)
+            {
+                throw new CannotActiveAppException("Handle can not be 0.");
+            }
+
+            try
+            {
+                if (hide)
+                {
+                    Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_HIDE);
+                }
+                else
+                {
+                    Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_SHOW);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new CannotActiveAppException("Can not hide/unhide test application: " + ex.ToString());
+            }
+        }
+
         public virtual void Wait(int seconds)
         {
             if (this._rootHandle == IntPtr.Zero)

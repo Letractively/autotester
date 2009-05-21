@@ -348,6 +348,16 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+
+        /* void Load(string url)
+        * Load the expected url. eg: www.sina.com.cn 
+        * before we load url, we need to use Start() method to start browser first.
+        */
+        public virtual void Load(string url)
+        {
+            Load(url, true);
+        }
+
         /* void Load(string url)
          * Load the expected url. eg: www.sina.com.cn 
          * before we load url, we need to use Start() method to start browser first.
