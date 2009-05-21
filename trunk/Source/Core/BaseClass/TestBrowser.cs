@@ -253,9 +253,30 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void Start()
         {
+            Start(null, null);
+        }
+
+        public override void Start(string parameters)
+        {
+            Start(null, parameters);
+        }
+
+        public override void Start(string appFullPath, string parameters)
+        {
             try
             {
-                _appProcess = Process.Start(TestConstants.IE_EXE, TestConstants.IE_BlankPage_Url);
+                ProcessStartInfo psInfo = new ProcessStartInfo();
+                psInfo.FileName = TestConstants.IE_EXE;
+                psInfo.Arguments = TestConstants.IE_BlankPage_Url;
+                if (!String.IsNullOrEmpty(appFullPath) && appFullPath.ToUpper().EndsWith(".EXE"))
+                {
+                    psInfo.FileName = appFullPath;
+                }
+                if (!String.IsNullOrEmpty(parameters))
+                {
+                    psInfo.Arguments = parameters;
+                }
+                _appProcess = Process.Start(psInfo);
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
                 ieExistT.Start("");
@@ -278,17 +299,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotStartBrowserException("Can not start Internet explorer: " + ex.ToString());
             }
-        }
-
-        public override void Start(string appFullPath)
-        {
-            Start();
-            Load(appFullPath, true);
-        }
-
-        public override void Start(string appFullPath, string parameters)
-        {
-            throw new CannotStartBrowserException();
         }
 
         /*  void Find(object browserTitle)
