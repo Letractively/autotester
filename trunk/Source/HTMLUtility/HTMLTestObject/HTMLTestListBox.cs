@@ -53,7 +53,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //if the flag is true, means the listbox can select more than 1 item.
         protected bool _isMultiple = false;
 
-
         #endregion
 
         #region properties
@@ -61,13 +60,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public int ItemCountPerPage
         {
             get { return _itemCountPerPage; }
-
         }
 
         public string SelectedValue
         {
             get { return _selectedValue; }
-
         }
 
         protected int ItemHeight
@@ -87,11 +84,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestListBox(IHTMLElement element)
-            : base(element)
+            : this(element, null)
         {
+        }
 
+        public HTMLTestListBox(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
+        {
             this._type = HTMLTestObjectType.ListBox;
-            this._isDelayAfterAction = false;
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
@@ -193,30 +193,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
-        public override void Hover()
-        {
-            if (!_isEnable || !_isVisible || _isReadonly)
-            {
-                throw new CannotPerformActionException("Listbox is not enabled.");
-            }
-
-            base.Hover();
-        }
-
         /* void Select(string value)
         *  Select an item by text.
         *  This method will get the index by text, and call SelectByIndex method to perform action.
         */
         public virtual void Select(string value)
         {
-            int index;
+            int index = 0;
 
             //if input text is null, select the frist one.
-            if (String.IsNullOrEmpty(value))
-            {
-                index = 0;
-            }
-            else
+            if (!String.IsNullOrEmpty(value))
             {
                 //get the actual index in the listbox items.
                 index = GetIndexByString(value);
@@ -248,7 +234,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
                 if (_sendMsgOnly)
@@ -265,14 +251,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 //refresh the selected value.
                 this._selectedValue = this._allValues[index];
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
-
             }
             catch (TestException)
             {
@@ -281,6 +259,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not select by index: " + index.ToString() + ": " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -309,12 +291,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
-
                 Point itemPosition;
-
                 //click each item.
                 foreach (int itemIndex in index)
                 {
@@ -324,14 +304,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //refresh the selected value.
                     this._selectedValue = this._allValues[itemIndex];
                 }
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
-
             }
             catch (TestException)
             {
@@ -340,6 +312,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not select multi stings: " + values.ToString() + ": " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -352,19 +328,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             // 2008/01/10 wan,yu update change HTMLOptionElementClass to IHTMLOptionElement
             IHTMLOptionElement optionElement;
-            try
+            for (int i = 0; i < _htmlSelectElement.length; i++)
             {
-                for (int i = 0; i < _htmlSelectElement.length; i++)
-                {
-                    optionElement = (IHTMLOptionElement)_htmlSelectElement.item(i, i);
-                    values[i] = optionElement.text;
-                }
-                return values;
+                optionElement = (IHTMLOptionElement)_htmlSelectElement.item(i, i);
+                values[i] = optionElement.text;
             }
-            catch
-            {
-                throw;
-            }
+            return values;
         }
 
         #region IWindows Interface
@@ -383,10 +352,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                StringBuilder sb = new StringBuilder(128);
-                Win32API.GetWindowText(_handle, sb, 128);
-
-                return sb.ToString();
+                return Win32API.GetWindowText(_handle);
             }
             catch (Exception ex)
             {
@@ -397,12 +363,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region IInteractive interface
-
-        public virtual void Focus()
-        {
-            Hover();
-            MouseOp.Click();
-        }
 
         public virtual string GetAction()
         {

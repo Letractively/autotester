@@ -56,7 +56,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected const string _labelSplitter = "__shrinerain__";
 
         //when finish action, sleep for a moment.
-        protected bool _isDelayAfterAction = true;
+        protected bool _isDelayAfterAction = false;
         protected const int _delayTime = 1;
 
         //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
@@ -116,23 +116,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        //when set the html browser, we can start to calculate the position
-        public override HTMLTestBrowser Browser
-        {
-            set
-            {
-                if (value != null)
-                {
-                    this._browser = value;
-                    GetRectOnScreen();
-                }
-            }
-            get
-            {
-                return this._browser;
-            }
-        }
-
         public bool SendMsgOnly
         {
             get { return _sendMsgOnly; }
@@ -151,8 +134,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         public HTMLTestGUIObject(IHTMLElement element)
-            : base(element)
+            : this(element, null)
         {
+        }
+
+        public HTMLTestGUIObject(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
+        {
+            GetRectOnScreen();
             this._isEnable = IsEnable();
             this._isReadonly = IsReadonly();
             this._isVisible = IsVisible();
@@ -195,7 +184,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //find parent object, calculate 
                 //the offsetTop/offsetLeft... is the distance between current object and it's parent object.
                 //so we need a loop to get the actual position on the screen.
-                IHTMLElement parent = _sourceElement.offsetParent;
+                IHTMLElement parent = this._sourceElement.offsetParent;
                 while (parent != null)
                 {
                     top += parent.offsetTop;
@@ -210,12 +199,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     parent = parent.offsetParent;
                 }
 
-                //get the browser information, get the real position on screen.
-                top += _browser.ClientTop + 1;
-                left += _browser.ClientLeft + 1;
+                if (_browser != null)
+                {
+                    //get the browser information, get the real position on screen.
+                    top += _browser.ClientTop + 1;
+                    left += _browser.ClientLeft + 1;
 
-                top -= _browser.ScrollTop;
-                left -= _browser.ScrollLeft;
+                    top -= _browser.ScrollTop;
+                    left -= _browser.ScrollLeft;
+                }
 
                 if (this._rect.Left != left || this._rect.Top != top || this._rect.Width != width || this._rect.Height != height)
                 {
@@ -739,9 +731,37 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public virtual bool IsReadyForAction()
+        {
+            return IsVisible() && IsEnable() && IsReadonly() && IsReady();
+        }
+
+        public virtual void Focus()
+        {
+            (this._sourceElement as IHTMLElement2).focus();
+        }
+
         #endregion
 
         #region private methods
+
+        protected virtual void BeforeAction()
+        {
+            if (IsReadyForAction())
+            {
+                throw new CannotPerformActionException("Object is not ready.");
+            }
+            _actionFinished.WaitOne();
+        }
+
+        protected virtual void AfterAction()
+        {
+            if (_isDelayAfterAction)
+            {
+                System.Threading.Thread.Sleep(_delayTime * 1000);
+            }
+            _actionFinished.Set();
+        }
 
         /* bool IsDisplay(IHTMLElement element)
         * Check the style

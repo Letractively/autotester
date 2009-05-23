@@ -10,8 +10,8 @@ namespace Shrinerain.AutoTester.Core
 
         //object pool for this map.
         protected ITestObjectPool _objPool;
-        protected ITestApp _app;
-        protected ITestBrowser _browser;
+        protected TestApp _app;
+        protected TestBrowser _browser;
 
         //key for cache.
         protected const string _keySplitter = "__shrinerainmap__";
@@ -46,7 +46,7 @@ namespace Shrinerain.AutoTester.Core
         {
         }
 
-        public TestObjectMap(ITestApp testApp)
+        public TestObjectMap(TestApp testApp)
         {
             if (testApp != null)
             {
@@ -55,7 +55,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public TestObjectMap(ITestBrowser testBrowser)
+        public TestObjectMap(TestBrowser testBrowser)
         {
             if (testBrowser != null)
             {
@@ -494,8 +494,14 @@ namespace Shrinerain.AutoTester.Core
             obj = null;
             exception = null;
 
+            int currentTimeout = _timeout;
             int oriTimeout = this._objPool.GetTimeout();
-            this._objPool.SetTimeout(_timeout);
+            if (this._browser.IsBusy)
+            {
+                currentTimeout = oriTimeout;
+            }
+            this._objPool.SetTimeout(currentTimeout);
+
             try
             {
                 if (String.IsNullOrEmpty(type) && (properties == null || properties.Length == 0))

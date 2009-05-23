@@ -737,9 +737,16 @@ namespace Shrinerain.AutoTester.Core
             StringBuilder sb = new StringBuilder();
             foreach (HTMLDocument doc in allDocs)
             {
-                if (doc.body.innerHTML != null)
+                try
                 {
-                    sb.Append(doc.body.innerHTML);
+                    if (doc.body != null && doc.body.innerHTML != null)
+                    {
+                        sb.Append(doc.body.innerHTML);
+                    }
+                }
+                catch
+                {
+                    continue;
                 }
             }
             return sb.ToString();

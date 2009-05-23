@@ -31,10 +31,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //<label>
         protected IHTMLLabelElement _labelElement;
-
         //<span>
         protected IHTMLSpanElement _spanElement;
-
         //<font>
         protected IHTMLFontElement _fontElement;
 
@@ -51,10 +49,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestLabel(IHTMLElement element)
-            : base(element)
+            : base(element, null)
+        {
+        }
+
+        public HTMLTestLabel(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
         {
             this._type = HTMLTestObjectType.Label;
-
             try
             {
                 if (element.tagName == "LABEL")
@@ -81,7 +83,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("Can not get text of label.");
             }
-
         }
 
         #endregion
@@ -131,7 +132,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 string fontSize = GetStyleProperty("font-size");
-
                 if (String.IsNullOrEmpty(fontSize) && _fontElement != null)
                 {
                     if (!HTMLTestObject.TryGetProperty(this._sourceElement, "size", out fontSize))
@@ -222,12 +222,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (startPos >= 0)
                 {
                     int endPos = style.IndexOf(';', startPos);
-
                     if (endPos <= 0)
                     {
                         endPos = style.Length;
                     }
-
                     if (endPos > startPos)
                     {
                         return style.Substring(startPos, endPos - startPos).Split(':')[1];
@@ -236,12 +234,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return null;
-
         }
 
         #endregion
 
         #endregion
-
     }
 }
