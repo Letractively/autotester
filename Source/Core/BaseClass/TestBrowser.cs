@@ -280,7 +280,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 if (_isHide)
                 {
-                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    startInfo.WindowStyle = ProcessWindowStyle.Minimized;
                 }
 
                 _appProcess = Process.Start(startInfo);
@@ -977,9 +977,13 @@ namespace Shrinerain.AutoTester.Core
 
                         _appProcess = p;
                         _rootHandle = p.MainWindowHandle;
+                        if (_isHide)
+                        {
+                            Win32API.ShowWindow(_rootHandle, (int)Win32API.ShowWindowCmds.SW_HIDE);
+                        }
+
                         _browser = AttachBrowser(_rootHandle);
                         _browserExisted.Set();
-
                         return;
                     }
                 }
@@ -1243,7 +1247,6 @@ namespace Shrinerain.AutoTester.Core
         protected void GetClientRect()
         {
             _rootHandle = GetMainHandle();
-
             if (_rootHandle == IntPtr.Zero)
             {
                 throw new BrowserNotFoundException("Can not get main handle of test browser.");
@@ -1383,9 +1386,16 @@ namespace Shrinerain.AutoTester.Core
                 {
                     IntPtr tabWindow = IntPtr.Zero;
                     //get the active tab.
-                    while (!Win32API.IsWindowVisible(tabWindow))
+                    if (_isHide)
                     {
                         tabWindow = Win32API.FindWindowEx(frame, tabWindow, TestConstants.IE_TabWindow_Class, null);
+                    }
+                    else
+                    {
+                        while (!Win32API.IsWindowVisible(tabWindow))
+                        {
+                            tabWindow = Win32API.FindWindowEx(frame, tabWindow, TestConstants.IE_TabWindow_Class, null);
+                        }
                     }
                     _shellDocHandle = Win32API.FindWindowEx(tabWindow, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
                 }
@@ -1623,10 +1633,12 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void OnDownloadBegin()
         {
+            _isDownloading = true;
         }
 
         protected virtual void OnDownloadComplete()
         {
+            _isDownloading = false;
         }
 
         /* void OnDocumentLoadComplete(object pDesp, ref object pUrl)
