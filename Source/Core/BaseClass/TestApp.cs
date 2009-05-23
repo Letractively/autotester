@@ -32,6 +32,7 @@ namespace Shrinerain.AutoTester.Core
         protected TestApp _parent;
         protected IntPtr _rootHandle;
         protected Process _appProcess;
+        protected bool _isHide;
 
         protected string _appPath;
         protected string _appArgs;
@@ -141,6 +142,10 @@ namespace Shrinerain.AutoTester.Core
                 ProcessStartInfo startInfo = new ProcessStartInfo();
                 startInfo.FileName = appFullPath;
                 startInfo.Arguments = parameters;
+                if (_isHide)
+                {
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                }
 
                 //process to start application.
                 _appProcess = new Process();
@@ -404,25 +409,25 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual void Hide(bool hide)
         {
-            if (this._rootHandle == IntPtr.Zero)
-            {
-                throw new CannotActiveAppException("Handle can not be 0.");
-            }
+            _isHide = hide;
 
-            try
+            if (this._rootHandle != IntPtr.Zero)
             {
-                if (hide)
+                try
                 {
-                    Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_HIDE);
+                    if (hide)
+                    {
+                        Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_HIDE);
+                    }
+                    else
+                    {
+                        Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_SHOW);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Win32API.ShowWindow(this._rootHandle, (int)Win32API.ShowWindowCmds.SW_SHOW);
+                    throw new CannotActiveAppException("Can not hide/unhide test application: " + ex.ToString());
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new CannotActiveAppException("Can not hide/unhide test application: " + ex.ToString());
             }
         }
 
@@ -763,10 +768,6 @@ namespace Shrinerain.AutoTester.Core
         public event TestAppEventHandler OnBeforeAppFound;
 
         public event TestAppEventHandler OnAfterAppFound;
-
-        #endregion
-
-        #region ITestApp Members
 
 
         public virtual void BeforeStart()

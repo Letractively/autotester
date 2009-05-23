@@ -19,7 +19,9 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Web;
 
 using mshtml;
 
@@ -56,7 +58,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //tag for this object, like "A" ,"INPUT"...
         protected string _tag;
-
         protected HTMLTestObjectType _type;
         protected IHTMLElement _sourceElement;
 
@@ -269,8 +270,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 else
                 {
                     value = (value.Trim() == "" ? value : value.Trim());
+                    value = HttpUtility.HtmlDecode(value);
                 }
-
                 //if acceptEmpty is true, we will return true.
                 //if acceptEnpty is false, then we will check the value, it it is empty, we will return false.
                 return acceptEmpty || value != "";
@@ -301,6 +302,36 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return false;
             }
+        }
+
+        public override List<TestProperty> GetIdenProperties()
+        {
+            try
+            {
+                List<TestProperty> properties = new List<TestProperty>();
+                properties.Add(new TestProperty(TestConstants.PROPERTY_DOMAIN, TestConstants.PROPERTY_HTML));
+                properties.Add(new TestProperty(TestConstants.PROPERTY_ID, _id));
+                properties.Add(new TestProperty(TestConstants.PROPERTY_NAME, _name));
+                properties.Add(new TestProperty(TestConstants.PROPERTY_TAG, _tag));
+                properties.Add(new TestProperty(TestConstants.PROPERTY_TYPE, _type.ToString()));
+                string outerHTML;
+                if (!TryGetProperty(this._sourceElement, "outerHTML", out outerHTML))
+                {
+                    outerHTML = "NO HTML";
+                }
+                else if (outerHTML.Length > 32)
+                {
+                    outerHTML = outerHTML.Substring(0, 32) + "...";
+                }
+                properties.Add(new TestProperty(TestConstants.PROPERTY_OUTERHTML, outerHTML));
+
+                return properties;
+            }
+            catch
+            {
+            }
+
+            return null;
         }
 
         #region IStatus Members

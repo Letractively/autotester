@@ -17,6 +17,7 @@
 
 
 using System;
+using System.Collections.Generic;
 
 using mshtml;
 
@@ -31,7 +32,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Normal = 0,
         Submit = 1,
         Reset = 3,
-        Unknow = 4
+        File = 4,
+        Unknow = 5
     }
 
     public class HTMLTestButton : HTMLTestGUIObject, IClickable, IText, IStatus
@@ -78,13 +80,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (String.Compare(element.tagName, "INPUT", true) == 0)
                 {
                     this._inputElement = (IHTMLInputElement)element;
-                    this._buttonCaption = this._inputElement.value;
                     this._btnType = GetButtonType();
+                    if (this._btnType != HTMLTestButtonType.File)
+                    {
+                        this._buttonCaption = GetProperty("value").ToString();
+                    }
+                    else
+                    {
+                        this._buttonCaption = "File";
+                    }
                 }
                 else if (String.Compare(element.tagName, "BUTTON", true) == 0)
                 {
                     this._buttonElement = (IHTMLButtonElement)element;
-                    this._buttonCaption = this._buttonElement.value;
+                    this._buttonCaption = GetProperty("value").ToString();
                     this._btnType = HTMLTestButtonType.Normal;
                 }
             }
@@ -97,6 +106,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region public methods
+
+        public override List<TestProperty> GetIdenProperties()
+        {
+            List<TestProperty> properties = base.GetIdenProperties();
+            properties.Add(new TestProperty(TestConstants.PROPERTY_CAPTION, _buttonCaption));
+            return properties;
+        }
 
         /* void Click()
          * Click on the button
@@ -256,6 +272,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 else if (String.Compare(type, "RESET", true) == 0)
                 {
                     return HTMLTestButtonType.Reset;
+                }
+                else if (String.Compare(type, "FILE", true) == 0)
+                {
+                    return HTMLTestButtonType.File;
                 }
             }
 

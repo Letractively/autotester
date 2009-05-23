@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
@@ -16,6 +17,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private static HTMLTestEventDispatcher _instance = new HTMLTestEventDispatcher();
         private HTMLTestBrowser _browser;
+        private static List<IHTMLDocument2> _registeredDocs = new List<IHTMLDocument2>(8);
 
         private IHTMLElement _lastMouseDownElement;
         private IHTMLElement _lastKeyDownElement;
@@ -41,7 +43,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void RegisterEvents(IHTMLDocument2 doc2)
         {
-            if (doc2 != null)
+            if (doc2 != null && !_registeredDocs.Contains(doc2))
             {
                 IHTMLDocument3 doc3 = doc2 as IHTMLDocument3;
                 if (doc3 != null)
@@ -50,6 +52,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     doc3.attachEvent("onmouseup", this);
                     doc3.attachEvent("onkeydown", this);
                     doc3.attachEvent("onkeyup", this);
+                    doc3.attachEvent("onchange", this);
+
+                    _registeredDocs.Add(doc2);
                 }
             }
         }
@@ -65,6 +70,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     doc3.detachEvent("onmouseup", this);
                     doc3.detachEvent("onkeydown", this);
                     doc3.detachEvent("onkeyup", this);
+                    doc3.detachEvent("onchange", this);
+
+                    if (_registeredDocs.Contains(doc2))
+                    {
+                        _registeredDocs.Remove(doc2);
+                    }
                 }
             }
         }
@@ -76,82 +87,184 @@ namespace Shrinerain.AutoTester.HTMLUtility
         [DispId(0)]
         public void HandleEvent(IHTMLEventObj pEvtObj)
         {
-            IHTMLElement src = pEvtObj.srcElement;
-
-            HTMLTestObject obj = null;
-            CheckMouseKeyEvent(pEvtObj, out obj);
-
-            if (CheckClick(pEvtObj))
+            lock (this)
             {
-                if (obj == null)
+                if (pEvtObj != null)
                 {
-                    obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                    string eventType = pEvtObj.type;
+                    IHTMLElement src = pEvtObj.srcElement;
+                    if (src != null)
+                    {
+                        HTMLTestObject obj = null;
+                        if (!CheckMouseEvent(pEvtObj, out obj))
+                        {
+                            CheckKeyEvent(pEvtObj, out obj);
+                        }
+
+                        if (String.Compare(eventType, "mousedown", true) == 0)
+                        {
+                            _lastMouseDownElement = src;
+                            return;
+                        }
+                        else if (String.Compare(eventType, "mouseup", true) == 0)
+                        {
+                            if (_lastMouseDownElement != src)
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                _lastMouseDownElement = null;
+                            }
+                        }
+                        else if (String.Compare(eventType, "keydown", true) == 0)
+                        {
+                            _lastKeyDownElement = src;
+                            return;
+                        }
+                        else if (String.Compare(eventType, "keyup", true) == 0)
+                        {
+                            if (_lastKeyDownElement != src)
+                            {
+                                return;
+                            }
+                            else
+                            {
+                                _lastKeyDownElement = null;
+                            }
+                        }
+
+                        if (CheckClick(pEvtObj))
+                        {
+                            if (obj == null)
+                            {
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            }
+                            OnClick(obj, null);
+                        }
+                        else if (CheckInput(pEvtObj))
+                        {
+                            if (obj == null)
+                            {
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            }
+                            OnTextChange(obj, null);
+                        }
+                        else if (CheckSelect(pEvtObj))
+                        {
+                            if (obj == null)
+                            {
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            }
+                            OnSelectIndexChange(obj, null);
+                        }
+                        else if (CheckCheckAction(pEvtObj))
+                        {
+                            if (obj == null)
+                            {
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            }
+                            OnCheck(obj, null);
+                        }
+                        else if (CheckUnCheckAction(pEvtObj))
+                        {
+                            if (obj == null)
+                            {
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            }
+                            OnUncheck(obj, null);
+                        }
+                    }
                 }
-                OnClick(obj, null);
-            }
-            else if (CheckInput(pEvtObj))
-            {
-                if (obj == null)
-                {
-                    obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
-                }
-                OnTextChange(obj, null);
             }
         }
 
-        private bool CheckMouseKeyEvent(IHTMLEventObj pEvtObj, out HTMLTestObject obj)
+        private bool CheckMouseEvent(IHTMLEventObj pEvtObj, out HTMLTestObject obj)
         {
             obj = null;
-            IHTMLElement src = pEvtObj.srcElement;
-            if (src != null)
+            if (OnMouseDown != null || OnMouseUp != null || OnMouseClick != null)
             {
                 String tp = pEvtObj.type;
-
-                try
+                if (tp.IndexOf("mouse") >= 0)
                 {
-                    if (OnMouseDown != null)
+                    try
                     {
+                        IHTMLElement src = pEvtObj.srcElement;
+                        obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                        TestEventArgs mouseEventArgs = BuildMouseEventArgs(tp);
+
                         if (String.Compare(tp, "mousedown", true) == 0)
                         {
-                            obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
-                            OnMouseDown(obj, null);
+                            if (OnMouseDown != null)
+                            {
+                                OnMouseDown(obj, mouseEventArgs);
+                            }
                         }
-                    }
-
-                    if (OnMouseUp != null)
-                    {
-                        if (String.Compare(tp, "mouseup", true) == 0)
+                        else if (String.Compare(tp, "mouseup", true) == 0)
                         {
-                            obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
-                            OnMouseUp(obj, null);
+                            if (OnMouseUp != null)
+                            {
+                                OnMouseUp(obj, mouseEventArgs);
+                            }
+
+                            if (OnMouseClick != null)
+                            {
+                                if (_lastMouseDownElement == src)
+                                {
+                                    OnMouseClick(obj, mouseEventArgs);
+                                }
+                            }
                         }
                     }
-
-                    if (OnKeyDown != null)
+                    catch (TestException)
                     {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new TestEventException("Create event failed: " + ex.ToString());
+                    }
+                }
+            }
+
+            return obj != null;
+        }
+
+        private bool CheckKeyEvent(IHTMLEventObj pEvtObj, out HTMLTestObject obj)
+        {
+            obj = null;
+            if (OnKeyDown != null || OnKeyUp != null)
+            {
+                String tp = pEvtObj.type;
+                if (tp.IndexOf("key") >= 0)
+                {
+                    try
+                    {
+                        IHTMLElement src = pEvtObj.srcElement;
+                        obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
                         if (String.Compare(tp, "keydown", true) == 0)
                         {
-                            obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
-                            OnKeyDown(obj, null);
+                            if (OnKeyDown != null)
+                            {
+                                OnKeyDown(obj, null);
+                            }
                         }
-                    }
-
-                    if (OnKeyUp != null)
-                    {
-                        if (String.Compare(tp, "keyup", true) == 0)
+                        else if (String.Compare(tp, "keyup", true) == 0)
                         {
-                            obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
-                            OnKeyUp(obj, null);
+                            if (OnKeyUp != null)
+                            {
+                                OnKeyUp(obj, null);
+                            }
                         }
                     }
-                }
-                catch (TestException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    throw new TestEventException("Create event failed: " + ex.ToString());
+                    catch (TestException)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new TestEventException("Create event failed: " + ex.ToString());
+                    }
                 }
             }
 
@@ -163,36 +276,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (OnClick != null)
             {
                 IHTMLElement src = pEvtObj.srcElement;
-                if (src != null)
-                {
-                    String tp = pEvtObj.type;
+                String tp = pEvtObj.type;
 
-                    if (String.Compare("mousedown", tp, true) == 0)
+                if (String.Compare("mouseup", tp, true) == 0)
+                {
+                    if (src is IHTMLInputElement)
                     {
-                        _lastMouseDownElement = src;
-                    }
-                    else if (String.Compare("mouseup", tp, true) == 0)
-                    {
-                        if (_lastMouseDownElement == src)
+                        String type = null;
+                        if (HTMLTestObject.TryGetProperty(src, "type", out type))
                         {
-                            _lastMouseDownElement = null;
-                            if (src is IHTMLInputElement)
-                            {
-                                String type = null;
-                                if (HTMLTestObject.TryGetProperty(src, "type", out type))
-                                {
-                                    if (String.Compare(type, "button", true) == 0 || String.Compare(type, "submit", true) == 0 ||
-                                        String.Compare(type, "reset", true) == 0 || String.Compare(type, "image", true) == 0)
-                                    {
-                                        return true;
-                                    }
-                                }
-                            }
-                            else if (src is IHTMLAnchorElement || src is IHTMLButtonElement || src is IHTMLImgElement)
+                            if (String.Compare(type, "button", true) == 0 || String.Compare(type, "submit", true) == 0 ||
+                                String.Compare(type, "reset", true) == 0 || String.Compare(type, "image", true) == 0)
                             {
                                 return true;
                             }
                         }
+                    }
+                    else if (src is IHTMLAnchorElement || src is IHTMLButtonElement || src is IHTMLImgElement)
+                    {
+                        return true;
                     }
                 }
             }
@@ -205,38 +307,69 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (OnTextChange != null)
             {
                 IHTMLElement src = pEvtObj.srcElement;
-                if (src != null)
+                String tp = pEvtObj.type;
+
+                if (String.Compare("keyup", tp, true) == 0)
+                {
+                    if (src is IHTMLInputElement || src is IHTMLTextAreaElement)
+                    {
+                        String type = null;
+                        if (!HTMLTestObject.TryGetProperty(src, "type", out type))
+                        {
+                            return true;
+                        }
+                        else if (String.Compare(type, "text", true) == 0 || String.Compare(type, "password", true) == 0)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        String contentEditable = null;
+                        if (HTMLTestObject.TryGetProperty(src, "contentEditable", out contentEditable))
+                        {
+                            return String.Compare(contentEditable, "true", true) == 0;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool CheckSelect(IHTMLEventObj pEvtObj)
+        {
+            if (OnSelectIndexChange != null)
+            {
+                IHTMLElement src = pEvtObj.srcElement;
+                if (String.Compare(src.tagName.ToUpper(), "SELECT", true) == 0)
                 {
                     String tp = pEvtObj.type;
-
-                    if (String.Compare("keydown", tp, true) == 0)
+                    if (String.Compare("change", tp, true) == 0)
                     {
-                        _lastKeyDownElement = src;
+                        return true;
                     }
-                    else if (String.Compare("keyup", tp, true) == 0)
+                }
+            }
+
+            return false;
+        }
+
+        private bool CheckCheckAction(IHTMLEventObj pEvtObj)
+        {
+            if (OnCheck != null)
+            {
+                String tp = pEvtObj.type;
+                if (String.Compare("mouseup", tp, true) == 0)
+                {
+                    IHTMLElement src = pEvtObj.srcElement;
+                    if (String.Compare(src.tagName, "INPUT", true) == 0)
                     {
-                        if (_lastKeyDownElement == src)
+                        string type;
+                        if (HTMLTestObject.TryGetProperty(src, "type", out type))
                         {
-                            _lastKeyDownElement = null;
-                            if (src is IHTMLInputElement || src is IHTMLTextAreaElement)
+                            if (String.Compare(type, "radio", true) == 0 || String.Compare(type, "checkbox", true) == 0)
                             {
-                                String type = null;
-                                if (!HTMLTestObject.TryGetProperty(src, "type", out type))
-                                {
-                                    return true;
-                                }
-                                else if (String.Compare(type, "text", true) == 0 || String.Compare(type, "password", true) == 0)
-                                {
-                                    return true;
-                                }
-                            }
-                            else
-                            {
-                                String contentEditable = null;
-                                if (HTMLTestObject.TryGetProperty(src, "contentEditable", out contentEditable))
-                                {
-                                    return String.Compare(contentEditable, "true", true) == 0;
-                                }
+                                return !(src as IHTMLInputElement).@checked;
                             }
                         }
                     }
@@ -244,6 +377,55 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return false;
+        }
+
+        private bool CheckUnCheckAction(IHTMLEventObj pEvtObj)
+        {
+            if (OnUncheck != null)
+            {
+                String tp = pEvtObj.type;
+                if (String.Compare("mouseup", tp, true) == 0)
+                {
+                    IHTMLElement src = pEvtObj.srcElement;
+                    if (String.Compare(src.tagName, "INPUT", true) == 0)
+                    {
+                        string type;
+                        if (HTMLTestObject.TryGetProperty(src, "type", out type))
+                        {
+                            if (String.Compare(type, "radio", true) == 0 || String.Compare(type, "checkbox", true) == 0)
+                            {
+                                return (src as IHTMLInputElement).@checked;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static TestEventArgs BuildMouseEventArgs(String mouseAction)
+        {
+            return new TestEventArgs(mouseAction, null, MouseOp.GetMousePos());
+        }
+
+
+        private void OnBrowserFound(TestApp application, TestEventArgs args)
+        {
+            if (application != null && application is HTMLTestBrowser)
+            {
+                this._browser = application as HTMLTestBrowser;
+                RegisterEvents(this._browser.GetDocument() as IHTMLDocument2);
+            }
+        }
+
+        private void OnBrowserStart(TestApp application, TestEventArgs args)
+        {
+            if (application != null && application is HTMLTestBrowser)
+            {
+                this._browser = application as HTMLTestBrowser;
+                RegisterEvents(this._browser.GetDocument() as IHTMLDocument2);
+            }
         }
 
         #endregion
@@ -256,7 +438,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (app != null && app is HTMLTestBrowser)
             {
+                //register events.
                 this._browser = app as HTMLTestBrowser;
+                this._browser.OnAfterAppStart += new TestAppEventHandler(OnBrowserStart);
+                this._browser.OnAfterAppFound += new TestAppEventHandler(OnBrowserFound);
                 RegisterEvents(this._browser.GetDocument() as IHTMLDocument2);
                 return true;
             }
@@ -268,7 +453,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Stop()
         {
+            //unregister events.
+            if (_registeredDocs.Count > 0)
+            {
+                foreach (IHTMLDocument2 doc2 in _registeredDocs)
+                {
+                    try
+                    {
+                        UnregisterEvents(doc2);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
 
+                _registeredDocs.Clear();
+            }
         }
 
         public event TestObjectEventHandler OnCheck;

@@ -265,18 +265,25 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-                ProcessStartInfo psInfo = new ProcessStartInfo();
-                psInfo.FileName = TestConstants.IE_EXE;
-                psInfo.Arguments = TestConstants.IE_BlankPage_Url;
+                BeforeStart();
+
+                ProcessStartInfo startInfo = new ProcessStartInfo();
+                startInfo.FileName = TestConstants.IE_EXE;
+                startInfo.Arguments = TestConstants.IE_BlankPage_Url;
                 if (!String.IsNullOrEmpty(appFullPath) && appFullPath.ToUpper().EndsWith(".EXE"))
                 {
-                    psInfo.FileName = appFullPath;
+                    startInfo.FileName = appFullPath;
                 }
                 if (!String.IsNullOrEmpty(args))
                 {
-                    psInfo.Arguments = args;
+                    startInfo.Arguments = args;
                 }
-                _appProcess = Process.Start(psInfo);
+                if (_isHide)
+                {
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                }
+
+                _appProcess = Process.Start(startInfo);
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
                 ieExistT.Start("");
@@ -299,6 +306,10 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotStartBrowserException("Can not start Internet explorer: " + ex.ToString());
             }
+            finally
+            {
+                AfterStart();
+            }
         }
 
         /*  void Find(object browserTitle)
@@ -314,6 +325,8 @@ namespace Shrinerain.AutoTester.Core
 
             try
             {
+                BeforeFound();
+
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
                 ieExistT.Start(browserTitle);
@@ -336,6 +349,10 @@ namespace Shrinerain.AutoTester.Core
             catch (Exception ex)
             {
                 throw new CannotAttachBrowserException("Can not find test browser: " + ex.ToString());
+            }
+            finally
+            {
+                AfterFound();
             }
         }
 
@@ -766,38 +783,28 @@ namespace Shrinerain.AutoTester.Core
         //return all documents, include frames.
         public virtual HTMLDocument[] GetAllDocuments()
         {
-            GetDocument();
-            return GetAllDocuments(_rootDocument);
-        }
-
-        protected virtual HTMLDocument[] GetAllDocuments(HTMLDocument root)
-        {
-            if (root != null)
+            if (_browser != null)
             {
-                List<HTMLDocument> res = new List<HTMLDocument>();
-                res.Add(root);
                 try
                 {
-                    if (root != null && root.frames != null)
+                    _rootDocument = _browser.Document as HTMLDocument;
+                    if (_rootDocument != null)
                     {
-                        IHTMLFramesCollection2 frames = root.frames;
-                        for (int i = 0; i < frames.length; i++)
+                        List<HTMLDocument> res = new List<HTMLDocument>();
+                        res.Add(_rootDocument);
+
+                        HTMLDocument[] frames = COMUtil.GetFrames(_rootDocument);
+                        if (frames != null)
                         {
-                            object index = i;
-                            IHTMLWindow2 frame = frames.item(ref index) as IHTMLWindow2;
-                            HTMLDocument temp = COMUtil.GetFrameDocument(frame);
-                            HTMLDocument[] curFrameDocs = GetAllDocuments(temp);
-                            if (curFrameDocs != null)
-                            {
-                                res.AddRange(curFrameDocs);
-                            }
+                            res.AddRange(frames);
                         }
+
+                        return res.ToArray();
                     }
                 }
                 catch
                 {
                 }
-                return res.ToArray();
             }
 
             return null;
@@ -819,7 +826,11 @@ namespace Shrinerain.AutoTester.Core
                     {
                         InternetExplorer ie = _browserList[index];
                         SetBrowser(ie);
-                        return this;
+                        if (times >= _maxWaitSeconds || ie.ReadyState == tagREADYSTATE.READYSTATE_INTERACTIVE ||
+                            ie.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE)
+                        {
+                            return this;
+                        }
                     }
 
                     Thread.Sleep(Interval * 1000);

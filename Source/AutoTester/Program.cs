@@ -101,8 +101,10 @@ namespace Shrinerain.AutoTester
             //Netyi.Test();
             // gougou.Test();
             // Mitbbs.Test();
-             Xjflcp.Test();
+            // Xjflcp.Test();
             //Marry5.Test();
+
+            EventTest.Test();
         }
     }
 }

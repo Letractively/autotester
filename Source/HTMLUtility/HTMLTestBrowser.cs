@@ -267,12 +267,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (_dispatcher != null)
             {
-                string url = pUrl.ToString();
-                if (!String.IsNullOrEmpty(url) && String.Compare(url, TestConstants.IE_BlankPage_Url, true) != 0)
-                {
-                    IHTMLDocument2 doc2 = (pDesp as IWebBrowser2).Document as IHTMLDocument2;
-                    _dispatcher.RegisterEvents(doc2);
-                }
+                IHTMLDocument2 doc2 = (pDesp as IWebBrowser2).Document as IHTMLDocument2;
+                _dispatcher.RegisterEvents(doc2);
             }
             needRefresh = true;
             base.OnDocumentLoadComplete(pDesp, ref pUrl);
