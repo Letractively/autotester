@@ -66,7 +66,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestLink(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-
             this._type = HTMLTestObjectType.Link;
             try
             {

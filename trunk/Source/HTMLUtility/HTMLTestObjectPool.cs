@@ -152,8 +152,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("Can not find object by id: id can not be empty.");
             }
 
-            id = id.Trim();
+            BeforeObjectFound();
 
+            id = id.Trim();
             //we will try 30 seconds to find an object.
             int times = 0;
             while (times <= _maxWaitSeconds)
@@ -201,8 +202,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("Can not find object by name: name can not be empty.");
             }
 
-            name = name.Trim();
+            BeforeObjectFound();
 
+            name = name.Trim();
             //we will try 30s to find a object
             int times = 0;
             while (times <= _maxWaitSeconds)
@@ -252,6 +254,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
+
+            BeforeObjectFound();
 
             if (index < 0)
             {
@@ -314,6 +318,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     simPercent = _similarPercentUpBound;
                 }
             }
+
+            BeforeObjectFound();
 
             //we will try 30s to find an object.
             int times = 0;
@@ -464,6 +470,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
+            BeforeObjectFound();
+
             //we will try 30s to find an object.
             int times = 0;
             while (times <= _maxWaitSeconds)
@@ -598,6 +606,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
+            BeforeObjectFound();
+
             int times = 0;
             while (times <= _maxWaitSeconds)
             {
@@ -649,6 +659,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("Unknow type.");
             }
 
+            BeforeObjectFound();
+
             int x = 0;
             int y = 0;
 
@@ -671,6 +683,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 x = left + width / 2;
                 y = top + height / 2;
             }
+
+            BeforeObjectFound();
 
             //try to get 5 objects from different area.
             HTMLTestGUIObject[] tmpObj = new HTMLTestGUIObject[5];
@@ -737,6 +751,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
+
+            BeforeObjectFound();
 
             //firstly, get all IHTMLElement from the browser
             GetAllElements();
@@ -942,6 +958,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #endregion
+
+        private void BeforeObjectFound()
+        {
+            if (this._htmlTestBrowser.IsBusy)
+            {
+                Thread.Sleep(Interval * 1000);
+            }
+        }
 
         private void AfterObjectFound(TestObject obj)
         {
