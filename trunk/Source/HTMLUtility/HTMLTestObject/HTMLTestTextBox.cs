@@ -18,6 +18,7 @@
 *********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 using mshtml;
@@ -108,6 +109,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region public methods
+
+        public override List<TestProperty> GetIdenProperties()
+        {
+            List<TestProperty> properties = base.GetIdenProperties();
+            string label = GetLabel();
+            string inputedText = GetText();
+            label = String.Compare(label, inputedText, true) == 0 ? "" : label;
+            properties.Add(new TestProperty(TestConstants.PROPERTY_LABEL, label));
+            properties.Add(new TestProperty(TestConstants.PROPERTY_VALUE, inputedText));
+            return properties;
+        }
 
         /* void Input(string value)
          * Input normal characters to textbox.

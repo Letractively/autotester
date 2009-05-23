@@ -258,7 +258,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element, HTMLTestBrowser browser)
         {
-            return BuildHTMLTestObject(element, browser);
+            return BuildHTMLTestObjectByType(element, HTMLTestObjectType.Unknow, browser);
         }
 
         public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, HTMLTestObjectType type, HTMLTestBrowser browser)

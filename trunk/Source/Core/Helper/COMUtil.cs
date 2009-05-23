@@ -114,5 +114,37 @@ namespace Shrinerain.AutoTester.Core
 
             return spWebBrws as IWebBrowser2;
         }
+
+        public static HTMLDocument[] GetFrames(HTMLDocument doc)
+        {
+            if (doc != null)
+            {
+                try
+                {
+                    if (doc != null && doc.frames != null)
+                    {
+                        List<HTMLDocument> res = new List<HTMLDocument>();
+                        IHTMLFramesCollection2 frames = doc.frames;
+                        for (int i = 0; i < frames.length; i++)
+                        {
+                            object index = i;
+                            IHTMLWindow2 frame = frames.item(ref index) as IHTMLWindow2;
+                            HTMLDocument temp = GetFrameDocument(frame);
+                            HTMLDocument[] curFrameDocs = GetFrames(temp);
+                            if (curFrameDocs != null)
+                            {
+                                res.AddRange(curFrameDocs);
+                            }
+                        }
+                        return res.ToArray();
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            return null;
+        }
     }
 }

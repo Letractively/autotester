@@ -65,6 +65,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
+        public override List<TestProperty> GetIdenProperties()
+        {
+            List<TestProperty> properties = base.GetIdenProperties();
+            properties.Add(new TestProperty(TestConstants.PROPERTY_LABEL, GetLabel()));
+            properties.Add(new TestProperty(TestConstants.PROPERTY_ISCHECKED, IsChecked().ToString()));
+            return properties;
+        }
+
         #region ICheckable Members
 
         public virtual void Check()
