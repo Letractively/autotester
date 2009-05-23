@@ -67,6 +67,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region Properties
 
+        public IHTMLElement HTMLElement
+        {
+            get { return _sourceElement; }
+        }
+
         public string ID
         {
             get
@@ -93,10 +98,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return this._tag; }
         }
 
-        public virtual HTMLTestBrowser Browser
+        public HTMLTestBrowser Browser
         {
             get { return _browser; }
-            set { _browser = value; }
         }
 
         #endregion
@@ -112,11 +116,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         public HTMLTestObject(IHTMLElement element)
+            : this(element, null)
+        {
+        }
+
+        public HTMLTestObject(IHTMLElement element, HTMLTestBrowser browser)
             : base()
         {
             if (element == null)
             {
-                throw new CannotBuildObjectException("Element is null.");
+                throw new CannotBuildObjectException("Element can not be null.");
             }
 
             try
@@ -131,6 +140,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     this._name = "";
                 }
+
+                this._browser = browser;
             }
             catch (Exception ex)
             {
@@ -240,9 +251,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     value = element.outerText;
                 }
-                else if (element.getAttribute(propertyName, 0) == null || element.getAttribute(propertyName, 0).GetType().ToString() == "System.DBNull")
+                else if (String.Compare(propertyName, "tag", true) == 0 || String.Compare(propertyName, "tagname", true) == 0)
                 {
-                    return false;
+                    value = element.tagName;
                 }
                 else
                 {
@@ -254,7 +265,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (value == null)
                 {
                     value = "";
-                    return false;
                 }
                 else
                 {
@@ -282,7 +292,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             propertyName = propertyName.Trim().Replace(".", "");
-
             try
             {
                 element.setAttribute(propertyName, value, 0);
@@ -332,7 +341,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (_sourceElement != null)
                 {
                     string readyS = ((IHTMLElement2)_sourceElement).readyState.ToString();
-
                     return readyS == null || readyS == "interactive" || readyS == "complete";
                 }
                 else

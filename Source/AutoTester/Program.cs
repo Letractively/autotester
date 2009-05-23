@@ -92,16 +92,17 @@ namespace Shrinerain.AutoTester
             //Test1.Test();
             //MSAA.Test();
             //Baidu.Test();
-           // Google.Test();
+            // Google.Test();
             //Other.Test();
             //Qidian.Test();
             //CSDN.Test();
             // QQ.Test();
             //FCKEditor.Test();
             //Netyi.Test();
-           // gougou.Test();
-           // Mitbbs.Test();
-            Xjflcp.Test();
+            // gougou.Test();
+            // Mitbbs.Test();
+             Xjflcp.Test();
+            //Marry5.Test();
         }
     }
 }

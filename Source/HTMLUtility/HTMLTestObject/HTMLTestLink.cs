@@ -30,18 +30,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the url of this link
         protected string _href;
-
         //the text of the link if it is a text link.
         protected string _linkText;
-
         //the image of the link if it is a image link.
         protected IHTMLImgElement _linkImgElement;
+        // the HTML element of link.
+        protected HTMLAnchorElement _acnchorElement;
 
         //for link, we can have child image.
         protected object[] _childeren;
-
-        // the HTML element of link.
-        protected HTMLAnchorElement _acnchorElement;
 
         #endregion
 
@@ -62,13 +59,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region methods
 
         #region ctor
-
         public HTMLTestLink(IHTMLElement element)
-            : base(element)
+            : this(element, null)
+        {
+        }
+        public HTMLTestLink(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
         {
 
             this._type = HTMLTestObjectType.Link;
-
             try
             {
                 _acnchorElement = (HTMLAnchorElement)element;
@@ -88,17 +87,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _linkText = "";
             }
 
-            try
+            // if the text is null, it maybe a image link, try to get the image.
+            if (String.IsNullOrEmpty(_linkText))
             {
-                // if the text is null, it maybe a image link, try to get the image.
-                if (String.IsNullOrEmpty(_linkText))
-                {
-                    _linkImgElement = (IHTMLImgElement)_acnchorElement.firstChild;
-                }
-            }
-            catch
-            {
-                //throw new CannotBuildObjectException("Can not get the image of link: " + ex.ToString());
+                _linkImgElement = _acnchorElement.firstChild as IHTMLImgElement;
             }
 
             try
@@ -123,12 +115,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!IsReady() || !_isEnable || !_isVisible)
-                {
-                    throw new CannotPerformActionException("Link is not enabled.");
-                }
-
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
                 if (_sendMsgOnly)
@@ -139,14 +126,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     MouseOp.Click();
                 }
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
-
             }
             catch (TestException)
             {
@@ -156,45 +135,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not perform click action of link: " + ex.ToString());
             }
+            finally
+            {
+                AfterAction();
+            }
         }
 
         public virtual void DoubleClick()
         {
-
         }
 
         public virtual void RightClick()
         {
-
         }
 
         public virtual void MiddleClick()
         {
-
-        }
-
-        public virtual void Focus()
-        {
-            try
-            {
-                if (this._acnchorElement != null)
-                {
-                    this._acnchorElement.focus();
-                }
-                else
-                {
-                    throw new CannotPerformActionException("Can not focus: Element can not be null.");
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not focus: " + ex.ToString());
-            }
-
         }
 
         public virtual string GetAction()
@@ -240,17 +196,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private methods
 
-        /* bool IsImage()
-         * Return true if the link is an image link.
-         */
-        protected virtual bool IsImage()
-        {
-            return String.IsNullOrEmpty(_linkText);
-        }
-
         #endregion
 
         #endregion
-
     }
 }

@@ -49,12 +49,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region methods
 
         #region ctor
-
         public HTMLTestImage(IHTMLElement element)
-            : base(element)
+            : this(element, null)
+        {
+        }
+
+        public HTMLTestImage(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
         {
             this._type = HTMLTestObjectType.Image;
-
             try
             {
                 _imgElement = (IHTMLImgElement)element;
@@ -109,12 +112,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!IsReady())
-                {
-                    throw new CannotPerformActionException("Element is not ready.");
-                }
-
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
                 if (_sendMsgOnly)
@@ -136,13 +134,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     MouseOp.Click();
                 }
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -151,6 +142,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not click an image: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -173,11 +168,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IInteractive Members
 
-        public virtual void Focus()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         public virtual string GetAction()
         {
             return "Click";
@@ -188,7 +178,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             Click();
         }
 
-        #endregion 
+        #endregion
 
         public String GetSrc()
         {
@@ -205,13 +195,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void Download(string des)
         {
+            BeforeAction();
+
             if (String.IsNullOrEmpty(des))
             {
                 des = @"C:\" + this._src.Trim();
             }
-
             WebClient client = new WebClient();
-            client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
+            client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(OnDownloadFileCompleted);
             client.DownloadFileAsync(new System.Uri(this._src), des);
         }
 
@@ -234,9 +225,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* private void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
          * callback function when the image is downloaded.
          */
-        private void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        private void OnDownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            _actionFinished.Set();
+            AfterAction();
         }
 
         #endregion

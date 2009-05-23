@@ -268,72 +268,71 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new CannotBuildObjectException("Element and type can not be null.");
             }
 
-            if (type == HTMLTestObjectType.Unknow)
+            try
             {
-                type = GetObjectType(element);
-            }
-
-            HTMLTestGUIObject tmp;
-            switch (type)
-            {
-                case HTMLTestObjectType.Label:
-                    tmp = new HTMLTestLabel(element);
-                    break;
-                case HTMLTestObjectType.Button:
-                    tmp = new HTMLTestButton(element);
-                    break;
-                case HTMLTestObjectType.TextBox:
-                    tmp = new HTMLTestTextBox(element);
-                    break;
-                case HTMLTestObjectType.ListBox:
-                    tmp = new HTMLTestListBox(element);
-                    break;
-                case HTMLTestObjectType.Link:
-                    tmp = new HTMLTestLink(element);
-                    break;
-                case HTMLTestObjectType.ComboBox:
-                    tmp = new HTMLTestComboBox(element);
-                    break;
-                case HTMLTestObjectType.Image:
-                    tmp = new HTMLTestImage(element);
-                    break;
-                case HTMLTestObjectType.RadioBox:
-                    tmp = new HTMLTestRadioBox(element);
-                    break;
-                case HTMLTestObjectType.CheckBox:
-                    tmp = new HTMLTestCheckBox(element);
-                    break;
-                case HTMLTestObjectType.Table:
-                    tmp = new HTMLTestTable(element);
-                    break;
-                default:
-                    tmp = new HTMLTestGUIObject(element);
-                    break;
-            }
-
-            if (tmp != null)
-            {
-                try
+                if (type == HTMLTestObjectType.Unknow)
                 {
-                    tmp.Browser = browser;
+                    type = GetObjectType(element);
+                }
+
+                HTMLTestGUIObject tmp;
+                switch (type)
+                {
+                    case HTMLTestObjectType.Label:
+                        tmp = new HTMLTestLabel(element, browser);
+                        break;
+                    case HTMLTestObjectType.Button:
+                        tmp = new HTMLTestButton(element, browser);
+                        break;
+                    case HTMLTestObjectType.TextBox:
+                        tmp = new HTMLTestTextBox(element, browser);
+                        break;
+                    case HTMLTestObjectType.ListBox:
+                        tmp = new HTMLTestListBox(element, browser);
+                        break;
+                    case HTMLTestObjectType.Link:
+                        tmp = new HTMLTestLink(element, browser);
+                        break;
+                    case HTMLTestObjectType.ComboBox:
+                        tmp = new HTMLTestComboBox(element, browser);
+                        break;
+                    case HTMLTestObjectType.Image:
+                        tmp = new HTMLTestImage(element, browser);
+                        break;
+                    case HTMLTestObjectType.RadioBox:
+                        tmp = new HTMLTestRadioBox(element, browser);
+                        break;
+                    case HTMLTestObjectType.CheckBox:
+                        tmp = new HTMLTestCheckBox(element, browser);
+                        break;
+                    case HTMLTestObjectType.Table:
+                        tmp = new HTMLTestTable(element, browser);
+                        break;
+                    default:
+                        tmp = new HTMLTestGUIObject(element, browser);
+                        break;
+                }
+
+                if (tmp != null)
+                {
                     return tmp;
                 }
-                catch (CannotGetObjectPositionException ex)
+                else
                 {
-                    throw new CannotBuildObjectException("Can not get object position: " + ex.ToString());
-                }
-                catch (TestException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    throw new CannotBuildObjectException(ex.ToString());
+                    throw new CannotBuildObjectException();
                 }
             }
-            else
+            catch (CannotGetObjectPositionException ex)
             {
-                throw new CannotBuildObjectException();
+                throw new CannotBuildObjectException("Can not get object position: " + ex.ToString());
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException(ex.ToString());
             }
         }
 

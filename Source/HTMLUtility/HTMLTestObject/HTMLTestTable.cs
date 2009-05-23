@@ -24,7 +24,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public class HTMLTestTable : HTMLTestGUIObject, IText, ITable
     {
-
         #region fields
 
         //HTML element for a table, we have table, row, col and cell.
@@ -55,12 +54,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region methods
 
         #region ctor
-
         public HTMLTestTable(IHTMLElement element)
-            : base(element)
+            : this(element, null)
+        {
+        }
+
+        public HTMLTestTable(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
         {
             this._type = HTMLTestObjectType.Table;
-
             try
             {
                 _tableElement = (IHTMLTable)element;
@@ -229,11 +231,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IInteractive Members
 
-        public virtual void Focus()
-        {
-            throw new NotImplementedException();
-        }
-
         public virtual string GetAction()
         {
             throw new NotImplementedException();
@@ -315,7 +312,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new ObjectNotFoundException("Can not get element by cell[" + row.ToString() + "," + col.ToString() + "]: " + ex.ToString());
             }
-
         }
 
         #endregion

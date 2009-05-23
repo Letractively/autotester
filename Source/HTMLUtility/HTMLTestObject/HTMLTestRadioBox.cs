@@ -43,12 +43,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestRadioBox(IHTMLElement element)
-            : base(element)
+            : this(element, null)
         {
+        }
 
+        public HTMLTestRadioBox(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
+        {
             this._type = HTMLTestObjectType.RadioBox;
-            this._isDelayAfterAction = false;
-
             try
             {
                 this._radioElement = (IHTMLInputElement)element;
@@ -123,12 +125,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!IsReady() || !_isEnable || !_isVisible || _isReadonly)
-                {
-                    throw new CannotPerformActionException("Radiobutton is not enabled.");
-                }
-
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
                 if (_sendMsgOnly)
@@ -139,13 +136,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     MouseOp.Click();
                 }
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -154,6 +144,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not click on the radio button: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -175,19 +169,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region IInteractive Members
-
-        public virtual void Focus()
-        {
-            try
-            {
-                Hover();
-                MouseOp.Click();
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not focus on radiobox: " + ex.ToString());
-            }
-        }
 
         public virtual string GetAction()
         {
@@ -231,7 +212,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
-
         /* string GetLabelForRadioBox(IHTMLElement element)
          * return the text around radio button, firstly we will try current cell, then try right cell and up cell.
          */
@@ -262,7 +242,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     for (int deepth = 1; deepth < 4; deepth++)
                     {
                         label = GetAroundCellText(element, currentDir, deepth);
-
                         if (!String.IsNullOrEmpty(label.Trim()))
                         {
                             return label;//.Split(' ')[0];

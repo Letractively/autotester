@@ -36,7 +36,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region properties
 
-
         #endregion
 
         #region methods
@@ -44,11 +43,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestCheckBox(IHTMLElement element)
-            : base(element)
+            : this(element, null)
         {
+        }
 
+        public HTMLTestCheckBox(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
+        {
             this._type = HTMLTestObjectType.CheckBox;
-            this._isDelayAfterAction = false;
             try
             {
                 this._checkBoxElement = (IHTMLInputElement)element;
@@ -57,7 +59,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotBuildObjectException("Can not get IHTMLInputElement: " + ex.ToString());
             }
-
         }
 
         #endregion
@@ -70,7 +71,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-
                 if (!IsChecked())
                 {
                     Click();
@@ -84,7 +84,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not perform Check action on checkbox: " + ex.ToString());
             }
-
         }
 
         public virtual void UnCheck()
@@ -126,12 +125,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!IsReady() || !_isEnable || !_isVisible || _isReadonly)
-                {
-                    throw new CannotPerformActionException("Checkbox is not enabled.");
-                }
-
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
                 if (_sendMsgOnly)
@@ -142,13 +136,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     MouseOp.Click();
                 }
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -157,6 +144,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not click on the checkbox: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -178,11 +169,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region IInteractive Members
-
-        public virtual void Focus()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
 
         public virtual string GetAction()
         {

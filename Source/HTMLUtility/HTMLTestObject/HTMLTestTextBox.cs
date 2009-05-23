@@ -66,23 +66,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestTextBox(IHTMLElement element)
-            : base(element)
+            : this(element, null)
+        {
+        }
+
+        public HTMLTestTextBox(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
         {
             this._type = HTMLTestObjectType.TextBox;
-            this._isDelayAfterAction = false;
             try
             {
-                if (this.Tag == "TEXTAREA")
+                if (this._tag == "TEXTAREA")
                 {
                     _textAreaElement = (IHTMLTextAreaElement)element;
                     _currentStr = _textAreaElement.value;
                     this._textBoxType = HTMLTestTextBoxType.MultiLine;
                 }
-                else
+                else if (this._tag == "INPUT")
                 {
                     _textInputElement = (IHTMLInputTextElement)element;
                     _currentStr = _textInputElement.value;
                     this._textBoxType = GetTextBoxType();
+                }
+                else
+                {
+                    _currentStr = _sourceElement.innerText;
+                    this._textBoxType = HTMLTestTextBoxType.MultiLine;
                 }
                 //for some exception issue, I change the null to "".
                 if (_currentStr == null)
@@ -108,22 +117,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             value = (value == null ? "" : value);
             try
             {
-                _actionFinished.WaitOne();
+                BeforeAction();
 
-                Focus();
+                Hover();
                 if (_sendMsgOnly)
                 {
                     //set the text directly.
                     if (this._tag == "INPUT")
                     {
                         this._textInputElement.value = value;
-                        FireEvent(this._textInputElement as IHTMLElement3, "onchange");
+                    }
+                    else if (this._tag == "TEXTAREA")
+                    {
+                        this._textAreaElement.value = value;
                     }
                     else
                     {
-                        this._textAreaElement.value = value;
-                        FireEvent(this._textAreaElement as IHTMLElement3, "onchange");
+                        this._sourceElement.innerHTML = value;
                     }
+
+                    FireEvent(this._sourceElement as IHTMLElement3, "onchange");
                 }
                 else
                 {
@@ -136,13 +149,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     //click just above the text box, to elimate it.
                     ClickAbove();
                 }
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -151,6 +157,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform Input action: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -163,16 +173,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
-                    _actionFinished.WaitOne();
+                    BeforeAction();
 
                     Focus();
                     KeyboardOp.SendKey(keys);
-                    if (_isDelayAfterAction)
-                    {
-                        System.Threading.Thread.Sleep(_delayTime * 1000);
-                    }
-
-                    _actionFinished.Set();
                 }
                 catch (TestException)
                 {
@@ -181,6 +185,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 catch (Exception ex)
                 {
                     throw new CannotPerformActionException("Can not input keys: " + keys + " to textbox :" + ex.ToString());
+                }
+                finally
+                {
+                    AfterAction();
                 }
             }
         }
@@ -192,28 +200,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (!_isEnable || !_isVisible || _isReadonly)
-                {
-                    throw new CannotPerformActionException("Textbox is not enabled.");
-                }
-
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 if (this._tag == "INPUT")
                 {
                     this._textInputElement.value = "";
                 }
-                else
+                else if (this._tag == "TEXTAREA")
                 {
                     this._textAreaElement.value = "";
                 }
-
-                if (_isDelayAfterAction)
+                else
                 {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
+                    this._sourceElement.innerHTML = "";
                 }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -223,34 +223,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not perform clear action: " + ex.ToString());
             }
+            finally
+            {
+                AfterAction();
+            }
         }
 
         #region IInteractive interface
-        public virtual void Focus()
-        {
-            try
-            {
-                if (!_isEnable || !_isVisible || _isReadonly)
-                {
-                    throw new CannotPerformActionException("Textbox is not enabled.");
-                }
-
-                if (!_sendMsgOnly)
-                {
-                    Hover();
-                    MouseOp.Click();
-                    System.Threading.Thread.Sleep(500 * 1);
-                }
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not perform focus action: " + ex.ToString());
-            }
-        }
 
         public virtual string GetAction()
         {
@@ -274,9 +253,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     return this._textInputElement.value == null ? "" : this._textInputElement.value;
                 }
-                else
+                else if (this._tag == "TEXTAREA")
                 {
                     return this._textAreaElement.value == null ? "" : this._textAreaElement.value;
+                }
+                else
+                {
+                    return this._sourceElement.innerText;
                 }
             }
             catch

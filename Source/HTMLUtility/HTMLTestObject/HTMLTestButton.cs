@@ -28,7 +28,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     //for HTML test button, we may have <input type="button">, <input type="submit">, <input type="reset">
     public enum HTMLTestButtonType : int
     {
-        Custom = 0,
+        Normal = 0,
         Submit = 1,
         Reset = 3,
         Unknow = 4
@@ -39,21 +39,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region fields
 
         //the text on the button, like "Login"
-        protected string _currentStr;
+        protected string _buttonCaption;
 
         //the HTML element of the object. we build HTMLTestButton based on the HTML element.
         //<input>
         protected IHTMLInputElement _inputElement;
-
         //<button>
         protected IHTMLButtonElement _buttonElement;
 
         protected HTMLTestButtonType _btnType = HTMLTestButtonType.Unknow;
-
-        //if the button type is not "submit" or "reset", we can get method name of "onclick" property.
-        protected string _customMethodName;
-
-        protected string _state;
 
         #endregion
 
@@ -64,11 +58,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _btnType; }
         }
 
-        public string CustomMethodName
-        {
-            get { return _customMethodName; }
-        }
-
         #endregion
 
         #region methods
@@ -76,41 +65,32 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestButton(IHTMLElement element)
-            : base(element)
+            : this(element, null)
+        {
+        }
+
+        public HTMLTestButton(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
         {
             this._type = HTMLTestObjectType.Button;
-
             try
             {
                 if (String.Compare(element.tagName, "INPUT", true) == 0)
                 {
                     this._inputElement = (IHTMLInputElement)element;
-
-                    this._currentStr = this._inputElement.value;
-
+                    this._buttonCaption = this._inputElement.value;
                     this._btnType = GetButtonType();
                 }
                 else if (String.Compare(element.tagName, "BUTTON", true) == 0)
                 {
                     this._buttonElement = (IHTMLButtonElement)element;
-
-                    this._currentStr = this._buttonElement.value;
-
-                    this._btnType = HTMLTestButtonType.Custom;
+                    this._buttonCaption = this._buttonElement.value;
+                    this._btnType = HTMLTestButtonType.Normal;
                 }
             }
             catch (Exception ex)
             {
                 throw new CannotBuildObjectException("Can not build test button: " + ex.ToString());
-            }
-
-            try
-            {
-                this._customMethodName = GetCustomMethodName();
-            }
-            catch
-            {
-                this._customMethodName = "";
             }
         }
 
@@ -125,8 +105,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                //wait last action finished.
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
                 if (this._sendMsgOnly)
@@ -139,15 +118,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     // see the definition in HTMLGUiTestObject.cs
                     MouseOp.Click();
                 }
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                //action is finished, signal.
-                _actionFinished.Set();
-
             }
             catch (TestException)
             {
@@ -156,6 +126,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform click action: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -166,17 +140,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
                 MouseOp.DoubleClick();
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -185,6 +152,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform double click action: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -195,17 +166,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                _actionFinished.WaitOne();
+                BeforeAction();
 
                 Hover();
                 MouseOp.RightClick();
-
-                if (_isDelayAfterAction)
-                {
-                    System.Threading.Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -214,6 +178,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform right click action: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -225,20 +193,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new CannotPerformActionException("Can not perform middle click.");
         }
 
-        #region IClickable methods
-        /* void Focus()
-         * make the button get focus, we click it
-         */
-        public virtual void Focus()
-        {
-            //try
-            //{
-            //    if (this._inputElement != null)
-            //    {
-
-            //    }
-            //}
-        }
+        #region IInteractive methods
 
         public virtual string GetAction()
         {
@@ -256,7 +211,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual string GetText()
         {
-            return this._currentStr;
+            return this._buttonCaption;
         }
 
         public override string GetLabel()
@@ -304,38 +259,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
-            return HTMLTestButtonType.Custom;
+            return HTMLTestButtonType.Normal;
         }
 
-
-        /* string GetCustomMethodName()
-         * return the method name by checking "onclick" property.
-         */
-        protected virtual string GetCustomMethodName()
-        {
-            string methodName = "";
-            if (HTMLTestObject.TryGetProperty(this._sourceElement, "onclick", out methodName))
-            {
-                return methodName;
-            }
-            else
-            {
-                return "";
-            }
-        }
-
-        public override void Hover()
-        {
-            if (!IsReady() || !_isEnable || !_isVisible)
-            {
-                throw new CannotPerformActionException("Button is not enabled.");
-            }
-
-            base.Hover();
-        }
         #endregion
 
         #endregion
-
     }
 }

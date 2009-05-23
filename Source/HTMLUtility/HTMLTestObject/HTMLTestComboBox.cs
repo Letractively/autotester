@@ -74,13 +74,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestComboBox(IHTMLElement element)
-            : base(element)
+            : this(element, null)
         {
-
+        }
+        public HTMLTestComboBox(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
+        {
             this._type = HTMLTestObjectType.ComboBox;
-
-            this._isDelayAfterAction = false;
-
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
@@ -111,13 +111,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
-
         public override Rectangle GetRectOnScreen()
         {
             try
             {
                 this._rect = base.GetRectOnScreen();
-
                 this._className = "Internet Explorer_TridentCmboBx";
 
                 //find the windows handle of combo box, it's class name is "Internet Explorer_TridentCmboBx".
@@ -146,7 +144,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch
             {
-
             }
 
             //get the height of each item.
@@ -159,7 +156,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return this._rect;
-
         }
 
         /* void Select(string value)
@@ -167,10 +163,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void Select(string value)
         {
-
             //the item index to select. -1 means invalid.
             int index;
-
             //if nothing input, then select the 1st item.
             if (String.IsNullOrEmpty(value))
             {
@@ -183,7 +177,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             SelectByIndex(index);
-
         }
 
         /* void SelectByIndex(int index)
@@ -199,19 +192,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                _actionFinished.WaitOne();
+                BeforeAction();
 
+                Hover();
                 if (_sendMsgOnly)
                 {
                     this._htmlSelectElement.selectedIndex = index;
-
                     FireEvent(this._htmlSelectElement as IHTMLElement3, "onchange");
                 }
                 else
                 {
                     //click the object.
                     Click();
-
                     //get the position on the screen 
                     Point itemPosition = GetItemPosition(index);
                     //click on the actual item.
@@ -220,13 +212,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 //refresh the selected value.
                 this._selectedValue = _allValues[index];
-
-                if (_isDelayAfterAction)
-                {
-                    Thread.Sleep(_delayTime * 1000);
-                }
-
-                _actionFinished.Set();
             }
             catch (TestException)
             {
@@ -236,7 +221,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not perform select action on Combobox: " + ex.ToString());
             }
-
+            finally
+            {
+                AfterAction();
+            }
         }
 
         public virtual void SelectMulti(string[] values)
@@ -245,12 +233,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #region IInteractive methods
-
-        public virtual void Focus()
-        {
-            Hover();
-            MouseOp.Click();
-        }
 
         public virtual string GetAction()
         {
@@ -316,10 +298,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                StringBuilder sb = new StringBuilder(128);
-                Win32API.GetWindowText(_handle, sb, 128);
-
-                return sb.ToString();
+                return Win32API.GetWindowText(_handle);
             }
             catch (Exception ex)
             {
@@ -338,7 +317,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             string[] values = new string[_htmlSelectElement.length];
             IHTMLOptionElement optionElement;
-
             try
             {
                 for (int i = 0; i < _htmlSelectElement.length; i++)
@@ -353,7 +331,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw;
             }
-
         }
 
         #endregion
@@ -386,7 +363,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual int GetIndexByString(string value)
         {
-
             for (int i = 0; i < this._allValues.Length; i++)
             {
                 if (String.Compare(value, _allValues[i], true) == 0)
@@ -403,7 +379,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual Point GetItemPosition(int index)
         {
-
             //get current top index, top index means the first item you can see currently.
             int topIndex = GetTopIndex();
 
@@ -488,13 +463,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual void Click()
         {
-            if (!_isEnable || !_isVisible || _isReadonly)
-            {
-                throw new CannotPerformActionException("ComboBox is not enabled.");
-            }
-
-            Hover();
-
             //get the right point
             int right = this._rect.Left + this._rect.Width;
             int height = this._rect.Height;
