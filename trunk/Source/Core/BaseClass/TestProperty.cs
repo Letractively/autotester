@@ -16,7 +16,7 @@ namespace Shrinerain.AutoTester.Core
         private String _name;
         private Object _value;
         private Regex _regValue;
-        private bool _isRegex;
+        private bool _isRegex = false;
         //weight of the property, should between 0 and 100.
         //more bigger, more important.
         private int _weight;
@@ -58,11 +58,20 @@ namespace Shrinerain.AutoTester.Core
         {
             this._name = name;
             this._value = value;
-            this._isRegex = isReg;
 
-            if (isReg)
+            if (value is String)
             {
-                _regValue = new Regex(value.ToString(), RegexOptions.Compiled);
+                string valueStr = value.ToString();
+                this._isRegex = isReg || valueStr.StartsWith(RegFlag);
+                if (this._isRegex)
+                {
+                    if (valueStr.StartsWith(RegFlag))
+                    {
+                        valueStr = valueStr.Remove(0, 1);
+                        this._value = valueStr;
+                    }
+                    _regValue = new Regex(valueStr, RegexOptions.Compiled);
+                }
             }
 
             if (weight < 0)
@@ -286,15 +295,7 @@ namespace Shrinerain.AutoTester.Core
                             {
                                 val = p.Substring(ePos + 1, p.Length - ePos - 1);
                             }
-
-                            bool isReg = false;
-                            if (val.StartsWith(RegFlag))
-                            {
-                                isReg = true;
-                                val = val.Remove(0, 1);
-                            }
-
-                            properties.Add(new TestProperty(prop, val, isReg));
+                            properties.Add(new TestProperty(prop, val));
                         }
                     }
                 }

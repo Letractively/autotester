@@ -351,7 +351,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             {
                                 //if we have too many objects, we will try to find it's possible position to improve performance.             
                                 possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, _htmlReg, htmlContent, searchVal);
-                                if (startPos == htmlContent.LastIndexOf(searchVal))
+                                if (!properties[0].IsRegex && startPos == htmlContent.LastIndexOf(searchVal))
                                 {
                                     isOnlyOneObject = true;
                                 }
@@ -512,7 +512,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 {
                                     //if we have too many objects, we will try to find it's possible position to improve performance.             
                                     possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, htmlContent, searchVal);
-                                    if (startPos == htmlContent.LastIndexOf(searchVal))
+                                    if (!properties[0].IsRegex && startPos == htmlContent.LastIndexOf(searchVal))
                                     {
                                         isOnlyOneObject = true;
                                     }

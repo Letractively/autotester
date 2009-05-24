@@ -26,7 +26,6 @@ namespace Shrinerain.AutoTester.Core
 {
     public class TestApp : ITestApp
     {
-
         #region fields
 
         protected TestApp _parent;

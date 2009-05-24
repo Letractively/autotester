@@ -141,7 +141,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestGUIObject(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            GetRectOnScreen();
+            if (!_sendMsgOnly)
+            {
+                GetRectOnScreen();
+            }
             this._isEnable = IsEnable();
             this._isReadonly = IsReadonly();
             this._isVisible = IsVisible();

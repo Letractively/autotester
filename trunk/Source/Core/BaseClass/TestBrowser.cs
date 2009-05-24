@@ -201,7 +201,18 @@ namespace Shrinerain.AutoTester.Core
         //property to show if the browser is downloading sth.
         public bool IsBusy
         {
-            get { return _isDownloading || _browser.Busy; }
+            get
+            {
+                if (_isDownloading || _browser.Busy ||
+                    (_browser.ReadyState != tagREADYSTATE.READYSTATE_COMPLETE && _browser.ReadyState != tagREADYSTATE.READYSTATE_INTERACTIVE))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         #endregion
@@ -952,8 +963,9 @@ namespace Shrinerain.AutoTester.Core
                 bool browserFound = false;
 
                 Process[] pArr = Process.GetProcessesByName(TestConstants.IE_Process_Name);
-                foreach (Process p in pArr)
+                for (int i = pArr.Length - 1; i >= 0; i--)
                 {
+                    Process p = pArr[i];
                     //if title is empty, find by process id.
                     if (String.IsNullOrEmpty(title))
                     {
@@ -975,13 +987,13 @@ namespace Shrinerain.AutoTester.Core
                             break;
                         }
 
-                        _appProcess = p;
-                        _rootHandle = p.MainWindowHandle;
                         if (_isHide)
                         {
-                            Win32API.ShowWindow(_rootHandle, (int)Win32API.ShowWindowCmds.SW_HIDE);
+                            Win32API.ShowWindow(p.MainWindowHandle, (int)Win32API.ShowWindowCmds.SW_HIDE);
                         }
 
+                        _appProcess = p;
+                        _rootHandle = p.MainWindowHandle;
                         _browser = AttachBrowser(_rootHandle);
                         _browserExisted.Set();
                         return;
