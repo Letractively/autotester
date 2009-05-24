@@ -81,7 +81,7 @@ namespace Shrinerain.AutoTester.Core
                 {
                     HttpWebRequest myRequest = (HttpWebRequest)WebRequest.Create(url);
                     myRequest.AllowAutoRedirect = true;
-                    myRequest.Timeout = 60 * 1000;
+                    myRequest.Timeout = 10 * 1000;
                     myRequest.UserAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)";
                     if (!String.IsNullOrEmpty(cookie))
                     {
