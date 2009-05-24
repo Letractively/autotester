@@ -60,9 +60,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _tag;
         protected HTMLTestObjectType _type;
         protected IHTMLElement _sourceElement;
-
         //the host browser of this object.
         protected HTMLTestBrowser _browser;
+
+        protected static Dictionary<string, bool> _commonProperties = new Dictionary<string, bool>(17);
 
         #endregion
 
@@ -231,32 +232,28 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             //property name not null
-            propertyName = propertyName.Trim().Replace(".", "");
+            propertyName = propertyName.Trim().Replace(".", "").ToUpper();
 
             try
             {
+                bool found = false;
                 //check some common properties, to improve performance.
-                if (String.Compare(propertyName, "innerText", true) == 0)
+                if (IsCommonProperties(propertyName))
                 {
-                    value = element.innerText;
+                    acceptEmpty = true;
+                    if (String.Compare(propertyName, "TAG") == 0 || String.Compare(propertyName, "TAGNAME") == 0)
+                    {
+                        found = true;
+                        value = element.tagName;
+                    }
+                    else if (String.Compare(propertyName, "CLASS") == 0 || String.Compare(propertyName, "CLASSNAME") == 0)
+                    {
+                        found = true;
+                        value = element.className;
+                    }
                 }
-                else if (String.Compare(propertyName, "innerHTML", true) == 0)
-                {
-                    value = element.innerHTML;
-                }
-                else if (String.Compare(propertyName, "outerHTML", true) == 0)
-                {
-                    value = element.outerHTML;
-                }
-                else if (String.Compare(propertyName, "outerText", true) == 0)
-                {
-                    value = element.outerText;
-                }
-                else if (String.Compare(propertyName, "tag", true) == 0 || String.Compare(propertyName, "tagname", true) == 0)
-                {
-                    value = element.tagName;
-                }
-                else
+
+                if (!found)
                 {
                     //not common properties
                     object valueObj = element.getAttribute(propertyName, 0);
@@ -410,6 +407,29 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                 }
             }
+        }
+
+        protected static bool IsCommonProperties(string propertyName)
+        {
+            if (!String.IsNullOrEmpty(propertyName))
+            {
+                if (_commonProperties.Count == 0)
+                {
+                    _commonProperties.Add("ID", true);
+                    _commonProperties.Add("INNERTEXT", true);
+                    _commonProperties.Add("INNERHTML", true);
+                    _commonProperties.Add("OUTERHTML", true);
+                    _commonProperties.Add("OUTERTEXT", true);
+                    _commonProperties.Add("TAG", true);
+                    _commonProperties.Add("TAGNAME", true);
+                    _commonProperties.Add("CLASSNAME", true);
+                    _commonProperties.Add("CLASS", true);
+                }
+
+                return _commonProperties.ContainsKey(propertyName);
+            }
+
+            return false;
         }
 
         #endregion
