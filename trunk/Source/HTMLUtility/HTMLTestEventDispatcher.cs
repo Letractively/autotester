@@ -53,7 +53,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     doc3.attachEvent("onkeydown", this);
                     doc3.attachEvent("onkeyup", this);
                     doc3.attachEvent("onchange", this);
-
+                    doc3.attachEvent("onfocus", this);
                     _registeredDocs.Add(doc2);
                 }
             }
@@ -71,7 +71,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     doc3.detachEvent("onkeydown", this);
                     doc3.detachEvent("onkeyup", this);
                     doc3.detachEvent("onchange", this);
-
+                    doc3.detachEvent("onfocus", this);
                     if (_registeredDocs.Contains(doc2))
                     {
                         _registeredDocs.Remove(doc2);
@@ -173,6 +173,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
                             }
                             OnUncheck(obj, null);
+                        }
+                        else if (CheckFocus(pEvtObj))
+                        {
+                            if (obj == null)
+                            {
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                            }
+                            OnFocus(obj, null);
                         }
                     }
                 }
@@ -399,6 +407,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         }
                     }
                 }
+            }
+
+            return false;
+        }
+
+        private bool CheckFocus(IHTMLEventObj pEvtObj)
+        {
+            if (OnFocus != null)
+            {
+                String tp = pEvtObj.type;
+                return String.Compare("focus", tp, true) == 0;
             }
 
             return false;
