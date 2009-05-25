@@ -110,7 +110,7 @@ namespace Shrinerain.AutoTester.Core
                 }
             }
 
-            if (html.IndexOf("Object moved") > 0)
+            if (html != null && html.IndexOf("Object moved") > 0)
             {
                 int pos1 = html.IndexOf("http://");
                 int pos2 = html.IndexOf("\">");
