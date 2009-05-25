@@ -291,7 +291,7 @@ namespace Shrinerain.AutoTester.Core
                 }
                 if (_isHide)
                 {
-                    startInfo.WindowStyle = ProcessWindowStyle.Minimized;
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 }
 
                 _appProcess = Process.Start(startInfo);
@@ -981,20 +981,15 @@ namespace Shrinerain.AutoTester.Core
 
                     if (browserFound)
                     {
-                        if (p.MainWindowHandle == IntPtr.Zero)
+                        if (!_isHide && p.MainWindowHandle == IntPtr.Zero)
                         {
                             //not ready, try again.
                             break;
                         }
 
-                        if (_isHide)
-                        {
-                            Win32API.ShowWindow(p.MainWindowHandle, (int)Win32API.ShowWindowCmds.SW_HIDE);
-                        }
-
                         _appProcess = p;
-                        _rootHandle = p.MainWindowHandle;
-                        _browser = AttachBrowser(_rootHandle);
+                        _browser = GetInternetExplorer(p.Id);
+                        _rootHandle = (IntPtr)_browser.HWND;
                         _browserExisted.Set();
                         return;
                     }
@@ -1064,11 +1059,11 @@ namespace Shrinerain.AutoTester.Core
          * return the instance of InternetExplorer.
          * 
          */
-        protected virtual InternetExplorer AttachBrowser(IntPtr ieHandle)
+        protected virtual InternetExplorer GetInternetExplorer(int processID)
         {
-            if (ieHandle == IntPtr.Zero)
+            if (processID <= 0)
             {
-                throw new CannotAttachBrowserException("IE handle can not be 0.");
+                throw new CannotAttachBrowserException("IE process can not be 0.");
             }
 
             //try until timeout, the default is 120s.
@@ -1084,9 +1079,14 @@ namespace Shrinerain.AutoTester.Core
                         InternetExplorer tempIE = allBrowsers[i];
                         try
                         {
-                            if (tempIE != null && (int)ieHandle == tempIE.HWND)
+                            if (tempIE != null && tempIE.HWND != 0)
                             {
-                                return tempIE;
+                                int pid = 0;
+                                Win32API.GetWindowThreadProcessId((IntPtr)tempIE.HWND, out pid);
+                                if (processID == pid)
+                                {
+                                    return tempIE;
+                                }
                             }
                         }
                         catch
@@ -1100,7 +1100,7 @@ namespace Shrinerain.AutoTester.Core
                 Thread.Sleep(Interval * 1000);
             }
 
-            throw new CannotAttachBrowserException("Browser: " + ieHandle + " does not exist.");
+            throw new CannotAttachBrowserException("Browser: " + processID + " does not exist.");
         }
 
         /* InternetExplorer GetTopmostBrowser()

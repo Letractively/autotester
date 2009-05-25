@@ -121,10 +121,10 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
-                    if (doc != null && doc.frames != null)
+                    IHTMLFramesCollection2 frames = doc.frames;
+                    if (frames != null && frames.length > 0)
                     {
                         List<HTMLDocument> res = new List<HTMLDocument>();
-                        IHTMLFramesCollection2 frames = doc.frames;
                         for (int i = 0; i < frames.length; i++)
                         {
                             object index = i;
