@@ -10,6 +10,15 @@ namespace Shrinerain.AutoTester.Core
     public delegate void TestAppEventHandler(TestApp application, TestEventArgs args);
     public delegate void TestObjectEventHandler(TestObject sender, TestEventArgs args);
 
+    public enum MouseButton
+    {
+        None = 0,
+        Left = 1,
+        Right = 2,
+        Middle = 4,
+        Other = 8
+    }
+
     public class TestEventArgs : EventArgs
     {
         #region fields
@@ -17,6 +26,8 @@ namespace Shrinerain.AutoTester.Core
         protected string _eventName;
         protected object _eventValue;
         protected Point _mousePos;
+        protected MouseButton _mouseButton;
+
         //keyboard status, ascii code of the key.
         protected int[] _keyCodes;
 
@@ -29,6 +40,11 @@ namespace Shrinerain.AutoTester.Core
         public Point MousePos
         {
             get { return _mousePos; }
+        }
+
+        public MouseButton MouseButton
+        {
+            get { return _mouseButton; }
         }
 
         public object EventValue
@@ -44,10 +60,8 @@ namespace Shrinerain.AutoTester.Core
         #region methods
 
         public TestEventArgs(String eventName, String eventValue)
+            : this(eventName, eventValue, MouseOp.GetMousePos())
         {
-            this._eventName = eventName;
-            this._eventValue = eventValue;
-            this._mousePos = MouseOp.GetMousePos();
         }
 
         public TestEventArgs(String eventName, String eventValue, Point mousePos)
@@ -56,18 +70,21 @@ namespace Shrinerain.AutoTester.Core
         }
 
         public TestEventArgs(String eventName, String eventValue, int[] keyCodes)
+            : this(eventName, eventValue, MouseOp.GetMousePos(), keyCodes)
         {
-            this._eventName = eventName;
-            this._eventValue = eventValue;
-            this._mousePos = MouseOp.GetMousePos();
-            this._keyCodes = keyCodes;
         }
 
         public TestEventArgs(String eventName, String eventValue, Point mousePos, int[] keyCodes)
+            : this(eventValue, eventValue, mousePos, MouseButton.None, keyCodes)
+        {
+        }
+
+        public TestEventArgs(String eventName, String eventValue, Point mousePos, MouseButton button, int[] keyCodes)
         {
             this._eventName = eventName;
             this._eventValue = eventValue;
             this._mousePos = mousePos;
+            this._mouseButton = button;
             this._keyCodes = keyCodes;
         }
 

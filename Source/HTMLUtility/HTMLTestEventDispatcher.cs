@@ -199,7 +199,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         IHTMLElement src = pEvtObj.srcElement;
                         obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
-                        TestEventArgs mouseEventArgs = BuildMouseEventArgs(tp);
+                        TestEventArgs mouseEventArgs = BuildMouseEventArgs(pEvtObj);
 
                         if (String.Compare(tp, "mousedown", true) == 0)
                         {
@@ -423,9 +423,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return false;
         }
 
-        private static TestEventArgs BuildMouseEventArgs(String mouseAction)
+        private static TestEventArgs BuildMouseEventArgs(IHTMLEventObj pEvtObj)
         {
-            return new TestEventArgs(mouseAction, null, MouseOp.GetMousePos());
+            String mouseEventType = pEvtObj.type;
+            MouseButton button = MouseButton.Left;
+            try
+            {
+                button = (MouseButton)pEvtObj.button;
+            }
+            catch
+            {
+            }
+            return new TestEventArgs(mouseEventType, button.ToString(), MouseOp.GetMousePos(), button, null);
         }
 
 
