@@ -336,6 +336,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 BeforeFound();
 
+                _browser = null;
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
                 ieExistT.Start(browserTitle);
@@ -979,12 +980,6 @@ namespace Shrinerain.AutoTester.Core
 
                     if (browserFound)
                     {
-                        if (!_isHide && p.MainWindowHandle == IntPtr.Zero)
-                        {
-                            //not ready, try again.
-                            break;
-                        }
-
                         _appProcess = p;
                         _browser = GetInternetExplorer(p.Id);
                         _rootHandle = (IntPtr)_browser.HWND;
