@@ -124,10 +124,7 @@ namespace Shrinerain.AutoTester.Core
 
         public int Left
         {
-            get
-            {
-                return _browserLeft;
-            }
+            get { return _browserLeft; }
         }
 
         public int Top
@@ -269,7 +266,8 @@ namespace Shrinerain.AutoTester.Core
 
         public override void Start(string args)
         {
-            Start(null, args);
+            Start(null, null);
+            Load(args);
         }
 
         public override void Start(string appFullPath, string args)
@@ -297,12 +295,12 @@ namespace Shrinerain.AutoTester.Core
                 _appProcess = Process.Start(startInfo);
                 //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
-                ieExistT.Start("");
+                ieExistT.Start(null);
                 //wait until the internet explorer started.
                 _browserExisted.WaitOne(_maxWaitSeconds * 1000, true);
                 if (_browser != null)
                 {
-                    SetBrowser(_browser);
+                    AttachBrowser(_browser);
                 }
                 else
                 {
@@ -346,7 +344,7 @@ namespace Shrinerain.AutoTester.Core
 
                 if (_browser != null)
                 {
-                    SetBrowser(_browser);
+                    AttachBrowser(_browser);
                 }
                 else
                 {
@@ -538,7 +536,7 @@ namespace Shrinerain.AutoTester.Core
                 {
                     AsstFunctions.CloseWindow(_dialogHandle);
                     this._dialogHandle = IntPtr.Zero;
-                    SetBrowser(this._browser);
+                    AttachBrowser(this._browser);
                 }
                 catch (TestException)
                 {
@@ -759,7 +757,7 @@ namespace Shrinerain.AutoTester.Core
         /* string GetHTML()
          * return the HTML code of current page.
          */
-        public virtual string GetHTMLContent()
+        public virtual string GetAllHTMLContent()
         {
             HTMLDocument[] allDocs = GetAllDocuments();
             StringBuilder sb = new StringBuilder();
@@ -836,7 +834,7 @@ namespace Shrinerain.AutoTester.Core
                     if (index >= 0 && index < _browserList.Count)
                     {
                         InternetExplorer ie = _browserList[index];
-                        SetBrowser(ie);
+                        AttachBrowser(ie);
                         if (times >= _maxWaitSeconds || ie.ReadyState == tagREADYSTATE.READYSTATE_INTERACTIVE ||
                             ie.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE)
                         {
@@ -882,7 +880,7 @@ namespace Shrinerain.AutoTester.Core
                             if ((String.IsNullOrEmpty(title) || String.Compare(curTitle, title, true) == 0) &&
                                 (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
                             {
-                                SetBrowser(ie);
+                                AttachBrowser(ie);
                                 return this;
                             }
                         }
@@ -909,7 +907,7 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 InternetExplorer ie = _browserList[_browserList.Count - 1];
-                SetBrowser(ie);
+                AttachBrowser(ie);
                 return this;
             }
             catch (TestException)
@@ -1010,7 +1008,8 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void WaitForBrowserExist(object title)
         {
-            WaitForBrowserExist(title.ToString(), _maxWaitSeconds);
+            String titleStr = title == null ? "" : title.ToString();
+            WaitForBrowserExist(titleStr, _maxWaitSeconds);
         }
 
         /* void WaitForNewBrowserSync()
@@ -1108,27 +1107,11 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual InternetExplorer GetTopmostBrowser()
         {
-            //get all shell browser.
-            SHDocVw.ShellWindows allBrowsers = new ShellWindows();
-            if (allBrowsers.Count > 0)
+            InternetExplorer[] browsers = GetAllBrowsers();
+            if (browsers != null && browsers.Length > 0)
             {
-                for (int i = allBrowsers.Count - 1; i >= 0; i--)
-                {
-                    try
-                    {
-                        InternetExplorer curIE = (InternetExplorer)allBrowsers.Item(i);
-                        if (curIE != null && curIE.Document is IHTMLDocument)
-                        {
-                            return curIE;
-                        }
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
+                return browsers[0];
             }
-
             return null;
         }
 
@@ -1163,10 +1146,7 @@ namespace Shrinerain.AutoTester.Core
             return null;
         }
 
-        /* void RefreshBrowser(InternetExplorer ie)
-         * use the new ie to replace old instance.
-         */
-        protected virtual void SetBrowser(InternetExplorer ie)
+        protected virtual void AttachBrowser(InternetExplorer ie)
         {
             if (ie != null)
             {
@@ -1571,7 +1551,7 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 ie.BeforeNavigate2 += new DWebBrowserEvents2_BeforeNavigate2EventHandler(OnBeforeNavigate2);
-                //ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
+                ie.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(OnNavigateError);
                 ie.NavigateComplete2 += new DWebBrowserEvents2_NavigateComplete2EventHandler(OnNavigateComplete2);
             }
             catch (Exception ex)
@@ -1634,6 +1614,12 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotAttachBrowserException("Error OnBeforeNavigate2: " + ex.ToString());
             }
+        }
+
+        protected void OnNavigateError(object pDisp, ref object URL, ref object Frame, ref object StatusCode, ref bool Cancel)
+        {
+            String exMsg = String.Format("Error code {0} when try to navigate to URL: {1}", StatusCode, URL);
+            throw new CannotNavigateException(exMsg);
         }
 
         protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
@@ -1714,13 +1700,31 @@ namespace Shrinerain.AutoTester.Core
             if (_browserList.Count > 0)
             {
                 InternetExplorer ie = _browserList[0];
-                SetBrowser(ie);
+                AttachBrowser(ie);
             }
         }
 
         #endregion
 
         #endregion
+
+        #endregion
+
+        #region ITestBrowser events
+
+        public event TestAppEventHandler OnBrowserStart;
+
+        public event TestAppEventHandler OnBrowserNavigate;
+
+        public event TestAppEventHandler OnBrowserTabChange;
+
+        public event TestAppEventHandler OnBrowserBack;
+
+        public event TestAppEventHandler OnBrowserForward;
+
+        public event TestAppEventHandler OnBrowserRefresh;
+
+        public event TestAppEventHandler OnBrowserClose;
 
         #endregion
     }

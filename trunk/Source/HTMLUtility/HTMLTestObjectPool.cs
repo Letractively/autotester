@@ -345,7 +345,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
                         if (!String.IsNullOrEmpty(searchVal))
                         {
-                            string htmlContent = _htmlTestBrowser.GetHTMLContent();
+                            string htmlContent = _htmlTestBrowser.GetAllHTMLContent();
                             int startPos = htmlContent.IndexOf(searchVal);
                             if (startPos > 0)
                             {
@@ -506,7 +506,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                     _regCache.Add(tag, tagReg);
                                 }
 
-                                string htmlContent = _htmlTestBrowser.GetHTMLContent();
+                                string htmlContent = _htmlTestBrowser.GetAllHTMLContent();
                                 int startPos = htmlContent.IndexOf(searchVal);
                                 if (startPos > 0)
                                 {

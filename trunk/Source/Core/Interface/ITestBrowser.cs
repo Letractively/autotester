@@ -22,6 +22,18 @@ namespace Shrinerain.AutoTester.Core
 {
     public interface ITestBrowser : ITestApp
     {
+        #region
+
+        event TestAppEventHandler OnBrowserStart;
+        event TestAppEventHandler OnBrowserNavigate;
+        event TestAppEventHandler OnBrowserTabChange;
+        event TestAppEventHandler OnBrowserBack;
+        event TestAppEventHandler OnBrowserForward;
+        event TestAppEventHandler OnBrowserRefresh;
+        event TestAppEventHandler OnBrowserClose;
+
+        #endregion
+
         //Browser actions
         void Start();
         void Load(String url, bool waitForPage);
