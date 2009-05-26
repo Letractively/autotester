@@ -132,22 +132,22 @@ namespace Shrinerain.AutoTester.Core
 
         #region test object
 
-        public IClickable Button()
+        public virtual IClickable Button()
         {
             return Buttons()[0];
         }
 
-        public IClickable[] Buttons()
+        public virtual IClickable[] Buttons()
         {
             return Buttons(null);
         }
 
-        public IClickable Button(string name)
+        public virtual IClickable Button(string name)
         {
             return Buttons(name)[0];
         }
 
-        public IClickable[] Buttons(string name)
+        public virtual IClickable[] Buttons(string name)
         {
             GetMapObjects(name, "button");
             IClickable[] tmp = new IClickable[_lastObjects.Length];
@@ -156,22 +156,22 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-        public IInputable TextBox()
+        public virtual IInputable TextBox()
         {
             return TextBoxs()[0];
         }
 
-        public IInputable[] TextBoxs()
+        public virtual IInputable[] TextBoxs()
         {
             return TextBoxs(null);
         }
 
-        public IInputable TextBox(string name)
+        public virtual IInputable TextBox(string name)
         {
             return TextBoxs(name)[0];
         }
 
-        public IInputable[] TextBoxs(string name)
+        public virtual IInputable[] TextBoxs(string name)
         {
             GetMapObjects(name, "TextBox");
             IInputable[] tmp = new IInputable[_lastObjects.Length];
@@ -180,22 +180,22 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-        public ICheckable CheckBox()
+        public virtual ICheckable CheckBox()
         {
             return CheckBoxs()[0];
         }
 
-        public ICheckable[] CheckBoxs()
+        public virtual ICheckable[] CheckBoxs()
         {
             return CheckBoxs(null);
         }
 
-        public ICheckable CheckBox(string name)
+        public virtual ICheckable CheckBox(string name)
         {
             return CheckBoxs(name)[0];
         }
 
-        public ICheckable[] CheckBoxs(string name)
+        public virtual ICheckable[] CheckBoxs(string name)
         {
             GetMapObjects(name, "CheckBox");
             ICheckable[] tmp = new ICheckable[_lastObjects.Length];
@@ -204,22 +204,22 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-        public ISelectable ComboBox()
+        public virtual ISelectable ComboBox()
         {
             return ComboBoxs()[0];
         }
 
-        public ISelectable[] ComboBoxs()
+        public virtual ISelectable[] ComboBoxs()
         {
             return ComboBoxs(null);
         }
 
-        public ISelectable ComboBox(string name)
+        public virtual ISelectable ComboBox(string name)
         {
             return ComboBoxs(name)[0];
         }
 
-        public ISelectable[] ComboBoxs(string name)
+        public virtual ISelectable[] ComboBoxs(string name)
         {
             GetMapObjects(name, "ComboBox");
             ISelectable[] tmp = new ISelectable[_lastObjects.Length];
@@ -228,22 +228,22 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-        public IPicture Image()
+        public virtual IPicture Image()
         {
             return Images()[0];
         }
 
-        public IPicture[] Images()
+        public virtual IPicture[] Images()
         {
             return Images(null);
         }
 
-        public IPicture Image(string name)
+        public virtual IPicture Image(string name)
         {
             return Images(name)[0];
         }
 
-        public IPicture[] Images(string name)
+        public virtual IPicture[] Images(string name)
         {
             GetMapObjects(name, "Image");
             IPicture[] tmp = new IPicture[_lastObjects.Length];
@@ -251,22 +251,22 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-        public IText Label()
+        public virtual IText Label()
         {
             return Labels()[0];
         }
 
-        public IText[] Labels()
+        public virtual IText[] Labels()
         {
             return Labels(null);
         }
 
-        public IText Label(string name)
+        public virtual IText Label(string name)
         {
             return Labels(name)[0];
         }
 
-        public IText[] Labels(string name)
+        public virtual IText[] Labels(string name)
         {
             GetMapObjects(name, "Label");
             IText[] tmp = new IText[_lastObjects.Length];
@@ -274,22 +274,22 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-        public IClickable Link()
+        public virtual IClickable Link()
         {
             return Links()[0];
         }
 
-        public IClickable[] Links()
+        public virtual IClickable[] Links()
         {
             return Links(null);
         }
 
-        public IClickable Link(string name)
+        public virtual IClickable Link(string name)
         {
             return Links(name)[0];
         }
 
-        public IClickable[] Links(string name)
+        public virtual IClickable[] Links(string name)
         {
             GetMapObjects(name, "Link");
             IClickable[] tmp = new IClickable[_lastObjects.Length];
@@ -297,22 +297,22 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-        public ISelectable ListBox()
+        public virtual ISelectable ListBox()
         {
             return ListBoxs()[0];
         }
 
-        public ISelectable[] ListBoxs()
+        public virtual ISelectable[] ListBoxs()
         {
             return ListBoxs(null);
         }
 
-        public ISelectable ListBox(string name)
+        public virtual ISelectable ListBox(string name)
         {
             return ListBoxs(name)[0];
         }
 
-        public ISelectable[] ListBoxs(string name)
+        public virtual ISelectable[] ListBoxs(string name)
         {
             GetMapObjects(name, "ListBox");
             ISelectable[] tmp = new ISelectable[_lastObjects.Length];
@@ -321,22 +321,22 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-        public ICheckable RadioBox()
+        public virtual ICheckable RadioBox()
         {
             return RadioBoxs()[0];
         }
 
-        public ICheckable[] RadioBoxs()
+        public virtual ICheckable[] RadioBoxs()
         {
             return RadioBoxs(null);
         }
 
-        public ICheckable RadioBox(string name)
+        public virtual ICheckable RadioBox(string name)
         {
             return RadioBoxs(name)[0];
         }
 
-        public ICheckable[] RadioBoxs(string name)
+        public virtual ICheckable[] RadioBoxs(string name)
         {
             GetMapObjects(name, "radiobox");
             ICheckable[] tmp = new ICheckable[_lastObjects.Length];
@@ -344,22 +344,22 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-        public ITable Table()
+        public virtual ITable Table()
         {
             return Tables()[0];
         }
 
-        public ITable[] Tables()
+        public virtual ITable[] Tables()
         {
             return Tables(null);
         }
 
-        public ITable Table(String name)
+        public virtual ITable Table(String name)
         {
             return Tables(name)[0];
         }
 
-        public ITable[] Tables(String name)
+        public virtual ITable[] Tables(String name)
         {
             GetMapObjects(name, "Table");
             ITable[] tmp = new ITable[_lastObjects.Length];
@@ -367,22 +367,22 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-        public IVisible AnyObject()
+        public virtual IVisible AnyObject()
         {
             return AnyObjects()[0];
         }
 
-        public IVisible[] AnyObjects()
+        public virtual IVisible[] AnyObjects()
         {
             return AnyObjects(null);
         }
 
-        public IVisible AnyObject(String name)
+        public virtual IVisible AnyObject(String name)
         {
             return AnyObjects(name)[0];
         }
 
-        public IVisible[] AnyObjects(String name)
+        public virtual IVisible[] AnyObjects(String name)
         {
             GetMapObjects(name, null);
             IVisible[] tmp = new IVisible[_lastObjects.Length];
@@ -390,42 +390,42 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-        public IClickable Menu()
+        public virtual IClickable Menu()
         {
             throw new NotImplementedException();
         }
 
-        public IClickable[] Menus()
+        public virtual IClickable[] Menus()
         {
             throw new NotImplementedException();
         }
 
-        public IClickable Menu(string name)
+        public virtual IClickable Menu(string name)
         {
             throw new NotImplementedException();
         }
 
-        public IClickable[] Menus(string name)
+        public virtual IClickable[] Menus(string name)
         {
             throw new NotImplementedException();
         }
 
-        public IClickable Tab()
+        public virtual IClickable Tab()
         {
             throw new NotImplementedException();
         }
 
-        public IClickable[] Tabs()
+        public virtual IClickable[] Tabs()
         {
             throw new NotImplementedException();
         }
 
-        public IClickable Tab(string name)
+        public virtual IClickable Tab(string name)
         {
             throw new NotImplementedException();
         }
 
-        public IClickable[] Tabs(string name)
+        public virtual IClickable[] Tabs(string name)
         {
             throw new NotImplementedException();
         }
@@ -436,7 +436,7 @@ namespace Shrinerain.AutoTester.Core
 
         #region private methods
 
-        private void GetMapObjects(string name, string type)
+        protected virtual void GetMapObjects(string name, string type)
         {
             try
             {

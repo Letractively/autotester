@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="HTMLTestEventDispatcher.cs" />
     <Compile Include="HTMLTestObjectFactory.cs" />
+    <Compile Include="HTMLTestObjectManager.cs" />
     <Compile Include="HTMLTestObject\HTMLTestActiveXObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestGUIObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestButton.cs" />

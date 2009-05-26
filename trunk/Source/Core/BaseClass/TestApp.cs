@@ -816,5 +816,10 @@ namespace Shrinerain.AutoTester.Core
         {
             return null;
         }
+
+        public virtual TestObjectManager GetObjectManager()
+        {
+            return new TestObjectManager(this);
+        }
     }
 }
