@@ -74,6 +74,7 @@
     <Compile Include="Helper\SocketWrapper.cs" />
     <Compile Include="Interface\ITestEventDispatcher.cs" />
     <Compile Include="Interface\ITestObjectMap.cs" />
+    <Compile Include="Interface\ITestWindowMap.cs" />
     <Compile Include="ObjectInterface\ICheckable.cs" />
     <Compile Include="ObjectInterface\IHTML.cs" />
     <Compile Include="ObjectInterface\IPicture.cs" />

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class TestObjectManager : TestObjectMap
+    public class TestObjectManager : TestObjectMap, ITestWindowMap
     {
         #region ctor
 
@@ -22,7 +22,7 @@ namespace Shrinerain.AutoTester.Core
 
         #region page and window
 
-        public TestObjectMap Page(int index)
+        public ITestObjectMap Page(int index)
         {
             if (index >= 0)
             {
@@ -37,7 +37,7 @@ namespace Shrinerain.AutoTester.Core
             throw new BrowserNotFoundException("Can not get page by index: " + index);
         }
 
-        public TestObjectMap Page(string title, string url)
+        public ITestObjectMap Page(string title, string url)
         {
             if (!String.IsNullOrEmpty(title) || !String.IsNullOrEmpty(url))
             {
@@ -52,7 +52,7 @@ namespace Shrinerain.AutoTester.Core
             throw new BrowserNotFoundException("Can not get page by title: " + title + ", url: " + url);
         }
 
-        public TestObjectMap NewPage()
+        public ITestObjectMap NewPage()
         {
             ITestBrowser browser = _browser.GetMostRecentPage();
             if (browser != null)
@@ -64,7 +64,7 @@ namespace Shrinerain.AutoTester.Core
             throw new BrowserNotFoundException("Can not get new page.");
         }
 
-        public TestObjectMap Window(int index)
+        public ITestObjectMap Window(int index)
         {
             if (index >= 0)
             {
@@ -79,7 +79,7 @@ namespace Shrinerain.AutoTester.Core
             throw new AppNotFoundExpcetion("Can not find window by index: " + index);
         }
 
-        public TestObjectMap Window(string title, string className)
+        public ITestObjectMap Window(string title, string className)
         {
             if (!String.IsNullOrEmpty(title) || !String.IsNullOrEmpty(className))
             {
@@ -94,7 +94,7 @@ namespace Shrinerain.AutoTester.Core
             throw new AppNotFoundExpcetion("Can not find window by title: " + title + ", className: " + className);
         }
 
-        public TestObjectMap NewWindow()
+        public ITestObjectMap NewWindow()
         {
             ITestApp app = _app.GetMostRecentWindow();
             if (app != null)

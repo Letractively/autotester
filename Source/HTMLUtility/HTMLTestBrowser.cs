@@ -282,6 +282,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        public override TestObjectManager GetObjectManager()
+        {
+            return new HTMLTestObjectManager(this);
+        }
+
         #endregion
     }
 }

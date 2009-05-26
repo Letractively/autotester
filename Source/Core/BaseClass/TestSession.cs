@@ -99,13 +99,13 @@ namespace Shrinerain.AutoTester.Core
             {
                 if (this._app != null)
                 {
-                    this._objManager = new TestObjectManager(this._app);
+                    this._objManager = _app.GetObjectManager();
                     this._dispatcher = _app.GetEventDispatcher();
                 }
 
                 if (this._browser != null)
                 {
-                    this._objManager = new TestObjectManager(this._browser);
+                    this._objManager = _browser.GetObjectManager();
                     this._dispatcher = _browser.GetEventDispatcher();
                 }
             }

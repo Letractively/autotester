@@ -9,6 +9,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
     public class HTMLTestSession : TestSession
     {
         #region fields
+
+        public new HTMLTestObjectManager Objects
+        {
+            get
+            {
+                Init();
+                return _objManager as HTMLTestObjectManager;
+            }
+        }
+
         #endregion
 
         #region methods
