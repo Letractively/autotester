@@ -53,7 +53,7 @@
   <ItemGroup>
     <Compile Include="HTMLTestEventDispatcher.cs" />
     <Compile Include="HTMLTestObjectFactory.cs" />
-    <Compile Include="HTMLTestObjectManager.cs" />
+    <Compile Include="HTMLTestObjectMap.cs" />
     <Compile Include="HTMLTestObject\HTMLTestActiveXObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestGUIObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestButton.cs" />
@@ -70,6 +70,7 @@
     <Compile Include="HTMLTestObject\HTMLTestTextBox.cs" />
     <Compile Include="HTMLTestCheckPoint.cs" />
     <Compile Include="HTMLTestBrowser.cs" />
+    <Compile Include="HTMLTestPageMap.cs" />
     <Compile Include="HTMLTestSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

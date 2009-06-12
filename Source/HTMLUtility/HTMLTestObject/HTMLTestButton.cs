@@ -74,6 +74,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestButton(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
+            this._isDelayAfterAction = true;
             this._type = HTMLTestObjectType.Button;
             try
             {

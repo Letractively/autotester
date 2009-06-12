@@ -6,12 +6,12 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestObjectManager : TestObjectManager
+    public class HTMLTestObjectMap : TestObjectMap
     {
         #region
 
-        public HTMLTestObjectManager(HTMLTestBrowser browser)
-            : base(browser as TestBrowser)
+        public HTMLTestObjectMap(HTMLTestObjectPool pool)
+            : base(pool)
         {
         }
 

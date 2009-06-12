@@ -10,12 +10,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         #region fields
 
-        public new HTMLTestObjectManager Objects
+        public new HTMLTestObjectMap Objects
         {
             get
             {
                 Init();
-                return _objManager as HTMLTestObjectManager;
+                return _objectMap as HTMLTestObjectMap;
+            }
+        }
+
+        public new HTMLTestPageMap Pages
+        {
+            get
+            {
+                Init();
+                return _pageMap as HTMLTestPageMap;
             }
         }
 

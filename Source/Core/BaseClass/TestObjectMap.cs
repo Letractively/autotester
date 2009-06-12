@@ -10,8 +10,6 @@ namespace Shrinerain.AutoTester.Core
 
         //object pool for this map.
         protected ITestObjectPool _objPool;
-        protected TestApp _app;
-        protected TestBrowser _browser;
 
         //key for cache.
         protected const string _keySplitter = "__shrinerainmap__";
@@ -28,6 +26,7 @@ namespace Shrinerain.AutoTester.Core
         public ITestObjectPool ObjectPool
         {
             get { return _objPool; }
+            set { _objPool = value; }
         }
 
         public int Timeout
@@ -42,26 +41,9 @@ namespace Shrinerain.AutoTester.Core
 
         #region ctor
 
-        public TestObjectMap()
+        public TestObjectMap(ITestObjectPool pool)
         {
-        }
-
-        public TestObjectMap(TestApp testApp)
-        {
-            if (testApp != null)
-            {
-                _app = testApp;
-                _objPool = _app.GetObjectPool();
-            }
-        }
-
-        public TestObjectMap(TestBrowser testBrowser)
-        {
-            if (testBrowser != null)
-            {
-                _browser = testBrowser;
-                _objPool = testBrowser.GetObjectPool();
-            }
+            this._objPool = pool;
         }
 
         #endregion
@@ -496,10 +478,6 @@ namespace Shrinerain.AutoTester.Core
 
             int currentTimeout = _timeout;
             int oriTimeout = this._objPool.GetTimeout();
-            if (this._browser.IsBusy)
-            {
-                currentTimeout = oriTimeout;
-            }
             this._objPool.SetTimeout(currentTimeout);
 
             try

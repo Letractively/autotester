@@ -198,7 +198,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (_sendMsgOnly)
                 {
                     this._htmlSelectElement.selectedIndex = index;
-                    FireEvent(this._htmlSelectElement as IHTMLElement3, "onchange");
+                    FireEvent("onchange");
                 }
                 else
                 {
