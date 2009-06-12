@@ -56,7 +56,7 @@ namespace Shrinerain.AutoTester.Core
                 }
             }
 
-            return null;
+            return "";
         }
 
         public static string GetHTML(string url)
@@ -118,7 +118,7 @@ namespace Shrinerain.AutoTester.Core
                 html = GetHTML(url, curCookie);
             }
 
-            return html;
+            return html == null ? "" : html;
         }
     }
 }
