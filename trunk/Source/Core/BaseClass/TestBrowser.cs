@@ -10,12 +10,7 @@
 *              ITestBrowser interface. You can use TestBrowser to 
 *              interactive with Internet Explorer, and get the information
 *              of Internet Explorer. 
-*
-* History: 2007/09/04 wan,yu Init version.
-*          2007/12/26 wan,yu add void Find(object) method. 
-*          2007/12/27 wan,yu rename WaitForIEExist to WaitForBrowser.     
-*          2008/01/15 wan,yu update, modify some static members to instance.
-*          2008/02/24 wan,yu update, add GetAllBrowsers() , GetTopmostBrowser() and SetBrowser().          
+*         
 *
 *********************************************************************/
 using System;
@@ -200,15 +195,18 @@ namespace Shrinerain.AutoTester.Core
         {
             get
             {
-                if (_isDownloading || _browser.Busy ||
-                    (_browser.ReadyState != tagREADYSTATE.READYSTATE_COMPLETE && _browser.ReadyState != tagREADYSTATE.READYSTATE_INTERACTIVE))
+                try
                 {
-                    return true;
+                    if (_isDownloading || _browser.Busy ||
+                        (_browser.ReadyState != tagREADYSTATE.READYSTATE_COMPLETE && _browser.ReadyState != tagREADYSTATE.READYSTATE_INTERACTIVE))
+                    {
+                        return true;
+                    }
                 }
-                else
+                catch
                 {
-                    return false;
                 }
+                return false;
             }
         }
 
@@ -1619,6 +1617,10 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
         {
+            if (_isDownloading == false)
+            {
+                _isDownloading = true;
+            }
         }
 
         /* void OnDownloadBegin()
@@ -1634,25 +1636,22 @@ namespace Shrinerain.AutoTester.Core
             _isDownloading = false;
         }
 
-        /* void OnDocumentLoadComplete(object pDesp, ref object pUrl)
-         * the callback function to hanle the browser finishing download a web page.
-         * when downloading complete, we can start to calculate the position of the web page.
-         */
         protected virtual void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
+            if (pUrl == null || String.Compare(pUrl.ToString(), TestConstants.IE_BlankPage_Url, true) == 0)
+            {
+                return;
+            }
+
             try
             {
-                if (pUrl == null || String.Compare(pUrl.ToString(), TestConstants.IE_BlankPage_Url, true) == 0)
-                {
-                    return;
-                }
-
                 if (_browser != null && _browser.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE && Marshal.GetIUnknownForObject(pDesp) == Marshal.GetIUnknownForObject(_browser))
                 {
                     _rootDocument = _browser.Document as HTMLDocument;
                     GetSize();
                     CalPerformanceTime();
                     _documentLoadComplete.Set();
+                    _isDownloading = false;
                 }
             }
             catch (TestException)
@@ -1665,10 +1664,6 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        /* void OnRectChanged(int size)
-         * the callback function to handle the browser changed it's position or size.
-         * when the browser chaneged it's size, we need to re-calculate the position.
-         */
         protected virtual void OnRectChanged(int size)
         {
             try
@@ -1690,7 +1685,7 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void OnQuit()
         {
-            //get the prev test browser.
+            //get the previous test browser.
             _browserList.Remove(this._browser);
             if (_browserList.Count > 0)
             {

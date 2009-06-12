@@ -24,7 +24,7 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public sealed class HTMLTestBrowser : TestBrowser
+    public class HTMLTestBrowser : TestBrowser
     {
         #region Fileds
 
@@ -52,7 +52,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #region public methods
-
 
         #region GetObject methods
 
@@ -233,6 +232,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public override ITestObjectMap GetObjectMap()
+        {
+            GetObjectPool();
+            return new HTMLTestObjectMap(_pool);
+        }
+
         public override ITestObjectPool GetObjectPool()
         {
             if (_pool == null)
@@ -241,6 +246,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return _pool;
+        }
+
+        public override ITestWindowMap GetWindowMap()
+        {
+            return new HTMLTestPageMap(this);
         }
 
         public override ITestEventDispatcher GetEventDispatcher()
@@ -281,11 +291,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #endregion
-
-        public override TestObjectManager GetObjectManager()
-        {
-            return new HTMLTestObjectManager(this);
-        }
 
         #endregion
     }

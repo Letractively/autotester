@@ -148,7 +148,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         this._sourceElement.innerHTML = value;
                     }
 
-                    FireEvent(this._sourceElement as IHTMLElement3, "onchange");
+                    FireEvent("onchange");
                 }
                 else
                 {

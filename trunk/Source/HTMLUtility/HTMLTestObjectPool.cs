@@ -8,27 +8,7 @@
 *
 * Description: This class implement ITestObjectPool interface.
 *              we can get HTML object from HTMLTestObjectPool
-*
-* History: 2007/09/04 wan,yu Init version.
-*          2007/12/21 wan,yu udpate, update for "button" object. 
-*          2007/12/24 wan,yu update, divide cache to Core compent
-*          2007/12/24 wan,yu update, add fuzzy search, we don't need to match the value 100%.
-*          2008/01/06 wan,yu update, update fuzzy search, we will try lower similar percent if object is not found.                
-*          2008/01/08 wan,yu update, add CheckButtonObject to check button object.     
-*          2008/01/10 wan,yu update, update GetTypeByString() method, accept more strings.   
-*          2008/01/10 wan,yu update, move GetObjectType from HTMLTestObject.cs to HTMLTestObjectPool.cs  
-*          2008/01/12 wan,yu update, add CheckTableObject, we can find the <table> object.
-*          2008/01/12 wan,yu update, add CheckMsgBoxObject and CheckFileDialogObject         
-*          2008/01/12 wan,yu update, bug fix for GetObjectByName, origin version will just check the first one. 
-*          2008/01/15 wan,yu update, modify some static members to instance. 
-*          2008/01/21 wan,yu update, modify to use HTMLTestObject.TryGetValueByProperty to check something. 
-*          2008/01/21 wan,yu update, add CheckLabelObject.          
-*          2008/01/22 wan,yu update, add CheckTextBoxObject.          
-*          2008/02/01 wan,yu update, modify GetObjectByType use RotateSearch to improve performance, in some situation, will be 
-*                                    10 times faster than before.
-*          2008/02/13 wan,yu update, add event OnNewObjectFound. 
-*          2008/02/18 wan,yu udpate, add event OnBeforeNewObjectFound.
-*          2009/05/16 wan,yu update, lots of code clean.                             
+*                        
 *
 *********************************************************************/
 
@@ -961,8 +941,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private void BeforeObjectFound()
         {
-            if (this._htmlTestBrowser.IsBusy)
+            int times = 0;
+            while (times < _maxWaitSeconds && this._htmlTestBrowser.IsBusy)
             {
+                times += Interval;
                 Thread.Sleep(Interval * 1000);
             }
         }

@@ -38,7 +38,8 @@ namespace Shrinerain.AutoTester.Core
         //event dispatcher will fire event to recorder.
         ITestEventDispatcher GetEventDispatcher();
         ITestObjectPool GetObjectPool();
-        TestObjectManager GetObjectManager();
+        ITestObjectMap GetObjectMap();
+        ITestWindowMap GetWindowMap();
 
         //operation on desktop applicatoin
         void BeforeStart();

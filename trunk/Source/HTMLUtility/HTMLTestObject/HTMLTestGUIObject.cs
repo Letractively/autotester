@@ -57,7 +57,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //when finish action, sleep for a moment.
         protected bool _isDelayAfterAction = false;
-        protected const int _delayTime = 1;
+        protected const int ActionDelayTime = 200;
 
         //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
         //then we will not see the mouse move.
@@ -619,7 +619,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (_sendMsgOnly)
                 {
-                    FireEvent(this._sourceElement as IHTMLElement3, "onmouseover");
+                    FireEvent("onmouseover");
                 }
                 else
                 {
@@ -761,7 +761,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (_isDelayAfterAction)
             {
-                System.Threading.Thread.Sleep(_delayTime * 1000);
+                System.Threading.Thread.Sleep(ActionDelayTime);
             }
             _actionFinished.Set();
         }

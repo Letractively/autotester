@@ -805,8 +805,6 @@ namespace Shrinerain.AutoTester.Core
                 OnAfterAppClose(this, null);
         }
 
-        #endregion
-
         public virtual ITestEventDispatcher GetEventDispatcher()
         {
             return null;
@@ -817,9 +815,16 @@ namespace Shrinerain.AutoTester.Core
             return null;
         }
 
-        public virtual TestObjectManager GetObjectManager()
+        public virtual ITestObjectMap GetObjectMap()
         {
-            return new TestObjectManager(this);
+            throw null;
         }
+
+        public virtual ITestWindowMap GetWindowMap()
+        {
+            throw null;
+        }
+
+        #endregion
     }
 }

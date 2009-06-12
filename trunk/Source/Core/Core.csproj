@@ -59,7 +59,6 @@
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
     <Compile Include="BaseClass\TestCheckPoint.cs" />
     <Compile Include="BaseClass\TestObjectMap.cs" />
-    <Compile Include="BaseClass\TestObjectManager.cs" />
     <Compile Include="BaseClass\TestSession.cs" />
     <Compile Include="BaseClass\TestProperty.cs" />
     <Compile Include="Helper\AsstFunctions.cs" />
@@ -103,6 +102,7 @@
     <Compile Include="BaseClass\TestException\TestException.cs" />
     <Compile Include="BaseClass\TestLog.cs" />
     <Compile Include="BaseClass\TestObject.cs" />
+    <Compile Include="BaseClass\TestWindowMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="MSHTML">
