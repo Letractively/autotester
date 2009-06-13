@@ -983,9 +983,20 @@ namespace Shrinerain.AutoTester.Core
                             browserFound = true;
                         }
                     }
-                    else if (p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                    else
                     {
-                        browserFound = true;
+                        try
+                        {
+                            String mainTitle = p.MainWindowTitle;
+                            if (mainTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0)
+                            {
+                                browserFound = true;
+                            }
+                        }
+                        catch
+                        {
+                            continue;
+                        }
                     }
 
                     if (browserFound)
@@ -1003,7 +1014,7 @@ namespace Shrinerain.AutoTester.Core
                 Thread.Sleep(Interval * 1000);
             }
 
-            throw new BrowserNotFoundException();
+            throw new BrowserNotFoundException("Can not find browser by title:" + title);
         }
 
         protected virtual void WaitForBrowserExist()

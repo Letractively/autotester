@@ -31,9 +31,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         Normal = 0,
         Submit = 1,
-        Reset = 3,
-        File = 4,
-        Unknow = 5
+        Reset = 2,
+        File = 3,
+        Unknow = 4
     }
 
     public class HTMLTestButton : HTMLTestGUIObject, IClickable, IText, IStatus

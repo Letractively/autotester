@@ -204,7 +204,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 AfterFound();
             }
-
         }
 
         public virtual void Find(string caption, string className)
