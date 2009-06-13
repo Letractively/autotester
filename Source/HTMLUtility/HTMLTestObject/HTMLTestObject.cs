@@ -142,7 +142,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     this._name = "";
                 }
-
                 this._browser = browser;
             }
             catch (Exception ex)
@@ -179,6 +178,39 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public override bool TryGetProperty(string propertyName, out object value)
         {
             value = null;
+            if (String.Compare(propertyName, TestConstants.PROPERTY_ID, true) == 0)
+            {
+                if (!String.IsNullOrEmpty(_id))
+                {
+                    value = _id;
+                    return true;
+                }
+            }
+            else if (String.Compare(propertyName, TestConstants.PROPERTY_NAME, true) == 0)
+            {
+                if (!String.IsNullOrEmpty(_name))
+                {
+                    value = _name;
+                    return true;
+                }
+            }
+            else if (String.Compare(propertyName, TestConstants.PROPERTY_TAG, true) == 0)
+            {
+                if (!String.IsNullOrEmpty(_tag))
+                {
+                    value = _tag;
+                    return true;
+                }
+            }
+            else if (String.Compare(propertyName, TestConstants.PROPERTY_TYPE, true) == 0)
+            {
+                if (!String.IsNullOrEmpty(_type.ToString()))
+                {
+                    value = _type.ToString();
+                    return true;
+                }
+            }
+
             string strValue = null;
             if (TryGetProperty(this._sourceElement, propertyName, out strValue))
             {
@@ -203,6 +235,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public override bool SetProperty(string propertyName, object value)
         {
             return TrySetProperty(this._sourceElement, propertyName, value);
+        }
+
+        protected override void SetIdenProperties()
+        {
+            base.SetIdenProperties();
+            this._idenProperties.Add(TestConstants.PROPERTY_ID);
+            this._idenProperties.Add(TestConstants.PROPERTY_NAME);
+            this._idenProperties.Add(TestConstants.PROPERTY_TAG);
+            this._idenProperties.Add(TestConstants.PROPERTY_TYPE);
+            this._idenProperties.Add(TestConstants.PROPERTY_OUTERHTML);
         }
 
         /* bool TryGetValueByProperty(IHTMLElement element, string properyName)
@@ -301,36 +343,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public override List<TestProperty> GetIdenProperties()
-        {
-            try
-            {
-                List<TestProperty> properties = new List<TestProperty>();
-                properties.Add(new TestProperty(TestConstants.PROPERTY_DOMAIN, TestConstants.PROPERTY_HTML));
-                properties.Add(new TestProperty(TestConstants.PROPERTY_ID, _id));
-                properties.Add(new TestProperty(TestConstants.PROPERTY_NAME, _name));
-                properties.Add(new TestProperty(TestConstants.PROPERTY_TAG, _tag));
-                properties.Add(new TestProperty(TestConstants.PROPERTY_TYPE, _type.ToString()));
-                string outerHTML;
-                if (!TryGetProperty(this._sourceElement, "outerHTML", out outerHTML))
-                {
-                    outerHTML = "NO HTML";
-                }
-                else if (outerHTML.Length > 32)
-                {
-                    outerHTML = outerHTML.Substring(0, 32) + "...";
-                }
-                properties.Add(new TestProperty(TestConstants.PROPERTY_OUTERHTML, outerHTML));
-
-                return properties;
-            }
-            catch
-            {
-            }
-
-            return null;
-        }
-
         #region IStatus Members
 
         /* object GetCurrentStatus()
@@ -422,6 +434,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (_commonProperties.Count == 0)
                 {
                     _commonProperties.Add("ID", true);
+                    _commonProperties.Add("NAME", true);
                     _commonProperties.Add("INNERTEXT", true);
                     _commonProperties.Add("INNERHTML", true);
                     _commonProperties.Add("OUTERHTML", true);
