@@ -442,6 +442,10 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 _browser.GoBack();
+                if (OnBrowserBack != null)
+                {
+                    OnBrowserBack(this, null);
+                }
             }
             catch (Exception ex)
             {
@@ -462,6 +466,10 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 _browser.GoForward();
+                if (OnBrowserForward != null)
+                {
+                    OnBrowserForward(this, null);
+                }
             }
             catch (Exception ex)
             {
@@ -502,6 +510,10 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 _browser.Refresh();
+                if (OnBrowserRefresh != null)
+                {
+                    OnBrowserRefresh(this, null);
+                }
             }
             catch (Exception ex)
             {
@@ -1145,7 +1157,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
-                    this._isDownloading = true;
                     this._browser = ie;
                     this._rootHandle = (IntPtr)ie.HWND;
                     try
@@ -1171,10 +1182,6 @@ namespace Shrinerain.AutoTester.Core
                 catch (Exception ex)
                 {
                     throw new CannotAttachBrowserException("Can not set browser: " + ex.ToString());
-                }
-                finally
-                {
-                    this._isDownloading = false;
                 }
             }
         }
@@ -1617,9 +1624,18 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
         {
-            if (_isDownloading == false)
+            string url = URL.ToString();
+            if (!String.IsNullOrEmpty(url) && String.Compare(url, TestConstants.IE_BlankPage_Url, true) != 0)
             {
-                _isDownloading = true;
+                if (_isDownloading == false)
+                {
+                    _isDownloading = true;
+                    if (OnBrowserNavigate != null)
+                    {
+                        TestEventArgs tea = new TestEventArgs(TestConstants.PROPERTY_URL, url);
+                        OnBrowserNavigate(this, tea);
+                    }
+                }
             }
         }
 
@@ -1701,6 +1717,20 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region ITestBrowser events
+
+        public override void BeforeStart()
+        {
+            base.BeforeStart();
+            if (OnBrowserStart != null)
+                OnBrowserStart(this, null);
+        }
+
+        public override void AfterClose()
+        {
+            base.AfterClose();
+            if (OnBrowserClose != null)
+                OnBrowserClose(this, null);
+        }
 
         public event TestAppEventHandler OnBrowserStart;
 

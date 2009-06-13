@@ -802,37 +802,39 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        //if the properties contains "id","name","tagName".
         private IHTMLElement[] GetElementsByCommonProperty(TestProperty[] properties)
         {
             if (properties != null && properties.Length > 0)
             {
                 string id;
-                if (HTMLTestObjectFactory.TryGetIDValue(properties, out id))
-                {
-                    IHTMLElement element = _htmlTestBrowser.GetObjectByID(id);
-                    if (element != null)
-                    {
-                        return new IHTMLElement[] { element };
-                    }
-                }
-
                 string name;
-                if (HTMLTestObjectFactory.TryGetNameValue(properties, out name))
-                {
-                    IHTMLElement[] tmp = _htmlTestBrowser.GetObjectsByName(name);
-                    if (tmp != null && tmp.Length > 0)
-                    {
-                        return tmp;
-                    }
-                }
-
                 string tagName;
-                if (HTMLTestObjectFactory.TryGetTagValue(properties, out tagName))
+                if (HTMLTestObjectFactory.TryGetCommonProperties(properties, out id, out name, out tagName))
                 {
-                    IHTMLElement[] tmp = _htmlTestBrowser.GetObjectsByTagName(tagName);
-                    if (tmp != null && tmp.Length > 0)
+                    if (!String.IsNullOrEmpty(id))
                     {
-                        return tmp;
+                        IHTMLElement element = _htmlTestBrowser.GetObjectByID(id);
+                        if (element != null)
+                        {
+                            return new IHTMLElement[] { element };
+                        }
+                    }
+                    else if (!String.IsNullOrEmpty(name))
+                    {
+                        IHTMLElement[] tmp = _htmlTestBrowser.GetObjectsByName(name);
+                        if (tmp != null && tmp.Length > 0)
+                        {
+                            return tmp;
+                        }
+                    }
+                    else if (!String.IsNullOrEmpty(tagName))
+                    {
+                        IHTMLElement[] tmp = _htmlTestBrowser.GetObjectsByTagName(tagName);
+                        if (tmp != null && tmp.Length > 0)
+                        {
+                            return tmp;
+                        }
                     }
                 }
             }

@@ -35,6 +35,7 @@ namespace Shrinerain.AutoTester.Core
         protected string _domain;
         protected bool _isExist = true;
 
+        protected List<String> _idenProperties = new List<String>();
         protected const string _visibleProperty = "VisibleProperty";
 
         #endregion
@@ -76,6 +77,8 @@ namespace Shrinerain.AutoTester.Core
             this._parentApp = app;
             this._domain = domain;
             this._isExist = true;
+
+            SetIdenProperties();
         }
 
         #region public method
@@ -116,11 +119,53 @@ namespace Shrinerain.AutoTester.Core
             return false;
         }
 
+        //identification properties is used to identify a test object.
+        //you can find an object by these properties.
+        //when recoding, test object will return these properties.
+        protected virtual void SetIdenProperties()
+        {
+            _idenProperties.Add(TestConstants.PROPERTY_DOMAIN);
+        }
+
+        public virtual void SetIdenProperties(String[] idenProperties)
+        {
+            if (idenProperties != null && idenProperties.Length > 0)
+            {
+                for (int i = 0; i < idenProperties.Length; i++)
+                {
+                    string tpName = idenProperties[i].ToUpper();
+                    if (!_idenProperties.Contains(tpName))
+                    {
+                        _idenProperties.Add(tpName);
+                    }
+                }
+            }
+        }
+
         //these properties is used to identify an object.
         //we will record these properties, and when playing back, use these properties to find an object.
         public virtual List<TestProperty> GetIdenProperties()
         {
-            return null;
+            List<TestProperty> properties = new List<TestProperty>();
+            if (_idenProperties.Count > 0)
+            {
+                foreach (String tpName in _idenProperties)
+                {
+                    if (tpName == TestConstants.PROPERTY_DOMAIN)
+                    {
+                        properties.Add(new TestProperty(TestConstants.PROPERTY_DOMAIN, _domain));
+                    }
+                    else
+                    {
+                        object tpValue;
+                        if (TryGetProperty(tpName, out tpValue))
+                        {
+                            properties.Add(new TestProperty(tpName, tpValue.ToString()));
+                        }
+                    }
+                }
+            }
+            return properties;
         }
 
         public override string ToString()

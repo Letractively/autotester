@@ -35,6 +35,7 @@ namespace Shrinerain.AutoTester.Core
         public const string PROPERTY_DOMAIN = "Domain";
         public const string PROPERTY_HTML = "HTML";
         public const string PROPERTY_MSAA = "MSAA";
+        public const string PROPERTY_URL = "URL";
 
         public const string PROPERTY_ID = "ID";
         public const string PROPERTY_NAME = "Name";

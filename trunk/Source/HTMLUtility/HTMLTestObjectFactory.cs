@@ -360,52 +360,36 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return true;
         }
 
-        public static bool TryGetIDValue(TestProperty[] properties, out string id)
+        //get most common properties used in HTML testing.
+        public static bool TryGetCommonProperties(TestProperty[] properties, out string id, out string name, out string tag)
         {
             id = "";
-            if (properties != null && properties.Length > 0)
-            {
-                foreach (TestProperty tp in properties)
-                {
-                    if (String.Compare(tp.Name, "id", true) == 0)
-                    {
-                        id = tp.Value.ToString();
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public static bool TryGetNameValue(TestProperty[] properties, out string name)
-        {
             name = "";
-            if (properties != null && properties.Length > 0)
-            {
-                foreach (TestProperty tp in properties)
-                {
-                    if (String.Compare(tp.Name, "name", true) == 0)
-                    {
-                        name = tp.Value.ToString();
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public static bool TryGetTagValue(TestProperty[] properties, out string tag)
-        {
             tag = "";
             if (properties != null && properties.Length > 0)
             {
                 foreach (TestProperty tp in properties)
                 {
-                    if (String.Compare(tp.Name, "tag", true) == 0 || String.Compare(tp.Name, "tagName", true) == 0)
+                    string tpName = tp.Name;
+                    string tpValue = tp.Value.ToString();
+                    if (String.IsNullOrEmpty(tpValue))
                     {
-                        tag = tp.Value.ToString();
+                        continue;
+                    }
+
+                    if (String.Compare(tpName, "id", true) == 0)
+                    {
+                        id = tpValue;
+                        return true;
+                    }
+                    else if (String.Compare(tpName, "name", true) == 0)
+                    {
+                        name = tpValue;
+                        return true;
+                    }
+                    else if (String.Compare(tpName, "tag", true) == 0 || String.Compare(tpName, "tagName", true) == 0)
+                    {
+                        tag = tpValue;
                         return true;
                     }
                 }
