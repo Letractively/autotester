@@ -71,7 +71,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     return false;
                 }
-
             }
 
             return base.CheckString(actualResult, expectResult, type);

@@ -100,10 +100,10 @@ namespace Shrinerain.AutoTester
             //FCKEditor.Test();
             //Netyi.Test();
             // gougou.Test();
-            Mitbbs.Test();
+            //Mitbbs.Test();
             // Xjflcp.Test();
             //Marry5.Test();
-
+            Maxthon.Test();
             //EventTest.Test();
         }
     }
