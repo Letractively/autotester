@@ -1,6 +1,6 @@
 = Fuzzy Search=
 
-Fuzzy Search is a powerful function to let you fina an object.
+Fuzzy Search is a powerful function to let you find an object.
 
 
 == Details ==
