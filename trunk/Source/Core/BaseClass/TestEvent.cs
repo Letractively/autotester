@@ -59,6 +59,11 @@ namespace Shrinerain.AutoTester.Core
 
         #region methods
 
+        public TestEventArgs(String eventName, object eventValue)
+            : this(eventName, eventValue, MouseOp.GetMousePos(), MouseButton.None, null)
+        {
+        }
+
         public TestEventArgs(String eventName, String eventValue)
             : this(eventName, eventValue, MouseOp.GetMousePos())
         {
@@ -79,7 +84,7 @@ namespace Shrinerain.AutoTester.Core
         {
         }
 
-        public TestEventArgs(String eventName, String eventValue, Point mousePos, MouseButton button, int[] keyCodes)
+        public TestEventArgs(String eventName, object eventValue, Point mousePos, MouseButton button, int[] keyCodes)
         {
             this._eventName = eventName;
             this._eventValue = eventValue;

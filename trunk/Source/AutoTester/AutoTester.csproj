@@ -60,6 +60,7 @@
     <Compile Include="Test\QQ.cs" />
     <Compile Include="Test\Test1.cs" />
     <Compile Include="Test\xjflcp.cs" />
+    <Compile Include="Test\xunlei.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AIUtility\AIUtility.vcproj">

@@ -12,6 +12,7 @@ namespace Shrinerain.AutoTester.Core
 
         private static Regex _testProRegex = new Regex("name=(?<name>.*),value=(?<value>.*),isregex=(?<isregex>.*),weight=(?<weight>.*)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private const string RegFlag = "@";
+        public const char PropertySeparator = ';';
 
         private String _name;
         private Object _value;
@@ -277,7 +278,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 //properties is splitted by ";"
                 //eg: "id=btnG;name=google".
-                string[] propPairs = str.Split(';');
+                string[] propPairs = str.Split(PropertySeparator);
 
                 List<TestProperty> properties = new List<TestProperty>(propPairs.Length);
                 for (int i = 0; i < propPairs.Length; i++)

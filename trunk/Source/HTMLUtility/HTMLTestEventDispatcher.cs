@@ -4,6 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 
 using mshtml;
+using SHDocVw;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Win32;
@@ -43,7 +44,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public void RegisterEvents(IHTMLDocument2 doc2)
         {
-            if (doc2 != null && !_registeredDocs.Contains(doc2))
+            if (doc2 != null && HTMLAsstFunctions.IsDocumentValid(doc2))
             {
                 IHTMLDocument3 doc3 = doc2 as IHTMLDocument3;
                 if (doc3 != null)
@@ -54,7 +55,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     doc3.attachEvent("onkeyup", this);
                     doc3.attachEvent("onchange", this);
                     doc3.attachEvent("onfocus", this);
-                    _registeredDocs.Add(doc2);
+                    if (!_registeredDocs.Contains(doc2))
+                    {
+                        _registeredDocs.Add(doc2);
+                    }
                 }
             }
         }
@@ -319,7 +323,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (String.Compare("keyup", tp, true) == 0)
                 {
-                    if (src is IHTMLInputElement || src is IHTMLTextAreaElement)
+                    if (src is IHTMLInputElement)
                     {
                         String type = null;
                         if (!HTMLTestObject.TryGetProperty(src, "type", out type))
@@ -330,6 +334,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             return true;
                         }
+                    }
+                    else if (src is IHTMLTextAreaElement)
+                    {
+                        return true;
                     }
                     else
                     {

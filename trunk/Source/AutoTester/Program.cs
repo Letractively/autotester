@@ -103,8 +103,9 @@ namespace Shrinerain.AutoTester
             //Mitbbs.Test();
             // Xjflcp.Test();
             //Marry5.Test();
-            Maxthon.Test();
-            //EventTest.Test();
+            //Maxthon.Test();
+            EventTest.Test();
+            //Xunlei.Test();
         }
     }
 }

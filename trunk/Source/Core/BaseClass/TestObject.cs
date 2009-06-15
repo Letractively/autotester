@@ -171,18 +171,16 @@ namespace Shrinerain.AutoTester.Core
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("{ ");
 
             List<TestProperty> properties = GetIdenProperties();
             if (properties != null && properties.Count > 0)
             {
                 foreach (TestProperty tp in properties)
                 {
-                    sb.Append(tp.Name + "=" + tp.Value + "; ");
+                    sb.Append(tp.Name + "=" + tp.Value + TestProperty.PropertySeparator);
                 }
             }
 
-            sb.Append("}");
             return sb.ToString();
         }
 

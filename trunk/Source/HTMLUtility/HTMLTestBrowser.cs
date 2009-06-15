@@ -270,18 +270,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private help methods
 
+        protected override void RegBrowserEvent(InternetExplorer ie)
+        {
+            base.RegBrowserEvent(ie);
+            if (_dispatcher != null)
+            {
+                _dispatcher.RegisterEvents(ie.Document as IHTMLDocument2);
+            }
+        }
         /* void OnDocumentLoadComplete(object pDesp, ref object pUrl)
          * when document loaded, tell the htmlobjectpool to reload all objects.
          */
         protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
         {
-            if (_dispatcher != null)
-            {
-                IHTMLDocument2 doc2 = (pDesp as IWebBrowser2).Document as IHTMLDocument2;
-                _dispatcher.RegisterEvents(doc2);
-            }
             needRefresh = true;
             base.OnDocumentLoadComplete(pDesp, ref pUrl);
+        }
+
+        protected override void AllDocumentComplete()
+        {
+            base.AllDocumentComplete();
+            if (_dispatcher != null)
+            {
+                _dispatcher.RegisterEvents(_rootDocument as IHTMLDocument2);
+            }
         }
 
         protected override void OnDownloadComplete()

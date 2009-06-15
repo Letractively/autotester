@@ -63,6 +63,7 @@
     <Compile Include="BaseClass\TestProperty.cs" />
     <Compile Include="Helper\AsstFunctions.cs" />
     <Compile Include="Helper\COMUtil.cs" />
+    <Compile Include="Helper\HTMLAsstFunctions.cs" />
     <Compile Include="Helper\HttpHandler.cs" />
     <Compile Include="Helper\Mail.cs" />
     <Compile Include="Helper\ObjectCache.cs" />
