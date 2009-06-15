@@ -296,11 +296,7 @@ namespace Shrinerain.AutoTester.Core
                 ieExistT.Start(null);
                 //wait until the internet explorer started.
                 _browserExisted.WaitOne(_maxWaitSeconds * 1000, true);
-                if (_browser != null)
-                {
-                    AttachBrowser(_browser);
-                }
-                else
+                if (_browser == null)
                 {
                     throw new CannotStartBrowserException("Can not start test browser.");
                 }
@@ -1023,8 +1019,8 @@ namespace Shrinerain.AutoTester.Core
                     if (browserFound)
                     {
                         _appProcess = p;
-                        _browser = GetInternetExplorer(p.Id);
-                        _rootHandle = (IntPtr)_browser.HWND;
+                        InternetExplorer ie = GetInternetExplorer(p.Id);
+                        AttachBrowser(ie);
                         _browserExisted.Set();
                         return;
                     }
@@ -1199,13 +1195,14 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void AttachBrowser(InternetExplorer ie)
         {
-            if (ie != null)
+            if (ie != null && this._browser != ie)
             {
                 try
                 {
                     if (!_browserList.Contains(ie))
                     {
                         _browserList.Add(ie);
+                        RegBrowserEvent(ie);
                     }
 
                     this._browser = ie;
@@ -1217,8 +1214,7 @@ namespace Shrinerain.AutoTester.Core
                     catch
                     {
                     }
-                    //register event.
-                    RegBrowserEvent(ie);
+
                     GetSize();
                 }
                 catch (TestException)
