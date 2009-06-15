@@ -49,6 +49,7 @@ namespace Shrinerain.AutoTester.Core
         public const string PROPERTY_LABEL = "Label";
         public const string PROPERTY_VALUE = "Value";
         public const string PROPERTY_ISCHECKED = "IsChecked";
+        public const string PROPERTY_CLASS = "class";
 
         #endregion
 

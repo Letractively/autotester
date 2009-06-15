@@ -240,10 +240,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected override void SetIdenProperties()
         {
             base.SetIdenProperties();
+
+            this._idenProperties.Add(TestConstants.PROPERTY_TYPE);
+            this._idenProperties.Add(TestConstants.PROPERTY_TAG);
             this._idenProperties.Add(TestConstants.PROPERTY_ID);
             this._idenProperties.Add(TestConstants.PROPERTY_NAME);
-            this._idenProperties.Add(TestConstants.PROPERTY_TAG);
-            this._idenProperties.Add(TestConstants.PROPERTY_TYPE);
+            this._idenProperties.Add(TestConstants.PROPERTY_CLASS);
             this._idenProperties.Add(TestConstants.PROPERTY_OUTERHTML);
         }
 

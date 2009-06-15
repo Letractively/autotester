@@ -845,10 +845,16 @@ namespace Shrinerain.AutoTester.Core
                     if (index >= 0 && index < _browserList.Count)
                     {
                         InternetExplorer ie = _browserList[index];
-                        AttachBrowser(ie);
+
                         if (times >= _maxWaitSeconds || ie.ReadyState == tagREADYSTATE.READYSTATE_INTERACTIVE ||
                             ie.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE)
                         {
+                            AttachBrowser(ie);
+                            if (OnBrowserPageChange != null)
+                            {
+                                TestEventArgs e = new TestEventArgs("PageIndex", GetPageIndex(ie));
+                                OnBrowserPageChange(this, e);
+                            }
                             return this;
                         }
                     }
@@ -892,6 +898,11 @@ namespace Shrinerain.AutoTester.Core
                                 (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
                             {
                                 AttachBrowser(ie);
+                                if (OnBrowserPageChange != null)
+                                {
+                                    TestEventArgs e = new TestEventArgs("PageIndex", GetPageIndex(ie));
+                                    OnBrowserPageChange(this, e);
+                                }
                                 return this;
                             }
                         }
@@ -929,6 +940,16 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotAttachBrowserException("Can not get most recent browser: " + ex.ToString());
             }
+        }
+
+        protected int GetPageIndex(InternetExplorer ie)
+        {
+            if (ie != null)
+            {
+                return _browserList.IndexOf(ie);
+            }
+
+            return -1;
         }
 
         #endregion
@@ -1039,10 +1060,14 @@ namespace Shrinerain.AutoTester.Core
             while (times < this._maxWaitSeconds)
             {
                 InternetExplorer ie = GetTopmostBrowser();
-                if (this.GetPrevBrowser() != ie)
+                if (this._browser != ie)
                 {
-                    _browserList.Add(ie);
-                    break;
+                    if (!_browserList.Contains(ie))
+                    {
+                        _browserList.Add(ie);
+                        RegBrowserEvent(ie);
+                        break;
+                    }
                 }
                 else
                 {
@@ -1062,6 +1087,16 @@ namespace Shrinerain.AutoTester.Core
         {
             Thread ieExistT = new Thread(new ThreadStart(WaitForNewBrowserSync));
             ieExistT.Start();
+        }
+
+        //when all documents(including sub frames) load complete.
+        protected virtual void AllDocumentComplete()
+        {
+            _rootDocument = _browser.Document as HTMLDocument;
+            GetSize();
+            CalPerformanceTime();
+            _documentLoadComplete.Set();
+            _isDownloading = false;
         }
 
         #endregion
@@ -1168,6 +1203,11 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
+                    if (!_browserList.Contains(ie))
+                    {
+                        _browserList.Add(ie);
+                    }
+
                     this._browser = ie;
                     this._rootHandle = (IntPtr)ie.HWND;
                     try
@@ -1180,11 +1220,6 @@ namespace Shrinerain.AutoTester.Core
                     //register event.
                     RegBrowserEvent(ie);
                     GetSize();
-
-                    if (!_browserList.Contains(ie))
-                    {
-                        _browserList.Add(ie);
-                    }
                 }
                 catch (TestException)
                 {
@@ -1489,6 +1524,12 @@ namespace Shrinerain.AutoTester.Core
                 RegNewWindowEvent(ie);
                 RegQuitEvent(ie);
                 ie.PutProperty(TestConstants.IE_ALREADY_REGISTERED, true);
+
+                if (OnBrowserAttached != null)
+                {
+                    TestEventArgs e = new TestEventArgs("Browser", ie);
+                    OnBrowserAttached(this, e);
+                }
             }
         }
 
@@ -1620,6 +1661,20 @@ namespace Shrinerain.AutoTester.Core
                 {
                     _startTime = GetPerformanceTime();
                 }
+
+                string url = URL.ToString();
+                if (!String.IsNullOrEmpty(url) && String.Compare(url, TestConstants.IE_BlankPage_Url, true) != 0)
+                {
+                    if (_isDownloading == false)
+                    {
+                        _isDownloading = true;
+                        if (OnBrowserNavigate != null)
+                        {
+                            TestEventArgs tea = new TestEventArgs(TestConstants.PROPERTY_URL, url);
+                            OnBrowserNavigate(this, tea);
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -1635,19 +1690,6 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void OnNavigateComplete2(object pDisp, ref object URL)
         {
-            string url = URL.ToString();
-            if (!String.IsNullOrEmpty(url) && String.Compare(url, TestConstants.IE_BlankPage_Url, true) != 0)
-            {
-                if (_isDownloading == false)
-                {
-                    _isDownloading = true;
-                    if (OnBrowserNavigate != null)
-                    {
-                        TestEventArgs tea = new TestEventArgs(TestConstants.PROPERTY_URL, url);
-                        OnBrowserNavigate(this, tea);
-                    }
-                }
-            }
         }
 
         /* void OnDownloadBegin()
@@ -1672,13 +1714,9 @@ namespace Shrinerain.AutoTester.Core
 
             try
             {
-                if (_browser != null && _browser.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE && Marshal.GetIUnknownForObject(pDesp) == Marshal.GetIUnknownForObject(_browser))
+                if (Marshal.GetIUnknownForObject(pDesp) == Marshal.GetIUnknownForObject(_browser))
                 {
-                    _rootDocument = _browser.Document as HTMLDocument;
-                    GetSize();
-                    CalPerformanceTime();
-                    _documentLoadComplete.Set();
-                    _isDownloading = false;
+                    AllDocumentComplete();
                 }
             }
             catch (TestException)
@@ -1747,7 +1785,7 @@ namespace Shrinerain.AutoTester.Core
 
         public event TestAppEventHandler OnBrowserNavigate;
 
-        public event TestAppEventHandler OnBrowserTabChange;
+        public event TestAppEventHandler OnBrowserPageChange;
 
         public event TestAppEventHandler OnBrowserBack;
 
@@ -1756,6 +1794,8 @@ namespace Shrinerain.AutoTester.Core
         public event TestAppEventHandler OnBrowserRefresh;
 
         public event TestAppEventHandler OnBrowserClose;
+
+        public event TestAppEventHandler OnBrowserAttached;
 
         #endregion
     }

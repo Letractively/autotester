@@ -26,11 +26,12 @@ namespace Shrinerain.AutoTester.Core
 
         event TestAppEventHandler OnBrowserStart;
         event TestAppEventHandler OnBrowserNavigate;
-        event TestAppEventHandler OnBrowserTabChange;
+        event TestAppEventHandler OnBrowserPageChange;
         event TestAppEventHandler OnBrowserBack;
         event TestAppEventHandler OnBrowserForward;
         event TestAppEventHandler OnBrowserRefresh;
         event TestAppEventHandler OnBrowserClose;
+        event TestAppEventHandler OnBrowserAttached;
 
         #endregion
 
