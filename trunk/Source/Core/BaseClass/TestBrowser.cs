@@ -893,11 +893,7 @@ namespace Shrinerain.AutoTester.Core
                             ie.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE)
                         {
                             AttachBrowser(ie);
-                            if (OnBrowserPageChange != null)
-                            {
-                                TestEventArgs e = new TestEventArgs("PageIndex", GetPageIndex(ie));
-                                OnBrowserPageChange(this, e);
-                            }
+                            PageChange(ie);
                             ActiveTab(index);
                             return this;
                         }
@@ -942,11 +938,7 @@ namespace Shrinerain.AutoTester.Core
                                 (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
                             {
                                 AttachBrowser(ie);
-                                if (OnBrowserPageChange != null)
-                                {
-                                    TestEventArgs e = new TestEventArgs("PageIndex", GetPageIndex(ie));
-                                    OnBrowserPageChange(this, e);
-                                }
+                                PageChange(ie);
                                 return this;
                             }
                         }
@@ -974,6 +966,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 InternetExplorer ie = _browserList[_browserList.Count - 1];
                 AttachBrowser(ie);
+                PageChange(ie);
                 return this;
             }
             catch (TestException)
@@ -1042,32 +1035,39 @@ namespace Shrinerain.AutoTester.Core
                     Process p = pArr[i];
                     InternetExplorer ie = null;
 
+                    //if all null, use any one.
+                    browserFound = _appProcess == null && String.IsNullOrEmpty(title) && String.IsNullOrEmpty(url);
+
                     //find by process id.
-                    if (_appProcess != null && _appProcess.Id == p.Id)
+                    if (_appProcess != null)
                     {
-                        browserFound = true;
+                        browserFound = _appProcess.Id == p.Id;
                     }
-                    else if (!String.IsNullOrEmpty(title))
+
+                    //by title
+                    if (!String.IsNullOrEmpty(title))
                     {
                         try
                         {
-                            String mainTitle = p.MainWindowTitle;
-                            if (mainTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0)
-                            {
-                                browserFound = true;
-                            }
+                            browserFound = p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0;
                         }
                         catch
                         {
                             continue;
                         }
                     }
-                    else if (!String.IsNullOrEmpty(url))
+
+                    //by URL
+                    if (!String.IsNullOrEmpty(url))
                     {
                         ie = GetInternetExplorer(p.Id);
-                        if (ie != null && ie.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase))
+                        try
                         {
-                            browserFound = true;
+                            browserFound = ie != null && ie.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase);
+                        }
+                        catch
+                        {
+                            continue;
                         }
                     }
 
@@ -1077,6 +1077,7 @@ namespace Shrinerain.AutoTester.Core
                         {
                             ie = GetInternetExplorer(p.Id);
                         }
+
                         if (ie != null)
                         {
                             _appProcess = p;
@@ -1088,9 +1089,9 @@ namespace Shrinerain.AutoTester.Core
                 }
 
                 //IE8 is mutli process model, we may can not find it by process we started. 
-                if (GetBrowserMajorVersion() > 7)
+                if (String.IsNullOrEmpty(url))
                 {
-                    if (String.IsNullOrEmpty(url))
+                    if (GetBrowserMajorVersion() > 7)
                     {
                         url = TestConstants.IE_BlankPage_Url;
                         _appProcess = null;
@@ -1302,6 +1303,20 @@ namespace Shrinerain.AutoTester.Core
             }
 
             return this._browser;
+        }
+
+        protected virtual void PageChange(InternetExplorer ie)
+        {
+            int pageIndex = GetPageIndex(ie);
+            if (pageIndex >= 0)
+            {
+                ActiveTab(pageIndex);
+            }
+            if (OnBrowserPageChange != null)
+            {
+                TestEventArgs e = new TestEventArgs("PageIndex", pageIndex);
+                OnBrowserPageChange(this, e);
+            }
         }
 
         #region get size

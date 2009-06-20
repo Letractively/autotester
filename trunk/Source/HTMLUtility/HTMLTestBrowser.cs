@@ -31,8 +31,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private HTMLTestObjectPool _pool;
         private HTMLTestEventDispatcher _dispatcher;
 
-        private IHTMLElement[] _allElements;
-        private bool needRefresh = false;
+        private bool _useCache = false;
+        private IHTMLElement[] _allElements = null;
+        private Dictionary<String, IHTMLElement[]> _tagElements = new Dictionary<string, IHTMLElement[]>(199);
+        private Dictionary<String, IHTMLElement[]> _nameElements = new Dictionary<string, IHTMLElement[]>(199);
 
         #endregion
 
@@ -66,10 +68,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                if (needRefresh || _allElements == null)
+                if (_allElements == null || !_useCache)
                 {
-                    needRefresh = false;
-
                     List<IHTMLElement> allObjectList = new List<IHTMLElement>();
                     HTMLDocument[] allDocs = GetAllDocuments();
                     foreach (HTMLDocument doc in allDocs)
@@ -154,22 +154,33 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                HTMLDocument[] allDocs = GetAllDocuments();
-                foreach (HTMLDocument doc in allDocs)
+                name = name.ToUpper();
+                IHTMLElement[] result = null;
+                if (!_nameElements.TryGetValue(name, out result) || !_useCache)
                 {
-                    try
+                    List<IHTMLElement> allObjectList = new List<IHTMLElement>();
+                    HTMLDocument[] allDocs = GetAllDocuments();
+                    foreach (HTMLDocument doc in allDocs)
                     {
-                        foreach (IHTMLElement ele in doc.getElementsByName(name))
+                        try
                         {
-                            allObjectList.Add(ele);
+                            foreach (IHTMLElement ele in doc.getElementsByName(name))
+                            {
+                                allObjectList.Add(ele);
+                            }
+                        }
+                        catch
+                        {
                         }
                     }
-                    catch
+                    result = allObjectList.ToArray();
+                    if (_useCache && !_nameElements.ContainsKey(name))
                     {
+                        _nameElements.Add(name, result);
                     }
                 }
-                return allObjectList.ToArray();
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -180,9 +191,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetObjectsByTagName(string name)
          * return elements by tag, eg: <a> will return all link.
          */
-        public IHTMLElement[] GetObjectsByTagName(string name)
+        public IHTMLElement[] GetObjectsByTagName(string tag)
         {
-            if (String.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(tag))
             {
                 throw new PropertyNotFoundException("Tag name can not be null.");
             }
@@ -194,26 +205,37 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                HTMLDocument[] allDocs = GetAllDocuments();
-                foreach (HTMLDocument doc in allDocs)
+                tag = tag.ToUpper();
+                IHTMLElement[] result = null;
+                if (!_tagElements.TryGetValue(tag, out result) || !_useCache)
                 {
-                    try
+                    List<IHTMLElement> allObjectList = new List<IHTMLElement>();
+                    HTMLDocument[] allDocs = GetAllDocuments();
+                    foreach (HTMLDocument doc in allDocs)
                     {
-                        foreach (IHTMLElement ele in doc.getElementsByTagName(name))
+                        try
                         {
-                            allObjectList.Add(ele);
+                            foreach (IHTMLElement ele in doc.getElementsByTagName(tag))
+                            {
+                                allObjectList.Add(ele);
+                            }
+                        }
+                        catch
+                        {
                         }
                     }
-                    catch
+                    result = allObjectList.ToArray();
+                    if (_useCache && !_tagElements.ContainsKey(tag))
                     {
+                        _tagElements.Add(tag, result);
                     }
                 }
-                return allObjectList.ToArray();
+
+                return result;
             }
             catch (Exception ex)
             {
-                throw new ObjectNotFoundException("Can not found test object by tag name:" + name + ":" + ex.ToString());
+                throw new ObjectNotFoundException("Can not found test object by tag name:" + tag + ":" + ex.ToString());
             }
         }
 
@@ -278,17 +300,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _dispatcher.RegisterEvents(ie.Document as IHTMLDocument2);
             }
         }
-        /* void OnDocumentLoadComplete(object pDesp, ref object pUrl)
-         * when document loaded, tell the htmlobjectpool to reload all objects.
-         */
-        protected override void OnDocumentLoadComplete(object pDesp, ref object pUrl)
-        {
-            needRefresh = true;
-            base.OnDocumentLoadComplete(pDesp, ref pUrl);
-        }
 
         protected override void AllDocumentComplete()
         {
+            NeedRefresh();
             base.AllDocumentComplete();
             if (_dispatcher != null)
             {
@@ -296,10 +311,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        protected override void OnDownloadComplete()
+        protected override void PageChange(InternetExplorer ie)
         {
-            needRefresh = true;
-            base.OnDownloadComplete();
+            NeedRefresh();
+            base.PageChange(ie);
+        }
+
+        protected virtual void NeedRefresh()
+        {
+            if (_useCache)
+            {
+                _allElements = null;
+                _tagElements.Clear();
+                _nameElements.Clear();
+            }
         }
 
         #endregion
