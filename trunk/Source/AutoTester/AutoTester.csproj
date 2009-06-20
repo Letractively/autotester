@@ -58,6 +58,7 @@
     <Compile Include="Test\Other.cs" />
     <Compile Include="Test\Qidian.cs" />
     <Compile Include="Test\QQ.cs" />
+    <Compile Include="Test\SP.cs" />
     <Compile Include="Test\Test1.cs" />
     <Compile Include="Test\xjflcp.cs" />
     <Compile Include="Test\xunlei.cs" />

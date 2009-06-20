@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 
 using mshtml;
 using SHDocVw;
+using Accessibility;
 
 using Shrinerain.AutoTester.Win32;
 
@@ -145,6 +146,54 @@ namespace Shrinerain.AutoTester.Core
             }
 
             return null;
+        }
+
+        public static IHTMLElement MSAAToIHTMLElement(IAccessible pacc)
+        {
+            if (pacc == null)
+            {
+                return null;
+            }
+
+            IServiceProvider spServiceProvider = pacc as IServiceProvider;
+            if (spServiceProvider == null)
+            {
+                return null;
+            }
+
+            object spHtmlElement;
+            Guid guid = typeof(IHTMLElement).GUID;
+            int hRes = spServiceProvider.QueryService(ref guid, ref guid, out spHtmlElement);
+            if (hRes != 0)
+            {
+                return null;
+            }
+
+            return spHtmlElement as IHTMLElement;
+        }
+
+        public static IAccessible IHTMLElementToMSAA(IHTMLElement element)
+        {
+            if (element == null)
+            {
+                return null;
+            }
+
+            IServiceProvider spServiceProvider = element as IServiceProvider;
+            if (spServiceProvider == null)
+            {
+                return null;
+            }
+            object spAccessible;
+
+            Guid guid = typeof(IAccessible).GUID;
+            int hRes = spServiceProvider.QueryService(ref guid, ref guid, out spAccessible);
+            if (hRes != 0)
+            {
+                return null;
+            }
+
+            return spAccessible as IAccessible;
         }
     }
 }

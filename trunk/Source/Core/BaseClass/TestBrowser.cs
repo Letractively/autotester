@@ -23,6 +23,7 @@ using System.Runtime.InteropServices;
 
 using mshtml;
 using SHDocVw;
+using Accessibility;
 
 using Shrinerain.AutoTester.Win32;
 
@@ -45,6 +46,7 @@ namespace Shrinerain.AutoTester.Core
         protected IntPtr _shellDocHandle;
         //handle of "showModelessDialog" and "showDialog". They contain HTML, but not a InternetExplorer instance.
         protected IntPtr _dialogHandle;
+        protected IntPtr _tabHandle;
 
         //HTML dom, we use HTML dom to get the HTML object.
         protected HTMLDocument _rootDocument;
@@ -556,6 +558,45 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        public virtual void ActiveTab(int tabIndex)
+        {
+            try
+            {
+                IntPtr tabHandle = GetTabHandle();
+                if (tabHandle != IntPtr.Zero)
+                {
+                    IAccessible iAcc = null;
+                    Win32API.AccessibleObjectFromWindow(tabHandle, -4, ref Win32API.IACCUID, ref iAcc);
+                    if (iAcc != null)
+                    {
+                        if (GetBrowserMajorVersion() > 7)
+                        {
+                            iAcc = iAcc.get_accChild(iAcc.accChildCount) as IAccessible;
+                        }
+
+                        if (iAcc != null)
+                        {
+                            //tablist
+                            int childCount = iAcc.accChildCount;
+                            //tabs count.
+                            if (childCount > 2 && tabIndex < childCount - 1)
+                            {
+                                //tab we want to focus.
+                                IAccessible tabToFocus = iAcc.get_accChild(tabIndex + 1) as IAccessible;
+                                if (tabToFocus != null)
+                                {
+                                    tabToFocus.accDoDefaultAction(0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+            }
+        }
+
         #endregion
 
         #region Get IE Information
@@ -709,6 +750,12 @@ namespace Shrinerain.AutoTester.Core
             return _version;
         }
 
+        public virtual int GetBrowserMajorVersion()
+        {
+            String version = GetBrowserVersion();
+            return int.Parse(version[0].ToString());
+        }
+
         /* int GetLoadSeconds()
          * return the seconds time used to load  current page.
          */
@@ -851,6 +898,7 @@ namespace Shrinerain.AutoTester.Core
                                 TestEventArgs e = new TestEventArgs("PageIndex", GetPageIndex(ie));
                                 OnBrowserPageChange(this, e);
                             }
+                            ActiveTab(index);
                             return this;
                         }
                     }
@@ -1489,6 +1537,23 @@ namespace Shrinerain.AutoTester.Core
             }
 
             return IntPtr.Zero;
+        }
+
+        private IntPtr GetTabHandle()
+        {
+            if (_tabHandle == IntPtr.Zero && GetBrowserMajorVersion() > 6)
+            {
+                IntPtr browserHandle = _rootHandle;
+                if (browserHandle != IntPtr.Zero)
+                {
+                    IntPtr directUI = Win32API.FindWindowEx(browserHandle, IntPtr.Zero, "CommandBarClass", null);
+                    directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "ReBarWindow32", null);
+                    directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "TabBandClass", null);
+                    directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "DirectUIHWND", null);
+                    _tabHandle = directUI;
+                }
+            }
+            return _tabHandle;
         }
 
         protected void CalPerformanceTime()
