@@ -245,4 +245,16 @@ namespace Shrinerain.AutoTester.Core
         {
         }
     }
+
+    public class CannotGetChildrenException : TestObjectException
+    {
+        public CannotGetChildrenException()
+            : this("Can not get children.")
+        {
+        }
+        public CannotGetChildrenException(String message)
+            : base(message)
+        {
+        }
+    }
 }

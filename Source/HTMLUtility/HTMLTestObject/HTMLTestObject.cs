@@ -48,16 +48,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
     }
 
     #region html object base class
-    public class HTMLTestObject : TestObject, IStatus
+    public class HTMLTestObject : TestObject, IStatus, IContainer
     {
         #region fields
 
-        //id and name for a HTML object, they are the most important property.
-        protected string _id;
-        protected string _name;
-
         //tag for this object, like "A" ,"INPUT"...
         protected string _tag;
+        protected string _id;
+        protected string _name;
+        protected string _className;
+        protected string _innerText;
+        protected string _innerHTML;
+        protected string _outterText;
+        protected string _outterHTML;
+
         protected HTMLTestObjectType _type;
         protected IHTMLElement _sourceElement;
         //the host browser of this object.
@@ -74,30 +78,49 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _sourceElement; }
         }
 
+        public string Tag
+        {
+            get { return _tag; }
+        }
+
         public string ID
         {
-            get
-            {
-                return this._id;
-            }
+            get { return _id; }
         }
 
         public string Name
         {
-            get
-            {
-                return this._name;
-            }
+            get { return _name; }
+        }
+
+        public string InnerHTML
+        {
+            get { return _innerHTML; }
+        }
+
+        public string InnerText
+        {
+            get { return _innerText; }
+        }
+
+        public string OutterText
+        {
+            get { return _outterText; }
+        }
+
+        public string OutterHTML
+        {
+            get { return _outterHTML; }
+        }
+
+        public string ClassName
+        {
+            get { return _className; }
         }
 
         public HTMLTestObjectType Type
         {
-            get { return this._type; }
-        }
-
-        public string Tag
-        {
-            get { return this._tag; }
+            get { return _type; }
         }
 
         public HTMLTestBrowser Browser
@@ -137,11 +160,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._domain = "HTML";
                 this._tag = element.tagName;
                 this._id = element.id;
+                this._className = element.className;
+                this._innerText = element.innerText;
+                this._innerHTML = element.innerHTML;
+                this._outterText = element.outerText;
+                this._outterHTML = element.outerHTML;
+
                 //get name, like <input name="btn2">
                 if (!TryGetProperty(element, "name", out this._name))
                 {
                     this._name = "";
                 }
+
                 this._browser = browser;
             }
             catch (Exception ex)
@@ -345,6 +375,79 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        #region IContainer Members
+
+        public virtual object[] GetChildren()
+        {
+            if (this._sourceElement != null)
+            {
+                try
+                {
+                    IHTMLElementCollection childrenElements = this._sourceElement.all as IHTMLElementCollection;
+                    if (childrenElements != null && childrenElements.length > 0)
+                    {
+                        List<HTMLTestObject> children = new List<HTMLTestObject>(childrenElements.length);
+                        for (int i = 0; i < childrenElements.length; i++)
+                        {
+                            try
+                            {
+                                IHTMLElement ele = childrenElements.item(i, i) as IHTMLElement;
+                                HTMLTestGUIObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._browser);
+                                if (obj != null)
+                                {
+                                    children.Add(obj);
+                                }
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
+
+                        return children.ToArray();
+                    }
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotGetChildrenException(ex.ToString());
+                }
+            }
+
+            return null;
+        }
+
+        public virtual object GetChild(int childIndex)
+        {
+            if (this._sourceElement != null)
+            {
+                try
+                {
+                    IHTMLElementCollection childrenElements = this._sourceElement.all as IHTMLElementCollection;
+                    if (childrenElements != null && childIndex < childrenElements.length)
+                    {
+                        IHTMLElement ele = childrenElements.item(childIndex, childIndex) as IHTMLElement;
+                        return HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._browser);
+                    }
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotGetChildrenException(ex.ToString());
+                }
+            }
+
+            return null;
+        }
+
+        #endregion
+
         #region IStatus Members
 
         /* object GetCurrentStatus()
@@ -456,6 +559,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #endregion
+
     }
     #endregion
 }

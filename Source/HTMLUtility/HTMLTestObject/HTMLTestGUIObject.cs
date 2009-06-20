@@ -647,9 +647,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void MouseClick()
         {
-            if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
+            try
             {
-                MouseOp.Click(this._centerPoint);
+                if (_sendMsgOnly && this._sourceElement != null)
+                {
+                    this._sourceElement.click();
+                    FireEvent("click");
+                }
+                else if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
+                {
+                    MouseOp.Click(this._centerPoint);
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not perform mouse click: " + ex.ToString());
             }
         }
 
