@@ -26,11 +26,6 @@ namespace Shrinerain.AutoTester.Core
             {
                 return _app;
             }
-            set
-            {
-                _app = value;
-                Init();
-            }
         }
 
         public TestBrowser Browser
@@ -38,11 +33,6 @@ namespace Shrinerain.AutoTester.Core
             get
             {
                 return _browser;
-            }
-            set
-            {
-                _browser = value;
-                Init();
             }
         }
 
