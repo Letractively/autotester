@@ -49,7 +49,7 @@ namespace Shrinerain.AutoTester.Core
 
         #region public methods
 
-        //check if an object exit or not.
+        //check if an object exist or not.
         public virtual bool IsExist(String name)
         {
             return IsExist(null, name);
