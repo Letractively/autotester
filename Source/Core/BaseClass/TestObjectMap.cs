@@ -18,7 +18,6 @@ namespace Shrinerain.AutoTester.Core
         protected bool _useCache = false;
         protected static int _timeout = 5;
 
-
         #endregion
 
         #region properties
@@ -49,6 +48,38 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region public methods
+
+        //check if an object exit or not.
+        public virtual bool IsExist(String name)
+        {
+            return IsExist(null, name);
+        }
+
+        public virtual bool IsExist(String type, String name)
+        {
+            TestObject[] tmps;
+            return TryGetObjects(type, name, out tmps);
+        }
+
+        public virtual bool TryGetObjects(String name, out TestObject[] objects)
+        {
+            objects = null;
+            return TryGetObjects(null, name, out objects);
+        }
+
+        public virtual bool TryGetObjects(String type, String name, out TestObject[] objects)
+        {
+            objects = null;
+            try
+            {
+                objects = GetMapObjects(type, name);
+                return objects != null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         /* void Add(String name)
          * Add the last object to map, then we can use name to access it.
@@ -131,7 +162,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual IClickable[] Buttons(string name)
         {
-            GetMapObjects(name, "button");
+            GetMapObjects("button", name);
             IClickable[] tmp = new IClickable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -155,7 +186,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual IInputable[] TextBoxs(string name)
         {
-            GetMapObjects(name, "TextBox");
+            GetMapObjects("TextBox", name);
             IInputable[] tmp = new IInputable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -179,7 +210,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual ICheckable[] CheckBoxs(string name)
         {
-            GetMapObjects(name, "CheckBox");
+            GetMapObjects("CheckBox", name);
             ICheckable[] tmp = new ICheckable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -203,7 +234,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual ISelectable[] ComboBoxs(string name)
         {
-            GetMapObjects(name, "ComboBox");
+            GetMapObjects("ComboBox", name);
             ISelectable[] tmp = new ISelectable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -227,7 +258,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual IPicture[] Images(string name)
         {
-            GetMapObjects(name, "Image");
+            GetMapObjects("Image", name);
             IPicture[] tmp = new IPicture[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -250,7 +281,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual IText[] Labels(string name)
         {
-            GetMapObjects(name, "Label");
+            GetMapObjects("Label", name);
             IText[] tmp = new IText[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -273,7 +304,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual IClickable[] Links(string name)
         {
-            GetMapObjects(name, "Link");
+            GetMapObjects("Link", name);
             IClickable[] tmp = new IClickable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -296,7 +327,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual ISelectable[] ListBoxs(string name)
         {
-            GetMapObjects(name, "ListBox");
+            GetMapObjects("ListBox", name);
             ISelectable[] tmp = new ISelectable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -320,7 +351,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual ICheckable[] RadioBoxs(string name)
         {
-            GetMapObjects(name, "radiobox");
+            GetMapObjects("radiobox", name);
             ICheckable[] tmp = new ICheckable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -343,7 +374,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual ITable[] Tables(String name)
         {
-            GetMapObjects(name, "Table");
+            GetMapObjects("Table", name);
             ITable[] tmp = new ITable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -366,7 +397,7 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual IVisible[] AnyObjects(String name)
         {
-            GetMapObjects(name, null);
+            GetMapObjects(null, name);
             IVisible[] tmp = new IVisible[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -418,7 +449,7 @@ namespace Shrinerain.AutoTester.Core
 
         #region private methods
 
-        protected virtual void GetMapObjects(string name, string type)
+        protected virtual TestObject[] GetMapObjects(string type, string name)
         {
             try
             {
@@ -443,22 +474,19 @@ namespace Shrinerain.AutoTester.Core
                         properties = new TestProperty[] { new TestProperty(TestObject.VisibleProperty, name) };
                     }
 
-                    if (TryGetObjectsFromPool(type, properties, out _lastObjects, out exception))
-                    {
-                        found = true;
-                    }
+                    found = TryGetObjectsFromPool(type, properties, out _lastObjects, out exception);
                 }
 
                 if (found)
                 {
-                    if (_useCache && _lastObjects[0].IsExist())
+                    if (_useCache)
                     {
                         ObjectCache.InsertObjectToCache(key, _lastObjects[0]);
                     }
                 }
                 else
                 {
-                    throw new ObjectNotFoundException(exception.Message);
+                    throw new ObjectNotFoundException(exception.ToString());
                 }
             }
             catch (TestException)
@@ -469,6 +497,8 @@ namespace Shrinerain.AutoTester.Core
             {
                 throw new CannotGetMapObjectException("Can not get object from map: " + ex.ToString());
             }
+
+            return _lastObjects;
         }
 
         private bool TryGetObjectsFromPool(string type, TestProperty[] properties, out TestObject[] obj, out TestException exception)
@@ -498,12 +528,6 @@ namespace Shrinerain.AutoTester.Core
                     }
                 }
 
-                return true;
-            }
-            catch (ObjectNotFoundException ex)
-            {
-                obj = new TestObject[] { new TestFakeObject() };
-                exception = ex;
                 return true;
             }
             catch (TestException ex)

@@ -36,7 +36,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestButton[] Buttons(string name)
         {
-            GetMapObjects(name, "button");
+            GetMapObjects("button", name);
             HTMLTestButton[] tmp = new HTMLTestButton[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -60,7 +60,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestTextBox[] TextBoxs(string name)
         {
-            GetMapObjects(name, "TextBox");
+            GetMapObjects("TextBox", name);
             HTMLTestTextBox[] tmp = new HTMLTestTextBox[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -84,7 +84,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestCheckBox[] CheckBoxs(string name)
         {
-            GetMapObjects(name, "CheckBox");
+            GetMapObjects("CheckBox", name);
             HTMLTestCheckBox[] tmp = new HTMLTestCheckBox[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -108,7 +108,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestComboBox[] ComboBoxs(string name)
         {
-            GetMapObjects(name, "ComboBox");
+            GetMapObjects("ComboBox", name);
             HTMLTestComboBox[] tmp = new HTMLTestComboBox[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -132,7 +132,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestImage[] Images(string name)
         {
-            GetMapObjects(name, "Image");
+            GetMapObjects("Image", name);
             HTMLTestImage[] tmp = new HTMLTestImage[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -155,7 +155,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestLabel[] Labels(string name)
         {
-            GetMapObjects(name, "Label");
+            GetMapObjects("Label", name);
             HTMLTestLabel[] tmp = new HTMLTestLabel[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -178,7 +178,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestLink[] Links(string name)
         {
-            GetMapObjects(name, "Link");
+            GetMapObjects("Link", name);
             HTMLTestLink[] tmp = new HTMLTestLink[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -201,7 +201,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestListBox[] ListBoxs(string name)
         {
-            GetMapObjects(name, "ListBox");
+            GetMapObjects("ListBox", name);
             HTMLTestListBox[] tmp = new HTMLTestListBox[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -225,7 +225,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestRadioBox[] RadioBoxs(string name)
         {
-            GetMapObjects(name, "radiobox");
+            GetMapObjects("radiobox", name);
             HTMLTestRadioBox[] tmp = new HTMLTestRadioBox[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -248,7 +248,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestTable[] Tables(String name)
         {
-            GetMapObjects(name, "Table");
+            GetMapObjects("Table", name);
             HTMLTestTable[] tmp = new HTMLTestTable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
@@ -271,7 +271,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestGUIObject[] AnyObjects(String name)
         {
-            GetMapObjects(name, null);
+            GetMapObjects(null, name);
             HTMLTestGUIObject[] tmp = new HTMLTestGUIObject[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
