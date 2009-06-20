@@ -84,7 +84,6 @@ namespace Shrinerain.AutoTester
             myTestJob.FrameworkConfigFile = frameworkConfigFile;
 
             myTestJob.StartTesting();
-
         }
 
         static void FunctionTest()

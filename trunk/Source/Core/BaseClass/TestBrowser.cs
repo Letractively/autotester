@@ -1024,7 +1024,7 @@ namespace Shrinerain.AutoTester.Core
       * if title is not empty, we need to check the title of browser.
       * we will use "Fuzzy Search" in this method
       */
-        protected virtual void WaitForBrowserExist(string title, int seconds)
+        protected virtual void WaitForBrowserExist(string title, string url, int seconds)
         {
             if (seconds < 0)
             {
@@ -1040,15 +1040,14 @@ namespace Shrinerain.AutoTester.Core
                 for (int i = pArr.Length - 1; i >= 0; i--)
                 {
                     Process p = pArr[i];
-                    //if title is empty, find by process id.
-                    if (String.IsNullOrEmpty(title))
+                    InternetExplorer ie = null;
+
+                    //find by process id.
+                    if (_appProcess != null && _appProcess.Id == p.Id)
                     {
-                        if (_appProcess != null && _appProcess.Id == p.Id)
-                        {
-                            browserFound = true;
-                        }
+                        browserFound = true;
                     }
-                    else
+                    else if (!String.IsNullOrEmpty(title))
                     {
                         try
                         {
@@ -1063,14 +1062,38 @@ namespace Shrinerain.AutoTester.Core
                             continue;
                         }
                     }
+                    else if (!String.IsNullOrEmpty(url))
+                    {
+                        ie = GetInternetExplorer(p.Id);
+                        if (ie != null && ie.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            browserFound = true;
+                        }
+                    }
 
                     if (browserFound)
                     {
-                        _appProcess = p;
-                        InternetExplorer ie = GetInternetExplorer(p.Id);
-                        AttachBrowser(ie);
-                        _browserExisted.Set();
-                        return;
+                        if (ie == null)
+                        {
+                            ie = GetInternetExplorer(p.Id);
+                        }
+                        if (ie != null)
+                        {
+                            _appProcess = p;
+                            AttachBrowser(ie);
+                            _browserExisted.Set();
+                            return;
+                        }
+                    }
+                }
+
+                //IE8 is mutli process model, we may can not find it by process we started. 
+                if (GetBrowserMajorVersion() > 7)
+                {
+                    if (String.IsNullOrEmpty(url))
+                    {
+                        url = TestConstants.IE_BlankPage_Url;
+                        _appProcess = null;
                     }
                 }
 
@@ -1084,13 +1107,13 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void WaitForBrowserExist()
         {
-            WaitForBrowserExist(null, _maxWaitSeconds);
+            WaitForBrowserExist(null, null, _maxWaitSeconds);
         }
 
         protected virtual void WaitForBrowserExist(object title)
         {
             String titleStr = title == null ? "" : title.ToString();
-            WaitForBrowserExist(titleStr, _maxWaitSeconds);
+            WaitForBrowserExist(titleStr, null, _maxWaitSeconds);
         }
 
         /* void WaitForNewBrowserSync()
@@ -1160,41 +1183,33 @@ namespace Shrinerain.AutoTester.Core
                 throw new CannotAttachBrowserException("IE process can not be 0.");
             }
 
-            //try until timeout, the default is 120s.
-            int times = 0;
-            while (times < this._maxWaitSeconds)
+            //get all shell browser.
+            InternetExplorer[] allBrowsers = GetAllBrowsers();
+            if (allBrowsers != null && allBrowsers.Length > 0)
             {
-                //get all shell browser.
-                InternetExplorer[] allBrowsers = GetAllBrowsers();
-                if (allBrowsers != null && allBrowsers.Length > 0)
+                for (int i = 0; i < allBrowsers.Length; i++)
                 {
-                    for (int i = 0; i < allBrowsers.Length; i++)
+                    InternetExplorer tempIE = allBrowsers[i];
+                    try
                     {
-                        InternetExplorer tempIE = allBrowsers[i];
-                        try
+                        if (tempIE != null && tempIE.HWND != 0)
                         {
-                            if (tempIE != null && tempIE.HWND != 0)
+                            int pid = 0;
+                            Win32API.GetWindowThreadProcessId((IntPtr)tempIE.HWND, out pid);
+                            if (processID == pid)
                             {
-                                int pid = 0;
-                                Win32API.GetWindowThreadProcessId((IntPtr)tempIE.HWND, out pid);
-                                if (processID == pid)
-                                {
-                                    return tempIE;
-                                }
+                                return tempIE;
                             }
                         }
-                        catch
-                        {
-                            continue;
-                        }
+                    }
+                    catch
+                    {
+                        continue;
                     }
                 }
-
-                times += Interval;
-                Thread.Sleep(Interval * 1000);
             }
 
-            throw new CannotAttachBrowserException("Browser: " + processID + " does not exist.");
+            return null;
         }
 
         /* InternetExplorer GetTopmostBrowser()

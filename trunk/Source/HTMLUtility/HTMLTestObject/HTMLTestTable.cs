@@ -274,16 +274,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region IContainer Members
 
-        public virtual object[] GetChildren()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual Object GetChild(int childIndex)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #endregion

@@ -174,6 +174,11 @@ namespace Shrinerain.AutoTester.Core
 
         public static IAccessible IHTMLElementToMSAA(IHTMLElement element)
         {
+            return ObjectToMSAA(element);
+        }
+
+        public static IAccessible ObjectToMSAA(object element)
+        {
             if (element == null)
             {
                 return null;
