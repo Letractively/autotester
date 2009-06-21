@@ -30,8 +30,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private HTMLTestObjectPool _pool;
         private HTMLTestEventDispatcher _dispatcher;
+        private HTMLTestObjectMap _objMap;
+        private HTMLTestPageMap _pageMap;
 
-        private bool _useCache = false;
+        private bool _useCache = true;
         private IHTMLElement[] _allElements = null;
         private Dictionary<String, IHTMLElement[]> _tagElements = new Dictionary<string, IHTMLElement[]>(199);
         private Dictionary<String, IHTMLElement[]> _nameElements = new Dictionary<string, IHTMLElement[]>(199);
@@ -256,8 +258,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public override ITestObjectMap GetObjectMap()
         {
-            GetObjectPool();
-            return new HTMLTestObjectMap(_pool);
+            if (_objMap == null)
+            {
+                GetObjectPool();
+                _objMap = new HTMLTestObjectMap(_pool);
+            }
+            return _objMap;
         }
 
         public override ITestObjectPool GetObjectPool()
@@ -266,13 +272,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 _pool = new HTMLTestObjectPool(this);
             }
-
             return _pool;
         }
 
         public override ITestWindowMap GetWindowMap()
         {
-            return new HTMLTestPageMap(this);
+            if (_pageMap == null)
+            {
+                _pageMap = new HTMLTestPageMap(this);
+            }
+            return _pageMap;
         }
 
         public override ITestEventDispatcher GetEventDispatcher()
@@ -282,7 +291,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _dispatcher = HTMLTestEventDispatcher.GetInstance();
                 _dispatcher.Start(this);
             }
-
             return _dispatcher;
         }
 
