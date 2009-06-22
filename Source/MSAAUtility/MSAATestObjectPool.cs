@@ -457,7 +457,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     {
                         if (properties != null && properties.Length > 0)
                         {
-                            if (!propertiesTable.TryGetValue(objType, out properties))
+                            TestProperty[] tmp;
+                            if (!propertiesTable.TryGetValue(objType, out tmp))
                             {
                                 List<TestProperty> newProperties = new List<TestProperty>();
                                 TestProperty typeProperty = new TestProperty("RoleType", objType, false, 100);
@@ -466,7 +467,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
                                 {
                                     newProperties.Add(tp);
                                 }
-                                propertiesTable.Add(objType, newProperties.ToArray());
+                                properties = newProperties.ToArray();
+                                propertiesTable.Add(objType, properties);
+                            }
+                            else
+                            {
+                                properties = tmp;
                             }
                         }
 

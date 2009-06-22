@@ -9,13 +9,13 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public class MSAAEventDispatcher : ITestEventDispatcher
+    public class MSAATestEventDispatcher : ITestEventDispatcher
     {
         #region fields
 
         private static MouseHook _mouseHook;
         private static EventHook _msaaHook;
-        private static MSAAEventDispatcher _instance = new MSAAEventDispatcher();
+        private static MSAATestEventDispatcher _instance = new MSAATestEventDispatcher();
 
         //cache
         private MSAATestObject _lastMSAAObj;
@@ -29,11 +29,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region ctor
 
-        private MSAAEventDispatcher()
+        private MSAATestEventDispatcher()
         {
         }
 
-        public static MSAAEventDispatcher GetInstance()
+        public static MSAATestEventDispatcher GetInstance()
         {
             return _instance;
         }
@@ -44,7 +44,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public bool Start(ITestApp app)
         {
-            if (app != null)
+            if (app != null && (app as TestApp).Handle != IntPtr.Zero)
             {
                 if (_msaaHook == null)
                 {
