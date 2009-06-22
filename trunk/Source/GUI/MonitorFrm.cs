@@ -45,7 +45,7 @@ namespace Shrinerain.AutoTester.GUI
 
         MSAATestApp app;
         MSAATestObjectPool pool;
-        MSAAEventDispatcher dispatcher;
+        MSAATestEventDispatcher dispatcher;
 
         //add message to rich text box.
         private delegate void AddLogDelegate(string m);

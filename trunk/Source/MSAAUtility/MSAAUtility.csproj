@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="MSAATestApp.cs" />
     <Compile Include="MSAATestEventDispatcher.cs" />
+    <Compile Include="MSAATestObjectMap.cs" />
     <Compile Include="MSAATestObjectPool.cs" />
     <Compile Include="MSAATestObject\MSAATestButton.cs" />
     <Compile Include="MSAATestObject\MSAATestCheckBox.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="MSAATestObject\MSAATestRadioButton.cs" />
     <Compile Include="MSAATestObject\MSAATestTextBox.cs" />
     <Compile Include="MSAATestSession.cs" />
+    <Compile Include="MSAATestWindowMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

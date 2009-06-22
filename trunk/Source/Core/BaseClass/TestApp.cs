@@ -29,7 +29,7 @@ namespace Shrinerain.AutoTester.Core
         #region fields
 
         protected TestApp _parent;
-        protected IntPtr _rootHandle;
+        protected IntPtr _rootHandle = IntPtr.Zero;
         protected Process _appProcess;
         protected bool _isHide;
 
@@ -157,8 +157,24 @@ namespace Shrinerain.AutoTester.Core
                 }
                 else
                 {
-                    //get the main handle.
-                    this._rootHandle = _appProcess.MainWindowHandle;
+                    int times = 0;
+                    while (times < _maxWaitSeconds)
+                    {
+                        Thread.Sleep(Interval * 1000);
+                        times += Interval;
+
+                        if (_appProcess.MainWindowHandle != IntPtr.Zero)
+                        {
+                            //get the main handle.
+                            this._rootHandle = _appProcess.MainWindowHandle;
+                            break;
+                        }
+                    }
+
+                    if (this._rootHandle == IntPtr.Zero)
+                    {
+                        throw new CannotStartAppException("Can not start application by path:" + appFullPath + " with parameters:" + parameters);
+                    }
                 }
             }
             catch (TestException)
@@ -533,7 +549,6 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 IntPtr currentActiveWindow = Win32API.GetActiveWindow();
-
                 return currentActiveWindow == this._rootHandle;
             }
             catch (Exception ex)

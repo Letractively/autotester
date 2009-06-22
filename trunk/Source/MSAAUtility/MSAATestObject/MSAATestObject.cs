@@ -173,9 +173,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             try
             {
                 this._domain = "MSAA";
-
                 Win32API.AccessibleObjectFromWindow(handle, -4, ref Win32API.IACCUID, ref this._iAcc);
-
                 GetMSAAInfo();
             }
             catch (Exception ex)
