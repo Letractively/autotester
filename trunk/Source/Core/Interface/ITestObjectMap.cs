@@ -87,6 +87,10 @@ namespace Shrinerain.AutoTester.Core
         IVisible[] AnyObjects();
         IVisible AnyObject(String name);
         IVisible[] AnyObjects(String name);
+        IVisible AnyObject(String type, String name);
+        IVisible[] AnyObjects(String type, String name);
+
+        ITestObjectPool ObjectPool { get; }
 
         #endregion
     }

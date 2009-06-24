@@ -2,72 +2,72 @@
 using System.Collections.Generic;
 using System.Text;
 
-using Shrinerain.AutoTester.Core;
-
-namespace Shrinerain.AutoTester.HTMLUtility
+namespace Shrinerain.AutoTester.Core
 {
-    public class HTMLTestPageMap : TestPageMap
+    public class TestPageMap : ITestPageMap
     {
-        #region fileds
+        #region fields
+
+        protected TestBrowser _browser;
+        protected ITestObjectPool _objPool;
+        protected TestObjectMap _map;
 
         #endregion
 
-        #region methods
-
         #region ctor
 
-        public HTMLTestPageMap(HTMLTestBrowser browser)
-            : base(browser)
+        public TestPageMap(TestBrowser browser)
         {
+            this._browser = browser;
+            this._objPool = browser.GetObjectPool();
+            this._map = browser.GetObjectMap() as TestObjectMap;
         }
 
         #endregion
 
-        public new HTMLTestObjectMap Page(int index)
+        public virtual ITestObjectMap Page(int index)
         {
             if (index >= 0)
             {
-                HTMLTestBrowser browser = _browser.GetPage(index) as HTMLTestBrowser;
+                ITestBrowser browser = _browser.GetPage(index);
                 if (browser != null)
                 {
                     this._objPool = browser.GetObjectPool();
                     _map.ObjectPool = this._objPool;
-                    return _map as HTMLTestObjectMap;
+                    return _map;
                 }
             }
 
             throw new BrowserNotFoundException("Can not get page by index: " + index);
         }
 
-        public new HTMLTestObjectMap Page(string title, string url)
+        public virtual ITestObjectMap Page(string title, string url)
         {
             if (!String.IsNullOrEmpty(title) || !String.IsNullOrEmpty(url))
             {
-                HTMLTestBrowser browser = _browser.GetPage(title, url) as HTMLTestBrowser;
+                ITestBrowser browser = _browser.GetPage(title, url);
                 if (browser != null)
                 {
                     this._objPool = browser.GetObjectPool();
                     _map.ObjectPool = this._objPool;
-                    return _map as HTMLTestObjectMap;
+                    return _map;
                 }
             }
 
             throw new BrowserNotFoundException("Can not get page by title: " + title + ", url: " + url);
         }
 
-        public new HTMLTestObjectMap NewPage()
+        public virtual ITestObjectMap NewPage()
         {
-            HTMLTestBrowser browser = _browser.GetMostRecentPage() as HTMLTestBrowser;
+            ITestBrowser browser = _browser.GetMostRecentPage();
             if (browser != null)
             {
                 this._objPool = browser.GetObjectPool();
                 _map.ObjectPool = this._objPool;
-                return _map as HTMLTestObjectMap;
+                return _map;
             }
 
             throw new BrowserNotFoundException("Can not get new page.");
         }
-
-        #endregion
     }
 }

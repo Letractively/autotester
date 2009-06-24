@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class TestSession
+    public class TestSession : ITestSession
     {
         #region fields
 
@@ -12,7 +12,7 @@ namespace Shrinerain.AutoTester.Core
         protected TestBrowser _browser;
         protected TestObjectMap _objectMap;
         protected TestWindowMap _windowMap;
-        protected TestWindowMap _pageMap;
+        protected TestPageMap _pageMap;
         protected TestCheckPoint _cp;
         protected ITestEventDispatcher _dispatcher;
 
@@ -20,67 +20,40 @@ namespace Shrinerain.AutoTester.Core
 
         #region properties
 
-        public TestApp App
+        public virtual ITestApp App
         {
-            get
-            {
-                return _app;
-            }
+            get { return _app; }
         }
 
-        public TestBrowser Browser
+        public virtual ITestBrowser Browser
         {
-            get
-            {
-                return _browser;
-            }
+            get { return _browser; }
         }
 
-        public TestObjectMap Objects
+        public virtual ITestObjectMap Objects
         {
-            get
-            {
-                Init();
-                return _objectMap;
-            }
+            get { return _objectMap; }
         }
 
-        public TestWindowMap Windows
+        public virtual ITestWindowMap Windows
         {
-            get
-            {
-                Init();
-                return _windowMap;
-            }
+            get { return _windowMap; }
         }
 
-        public TestWindowMap Pages
+        public virtual ITestPageMap Pages
         {
-            get
-            {
-                Init();
-                return _pageMap;
-            }
+            get { return _pageMap; }
         }
 
-        public ITestEventDispatcher Event
+        public virtual ITestEventDispatcher Event
         {
-            get
-            {
-                Init();
-                return _dispatcher;
-            }
+            get { return _dispatcher; }
         }
 
-        public TestCheckPoint CheckPoint
+        public virtual ITestCheckPoint CheckPoint
         {
-            get
-            {
-                Init();
-                return _cp;
-            }
+            get { return _cp; }
         }
-
 
         #endregion
 
@@ -89,42 +62,54 @@ namespace Shrinerain.AutoTester.Core
         #region ctor
 
         public TestSession()
-            : this(null)
         {
         }
 
         public TestSession(TestApp application)
         {
             this._app = application;
+            Init();
         }
 
         public TestSession(TestBrowser browser)
         {
             this._browser = browser;
+            Init();
         }
 
         protected virtual void Init()
         {
             if (this._objectMap == null)
             {
-                if (this._app != null)
+                try
                 {
-                    this._objectMap = this._app.GetObjectMap() as TestObjectMap;
-                    this._windowMap = this._app.GetWindowMap() as TestWindowMap;
-                    this._dispatcher = _app.GetEventDispatcher();
-                }
+                    if (this._app != null)
+                    {
+                        this._objectMap = this._app.GetObjectMap() as TestObjectMap;
+                        this._windowMap = this._app.GetWindowMap() as TestWindowMap;
+                        this._dispatcher = _app.GetEventDispatcher();
+                    }
 
-                if (this._browser != null)
+                    if (this._browser != null)
+                    {
+                        this._objectMap = this._browser.GetObjectMap() as TestObjectMap;
+                        this._pageMap = this._browser.GetPageMap() as TestPageMap;
+                        this._dispatcher = _browser.GetEventDispatcher();
+                    }
+                }
+                catch (TestException)
                 {
-                    this._objectMap = this._browser.GetObjectMap() as TestObjectMap;
-                    this._pageMap = this._browser.GetWindowMap() as TestWindowMap;
-                    this._dispatcher = _browser.GetEventDispatcher();
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new TestSessionException(ex.ToString());
                 }
             }
 
             if (this._objectMap == null)
             {
-                throw new TestObjectPoolExcpetion("Can not get test object map from application.");
+                throw new TestSessionException("Can not start test session");
             }
         }
 

@@ -873,7 +873,12 @@ namespace Shrinerain.AutoTester.Core
             return null;
         }
 
-        public ITestBrowser GetPage(int index)
+        public virtual ITestPageMap GetPageMap()
+        {
+            return null;
+        }
+
+        public virtual ITestBrowser GetPage(int index)
         {
             try
             {
@@ -915,7 +920,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public ITestBrowser GetPage(string title, string url)
+        public virtual ITestBrowser GetPage(string title, string url)
         {
             try
             {
@@ -960,7 +965,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public ITestBrowser GetMostRecentPage()
+        public virtual ITestBrowser GetMostRecentPage()
         {
             try
             {
@@ -979,7 +984,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        protected int GetPageIndex(InternetExplorer ie)
+        protected virtual int GetPageIndex(InternetExplorer ie)
         {
             if (ie != null)
             {

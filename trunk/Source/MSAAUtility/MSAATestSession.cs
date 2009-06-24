@@ -9,6 +9,23 @@ namespace Shrinerain.AutoTester.MSAAUtility
     public class MSAATestSession : TestSession
     {
         #region fields
+
+        public new MSAATestObjectMap Objects
+        {
+            get
+            {
+                return _objectMap as MSAATestObjectMap;
+            }
+        }
+
+        public new MSAATestWindowMap Windows
+        {
+            get
+            {
+                return _windowMap as MSAATestWindowMap;
+            }
+        }
+
         #endregion
 
         #region methods

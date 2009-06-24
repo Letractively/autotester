@@ -10,11 +10,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         #region fields
 
+        public new HTMLTestBrowser Browser
+        {
+            get
+            {
+                return _browser as HTMLTestBrowser;
+            }
+        }
+
         public new HTMLTestObjectMap Objects
         {
             get
             {
-                Init();
                 return _objectMap as HTMLTestObjectMap;
             }
         }
@@ -23,8 +30,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get
             {
-                Init();
                 return _pageMap as HTMLTestPageMap;
+            }
+        }
+
+        public new HTMLTestEventDispatcher Event
+        {
+            get
+            {
+                return _dispatcher as HTMLTestEventDispatcher;
             }
         }
 

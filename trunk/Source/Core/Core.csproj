@@ -59,6 +59,7 @@
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
     <Compile Include="BaseClass\TestCheckPoint.cs" />
     <Compile Include="BaseClass\TestObjectMap.cs" />
+    <Compile Include="BaseClass\TestPageMap.cs" />
     <Compile Include="BaseClass\TestSession.cs" />
     <Compile Include="BaseClass\TestProperty.cs" />
     <Compile Include="Helper\AsstFunctions.cs" />
@@ -74,6 +75,8 @@
     <Compile Include="Helper\SocketWrapper.cs" />
     <Compile Include="Interface\ITestEventDispatcher.cs" />
     <Compile Include="Interface\ITestObjectMap.cs" />
+    <Compile Include="Interface\ITestPageMap.cs" />
+    <Compile Include="Interface\ITestSession.cs" />
     <Compile Include="Interface\ITestWindowMap.cs" />
     <Compile Include="ObjectInterface\ICheckable.cs" />
     <Compile Include="ObjectInterface\IHTML.cs" />
