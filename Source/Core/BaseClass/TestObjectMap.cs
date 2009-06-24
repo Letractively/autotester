@@ -522,20 +522,20 @@ namespace Shrinerain.AutoTester.Core
 
             try
             {
-                if (String.IsNullOrEmpty(type) && (properties == null || properties.Length == 0))
+                if (String.IsNullOrEmpty(type))
                 {
-                    obj = this._objPool.GetAllObjects();
-                }
-                else
-                {
-                    if (String.IsNullOrEmpty(type))
+                    if (properties == null || properties.Length == 0)
                     {
-                        obj = this._objPool.GetObjectsByProperties(properties);
+                        obj = this._objPool.GetAllObjects();
                     }
                     else
                     {
-                        obj = this._objPool.GetObjectsByType(type, properties);
+                        obj = this._objPool.GetObjectsByProperties(properties);
                     }
+                }
+                else
+                {
+                    obj = this._objPool.GetObjectsByType(type, properties);
                 }
 
                 return true;
