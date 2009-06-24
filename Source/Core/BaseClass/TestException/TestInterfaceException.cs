@@ -31,6 +31,18 @@ namespace Shrinerain.AutoTester.Core
         }
     }
 
+    public class TestSessionException : TestInterfaceException
+    {
+        public TestSessionException()
+            : this("Error of test session.")
+        {
+        }
+        public TestSessionException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class TestObjectPoolExcpetion : TestInterfaceException
     {
         public TestObjectPoolExcpetion()
@@ -44,14 +56,14 @@ namespace Shrinerain.AutoTester.Core
         }
     }
 
-    public class NullObjectPoolException : TestObjectPoolExcpetion
+    public class TestObjectMapException : TestInterfaceException
     {
-        public NullObjectPoolException()
-            : this("Test object pool is null.")
+        public TestObjectMapException()
+            : this("Error of Test Object Map.")
         {
         }
 
-        public NullObjectPoolException(String message)
+        public TestObjectMapException(String message)
             : base(message)
         {
         }

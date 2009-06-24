@@ -4,7 +4,7 @@ using System.Text;
 using System.Drawing;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.WindowsHook;
+//using Shrinerain.AutoTester.WindowsHook;
 using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
@@ -13,8 +13,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
     {
         #region fields
 
-        private static MouseHook _mouseHook;
-        private static EventHook _msaaHook;
+        //private static MouseHook _mouseHook;
+        //private static EventHook _msaaHook;
         private static MSAATestEventDispatcher _instance = new MSAATestEventDispatcher();
 
         //cache
@@ -44,39 +44,39 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public bool Start(ITestApp app)
         {
-            if (app != null && (app as TestApp).Handle != IntPtr.Zero)
-            {
-                if (_msaaHook == null)
-                {
-                    _msaaHook = EventHook.GetInstance();
-                    _msaaHook.OnWindowsEventFired += new EventHook.WindowsEventHandler(HandleEvent);
-                    _msaaHook.InstallHook(app.GetProcessID());
-                }
+            //if (app != null && (app as TestApp).Handle != IntPtr.Zero)
+            //{
+            //    if (_msaaHook == null)
+            //    {
+            //        _msaaHook = EventHook.GetInstance();
+            //        _msaaHook.OnWindowsEventFired += new EventHook.WindowsEventHandler(HandleEvent);
+            //        _msaaHook.InstallHook(app.GetProcessID());
+            //    }
 
-                if (_mouseHook == null)
-                {
-                    _mouseHook = MouseHook.GetInstance();
-                    //_mouseHook.InstallHook(app.GetProcess().MainWindowHandle);
-                    //_mouseHook.OnMouseEvent += new MouseHook.MouseEventHandler(HandleMouseEvent);
-                }
-            }
+            //    if (_mouseHook == null)
+            //    {
+            //        _mouseHook = MouseHook.GetInstance();
+            //        //_mouseHook.InstallHook(app.GetProcess().MainWindowHandle);
+            //        //_mouseHook.OnMouseEvent += new MouseHook.MouseEventHandler(HandleMouseEvent);
+            //    }
+            //}
 
-            return app != null && _msaaHook != null && _mouseHook != null;
+            return app != null; //&& _msaaHook != null && _mouseHook != null;
         }
 
         public void Stop()
         {
-            if (_msaaHook != null)
-            {
-                _msaaHook = EventHook.GetInstance();
-                _msaaHook.UninstallHook();
-            }
+            //if (_msaaHook != null)
+            //{
+            //    _msaaHook = EventHook.GetInstance();
+            //    _msaaHook.UninstallHook();
+            //}
 
-            if (_mouseHook != null)
-            {
-                _mouseHook = MouseHook.GetInstance();
-                _mouseHook.UninstallHook();
-            }
+            //if (_mouseHook != null)
+            //{
+            //    _mouseHook = MouseHook.GetInstance();
+            //    _mouseHook.UninstallHook();
+            //}
         }
 
         #endregion

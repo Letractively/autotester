@@ -385,19 +385,29 @@ namespace Shrinerain.AutoTester.Core
             return AnyObjects()[0];
         }
 
+        public virtual IVisible AnyObject(String name)
+        {
+            return AnyObject(null, name);
+        }
+
+        public virtual IVisible AnyObject(String type, String name)
+        {
+            return AnyObjects(type, name)[0];
+        }
+
         public virtual IVisible[] AnyObjects()
         {
             return AnyObjects(null);
         }
 
-        public virtual IVisible AnyObject(String name)
-        {
-            return AnyObjects(name)[0];
-        }
-
         public virtual IVisible[] AnyObjects(String name)
         {
-            GetMapObjects(null, name);
+            return AnyObjects(null, name);
+        }
+
+        public virtual IVisible[] AnyObjects(String type, String name)
+        {
+            GetMapObjects(type, name);
             IVisible[] tmp = new IVisible[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;

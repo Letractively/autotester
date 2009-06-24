@@ -275,7 +275,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return _pool;
         }
 
-        public override ITestWindowMap GetWindowMap()
+        public override ITestPageMap GetPageMap()
         {
             if (_pageMap == null)
             {

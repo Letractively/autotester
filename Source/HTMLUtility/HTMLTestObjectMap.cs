@@ -138,6 +138,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return tmp;
         }
 
+
         public new HTMLTestLabel Label()
         {
             return Labels()[0];
@@ -161,6 +162,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return tmp;
         }
 
+
         public new HTMLTestLink Link()
         {
             return Links()[0];
@@ -183,6 +185,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
+
 
         public new HTMLTestListBox ListBox()
         {
@@ -231,6 +234,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return tmp;
         }
 
+
         public new HTMLTestTable Table()
         {
             return Tables()[0];
@@ -254,14 +258,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return tmp;
         }
 
+
         public new HTMLTestGUIObject AnyObject()
         {
             return AnyObjects()[0];
-        }
-
-        public new HTMLTestGUIObject[] AnyObjects()
-        {
-            return AnyObjects(null);
         }
 
         public new HTMLTestGUIObject AnyObject(String name)
@@ -269,9 +269,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return AnyObjects(name)[0];
         }
 
+        public new HTMLTestGUIObject AnyObject(String type, String name)
+        {
+            return AnyObjects(type, name)[0];
+        }
+
+        public new HTMLTestGUIObject[] AnyObjects()
+        {
+            return AnyObjects(null);
+        }
+
         public new HTMLTestGUIObject[] AnyObjects(String name)
         {
             GetMapObjects(null, name);
+            HTMLTestGUIObject[] tmp = new HTMLTestGUIObject[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        public new HTMLTestGUIObject[] AnyObjects(String type, String name)
+        {
+            GetMapObjects(type, name);
             HTMLTestGUIObject[] tmp = new HTMLTestGUIObject[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;

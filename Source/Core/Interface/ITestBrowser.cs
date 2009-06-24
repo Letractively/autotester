@@ -35,8 +35,11 @@ namespace Shrinerain.AutoTester.Core
 
         #endregion
 
+        ITestPageMap GetPageMap();
+
         //Browser actions
         void Start();
+        void Load(String url);
         void Load(String url, bool waitForPage);
 
         void Back();
