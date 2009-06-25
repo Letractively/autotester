@@ -161,7 +161,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* void Select(string value)
          * select an item by text.
          */
-        public virtual void Select(string value)
+        public void Select(string value)
         {
             //the item index to select. -1 means invalid.
             int index;
@@ -182,7 +182,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* void SelectByIndex(int index)
          * Select the item by it's index.
          */
-        public virtual void SelectByIndex(int index)
+        public void SelectByIndex(int index)
         {
             //if the index is less than 0 or larger than the item count, invalid.
             if (index < 0 || index > _allValues.Length)
@@ -227,9 +227,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public virtual void SelectMulti(string[] values)
+        public void SelectMulti(string[] values)
         {
             throw new CannotPerformActionException("Can not select more than 1 item in  Combo box.");
+        }
+
+        public bool IsInputable()
+        {
+            return false;
         }
 
         #region IInteractive methods

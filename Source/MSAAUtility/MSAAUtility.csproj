@@ -48,6 +48,7 @@
     <Compile Include="MSAATestObject\MSAATestCheckBox.cs" />
     <Compile Include="MSAATestObject\MSAATestComboBox.cs" />
     <Compile Include="MSAATestObject\MSAATestGUIObject.cs" />
+    <Compile Include="MSAATestObject\MSAATestMenuObject.cs" />
     <Compile Include="MSAATestObject\MSAATestObject.cs" />
     <Compile Include="MSAATestObjectFactory.cs" />
     <Compile Include="MSAATestObject\MSAATestObjectInfo.cs" />
