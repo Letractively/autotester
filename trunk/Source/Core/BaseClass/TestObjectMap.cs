@@ -538,7 +538,7 @@ namespace Shrinerain.AutoTester.Core
                     obj = this._objPool.GetObjectsByType(type, properties);
                 }
 
-                return true;
+                return obj != null;
             }
             catch (TestException ex)
             {

@@ -336,6 +336,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return values;
         }
 
+        public bool IsInputable()
+        {
+            return false;
+        }
+
         #region IWindows Interface
 
         public virtual IntPtr GetHandle()

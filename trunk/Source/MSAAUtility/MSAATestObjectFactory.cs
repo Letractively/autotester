@@ -109,7 +109,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
                         return MSAATestObject.Type.TextBox;
                     }
-                    else if (role == MSAATestObject.RoleType.ComboBox)
+                    else if (role == MSAATestObject.RoleType.ComboBox || role == MSAATestObject.RoleType.DropList)
                     {
                         return MSAATestObject.Type.ComboBox;
                     }
