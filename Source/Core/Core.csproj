@@ -58,10 +58,11 @@
     <Compile Include="BaseClass\TestException\TestLogException.cs" />
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
     <Compile Include="BaseClass\TestCheckPoint.cs" />
-    <Compile Include="BaseClass\TestObjectMap.cs" />
-    <Compile Include="BaseClass\TestPageMap.cs" />
+    <Compile Include="BaseClass\TestObject\TestObjectMap.cs" />
+    <Compile Include="BaseClass\TestObject\TestObjectType.cs" />
+    <Compile Include="BaseClass\TestApp\TestPageMap.cs" />
     <Compile Include="BaseClass\TestSession.cs" />
-    <Compile Include="BaseClass\TestProperty.cs" />
+    <Compile Include="BaseClass\TestObject\TestProperty.cs" />
     <Compile Include="Helper\AsstFunctions.cs" />
     <Compile Include="Helper\COMUtil.cs" />
     <Compile Include="Helper\HTMLAsstFunctions.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="ObjectInterface\IPath.cs" />
     <Compile Include="ObjectInterface\IStatus.cs" />
     <Compile Include="ObjectInterface\IClickable.cs" />
-    <Compile Include="ObjectInterface\IContainer.cs" />
+    <Compile Include="ObjectInterface\IHierarchy.cs" />
     <Compile Include="ObjectInterface\IDragable.cs" />
     <Compile Include="ObjectInterface\IInputable.cs" />
     <Compile Include="ObjectInterface\IInteractive.cs" />
@@ -100,13 +101,13 @@
     <Compile Include="Interface\ITestCheckPoint.cs" />
     <Compile Include="Interface\ITestObjectPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BaseClass\TestApp.cs" />
-    <Compile Include="BaseClass\TestBrowser.cs" />
+    <Compile Include="BaseClass\TestApp\TestApp.cs" />
+    <Compile Include="BaseClass\TestApp\TestBrowser.cs" />
     <Compile Include="BaseClass\TestDataPool.cs" />
     <Compile Include="BaseClass\TestException\TestException.cs" />
     <Compile Include="BaseClass\TestLog.cs" />
-    <Compile Include="BaseClass\TestObject.cs" />
-    <Compile Include="BaseClass\TestWindowMap.cs" />
+    <Compile Include="BaseClass\TestObject\TestObject.cs" />
+    <Compile Include="BaseClass\TestApp\TestWindowMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="MSHTML">

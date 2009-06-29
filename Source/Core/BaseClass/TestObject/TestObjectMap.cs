@@ -240,6 +240,28 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
+        public virtual ISelectable DropList()
+        {
+            return DropLists()[0];
+        }
+
+        public virtual ISelectable[] DropLists()
+        {
+            return DropLists(null);
+        }
+
+        public virtual ISelectable DropList(string name)
+        {
+            return DropLists(name)[0];
+        }
+
+        public virtual ISelectable[] DropLists(string name)
+        {
+            GetMapObjects("DropList", name);
+            ISelectable[] tmp = new ISelectable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
 
         public virtual IPicture Image()
         {

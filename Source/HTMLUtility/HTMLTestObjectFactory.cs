@@ -66,9 +66,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 htmlType = HTMLTestObjectType.Image;
             }
-            else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN" || type == "CB")
+            else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN" || type == "DROPLIST" || type == "CB")
             {
-                htmlType = HTMLTestObjectType.ComboBox;
+                htmlType = HTMLTestObjectType.DropList;
             }
             else if (type == "LISTBOX" || type == "LIST" || type == "LST" || type == "LS")
             {
@@ -130,7 +130,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 case HTMLTestObjectType.RadioBox:
                     res = new string[] { "input", "label" };
                     break;
-                case HTMLTestObjectType.ComboBox:
+                case HTMLTestObjectType.DropList:
                     res = new string[] { "select" };
                     break;
                 case HTMLTestObjectType.ListBox:
@@ -222,7 +222,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (!HTMLTestObject.TryGetProperty(element, "size", out selectValue))
                 {
-                    return HTMLTestObjectType.ComboBox;
+                    return HTMLTestObjectType.DropList;
                 }
                 else
                 {
@@ -230,7 +230,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     if (selectSize < 2)
                     {
-                        return HTMLTestObjectType.ComboBox;
+                        return HTMLTestObjectType.DropList;
                     }
                     else
                     {
@@ -293,8 +293,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     case HTMLTestObjectType.Link:
                         tmp = new HTMLTestLink(element, browser);
                         break;
-                    case HTMLTestObjectType.ComboBox:
-                        tmp = new HTMLTestComboBox(element, browser);
+                    case HTMLTestObjectType.DropList:
+                        tmp = new HTMLTestDropList(element, browser);
                         break;
                     case HTMLTestObjectType.Image:
                         tmp = new HTMLTestImage(element, browser);

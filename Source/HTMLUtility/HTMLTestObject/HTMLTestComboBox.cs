@@ -28,13 +28,9 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestComboBox : HTMLTestGUIObject, ISelectable, IWindows
+    public class HTMLTestDropList : HTMLTestGUIObject, ISelectable
     {
         #region fields
-
-        //HTML combobox is NOT a HTML control, it is a standard windows control, so we can  get it's handle.
-        protected IntPtr _handle;
-        protected string _className;
 
         //all items.
         protected string[] _allValues;
@@ -46,7 +42,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected int _itemCountPerPage = 30;
 
         //height of each item.
-        protected int _itemHeight;
+        protected int _itemHeight = 13;
 
         //HTML element.
         protected IHTMLSelectElement _htmlSelectElement;
@@ -54,17 +50,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region properties
-        public int ItemHeight
-        {
-            get { return _itemHeight; }
-        }
-        public int ItemCountPerPage
-        {
-            get { return _itemCountPerPage; }
-        }
+
         public string SelectedValue
         {
             get { return _selectedValue; }
+        }
+
+        public int SelectedIndex
+        {
+            get
+            {
+                if (_htmlSelectElement != null)
+                {
+                    return _htmlSelectElement.selectedIndex;
+                }
+                return -1;
+            }
         }
 
         #endregion
@@ -73,14 +74,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
-        public HTMLTestComboBox(IHTMLElement element)
+        public HTMLTestDropList(IHTMLElement element)
             : this(element, null)
         {
         }
-        public HTMLTestComboBox(IHTMLElement element, HTMLTestBrowser browser)
+        public HTMLTestDropList(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            this._type = HTMLTestObjectType.ComboBox;
+            this._type = HTMLTestObjectType.DropList;
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
@@ -110,53 +111,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region public methods
-
-        public override Rectangle GetRectOnScreen()
-        {
-            try
-            {
-                this._rect = base.GetRectOnScreen();
-                this._className = "Internet Explorer_TridentCmboBx";
-
-                //find the windows handle of combo box, it's class name is "Internet Explorer_TridentCmboBx".
-                IntPtr comboboxHandle = Win32API.FindWindowEx(_browser.IEServerHandle, IntPtr.Zero, this._className, null);
-                while (comboboxHandle != IntPtr.Zero)
-                {
-                    //get the position of the control
-                    Win32API.Rect tmpRect = new Win32API.Rect();
-                    Win32API.GetWindowRect(comboboxHandle, ref tmpRect);
-                    int centerX = (tmpRect.right - tmpRect.left) / 2 + tmpRect.left;
-                    int centerY = (tmpRect.bottom - tmpRect.top) / 2 + tmpRect.top;
-
-                    //we compare the position of the Windows control and HTML object. if they have same position, that means we find it.
-                    if ((centerX > this.Rect.Left && centerX < this.Rect.Left + this.Rect.Width) && (centerY > this.Rect.Top && centerY < this.Rect.Top + this.Rect.Height))
-                    {
-                        this._rect = new Rectangle(tmpRect.left, tmpRect.top, tmpRect.Width, tmpRect.Height);
-                        this._handle = comboboxHandle;
-                        break;
-                    }
-                    else
-                    {
-                        //not found, go to next control
-                        comboboxHandle = Win32API.FindWindowEx(_browser.IEServerHandle, comboboxHandle, this._className, null);
-                    }
-                }
-            }
-            catch
-            {
-            }
-
-            //get the height of each item.
-            this._itemHeight = Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.COMBOBOXMSG.CB_GETITEMHEIGHT), 0, 0);
-
-            if (this._itemHeight == 0)
-            {
-                //the default item height
-                this._itemHeight = 13;
-            }
-
-            return this._rect;
-        }
 
         /* void Select(string value)
          * select an item by text.
@@ -227,7 +181,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public void SelectMulti(string[] values)
+        public void MultiSelect(string[] values)
+        {
+            throw new CannotPerformActionException("Can not select more than 1 item in  Combo box.");
+        }
+
+        public void MultiSelectByIndex(int[] items)
         {
             throw new CannotPerformActionException("Can not select more than 1 item in  Combo box.");
         }
@@ -284,31 +243,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public string GetFontColor()
         {
             throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
-
-        #region IWindows methods
-
-        public virtual IntPtr GetHandle()
-        {
-            return this._handle;
-        }
-        public virtual string GetClass()
-        {
-            return this._className;
-        }
-
-        public String GetCaption()
-        {
-            try
-            {
-                return Win32API.GetWindowText(_handle);
-            }
-            catch (Exception ex)
-            {
-                throw new PropertyNotFoundException("Can not get windows caption: " + ex.ToString());
-            }
         }
 
         #endregion
@@ -385,7 +319,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected virtual Point GetItemPosition(int index)
         {
             //get current top index, top index means the first item you can see currently.
-            int topIndex = GetTopIndex();
+            int topIndex = this._htmlSelectElement.selectedIndex;
 
             if (topIndex < 0 || topIndex >= this._allValues.Length)
             {
@@ -446,20 +380,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return new Point(itemX, itemY);
         }
 
-        /* int GetTopIndex()
-         * get the index of the first item we can see currently.
-         */
-        protected virtual int GetTopIndex()
-        {
-            try
-            {
-                return Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.COMBOBOXMSG.CB_GETTOPINDEX), 0, 0);
-            }
-            catch
-            {
-                throw new PropertyNotFoundException("Can not get the first visible item.");
-            }
-        }
 
         /* void Click()
          * Click the combo box.

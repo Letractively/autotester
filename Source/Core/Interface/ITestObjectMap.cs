@@ -43,6 +43,11 @@ namespace Shrinerain.AutoTester.Core
         ISelectable ComboBox(string name);
         ISelectable[] ComboBoxs(string name);
 
+        ISelectable DropList();
+        ISelectable[] DropLists();
+        ISelectable DropList(string name);
+        ISelectable[] DropLists(string name);
+
         IPicture Image();
         IPicture[] Images();
         IPicture Image(string name);

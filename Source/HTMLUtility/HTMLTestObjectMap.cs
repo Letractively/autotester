@@ -91,25 +91,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
 
-        public new HTMLTestComboBox ComboBox()
+        public new HTMLTestDropList DropList()
         {
-            return ComboBoxs()[0];
+            return DropLists()[0];
         }
 
-        public new HTMLTestComboBox[] ComboBoxs()
+        public new HTMLTestDropList[] DropLists()
         {
-            return ComboBoxs(null);
+            return DropLists(null);
         }
 
-        public new HTMLTestComboBox ComboBox(string name)
+        public new HTMLTestDropList DropList(string name)
         {
-            return ComboBoxs(name)[0];
+            return DropLists(name)[0];
         }
 
-        public new HTMLTestComboBox[] ComboBoxs(string name)
+        public new HTMLTestDropList[] DropLists(string name)
         {
-            GetMapObjects("ComboBox", name);
-            HTMLTestComboBox[] tmp = new HTMLTestComboBox[_lastObjects.Length];
+            GetMapObjects("DropList", name);
+            HTMLTestDropList[] tmp = new HTMLTestDropList[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
