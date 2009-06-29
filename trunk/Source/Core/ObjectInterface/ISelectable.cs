@@ -25,7 +25,10 @@ namespace Shrinerain.AutoTester.Core
         void Select(string str);
 
         //select more than 1 item.
-        void SelectMulti(string[] strs);
+        void MultiSelect(string[] strs);
+
+        //select more than 1 item.
+        void MultiSelectByIndex(int[] items);
 
         //select the item by it's index, eg: the 1st one.
         void SelectByIndex(int index);

@@ -912,7 +912,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     visibleText = element.innerText;
                 }
-                else if (type == HTMLTestObjectType.ComboBox || type == HTMLTestObjectType.ListBox)
+                else if (type == HTMLTestObjectType.DropList || type == HTMLTestObjectType.ListBox)
                 {
                     visibleText = ((IHTMLOptionElement)(element as IHTMLSelectElement).item(0, 0)).text;
                 }

@@ -27,7 +27,7 @@ using Shrinerain.AutoTester.Win32;
 namespace Shrinerain.AutoTester.HTMLUtility
 {
     //HTMLTestListBox is NOT a HTML control, it is a standard windows control.
-    public class HTMLTestListBox : HTMLTestGUIObject, ISelectable, IWindows
+    public class HTMLTestListBox : HTMLTestGUIObject, ISelectable
     {
         #region fields
 
@@ -41,25 +41,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected int _itemCountPerPage;
 
         //height of each item.
-        protected int _itemHeight;
-
-        //handle for listbox, listbox is a windows control
-        protected IntPtr _handle;
-        protected string _className;
+        protected int _itemHeight = 13;
 
         protected IHTMLSelectElement _htmlSelectElement;
-        //protected HTMLSelectElementClass _htmlSelectClass;
 
         //if the flag is true, means the listbox can select more than 1 item.
-        protected bool _isMultiple = false;
+        protected bool _isMultipleSelect = false;
 
         #endregion
 
         #region properties
 
-        public int ItemCountPerPage
+        public int SelectedIndex
         {
-            get { return _itemCountPerPage; }
+            get
+            {
+                if (_htmlSelectElement != null)
+                {
+                    return _htmlSelectElement.selectedIndex;
+                }
+                return -1;
+            }
         }
 
         public string SelectedValue
@@ -67,14 +69,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _selectedValue; }
         }
 
-        protected int ItemHeight
+        public bool IsMultipleSelect
         {
-            get { return _itemHeight; }
-        }
-
-        public bool IsMultiple
-        {
-            get { return _isMultiple; }
+            get { return _isMultipleSelect; }
         }
 
         #endregion
@@ -95,7 +92,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;
-                _isMultiple = _htmlSelectElement.multiple;
+                _isMultipleSelect = _htmlSelectElement.multiple;
             }
             catch (Exception ex)
             {
@@ -127,65 +124,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotBuildObjectException("Can not get size of list box: " + ex.ToString());
-            }
-
-            try
-            {
-                this._className = "Internet Explorer_TridentLstBox";
-
-                //get the windows handle
-                IntPtr listboxHandle = Win32API.FindWindowEx(_browser.IEServerHandle, IntPtr.Zero, this._className, null);
-                while (listboxHandle != IntPtr.Zero)
-                {
-                    // get the rect of this control
-                    Win32API.Rect tmpRect = new Win32API.Rect();
-                    Win32API.GetWindowRect(listboxHandle, ref tmpRect);
-                    int centerX = (tmpRect.right - tmpRect.left) / 2 + tmpRect.left;
-                    int centerY = (tmpRect.bottom - tmpRect.top) / 2 + tmpRect.top;
-
-                    //if the control has the same position with our HTML test object, that means we find it.
-                    if ((centerX > this.Rect.Left && centerX < this.Rect.Left + this.Rect.Width) && (centerY > this.Rect.Top && centerY < this.Rect.Top + this.Rect.Height))
-                    {
-                        this._handle = listboxHandle;
-
-                        break;
-                    }
-                    else
-                    {
-                        //else, go to next listbox
-                        listboxHandle = Win32API.FindWindowEx(_browser.IEServerHandle, listboxHandle, this._className, null);
-                    }
-                }
-
-                //if (this._handle == IntPtr.Zero)
-                //{
-                //    throw new CannotBuildObjectException("Can not get windows handle of list box.");
-                //}
-            }
-            //catch (CannotBuildObjectException)
-            //{
-            //    throw;
-            //}
-            catch //(Exception ex)
-            {
-                // throw new CannotBuildObjectException("Can not get windows handle of list box: " + ex.ToString());
-            }
-
-            try
-            {
-                //get the height of each item.
-                this._itemHeight = Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_GETITEMHEIGHT), 0, 0);
-            }
-            catch
-            {
-                if (this.ItemCountPerPage < 1)
-                {
-                    this._itemHeight = this.Rect.Height;
-                }
-                else
-                {
-                    this._itemHeight = this.Rect.Height / this.ItemCountPerPage;
-                }
             }
         }
 
@@ -269,9 +207,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* void SelectMulti(string[] values)
          * Select more than 1 items.
          */
-        public virtual void SelectMulti(string[] values)
+        public virtual void MultiSelect(string[] values)
         {
-            if (!_isMultiple)
+            if (!_isMultipleSelect)
             {
                 throw new CannotPerformActionException("Can not select multi items.");
             }
@@ -319,6 +257,53 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public virtual void MultiSelectByIndex(int[] items)
+        {
+            if (!_isMultipleSelect)
+            {
+                throw new CannotPerformActionException("Can not select multi items.");
+            }
+
+            if (items == null)
+            {
+                throw new CannotPerformActionException("Can not select in listbox, no item.");
+            }
+
+            if (this._allValues == null)
+            {
+                this._allValues = GetAllValues();
+            }
+
+            try
+            {
+                BeforeAction();
+
+                Hover();
+                Point itemPosition;
+                //click each item.
+                foreach (int itemIndex in items)
+                {
+                    //get the actual position on the screen.
+                    itemPosition = GetItemPosition(itemIndex);
+                    MouseOp.Click(itemPosition);
+                    //refresh the selected value.
+                    this._selectedValue = this._allValues[itemIndex];
+                }
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not select multi index: " + items.ToString() + ": " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
+            }
+        }
+
         /* String[] GetAllValues()
          * Return the all items text of the listbox
          */
@@ -340,32 +325,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             return false;
         }
-
-        #region IWindows Interface
-
-        public virtual IntPtr GetHandle()
-        {
-            return this._handle;
-        }
-
-        public virtual string GetClass()
-        {
-            return this._className;
-        }
-
-        public String GetCaption()
-        {
-            try
-            {
-                return Win32API.GetWindowText(_handle);
-            }
-            catch (Exception ex)
-            {
-                throw new PropertyNotFoundException("Can not get windows caption: " + ex.ToString());
-            }
-        }
-
-        #endregion
 
         #region IInteractive interface
 
@@ -452,7 +411,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected virtual Point GetItemPosition(int index)
         {
             //get the the first item index we can  see currently.
-            int startIndex = GetTopIndex();
+            int startIndex = this._htmlSelectElement.selectedIndex;
 
             //if the index is smaller than 0 or larger than capacity
             if (startIndex < 0 || startIndex >= this._allValues.Length)
@@ -499,33 +458,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else if (positionFlag == 1)
             {
                 //we need to move the scroll bar upward.
-                Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_SETTOPINDEX), index, 0);
+                this._htmlSelectElement.selectedIndex = index;
             }
             else if (positionFlag == 2)
             {
                 //we need to move the scroll bar downward, and recalculate the position.
                 int expectedStartIndex = index - this._itemCountPerPage + 1;
-                Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_SETTOPINDEX), expectedStartIndex, 0);
-
+                this._htmlSelectElement.selectedIndex = expectedStartIndex;
                 itemY += (this._itemCountPerPage - 1) * this._itemHeight;
             }
 
             return new Point(itemX, itemY);
-        }
-
-        /* int GetTopIndex()
-         * return the first item index we can see currently.
-         */
-        protected virtual int GetTopIndex()
-        {
-            try
-            {
-                return Win32API.SendMessage(this._handle, Convert.ToInt32(Win32API.LISTBOXMSG.LB_GETTOPINDEX), 0, 0);
-            }
-            catch
-            {
-                throw new PropertyNotFoundException("Can not get the first visible item.");
-            }
         }
 
         /* int[] GetIndexByString(string[] value)

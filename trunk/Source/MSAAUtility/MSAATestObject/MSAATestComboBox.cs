@@ -134,7 +134,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
-        public void SelectMulti(string[] strs)
+        public void MultiSelect(string[] strs)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MultiSelectByIndex(int[] items)
         {
             throw new NotImplementedException();
         }

@@ -39,7 +39,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         CheckBox,
         RadioBox,
         TextBox,
-        ComboBox,
+        DropList,
         ListBox,
         Table,
         Image,
@@ -48,7 +48,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     }
 
     #region html object base class
-    public class HTMLTestObject : TestObject, IStatus, IContainer
+    public class HTMLTestObject : TestObject, IStatus, IHierarchy
     {
         #region fields
 
@@ -376,6 +376,29 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #region IContainer Members
+
+        public virtual object GetParent()
+        {
+            if (this._sourceElement != null)
+            {
+                try
+                {
+                    IHTMLElement ele = this._sourceElement.parentElement;
+                    HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._browser);
+                    return obj;
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new ObjectNotFoundException("Can not get parent: " + ex.ToString());
+                }
+            }
+
+            return null;
+        }
 
         public virtual object[] GetChildren()
         {

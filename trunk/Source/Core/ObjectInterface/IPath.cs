@@ -17,7 +17,7 @@ using System;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public interface IPath : IInteractive, IContainer
+    public interface IPath : IInteractive, IHierarchy
     {
         int GetDepth();
 

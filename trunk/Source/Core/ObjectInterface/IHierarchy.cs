@@ -18,8 +18,9 @@
 
 namespace Shrinerain.AutoTester.Core
 {
-    public interface IContainer
+    public interface IHierarchy
     {
+        object GetParent();
         object[] GetChildren();
         object GetChild(int childIndex);
     }
