@@ -955,7 +955,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             if (OnObjectFound != null)
             {
-                OnObjectFound(_testObj, null);
+                OnObjectFound(obj, null);
             }
         }
 
