@@ -16,10 +16,11 @@
 *
 *********************************************************************/
 
-using System;
-
 namespace Shrinerain.AutoTester.Core
 {
+    using System;
+    using mshtml;
+
     public interface ITestBrowser : ITestApp
     {
         #region
@@ -32,6 +33,8 @@ namespace Shrinerain.AutoTester.Core
         event TestAppEventHandler OnBrowserRefresh;
         event TestAppEventHandler OnBrowserClose;
         event TestAppEventHandler OnBrowserAttached;
+        event TestAppEventHandler OnNewWindow;
+        event TestAppEventHandler OnPopupDialog;
 
         #endregion
 
@@ -42,6 +45,7 @@ namespace Shrinerain.AutoTester.Core
         void Load(String url);
         void Load(String url, bool waitForPage);
 
+        void Home();
         void Back();
         void Forward();
         void Refresh();
@@ -50,6 +54,11 @@ namespace Shrinerain.AutoTester.Core
         //Browser information
         string GetBrowserName(); //get the  browser name, eg: Internet Explorer
         string GetBrowserVersion(); //get the browser version, eg: 7.0
+        string GetStatusText();
+        string GetTitle();
+        string GetUrl();
+        bool IsLoading();
+        HTMLDocument GetDocument();
 
         //find sub pages/tabs
         ITestBrowser GetPage(int index);

@@ -944,7 +944,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private void BeforeObjectFound()
         {
             int times = 0;
-            while (times < _maxWaitSeconds && this._htmlTestBrowser.IsBusy)
+            while (times < _maxWaitSeconds && this._htmlTestBrowser.IsLoading())
             {
                 times += Interval;
                 Thread.Sleep(Interval * 1000);
