@@ -23,7 +23,7 @@ namespace Shrinerain.AutoTester.Core
 
     public interface ITestBrowser : ITestApp
     {
-        #region
+        #region event
 
         event TestAppEventHandler OnBrowserStart;
         event TestAppEventHandler OnBrowserNavigate;
