@@ -757,7 +757,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void Focus()
         {
-            (this._sourceElement as IHTMLElement2).focus();
+            if (this._sourceElement == null)
+            {
+                throw new CannotPerformActionException("Can not focus on null element.");
+            }
+
+            try
+            {
+                (this._sourceElement as IHTMLElement2).focus();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not focus on element: " + ex.ToString());
+            }
         }
 
         #endregion
