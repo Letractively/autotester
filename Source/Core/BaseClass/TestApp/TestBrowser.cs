@@ -192,26 +192,6 @@ namespace Shrinerain.AutoTester.Core
             get { return _ieServerHandle; }
         }
 
-        //property to show if the browser is downloading sth.
-        public bool IsBusy
-        {
-            get
-            {
-                try
-                {
-                    if (_isDownloading || _browser.Busy ||
-                        (_browser.ReadyState != tagREADYSTATE.READYSTATE_COMPLETE && _browser.ReadyState != tagREADYSTATE.READYSTATE_INTERACTIVE))
-                    {
-                        return true;
-                    }
-                }
-                catch
-                {
-                }
-                return false;
-            }
-        }
-
         #endregion
 
         #region Methods
@@ -662,6 +642,21 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        public virtual bool IsLoading()
+        {
+            try
+            {
+                if (_isDownloading || _browser.Busy || _browser.ReadyState != tagREADYSTATE.READYSTATE_COMPLETE)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+            }
+            return false;
+        }
+
         /* bool IsMenuVisible()
          * return true if the menu bar is visible. 
          * sometimes we will cancel the menu bar, eg: pop up window.
@@ -764,7 +759,7 @@ namespace Shrinerain.AutoTester.Core
             int times = 0;
             while (times < this._maxWaitSeconds)
             {
-                if (IsBusy)
+                if (IsLoading())
                 {
                     Thread.Sleep(1 * 1000);
                     times++;
@@ -1127,8 +1122,6 @@ namespace Shrinerain.AutoTester.Core
          */
         protected virtual void WaitForNewBrowserSync()
         {
-            this._isDownloading = true;
-
             int times = 0;
             while (times < this._maxWaitSeconds)
             {
@@ -1149,7 +1142,6 @@ namespace Shrinerain.AutoTester.Core
                 }
             }
 
-            this._isDownloading = false;
             this._browserExisted.Set();
         }
 
@@ -1892,6 +1884,10 @@ namespace Shrinerain.AutoTester.Core
         public event TestAppEventHandler OnBrowserClose;
 
         public event TestAppEventHandler OnBrowserAttached;
+
+        public event TestAppEventHandler OnNewWindow;
+
+        public event TestAppEventHandler OnPopupDialog;
 
         #endregion
     }
