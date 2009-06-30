@@ -27,7 +27,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 {
     public class MSAATestGUIObject : MSAATestObject, IVisible
     {
-
         #region fields
 
         protected Rectangle _rect;
@@ -222,6 +221,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             string state = GetState();
             return state.IndexOf("ReadOnly") >= 0;
+        }
+
+        public virtual bool IsReadyForAction()
+        {
+            return IsVisible() && IsEnable() && IsReadonly();
         }
 
         public virtual void HighLight()
