@@ -513,7 +513,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    throw new CannotPerformActionException("Can not get ready status: InputElement can not be null.");
+                    throw new CannotPerformActionException("Can not get ready status: element can not be null.");
                 }
             }
             catch (TestException)
