@@ -84,7 +84,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     this._btnType = GetButtonType();
                     if (this._btnType != HTMLTestButtonType.File)
                     {
-                        this._buttonCaption = GetProperty("value").ToString();
+                        this._buttonCaption = GetCaption();
                     }
                     else
                     {
@@ -94,7 +94,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 else if (String.Compare(element.tagName, "BUTTON", true) == 0)
                 {
                     this._buttonElement = (IHTMLButtonElement)element;
-                    this._buttonCaption = GetProperty("value").ToString();
+                    this._buttonCaption = GetCaption();
                     this._btnType = HTMLTestButtonType.Normal;
                 }
             }
@@ -281,6 +281,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return HTMLTestButtonType.Normal;
+        }
+
+        protected virtual String GetCaption()
+        {
+            object caption;
+            if (!TryGetProperty("value", out caption))
+            {
+                TryGetProperty("title", out caption);
+            }
+
+            return caption != null ? caption.ToString() : "";
         }
 
         #endregion

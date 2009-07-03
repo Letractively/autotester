@@ -52,25 +52,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HTMLTestEventDispatcher.cs" />
-    <Compile Include="HTMLTestObjectFactory.cs" />
-    <Compile Include="HTMLTestObjectMap.cs" />
+    <Compile Include="HTMLTestObjectFinder\HTMLTestObjectFactory.cs" />
+    <Compile Include="HTMLTestObjectFinder\HTMLTestObjectMap.cs" />
     <Compile Include="HTMLTestObject\HTMLTestActiveXObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestGUIObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestButton.cs" />
     <Compile Include="HTMLTestObject\HTMLTestCheckBox.cs" />
-    <Compile Include="HTMLTestObject\HTMLTestComboBox.cs" />
+    <Compile Include="HTMLTestObject\HTMLTestDropList.cs" />
     <Compile Include="HTMLTestObject\HTMLTestImage.cs" />
     <Compile Include="HTMLTestObject\HTMLTestLabel.cs" />
     <Compile Include="HTMLTestObject\HTMLTestLink.cs" />
     <Compile Include="HTMLTestObject\HTMLTestListBox.cs" />
     <Compile Include="HTMLTestObject\HTMLTestObject.cs" />
-    <Compile Include="HTMLTestObjectPool.cs" />
+    <Compile Include="HTMLTestObjectFinder\HTMLTestObjectPool.cs" />
     <Compile Include="HTMLTestObject\HTMLTestRadioBox.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTable.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTextBox.cs" />
     <Compile Include="HTMLTestCheckPoint.cs" />
-    <Compile Include="HTMLTestBrowser.cs" />
-    <Compile Include="HTMLTestPageMap.cs" />
+    <Compile Include="HTMLTestBrowser\HTMLTestBrowser.cs" />
+    <Compile Include="HTMLTestBrowser\HTMLTestPageMap.cs" />
     <Compile Include="HTMLTestSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
