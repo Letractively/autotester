@@ -34,6 +34,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _linkText;
         //the image of the link if it is a image link.
         protected IHTMLImgElement _linkImgElement;
+        protected string _linkImgSrc;
         // the HTML element of link.
         protected HTMLAnchorElement _acnchorElement;
 
@@ -47,6 +48,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public string LinkText
         {
             get { return _linkText; }
+        }
+
+        public string LinkImage
+        {
+            get { return _linkImgSrc; }
         }
 
         public string Href
@@ -90,7 +96,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             // if the text is null, it maybe a image link, try to get the image.
             if (String.IsNullOrEmpty(_linkText))
             {
-                _linkImgElement = _acnchorElement.firstChild as IHTMLImgElement;
+                try
+                {
+                    _linkImgElement = _acnchorElement.firstChild as IHTMLImgElement;
+                    if (_linkImgElement != null)
+                    {
+                        _linkImgSrc = _linkImgElement.src;
+                    }
+                }
+                catch
+                {
+                }
             }
 
             try
