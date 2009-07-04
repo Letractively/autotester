@@ -51,10 +51,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HTMLTestEventDispatcher.cs" />
+    <Compile Include="HTMLTestEvent\HTMLTestEventDispatcher.cs" />
     <Compile Include="HTMLTestObjectFinder\HTMLTestObjectFactory.cs" />
     <Compile Include="HTMLTestObjectFinder\HTMLTestObjectMap.cs" />
     <Compile Include="HTMLTestObject\HTMLTestActiveXObject.cs" />
+    <Compile Include="HTMLTestObject\HTMLTestDialog.cs" />
     <Compile Include="HTMLTestObject\HTMLTestGUIObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestButton.cs" />
     <Compile Include="HTMLTestObject\HTMLTestCheckBox.cs" />
@@ -68,7 +69,7 @@
     <Compile Include="HTMLTestObject\HTMLTestRadioBox.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTable.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTextBox.cs" />
-    <Compile Include="HTMLTestCheckPoint.cs" />
+    <Compile Include="HTMLTestCheckPoint\HTMLTestCheckPoint.cs" />
     <Compile Include="HTMLTestBrowser\HTMLTestBrowser.cs" />
     <Compile Include="HTMLTestBrowser\HTMLTestPageMap.cs" />
     <Compile Include="HTMLTestSession.cs" />

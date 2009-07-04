@@ -40,22 +40,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MSAATestApp.cs" />
-    <Compile Include="MSAATestEventDispatcher.cs" />
-    <Compile Include="MSAATestObjectMap.cs" />
-    <Compile Include="MSAATestObjectPool.cs" />
+    <Compile Include="MSAATestApp\MSAATestApp.cs" />
+    <Compile Include="MSAATestEvent\MSAATestEventDispatcher.cs" />
+    <Compile Include="MSAATestEvent\MSAATestEventHook.cs" />
+    <Compile Include="MSAATestObjectFinder\MSAATestObjectMap.cs" />
+    <Compile Include="MSAATestObjectFinder\MSAATestObjectPool.cs" />
     <Compile Include="MSAATestObject\MSAATestButton.cs" />
     <Compile Include="MSAATestObject\MSAATestCheckBox.cs" />
     <Compile Include="MSAATestObject\MSAATestComboBox.cs" />
     <Compile Include="MSAATestObject\MSAATestGUIObject.cs" />
     <Compile Include="MSAATestObject\MSAATestMenuObject.cs" />
     <Compile Include="MSAATestObject\MSAATestObject.cs" />
-    <Compile Include="MSAATestObjectFactory.cs" />
+    <Compile Include="MSAATestObjectFinder\MSAATestObjectFactory.cs" />
     <Compile Include="MSAATestObject\MSAATestObjectInfo.cs" />
     <Compile Include="MSAATestObject\MSAATestRadioButton.cs" />
     <Compile Include="MSAATestObject\MSAATestTextBox.cs" />
     <Compile Include="MSAATestSession.cs" />
-    <Compile Include="MSAATestWindowMap.cs" />
+    <Compile Include="MSAATestApp\MSAATestWindowMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
