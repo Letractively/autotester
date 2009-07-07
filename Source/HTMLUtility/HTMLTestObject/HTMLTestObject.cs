@@ -24,6 +24,7 @@ using System.Threading;
 using System.Web;
 
 using mshtml;
+using Accessibility;
 
 using Shrinerain.AutoTester.Core;
 
@@ -48,9 +49,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
     }
 
     #region html object base class
-    public class HTMLTestObject : TestObject, IStatus, IHierarchy
+    public class HTMLTestObject : TestObject, IStatus, IHierarchy, IMSAA
     {
         #region fields
+
+        public const string DOMAIN = "HTML";
 
         //tag for this object, like "A" ,"INPUT"...
         protected string _tag;
@@ -137,7 +140,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestObject()
             : base()
         {
-            this._domain = "HTML";
+            this._domain = DOMAIN;
         }
 
         public HTMLTestObject(IHTMLElement element)
@@ -157,7 +160,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 this._sourceElement = element;
                 //get tag, like <A>, <Input>...
-                this._domain = "HTML";
+                this._domain = DOMAIN;
                 this._tag = element.tagName;
                 this._id = element.id;
                 this._className = element.className;
@@ -467,6 +470,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return null;
+        }
+
+        #endregion
+
+        #region IMSAA Members
+
+        public virtual IAccessible GetIAccInterface()
+        {
+            if (this._sourceElement != null)
+            {
+                return COMUtil.IHTMLElementToMSAA(this._sourceElement);
+            }
+
+            return null;
+        }
+
+        public virtual int GetChildID()
+        {
+            return 0;
         }
 
         #endregion

@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 
+using mshtml;
 using Accessibility;
 
 using Shrinerain.AutoTester.Core;
@@ -25,9 +26,11 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public partial class MSAATestObject : TestObject, IMSAA
+    public partial class MSAATestObject : TestObject, IMSAA, IHierarchy
     {
         #region fields
+
+        public const string DOMAIN = "MSAA";
 
         //MSAA interface.
         protected IAccessible _iAcc;
@@ -90,6 +93,25 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
         }
 
+        public MSAATestObject(IHTMLElement element)
+            : base()
+        {
+            if (element == null)
+            {
+                throw new CannotBuildObjectException("HTML element can not be null.");
+            }
+            try
+            {
+                this._domain = DOMAIN;
+                this._iAcc = COMUtil.IHTMLElementToMSAA(element);
+                GetMSAAInfo();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build MSAA test object: " + ex.ToString());
+            }
+        }
+
         public MSAATestObject(IAccessible iAcc)
             : base()
         {
@@ -100,7 +122,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             try
             {
-                this._domain = "MSAA";
+                this._domain = DOMAIN;
                 this._iAcc = iAcc;
 
                 GetMSAAInfo();
@@ -127,7 +149,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             try
             {
-                this._domain = "MSAA";
+                this._domain = DOMAIN;
                 this._childID = childID;
                 this._iAcc = parentAcc;
 
@@ -146,7 +168,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             try
             {
-                this._domain = "MSAA";
+                this._domain = DOMAIN;
 
                 Win32API.POINT p = new Win32API.POINT(x, y);
                 object childID = new object();
@@ -172,7 +194,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             try
             {
-                this._domain = "MSAA";
+                this._domain = DOMAIN;
                 Win32API.AccessibleObjectFromWindow(handle, -4, ref Win32API.IACCUID, ref this._iAcc);
                 GetMSAAInfo();
             }
@@ -190,7 +212,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 try
                 {
-                    this._domain = "MSAA";
+                    this._domain = DOMAIN;
 
                     object var = new object();
                     Win32API.AccessibleObjectFromEvent(hwnd, (uint)dwObjectID, (uint)dwChildID, out this._iAcc, out var);
@@ -510,7 +532,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
-        public MSAATestObject[] GetChildren()
+        public virtual Object[] GetChildren()
         {
             if (this._iAcc == null)
             {
@@ -545,7 +567,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return res.ToArray();
         }
 
-        public MSAATestObject GetChild(int childID)
+        public virtual Object GetChild(int childID)
         {
             if (this._iAcc == null)
             {
@@ -564,6 +586,28 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             catch
             {
+            }
+
+            return null;
+        }
+
+        public virtual Object GetParent()
+        {
+            if (this._iAcc != null)
+            {
+                try
+                {
+                    IAccessible parent = this._iAcc.accParent as IAccessible;
+                    return new MSAATestObject(parent);
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotBuildObjectException("Can not get parent: " + ex.ToString());
+                }
             }
 
             return null;
@@ -663,6 +707,5 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #endregion
 
         #endregion
-
     }
 }
