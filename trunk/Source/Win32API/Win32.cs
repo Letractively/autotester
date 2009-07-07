@@ -192,6 +192,19 @@ namespace Shrinerain.AutoTester.Win32
             WH_MOUSE_LL = 14
         }
 
+        public enum WindowsEvent
+        {
+            SYS_MENUPOPUPSTART = 0x06,
+            SYS_MENUPOPUPEND = 0x07,
+            SYS_DIALOGSTART = 0x10,
+            OBJ_CREATE = 0x8000,
+            OBJ_DESTROY = 0x8001,
+            OBJ_SHOW = 0x8002,
+            OBJ_FOCUS = 0x8005,
+            OBJ_STATECHANGE = 0x800A,
+            OBJ_VALUECHANGE = 0x800E
+        }
+
         public enum ShellHookMessages
         {
             HSHELL_WINDOWCREATED = 1,
@@ -510,6 +523,14 @@ namespace Shrinerain.AutoTester.Win32
 
         [DllImport("user32.dll")]
         public static extern int CallNextHookEx(IntPtr hookHandle, int nCode, Int32 wParam, IntPtr lParam);
+
+        public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, int idProcess, uint idThread, uint dwFlags);
+
+        [DllImport("user32.dll")]
+        public static extern bool UnhookWinEvent(IntPtr hWinEventHook);
 
         [DllImport("user32.dll")]
         public static extern int RegisterShellHookWindow(IntPtr hWnd);
@@ -1047,16 +1068,6 @@ namespace Shrinerain.AutoTester.Win32
             WS_SIZEBOX = WS_THICKFRAME,
             WS_TILED = WS_OVERLAPPED,
             WS_OVERLAPPEDWINDOW = (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX)
-        }
-
-        public enum WindowsEvent : uint
-        {
-            SYS_DIALOGSTART = 0x10,
-            OBJ_CREATE = 0x8000,
-            OBJ_SHOW = 0x8002,
-            OBJ_FOCUS = 0x8005,
-            OBJ_STATECHANGE = 0x800A,
-            OBJ_VALUECHANGE = 0x800E
         }
 
         public struct WindowInfo

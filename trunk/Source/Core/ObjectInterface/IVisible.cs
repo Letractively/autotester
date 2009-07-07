@@ -43,5 +43,6 @@ namespace Shrinerain.AutoTester.Core
         bool IsVisible();
         bool IsEnable();
         bool IsReadonly();
+        bool IsFocused();
     }
 }

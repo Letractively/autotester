@@ -32,6 +32,7 @@ using mshtml;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Win32;
+using Shrinerain.AutoTester.MSAAUtility;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
@@ -172,53 +173,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                // get it's position offset to it's parent object.
-                int top = this._sourceElement.offsetTop;
-                int left = this._sourceElement.offsetLeft;
-                int width = this._sourceElement.offsetWidth;
-                int height = this._sourceElement.offsetHeight;
-
-                //if width or height is 0, error.
-                if (width <= 0 || height <= 0)
-                {
-                    throw new CannotGetObjectPositionException("width and height of object can not be 0.");
-                }
-
-                //find parent object, calculate 
-                //the offsetTop/offsetLeft... is the distance between current object and it's parent object.
-                //so we need a loop to get the actual position on the screen.
-                IHTMLElement parent = this._sourceElement.offsetParent;
-                while (parent != null)
-                {
-                    top += parent.offsetTop;
-                    left += parent.offsetLeft;
-
-                    if (parent.offsetTop == 0 && parent.offsetLeft == 0)
-                    {
-                        top++;
-                        left++;
-                    }
-
-                    parent = parent.offsetParent;
-                }
-
-                if (_browser != null)
-                {
-                    //get the browser information, get the real position on screen.
-                    top += _browser.ClientTop + 1;
-                    left += _browser.ClientLeft + 1;
-
-                    top -= _browser.ScrollTop;
-                    left -= _browser.ScrollLeft;
-                }
-
-                if (this._rect.Left != left || this._rect.Top != top || this._rect.Width != width || this._rect.Height != height)
-                {
-                    // we will calculate the center point of this object.
-                    CalCenterPoint(left, top, width, height);
-                    this._rect = new Rectangle(left, top, width, height);
-                }
-
+                MSAATestObject obj = new MSAATestObject(this._sourceElement);
+                this._rect = obj.GetRect();
+                this._centerPoint = obj.GetCenterPoint();
                 return _rect;
             }
             catch (TestException)
@@ -753,6 +710,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public virtual bool IsReadyForAction()
         {
             return IsVisible() && IsEnable() && IsReadonly() && IsReady();
+        }
+
+        public virtual bool IsFocused()
+        {
+            if (_sourceElement != null)
+            {
+                try
+                {
+                    MSAATestGUIObject obj = new MSAATestGUIObject(_sourceElement);
+                    return obj.IsFocused();
+                }
+                catch
+                {
+                }
+            }
+            return false;
         }
 
         public virtual void Focus()

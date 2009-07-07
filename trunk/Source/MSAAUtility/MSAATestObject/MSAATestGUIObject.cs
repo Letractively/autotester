@@ -18,6 +18,7 @@ using System.Text;
 using System.Drawing;
 using System.Threading;
 
+using mshtml;
 using Accessibility;
 
 using Shrinerain.AutoTester.Core;
@@ -130,6 +131,19 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
         }
 
+        public MSAATestGUIObject(IHTMLElement element)
+            : base(element)
+        {
+            try
+            {
+                GetGUIInfo();
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build GUI object: " + ex.ToString());
+            }
+        }
+
         public MSAATestGUIObject(IAccessible parentAcc, int childID)
             : base(parentAcc, childID)
         {
@@ -221,6 +235,12 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             string state = GetState();
             return state.IndexOf("ReadOnly") >= 0;
+        }
+
+        public virtual bool IsFocused()
+        {
+            string state = GetState();
+            return state.IndexOf("Focused") >= 0;
         }
 
         public virtual bool IsReadyForAction()

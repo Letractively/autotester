@@ -9,6 +9,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 {
     public class HTMLTestDialog : HTMLTestGUIObject, IMSAA, IWindows
     {
+        #region fields
+
+        protected IntPtr _mainHandle;
+        protected MSAATestObject _mainObj;
+
+        #endregion
+
         #region IMSAA Members
 
         public Accessibility.IAccessible GetIAccInterface()
