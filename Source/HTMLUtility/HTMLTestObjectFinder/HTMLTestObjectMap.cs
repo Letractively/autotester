@@ -258,6 +258,52 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return tmp;
         }
 
+        public HTMLTestActiveXObject ActiveX()
+        {
+            return ActiveXs()[0];
+        }
+
+        public HTMLTestActiveXObject[] ActiveXs()
+        {
+            return ActiveXs(null);
+        }
+
+        public HTMLTestActiveXObject ActiveX(String name)
+        {
+            return ActiveXs(name)[0];
+        }
+
+        public HTMLTestActiveXObject[] ActiveXs(String name)
+        {
+            GetMapObjects("ActiveX", name);
+            HTMLTestActiveXObject[] tmp = new HTMLTestActiveXObject[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        public HTMLTestDialog Dialog()
+        {
+            return Dialogs()[0];
+        }
+
+        public HTMLTestDialog[] Dialogs()
+        {
+            return Dialogs(null);
+        }
+
+        public HTMLTestDialog Dialog(String name)
+        {
+            return Dialogs(name)[0];
+        }
+
+        public HTMLTestDialog[] Dialogs(String name)
+        {
+            GetMapObjects("Dialog", name);
+            HTMLTestDialog[] tmp = new HTMLTestDialog[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
 
         public new HTMLTestGUIObject AnyObject()
         {

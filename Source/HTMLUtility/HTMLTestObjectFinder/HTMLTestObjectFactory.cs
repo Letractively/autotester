@@ -308,6 +308,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     case HTMLTestObjectType.Table:
                         tmp = new HTMLTestTable(element, browser);
                         break;
+                    case HTMLTestObjectType.ActiveX:
+                        tmp = new HTMLTestActiveXObject(element, browser);
+                        break;
+                    case HTMLTestObjectType.Dialog:
+                        tmp = new HTMLTestDialog(IntPtr.Zero, browser);
+                        break;
                     default:
                         tmp = new HTMLTestGUIObject(element, browser);
                         break;
