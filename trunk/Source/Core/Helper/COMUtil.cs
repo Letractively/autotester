@@ -189,8 +189,8 @@ namespace Shrinerain.AutoTester.Core
             {
                 return null;
             }
-            object spAccessible;
 
+            object spAccessible;
             Guid guid = typeof(IAccessible).GUID;
             int hRes = spServiceProvider.QueryService(ref guid, ref guid, out spAccessible);
             if (hRes != 0)
@@ -199,6 +199,31 @@ namespace Shrinerain.AutoTester.Core
             }
 
             return spAccessible as IAccessible;
+        }
+
+        public static IMarkupContainer2 GetMarkupContainer(IHTMLDocument2 doc2)
+        {
+            if (doc2 != null)
+            {
+                try
+                {
+                    object oDocument = doc2;
+                    IntPtr pDocument = Marshal.GetIUnknownForObject(oDocument);
+                    IntPtr pMarkupContainer = IntPtr.Zero;
+                    Guid IMarkupContainer2GUID = typeof(mshtml.IMarkupContainer2).GUID;
+                    Marshal.QueryInterface(pDocument, ref IMarkupContainer2GUID, out pMarkupContainer);
+                    if (pMarkupContainer != IntPtr.Zero)
+                    {
+                        object oMarkupContainer = Marshal.GetUniqueObjectForIUnknown(pMarkupContainer);
+                        return oMarkupContainer as mshtml.IMarkupContainer2;
+                    }
+                }
+                catch
+                {
+                }
+            }
+
+            return null;
         }
     }
 }

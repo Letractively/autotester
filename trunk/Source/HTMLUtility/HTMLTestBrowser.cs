@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 using mshtml;
 using SHDocVw;
@@ -33,10 +34,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private HTMLTestObjectMap _objMap;
         private HTMLTestPageMap _pageMap;
 
-        private bool _useCache = true;
-        private IHTMLElement[] _allElements = null;
-        private Dictionary<String, IHTMLElement[]> _tagElements = new Dictionary<string, IHTMLElement[]>(199);
-        private Dictionary<String, IHTMLElement[]> _nameElements = new Dictionary<string, IHTMLElement[]>(199);
+        private HTMLTestDocument[] _allDocuments;
 
         #endregion
 
@@ -59,6 +57,29 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region GetObject methods
 
+        public override HTMLDocument[] GetAllDocuments()
+        {
+            if (this._allDocuments == null)
+            {
+                HTMLDocument[] allDocs = base.GetAllDocuments();
+                _allDocuments = new HTMLTestDocument[allDocs.Length];
+                for (int i = 0; i < allDocs.Length; i++)
+                {
+                    try
+                    {
+                        HTMLDocument doc = allDocs[i];
+                        HTMLTestDocument testDoc = new HTMLTestDocument(doc as IHTMLDocument2);
+                        _allDocuments[i] = testDoc;
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            return _allDocuments;
+        }
+
         /* IHTMLElementCollection GetAllObjects()
          * return all element of HTML DOM.
          */
@@ -70,31 +91,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                if (_allElements == null || !_useCache)
+                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
+                HTMLTestDocument[] allDocs = GetAllDocuments() as HTMLTestDocument[];
+                foreach (HTMLTestDocument doc in allDocs)
                 {
-                    List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                    HTMLDocument[] allDocs = GetAllDocuments();
-                    foreach (HTMLDocument doc in allDocs)
+                    try
                     {
-                        try
-                        {
-                            foreach (IHTMLElement ele in (IHTMLElementCollection)doc.body.all)
-                            {
-                                if (ele != null)
-                                {
-                                    allObjectList.Add(ele);
-                                }
-                            }
-                        }
-                        catch
-                        {
-                        }
+                        IHTMLElement[] elements = doc.GetAllElements();
+                        allObjectList.AddRange(elements);
                     }
-
-                    _allElements = allObjectList.ToArray();
+                    catch
+                    {
+                    }
                 }
 
-                return _allElements;
+                return allObjectList.ToArray();
+
             }
             catch (Exception ex)
             {
@@ -120,10 +132,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 IHTMLElement element = _rootDocument.getElementById(id);
                 if (element == null)
                 {
-                    HTMLDocument[] allDocs = GetAllDocuments();
-                    foreach (HTMLDocument doc in allDocs)
+                    HTMLTestDocument[] allDocs = GetAllDocuments() as HTMLTestDocument[];
+                    foreach (HTMLTestDocument doc in allDocs)
                     {
-                        element = doc.getElementById(id);
+                        element = doc.GetElementByID(id);
                         if (element != null)
                         {
                             return element;
@@ -157,32 +169,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 name = name.ToUpper();
-                IHTMLElement[] result = null;
-                if (!_nameElements.TryGetValue(name, out result) || !_useCache)
+                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
+                HTMLTestDocument[] allDocs = GetAllDocuments() as HTMLTestDocument[];
+                foreach (HTMLTestDocument doc in allDocs)
                 {
-                    List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                    HTMLDocument[] allDocs = GetAllDocuments();
-                    foreach (HTMLDocument doc in allDocs)
+                    try
                     {
-                        try
-                        {
-                            foreach (IHTMLElement ele in doc.getElementsByName(name))
-                            {
-                                allObjectList.Add(ele);
-                            }
-                        }
-                        catch
-                        {
-                        }
+                        IHTMLElement[] res = doc.GetElementsByName(name);
+                        allObjectList.AddRange(res);
                     }
-                    result = allObjectList.ToArray();
-                    if (_useCache && !_nameElements.ContainsKey(name))
+                    catch
                     {
-                        _nameElements.Add(name, result);
                     }
                 }
-
-                return result;
+                return allObjectList.ToArray();
             }
             catch (Exception ex)
             {
@@ -208,32 +208,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 tag = tag.ToUpper();
-                IHTMLElement[] result = null;
-                if (!_tagElements.TryGetValue(tag, out result) || !_useCache)
+
+                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
+                HTMLTestDocument[] allDocs = GetAllDocuments() as HTMLTestDocument[];
+                foreach (HTMLTestDocument doc in allDocs)
                 {
-                    List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                    HTMLDocument[] allDocs = GetAllDocuments();
-                    foreach (HTMLDocument doc in allDocs)
+                    try
                     {
-                        try
-                        {
-                            foreach (IHTMLElement ele in doc.getElementsByTagName(tag))
-                            {
-                                allObjectList.Add(ele);
-                            }
-                        }
-                        catch
-                        {
-                        }
+                        IHTMLElement[] res = doc.GetElementsByTagName(tag);
+                        allObjectList.AddRange(res);
                     }
-                    result = allObjectList.ToArray();
-                    if (_useCache && !_tagElements.ContainsKey(tag))
+                    catch
                     {
-                        _tagElements.Add(tag, result);
                     }
                 }
-
-                return result;
+                return allObjectList.ToArray();
             }
             catch (Exception ex)
             {
@@ -300,6 +289,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region private help methods
 
+        protected bool IsDocumentContained(IHTMLDocument doc)
+        {
+            if (this._allDocuments != null && doc != null)
+            {
+                IntPtr newDocIUnknown = Marshal.GetIUnknownForObject(doc);
+                foreach (HTMLTestDocument existedDoc in this._allDocuments)
+                {
+                    IntPtr existedDocIUnknown = Marshal.GetIUnknownForObject(existedDoc);
+                    if (newDocIUnknown == existedDocIUnknown)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         protected override void RegBrowserEvent(InternetExplorer ie)
         {
             base.RegBrowserEvent(ie);
@@ -311,28 +318,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected override void AllDocumentComplete()
         {
-            NeedRefresh();
             base.AllDocumentComplete();
             if (_dispatcher != null)
             {
                 _dispatcher.RegisterEvents(_rootDocument as IHTMLDocument2);
             }
+            NeedRefresh();
         }
 
         protected override void PageChange(InternetExplorer ie)
         {
-            NeedRefresh();
             base.PageChange(ie);
+            NeedRefresh();
         }
 
-        protected virtual void NeedRefresh()
+        protected void NeedRefresh()
         {
-            if (_useCache)
-            {
-                _allElements = null;
-                _tagElements.Clear();
-                _nameElements.Clear();
-            }
+            _allDocuments = null;
         }
 
         #endregion
