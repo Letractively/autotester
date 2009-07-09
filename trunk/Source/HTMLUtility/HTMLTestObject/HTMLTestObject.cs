@@ -45,7 +45,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         Table,
         Image,
         Link,
-        ActiveX
+        ActiveX,
+        Dialog
     }
 
     #region html object base class

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using mshtml;
+
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.MSAAUtility;
 
@@ -24,16 +26,34 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
+        public HTMLTestActiveXObject(IHTMLElement element)
+            : this(element, null)
+        {
+        }
+
+        public HTMLTestActiveXObject(IHTMLElement element, HTMLTestBrowser browser)
+            : base(element, browser)
+        {
+            if (!_sendMsgOnly)
+            {
+                GetRectOnScreen();
+            }
+            this._rootObj = new MSAATestObject(element);
+            this._isEnable = IsEnable();
+            this._isReadonly = IsReadonly();
+            this._isVisible = IsVisible();
+        }
+
         #endregion
 
         #region IMSAA Members
 
-        public Accessibility.IAccessible GetIAccInterface()
+        public override Accessibility.IAccessible GetIAccInterface()
         {
             throw new NotImplementedException();
         }
 
-        public int GetChildID()
+        public override int GetChildID()
         {
             throw new NotImplementedException();
         }

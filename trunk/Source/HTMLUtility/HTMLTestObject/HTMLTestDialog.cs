@@ -16,14 +16,45 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region methods
+
+        #region cotr
+        public HTMLTestDialog()
+            : base()
+        {
+        }
+
+        public HTMLTestDialog(IntPtr handle)
+            : this(handle, null)
+        {
+        }
+
+        public HTMLTestDialog(IntPtr handle, HTMLTestBrowser browser)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                throw new CannotBuildObjectException("Can not build windows dialog: handle can not be 0.");
+            }
+
+            _mainObj = new MSAATestObject(handle);
+
+            if (!_sendMsgOnly)
+            {
+                GetRectOnScreen();
+            }
+        }
+        #endregion
+
+        #endregion
+
         #region IMSAA Members
 
-        public Accessibility.IAccessible GetIAccInterface()
+        public override Accessibility.IAccessible GetIAccInterface()
         {
             throw new NotImplementedException();
         }
 
-        public int GetChildID()
+        public override int GetChildID()
         {
             throw new NotImplementedException();
         }
