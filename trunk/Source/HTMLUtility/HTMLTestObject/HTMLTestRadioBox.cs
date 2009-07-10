@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 using mshtml;
 
@@ -79,9 +80,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                BeforeAction();
+
                 if (!IsChecked())
                 {
-                    Click();
+                    Thread t = new Thread(new ThreadStart(Click));
+                    t.Start();
+                    t.Join(ActionTimeout);
                 }
             }
             catch (TestException)
@@ -92,15 +97,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not perform Check action on radio button: " + ex.ToString());
             }
+            finally
+            {
+                AfterAction();
+            }
         }
 
         public virtual void UnCheck()
         {
             try
             {
+                BeforeAction();
+
                 if (IsChecked())
                 {
-                    Click();
+                    Thread t = new Thread(new ThreadStart(Click));
+                    t.Start();
+                    t.Join(ActionTimeout);
                 }
             }
             catch (TestException)
@@ -110,6 +123,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform UnCheck action on radio button: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -133,12 +150,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                BeforeAction();
-
                 Hover();
                 if (_sendMsgOnly)
                 {
                     this._radioElement.@checked = true;
+                    FireEvent("onclick");
                 }
                 else
                 {
@@ -152,10 +168,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not click on the radio button: " + ex.ToString());
-            }
-            finally
-            {
-                AfterAction();
             }
         }
 

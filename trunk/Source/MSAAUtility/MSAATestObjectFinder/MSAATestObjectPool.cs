@@ -62,6 +62,16 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region ctor
 
+        public MSAATestObjectPool()
+        {
+        }
+
+        public MSAATestObjectPool(MSAATestObject rootObj)
+        {
+            this._testApp = new MSAATestApp();
+            this._testApp.RootObject = rootObj;
+        }
+
         #endregion
 
         #region public methods

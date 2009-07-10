@@ -1126,7 +1126,7 @@ namespace Shrinerain.AutoTester.Win32
             OBJID_CLIENT = -4,
         }
 
-        public delegate bool EnumWindowEventHandler(IntPtr hWnd, Int32 lParam);
+        public delegate bool EnumWindowEventHandler(IntPtr hWnd, IntPtr lParam);
 
         [DllImport("user32.dll", EntryPoint = "GetCursorPos")]
         public static extern int GetCursorPos(ref POINT lpPoint);
@@ -1163,6 +1163,9 @@ namespace Shrinerain.AutoTester.Win32
         [return: MarshalAs(UnmanagedType.Interface)]
         public static extern object AccessibleObjectFromWindow(IntPtr hwnd, int dwObjectID, ref Guid riid, ref IAccessible ppvObject);
 
+        [DllImport("oleacc.dll")]
+        public static extern uint WindowFromAccessibleObject(IAccessible pacc, ref IntPtr phwnd);
+
         [DllImport("Oleacc.dll")]
         public static extern int AccessibleChildren(IAccessible paccContainer, int iChildStart, int cChildren, [Out] object[] rgvarChildren, out int pcObtained);
 
@@ -1181,6 +1184,18 @@ namespace Shrinerain.AutoTester.Win32
         public static extern int SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
         [DllImport("user32.dll")]
+        public static extern int SetWindowText(IntPtr hwnd, StringBuilder buf);
+
+        public static void SetWindowText(IntPtr hwnd, string text)
+        {
+            if (hwnd != IntPtr.Zero && text != null)
+            {
+                StringBuilder buff = new StringBuilder(text);
+                Win32API.SetWindowText(hwnd, buff);
+            }
+        }
+
+        [DllImport("user32.dll")]
         public static extern bool MoveWindow(IntPtr hWnd, int X, int Y, int nWidth, int nHeight, bool bRepaint);
 
         [DllImport("user32.dll")]
@@ -1189,11 +1204,18 @@ namespace Shrinerain.AutoTester.Win32
         [DllImport("User32.dll")]
         public static extern int RegisterWindowMessage(string message);
 
+        public delegate bool EnumWindowsCallback(IntPtr hwnd, IntPtr lParam);
+
         [DllImport("User32.dll")]
-        public static extern void EnumWindows(EnumWindowEventHandler callback, Int32 lParam);
+        public static extern int EnumChildWindows(IntPtr hwnd, EnumWindowsCallback proc, IntPtr lParam);
+
+        [DllImport("User32.dll")]
+        public static extern void EnumWindows(EnumWindowEventHandler callback, IntPtr lParam);
 
         //		[DllImport("User32.dll")]
         //		public static extern Int32 GetWindowText(IntPtr hWnd, StringBuilder lpString, Int32 nMaxCount);
+        [DllImport("User32.dll")]
+        public static extern bool IsWindow(IntPtr hWnd);
 
         [DllImport("User32.dll")]
         public static extern bool IsWindowVisible(IntPtr hWnd);

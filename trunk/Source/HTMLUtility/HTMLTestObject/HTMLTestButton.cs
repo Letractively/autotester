@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using mshtml;
 
@@ -125,16 +126,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 BeforeAction();
 
                 Hover();
-                if (this._sendMsgOnly)
-                {
-                    this._sourceElement.click();
-                }
-                else
-                {
-                    //move the mouse to the center point of button.
-                    // see the definition in HTMLGUiTestObject.cs
-                    MouseOp.Click();
-                }
+                Thread t = new Thread(new ThreadStart(MouseClick));
+                t.Start();
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {

@@ -106,7 +106,15 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 }
                 else
                 {
-                    SetProperty("value", values.ToString());
+                    IntPtr handle = GetHandle();
+                    if (handle == IntPtr.Zero)
+                    {
+                        SetProperty("value", values.ToString());
+                    }
+                    else
+                    {
+                        Win32API.SetWindowText(handle, values);
+                    }
                 }
 
                 _text = values;

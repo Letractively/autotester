@@ -58,6 +58,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //when finish action, sleep for a moment.
         protected bool _isDelayAfterAction = false;
+        protected const int ActionTimeout = 3 * 1000;
         protected const int ActionDelayTime = 200;
 
         //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
@@ -609,7 +610,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 if (_sendMsgOnly && this._sourceElement != null)
                 {
                     this._sourceElement.click();
-                    FireEvent("click");
+                    FireEvent("onclick");
                 }
                 else if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
                 {

@@ -90,8 +90,8 @@ namespace Shrinerain.AutoTester
         {
             //Test1.Test();
             //MSAA.Test();
-           //Baidu.Test();
-             Google.Test();
+            //Baidu.Test();
+            Google.Test();
             //Other.Test();
             //Qidian.Test();
             //CSDN.Test();
@@ -107,7 +107,9 @@ namespace Shrinerain.AutoTester
             //Xunlei.Test();
             //SP.Test();
             //Calculator.Test();
-           // YY365.Test();
+            // YY365.Test();
+            //TimeFairy.Test();
+            //Alipay.Test();
         }
     }
 }

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Accessibility;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.MSAAUtility;
+using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
@@ -13,7 +15,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         #region fields
 
-        MSAATestObject _rootObj;
+        protected IHTMLObjectElement _objElement;
+
+        protected IntPtr _mainHandle;
+        protected MSAATestObject _rootObj;
+        protected MSAATestObjectMap _msaaObjMap;
+
+        public MSAATestObjectMap WinObjects
+        {
+            get { return _msaaObjMap; }
+        }
 
         #endregion
 
@@ -34,28 +45,50 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestActiveXObject(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            if (!_sendMsgOnly)
+            try
             {
-                GetRectOnScreen();
+                _objElement = element as IHTMLObjectElement;
+                this._rootObj = new MSAATestObject(element);
+
+                this._isEnable = IsEnable();
+                this._isVisible = IsVisible();
+                this._isReadonly = false;
+
+                if (!_sendMsgOnly)
+                {
+                    GetRectOnScreen();
+                }
+
+                InitMSAA();
             }
-            this._rootObj = new MSAATestObject(element);
-            this._isEnable = IsEnable();
-            this._isReadonly = IsReadonly();
-            this._isVisible = IsVisible();
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotBuildObjectException("Can not build html activex object: " + ex.ToString());
+            }
         }
 
         #endregion
 
+        private void InitMSAA()
+        {
+            MSAATestObjectPool pool = new MSAATestObjectPool(this._rootObj);
+            _msaaObjMap = new MSAATestObjectMap(pool);
+        }
+
         #region IMSAA Members
 
-        public override Accessibility.IAccessible GetIAccInterface()
+        public override IAccessible GetIAccInterface()
         {
-            throw new NotImplementedException();
+            return this._rootObj.IAcc;
         }
 
         public override int GetChildID()
         {
-            throw new NotImplementedException();
+            return this._rootObj.ChildID;
         }
 
         #endregion
@@ -64,20 +97,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public IntPtr GetHandle()
         {
-            throw new NotImplementedException();
+            return this._mainHandle;
         }
 
         public string GetClass()
         {
-            throw new NotImplementedException();
+            return Win32API.GetClassName(this._mainHandle);
         }
 
         public string GetCaption()
         {
-            throw new NotImplementedException();
+            return Win32API.GetWindowText(this._mainHandle);
         }
 
         #endregion
+
         #endregion
 
     }

@@ -20,6 +20,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public MSAATestObject RootObject
         {
             get { return _rootObj; }
+            set { _rootObj = value; }
         }
 
         #endregion

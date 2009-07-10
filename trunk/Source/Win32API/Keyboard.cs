@@ -59,7 +59,6 @@ namespace Shrinerain.AutoTester.Win32
          */
         public unsafe static void SendChars(string str)
         {
-
             if (String.IsNullOrEmpty(str))
             {
                 return;
@@ -80,9 +79,6 @@ namespace Shrinerain.AutoTester.Win32
                 structInput[1].ki.dwFlags = 2;
                 //send the character
                 Win32API.SendInput(2, structInput, Marshal.SizeOf(*structInput));
-
-                //sleep for 0.05 second, make it looks like human actions
-                System.Threading.Thread.Sleep(50 * 1);
             }
         }
 

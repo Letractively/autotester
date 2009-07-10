@@ -23,7 +23,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public class MSAATestComboBox : MSAATestGUIObject, ISelectable, IText, IInputable
+    public class MSAATestComboBox : MSAATestGUIObject, IComboBox, IText
     {
 
         #region fields
@@ -281,7 +281,24 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             else
             {
-                SetProperty("value", values.ToString());
+                IntPtr handle = GetHandle();
+                if (handle == IntPtr.Zero)
+                {
+                    SetProperty("value", values.ToString());
+                }
+                else
+                {
+                    List<IntPtr> textBox = WindowsAsstFunctions.GetChildren(handle);
+                    if (textBox != null && textBox.Count > 0)
+                    {
+                        String className = Win32API.GetClassName(textBox[0]);
+                        if (String.Compare(className, "Edit", true) == 0)
+                        {
+                            MSAATestObject obj = new MSAATestObject(textBox[0]);
+                            obj.SetProperty("value", values.ToString());
+                        }
+                    }
+                }
             }
         }
 

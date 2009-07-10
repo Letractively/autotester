@@ -95,7 +95,15 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 }
                 else
                 {
-                    IAcc.accDoDefaultAction(ChildID);
+                    IntPtr handle = GetHandle();
+                    if (handle == IntPtr.Zero)
+                    {
+                        IAcc.accDoDefaultAction(ChildID);
+                    }
+                    else
+                    {
+                        MouseOp.Click(handle);
+                    }
                 }
             }
             catch (TestException)
