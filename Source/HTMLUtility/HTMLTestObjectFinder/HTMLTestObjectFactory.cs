@@ -27,11 +27,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         }
 
         #endregion
-        /* HTMLTestObjectType ConvertStrToHTMLType(string type)
+        /* HTMLTestObjectType GetHTMLTypeByString(string type)
         * convert the type text to html type enum. 
         * eg: button to HTMLTestObjectType.Button
         */
-        public static HTMLTestObjectType ConvertStrToHTMLType(string type)
+        public static HTMLTestObjectType GetHTMLTypeByString(string type)
         {
             if (String.IsNullOrEmpty(type))
             {
@@ -90,6 +90,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 htmlType = HTMLTestObjectType.Table;
             }
+            else if (type == "DIALOG" || type == "WINDOWS")
+            {
+                htmlType = HTMLTestObjectType.Dialog;
+            }
 
             _objectTypeTable.Add(type, htmlType);
             return htmlType;
@@ -141,6 +145,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     break;
                 case HTMLTestObjectType.ActiveX:
                     res = new string[] { "object" };
+                    break;
+                case HTMLTestObjectType.Dialog:
+                    res = new string[] { };
                     break;
                 case HTMLTestObjectType.Unknow:
                     res = new string[] { };
@@ -261,11 +268,21 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return BuildHTMLTestObjectByType(element, HTMLTestObjectType.Unknow, browser);
         }
 
+        public static HTMLTestGUIObject BuildHTMLTestObject(IntPtr handle, HTMLTestBrowser browser)
+        {
+            return BuildHTMLTestObjectByType(null, handle, HTMLTestObjectType.Dialog, browser);
+        }
+
         public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, HTMLTestObjectType type, HTMLTestBrowser browser)
         {
-            if (element == null)
+            return BuildHTMLTestObjectByType(element, IntPtr.Zero, type, browser);
+        }
+
+        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, IntPtr handle, HTMLTestObjectType type, HTMLTestBrowser browser)
+        {
+            if (element == null && handle == IntPtr.Zero)
             {
-                throw new CannotBuildObjectException("Element and type can not be null.");
+                throw new CannotBuildObjectException("Element and handle can not be null.");
             }
 
             try
@@ -312,7 +329,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         tmp = new HTMLTestActiveXObject(element, browser);
                         break;
                     case HTMLTestObjectType.Dialog:
-                        tmp = new HTMLTestDialog(IntPtr.Zero, browser);
+                        tmp = new HTMLTestDialog(handle, browser);
                         break;
                     default:
                         tmp = new HTMLTestGUIObject(element, browser);

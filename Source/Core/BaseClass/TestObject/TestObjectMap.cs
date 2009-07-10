@@ -217,25 +217,25 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-        public virtual ISelectable ComboBox()
+        public virtual IComboBox ComboBox()
         {
             return ComboBoxs()[0];
         }
 
-        public virtual ISelectable[] ComboBoxs()
+        public virtual IComboBox[] ComboBoxs()
         {
             return ComboBoxs(null);
         }
 
-        public virtual ISelectable ComboBox(string name)
+        public virtual IComboBox ComboBox(string name)
         {
             return ComboBoxs(name)[0];
         }
 
-        public virtual ISelectable[] ComboBoxs(string name)
+        public virtual IComboBox[] ComboBoxs(string name)
         {
             GetMapObjects("ComboBox", name);
-            ISelectable[] tmp = new ISelectable[_lastObjects.Length];
+            IComboBox[] tmp = new IComboBox[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }

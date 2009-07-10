@@ -426,7 +426,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //convert the TYPE text to valid internal type.
             // eg: "button" to HTMLTestObjectType.Button
-            HTMLTestObjectType typeValue = HTMLTestObjectFactory.ConvertStrToHTMLType(type);
+            HTMLTestObjectType typeValue = HTMLTestObjectFactory.GetHTMLTypeByString(type);
             if (typeValue == HTMLTestObjectType.Unknow)
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
@@ -458,94 +458,107 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 List<TestObject> result = new List<TestObject>();
 
-                IHTMLElement[] candidateElements = GetElementsByCommonProperty(properties);
-
-                bool isOnlyOneObject = false;
-                //because we may convert one type to multi tags, so check them one by one.
-                //eg: Button to <input> and <button>
-                foreach (string tag in tags)
+                if (typeValue == HTMLTestObjectType.Dialog)
                 {
-                    if (candidateElements == null)
+                    IntPtr dialogHandle = GetHTMLDialogObject(properties);
+                    if (dialogHandle != IntPtr.Zero)
                     {
-                        candidateElements = _htmlTestBrowser.GetObjectsByTagName(tag);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(dialogHandle, this._htmlTestBrowser);
+                        AfterObjectFound(_testObj);
+                        result.Add(_testObj);
                     }
+                }
+                else
+                {
+                    IHTMLElement[] candidateElements = GetElementsByCommonProperty(properties);
 
-                    if (candidateElements != null && candidateElements.Length > 0)
+                    bool isOnlyOneObject = false;
+                    //because we may convert one type to multi tags, so check them one by one.
+                    //eg: Button to <input> and <button>
+                    foreach (string tag in tags)
                     {
-                        int possibleStartIndex = 0;
-                        if (properties != null && properties.Length > 0 && Searcher.IsNeedCalPossibleStartIndex(candidateElements.Length))
+                        if (candidateElements == null)
                         {
-                            string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
-                            if (!String.IsNullOrEmpty(searchVal))
-                            {
-                                Regex tagReg;
-                                if (!_regCache.TryGetValue(tag, out tagReg))
-                                {
-                                    //create new regex to match objects from HTML code.
-                                    tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
-                                    _regCache.Add(tag, tagReg);
-                                }
-
-                                string htmlContent = _htmlTestBrowser.GetAllHTMLContent();
-                                int startPos = htmlContent.IndexOf(searchVal);
-                                if (startPos > 0)
-                                {
-                                    //if we have too many objects, we will try to find it's possible position to improve performance.             
-                                    possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, htmlContent, searchVal);
-                                    if (!properties[0].IsRegex && startPos == htmlContent.LastIndexOf(searchVal))
-                                    {
-                                        isOnlyOneObject = true;
-                                    }
-                                }
-                            }
+                            candidateElements = _htmlTestBrowser.GetObjectsByTagName(tag);
                         }
-                        int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
-                        // check object one by one, start from the possible position.
-                        // the "|" means the start position, the "--->" means the search direction.            
-                        //  -----------------------------------------------------------------------
-                        //  step 1:                          |--->
-                        //  step 2:                      <---|
-                        //  step 3:                          |    --->
-                        //  ...                      <---    |
-                        foreach (int currentObjIndex in searchOrder)
+
+                        if (candidateElements != null && candidateElements.Length > 0)
                         {
-                            try
+                            int possibleStartIndex = 0;
+                            if (properties != null && properties.Length > 0 && Searcher.IsNeedCalPossibleStartIndex(candidateElements.Length))
                             {
-                                _tempElement = candidateElements[currentObjIndex];
-                                // check if it is a interactive object.
-                                if (HTMLTestObjectFactory.IsVisible(_tempElement))
+                                string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
+                                if (!String.IsNullOrEmpty(searchVal))
                                 {
-                                    //check object by type
-                                    if (HTMLTestObjectFactory.GetObjectType(_tempElement) == typeValue)
+                                    Regex tagReg;
+                                    if (!_regCache.TryGetValue(tag, out tagReg))
                                     {
-                                        if (CheckObjectProperties(_tempElement, typeValue, properties, simPercent, out _testObj))
+                                        //create new regex to match objects from HTML code.
+                                        tagReg = new Regex("<" + tag + "[^>]+>", RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                                        _regCache.Add(tag, tagReg);
+                                    }
+
+                                    string htmlContent = _htmlTestBrowser.GetAllHTMLContent();
+                                    int startPos = htmlContent.IndexOf(searchVal);
+                                    if (startPos > 0)
+                                    {
+                                        //if we have too many objects, we will try to find it's possible position to improve performance.             
+                                        possibleStartIndex = Searcher.GetPossibleStartIndex(candidateElements.Length, tagReg, htmlContent, searchVal);
+                                        if (!properties[0].IsRegex && startPos == htmlContent.LastIndexOf(searchVal))
                                         {
-                                            AfterObjectFound(_testObj);
-                                            result.Add(_testObj);
-                                            if (isOnlyOneObject)
-                                            {
-                                                break;
-                                            }
+                                            isOnlyOneObject = true;
                                         }
                                     }
                                 }
                             }
-                            catch (CannotBuildObjectException)
+                            int[] searchOrder = Searcher.VibrationSearch(possibleStartIndex, 0, candidateElements.Length - 1);
+                            // check object one by one, start from the possible position.
+                            // the "|" means the start position, the "--->" means the search direction.            
+                            //  -----------------------------------------------------------------------
+                            //  step 1:                          |--->
+                            //  step 2:                      <---|
+                            //  step 3:                          |    --->
+                            //  ...                      <---    |
+                            foreach (int currentObjIndex in searchOrder)
                             {
-                                throw;
-                            }
-                            catch
-                            {
+                                try
+                                {
+                                    _tempElement = candidateElements[currentObjIndex];
+                                    // check if it is a interactive object.
+                                    if (HTMLTestObjectFactory.IsVisible(_tempElement))
+                                    {
+                                        //check object by type
+                                        if (HTMLTestObjectFactory.GetObjectType(_tempElement) == typeValue)
+                                        {
+                                            if (CheckObjectProperties(_tempElement, typeValue, properties, simPercent, out _testObj))
+                                            {
+                                                AfterObjectFound(_testObj);
+                                                result.Add(_testObj);
+                                                if (isOnlyOneObject)
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                catch (CannotBuildObjectException)
+                                {
+                                    throw;
+                                }
+                                catch
+                                {
+                                }
                             }
                         }
-                    }
 
-                    if (isOnlyOneObject && result.Count > 0)
-                    {
-                        break;
-                    }
+                        if (isOnlyOneObject && result.Count > 0)
+                        {
+                            break;
+                        }
 
-                    candidateElements = null;
+                        candidateElements = null;
+                    }
                 }
 
                 if (result.Count > 0)
@@ -632,7 +645,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("The width and height of rect can not be 0.");
             }
 
-            HTMLTestObjectType type = HTMLTestObjectFactory.ConvertStrToHTMLType(typeStr);
+            HTMLTestObjectType type = HTMLTestObjectFactory.GetHTMLTypeByString(typeStr);
 
             if (type == HTMLTestObjectType.Unknow)
             {
@@ -937,6 +950,45 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return false;
+        }
+
+        private static IntPtr GetHTMLDialogObject(TestProperty[] properties)
+        {
+            try
+            {
+                if (properties == null || properties.Length == 0)
+                {
+                    return WindowsAsstFunctions.GetActiveDialog();
+                }
+                else
+                {
+                    String className = TestConstants.WIN_Dialog_Class;
+                    String text = null;
+
+                    foreach (TestProperty tp in properties)
+                    {
+                        if (tp.Name.IndexOf("class", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                        {
+                            className = tp.Value.ToString();
+                        }
+                        else if (String.Compare(tp.Name, TestObject.VisibleProperty, true) == 0 ||
+                                 tp.Name.IndexOf("text", StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                                 tp.Name.IndexOf("caption", StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                                 tp.Name.IndexOf("name", StringComparison.CurrentCultureIgnoreCase) >= 0 ||
+                                 tp.Name.IndexOf("window", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                        {
+                            text = tp.Value.ToString();
+                        }
+                    }
+
+                    return Win32API.FindWindow(className, text);
+                }
+            }
+            catch
+            {
+            }
+
+            return IntPtr.Zero;
         }
 
         #endregion

@@ -26,7 +26,7 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
-    public partial class MSAATestObject : TestObject, IMSAA, IHierarchy
+    public partial class MSAATestObject : TestObject, IMSAA, IHierarchy, IWindows
     {
         #region fields
 
@@ -250,6 +250,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         }
 
         #endregion
+
 
         /*  object GetProperty(string propertyName)
          *  get proerty of MSAA object.
@@ -637,6 +638,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
+        #region IWindows Members
+
         public IntPtr GetHandle()
         {
             if (this._iAcc == null)
@@ -646,15 +649,41 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             if (this._handle == IntPtr.Zero)
             {
-                Point p = this.GetCenterPoint();
-                if (p.X != 0 && p.Y != 0)
+                try
                 {
-                    this._handle = (IntPtr)Win32API.WindowFromPoint(p.X, p.Y);
+                    Win32API.WindowFromAccessibleObject(this._iAcc, ref this._handle);
+                }
+                catch
+                {
                 }
             }
 
             return this._handle;
         }
+
+        public string GetClass()
+        {
+            IntPtr handle = GetHandle();
+            if (handle != IntPtr.Zero)
+            {
+                return Win32API.GetClassName(handle);
+            }
+
+            return "";
+        }
+
+        public string GetCaption()
+        {
+            IntPtr handle = GetHandle();
+            if (handle != IntPtr.Zero)
+            {
+                return Win32API.GetWindowText(handle);
+            }
+
+            return "";
+        }
+
+        #endregion
 
         //refresh , force to get new property.
         public void Refresh()
@@ -707,5 +736,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #endregion
 
         #endregion
+
     }
 }

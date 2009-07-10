@@ -38,10 +38,10 @@ namespace Shrinerain.AutoTester.Core
         ICheckable CheckBox(string name);
         ICheckable[] CheckBoxs(string name);
 
-        ISelectable ComboBox();
-        ISelectable[] ComboBoxs();
-        ISelectable ComboBox(string name);
-        ISelectable[] ComboBoxs(string name);
+        IComboBox ComboBox();
+        IComboBox[] ComboBoxs();
+        IComboBox ComboBox(string name);
+        IComboBox[] ComboBoxs(string name);
 
         ISelectable DropList();
         ISelectable[] DropLists();

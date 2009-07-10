@@ -124,6 +124,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (linkElement != null)
                     {
                         linkElement.click();
+                        FireEvent("onclick");
                     }
                     else
                     {
