@@ -75,7 +75,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestTextBox(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            this._type = HTMLTestObjectType.TextBox;
+            this._type = HTMLTestObjectTypeEnum.TextBox;
             try
             {
                 if (this._tag == "TEXTAREA")

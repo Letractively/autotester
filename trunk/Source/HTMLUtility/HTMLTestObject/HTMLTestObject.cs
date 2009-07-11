@@ -30,25 +30,6 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    // HTMLTestObjectType defines the object type we used in HTML Testing.
-    public enum HTMLTestObjectType
-    {
-        Unknow = 0,
-        Any,
-        Label,
-        Button,
-        CheckBox,
-        RadioBox,
-        TextBox,
-        DropList,
-        ListBox,
-        Table,
-        Image,
-        Link,
-        ActiveX,
-        Dialog
-    }
-
     #region html object base class
     public class HTMLTestObject : TestObject, IStatus, IHierarchy, IMSAA
     {
@@ -66,7 +47,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _outterText;
         protected string _outterHTML;
 
-        protected HTMLTestObjectType _type;
+        protected HTMLTestObjectTypeEnum _type;
         protected IHTMLElement _sourceElement;
         //the host browser of this object.
         protected HTMLTestBrowser _browser;
@@ -122,7 +103,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _className; }
         }
 
-        public HTMLTestObjectType Type
+        public HTMLTestObjectTypeEnum Type
         {
             get { return _type; }
         }

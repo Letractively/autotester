@@ -355,7 +355,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             //if it is not an interactive object or the property is not found. 
                             if (HTMLTestObjectFactory.IsVisible(_tempElement))
                             {
-                                if (CheckObjectProperties(_tempElement, HTMLTestObjectType.Unknow, properties, simPercent, out _testObj))
+                                if (CheckObjectProperties(_tempElement, HTMLTestObjectTypeEnum.Unknow, properties, simPercent, out _testObj))
                                 {
                                     AfterObjectFound(_testObj);
                                     result.Add(_testObj);
@@ -426,8 +426,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //convert the TYPE text to valid internal type.
             // eg: "button" to HTMLTestObjectType.Button
-            HTMLTestObjectType typeValue = HTMLTestObjectFactory.GetHTMLTypeByString(type);
-            if (typeValue == HTMLTestObjectType.Unknow)
+            HTMLTestObjectTypeEnum typeValue = HTMLTestObjectFactory.GetHTMLTypeByString(type);
+            if (typeValue == HTMLTestObjectTypeEnum.Unknow)
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
             }
@@ -458,7 +458,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 List<TestObject> result = new List<TestObject>();
 
-                if (typeValue == HTMLTestObjectType.Dialog)
+                if (typeValue == HTMLTestObjectTypeEnum.Dialog)
                 {
                     IntPtr dialogHandle = GetHTMLDialogObject(properties);
                     if (dialogHandle != IntPtr.Zero)
@@ -645,9 +645,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("The width and height of rect can not be 0.");
             }
 
-            HTMLTestObjectType type = HTMLTestObjectFactory.GetHTMLTypeByString(typeStr);
+            HTMLTestObjectTypeEnum type = HTMLTestObjectFactory.GetHTMLTypeByString(typeStr);
 
-            if (type == HTMLTestObjectType.Unknow)
+            if (type == HTMLTestObjectTypeEnum.Unknow)
             {
                 throw new ObjectNotFoundException("Unknow type.");
             }
@@ -857,7 +857,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region check test object
 
-        private bool CheckObjectProperties(IHTMLElement element, HTMLTestObjectType type, TestProperty[] properties, int simPercent, out TestObject obj)
+        private bool CheckObjectProperties(IHTMLElement element, HTMLTestObjectTypeEnum type, TestProperty[] properties, int simPercent, out TestObject obj)
         {
             obj = null;
             int totalResult = 0;
@@ -874,7 +874,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         isCurrentPropertyMatch = tp.IsValueMatch(element.tagName);
                     }
-                    else if (String.Compare(tp.Name, TestObject.VisibleProperty, true) == 0)
+                    else if (String.Compare(tp.Name, TestConstants.PROPERTY_VISIBLE, true) == 0)
                     {
                         isCurrentPropertyMatch = CheckVisibleProperty(element, type, tp, simPercent, out obj);
                     }
@@ -914,18 +914,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        private bool CheckVisibleProperty(IHTMLElement element, HTMLTestObjectType type, TestProperty property, int simPercent, out TestObject obj)
+        private bool CheckVisibleProperty(IHTMLElement element, HTMLTestObjectTypeEnum type, TestProperty property, int simPercent, out TestObject obj)
         {
             obj = null;
 
             try
             {
                 string visibleText = null;
-                if (type == HTMLTestObjectType.Link || type == HTMLTestObjectType.Label)
+                if (type == HTMLTestObjectTypeEnum.Link || type == HTMLTestObjectTypeEnum.Label)
                 {
                     visibleText = element.innerText;
                 }
-                else if (type == HTMLTestObjectType.DropList || type == HTMLTestObjectType.ListBox)
+                else if (type == HTMLTestObjectTypeEnum.DropList || type == HTMLTestObjectTypeEnum.ListBox)
                 {
                     visibleText = ((IHTMLOptionElement)(element as IHTMLSelectElement).item(0, 0)).text;
                 }
@@ -971,7 +971,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             className = tp.Value.ToString();
                         }
-                        else if (String.Compare(tp.Name, TestObject.VisibleProperty, true) == 0 ||
+                        else if (String.Compare(tp.Name, TestConstants.PROPERTY_VISIBLE, true) == 0 ||
                                  tp.Name.IndexOf("text", StringComparison.CurrentCultureIgnoreCase) >= 0 ||
                                  tp.Name.IndexOf("caption", StringComparison.CurrentCultureIgnoreCase) >= 0 ||
                                  tp.Name.IndexOf("name", StringComparison.CurrentCultureIgnoreCase) >= 0 ||

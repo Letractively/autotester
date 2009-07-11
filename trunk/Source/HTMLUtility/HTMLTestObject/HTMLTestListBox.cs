@@ -89,7 +89,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestListBox(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            this._type = HTMLTestObjectType.ListBox;
+            this._type = HTMLTestObjectTypeEnum.ListBox;
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;

@@ -10,12 +10,7 @@ namespace Shrinerain.AutoTester.Core
 
         //object pool for this map.
         protected ITestObjectPool _objPool;
-
-        //key for cache.
-        protected const string _keySplitter = "__shrinerainmap__";
         protected TestObject[] _lastObjects;
-
-        protected bool _useCache = false;
         protected static int _timeout = 5;
 
         #endregion
@@ -49,6 +44,8 @@ namespace Shrinerain.AutoTester.Core
 
         #region public methods
 
+        #region check object
+
         //check if an object exist or not.
         public virtual bool IsExist(String name)
         {
@@ -59,6 +56,18 @@ namespace Shrinerain.AutoTester.Core
         {
             TestObject[] tmps;
             return TryGetObjects(type, name, out tmps);
+        }
+
+        public virtual bool IsExist(TestProperty[] properties)
+        {
+            TestObject[] tmps;
+            return TryGetObjects(null, properties, out tmps);
+        }
+
+        public virtual bool IsExist(String type, TestProperty[] properties)
+        {
+            TestObject[] tmps;
+            return TryGetObjects(type, properties, out tmps);
         }
 
         public virtual bool TryGetObjects(String name, out TestObject[] objects)
@@ -81,78 +90,43 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        /* void Add(String name)
-         * Add the last object to map, then we can use name to access it.
-         * 
-         */
-        public void Add(string name)
+        public virtual bool TryGetObjects(TestProperty[] properties, out TestObject[] objects)
         {
-            if (String.IsNullOrEmpty(name))
-            {
-                throw new CannotAddMapObjectException("Name can not be empty.");
-            }
-
-            TestObject obj = (TestObject)this._objPool.GetLastObject();
-            Add(name, obj);
-        }
-
-        public void Add(string name, TestObject obj)
-        {
+            objects = null;
             try
             {
-                if (obj != null)
-                {
-                    string key = BuildKey(obj.Domain + name);
-                    ObjectCache.InsertObjectToCache(key, obj);
-                }
+                objects = GetMapObjects(null, properties);
+                return objects != null;
             }
-            catch (TestException)
+            catch
             {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotAddMapObjectException("Can not add object[" + name + "] to map: " + ex.ToString());
+                return false;
             }
         }
 
-        /* void Delete(string name)
-         * delete an object from map.
-         */
-        public void Delete(string name)
+        public virtual bool TryGetObjects(String type, TestProperty[] properties, out TestObject[] objects)
         {
-            if (!String.IsNullOrEmpty(name))
+            objects = null;
+            try
             {
-                try
-                {
-                    //check all keys.
-                    string[] allKeys = ObjectCache.GetKeys();
-                    foreach (string k in allKeys)
-                    {
-                        if (k.IndexOf(_keySplitter) > 0 && k.IndexOf(name) > 0)
-                        {
-                            //remove the object.
-                            ObjectCache.Remove(k);
-                            return;
-                        }
-                    }
-                }
-                catch
-                {
-                }
+                objects = GetMapObjects(type, properties);
+                return objects != null;
+            }
+            catch
+            {
+                return false;
             }
         }
+
+        #endregion
 
         #region test object
 
+        #region button
+
         public virtual IClickable Button()
         {
-            return Buttons()[0];
-        }
-
-        public virtual IClickable[] Buttons()
-        {
-            return Buttons(null);
+            return Button(String.Empty);
         }
 
         public virtual IClickable Button(string name)
@@ -160,23 +134,39 @@ namespace Shrinerain.AutoTester.Core
             return Buttons(name)[0];
         }
 
+        public virtual IClickable Button(TestProperty[] properties)
+        {
+            return Buttons(properties)[0];
+        }
+
+        public virtual IClickable[] Buttons()
+        {
+            return Buttons(String.Empty);
+        }
+
         public virtual IClickable[] Buttons(string name)
         {
-            GetMapObjects("button", name);
+            GetMapObjects(TestObjectType.Button, name);
             IClickable[] tmp = new IClickable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
+        public virtual IClickable[] Buttons(TestProperty[] properties)
+        {
+            GetMapObjects(TestObjectType.Button, properties);
+            IClickable[] tmp = new IClickable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
+
+        #region textbox
 
         public virtual IInputable TextBox()
         {
-            return TextBoxs()[0];
-        }
-
-        public virtual IInputable[] TextBoxs()
-        {
-            return TextBoxs(null);
+            return TextBox(String.Empty);
         }
 
         public virtual IInputable TextBox(string name)
@@ -184,23 +174,39 @@ namespace Shrinerain.AutoTester.Core
             return TextBoxs(name)[0];
         }
 
+        public virtual IInputable TextBox(TestProperty[] properties)
+        {
+            return TextBoxs(properties)[0];
+        }
+
+        public virtual IInputable[] TextBoxs()
+        {
+            return TextBoxs(String.Empty);
+        }
+
         public virtual IInputable[] TextBoxs(string name)
         {
-            GetMapObjects("TextBox", name);
+            GetMapObjects(TestObjectType.TextBox, name);
             IInputable[] tmp = new IInputable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
+        public virtual IInputable[] TextBoxs(TestProperty[] properties)
+        {
+            GetMapObjects(TestObjectType.TextBox, properties);
+            IInputable[] tmp = new IInputable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
+
+        #region checkbox
 
         public virtual ICheckable CheckBox()
         {
-            return CheckBoxs()[0];
-        }
-
-        public virtual ICheckable[] CheckBoxs()
-        {
-            return CheckBoxs(null);
+            return CheckBox(String.Empty);
         }
 
         public virtual ICheckable CheckBox(string name)
@@ -208,23 +214,44 @@ namespace Shrinerain.AutoTester.Core
             return CheckBoxs(name)[0];
         }
 
+        public virtual ICheckable CheckBox(TestProperty[] propertiese)
+        {
+            return CheckBoxs(propertiese)[0];
+        }
+
+        public virtual ICheckable[] CheckBoxs()
+        {
+            return CheckBoxs(String.Empty);
+        }
+
         public virtual ICheckable[] CheckBoxs(string name)
         {
-            GetMapObjects("CheckBox", name);
+            GetMapObjects(TestObjectType.CheckBox, name);
             ICheckable[] tmp = new ICheckable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
+        public virtual ICheckable[] CheckBoxs(TestProperty[] properties)
+        {
+            GetMapObjects(TestObjectType.CheckBox, properties);
+            ICheckable[] tmp = new ICheckable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
+
+        #region ComboBox
 
         public virtual IComboBox ComboBox()
         {
-            return ComboBoxs()[0];
+            return ComboBox(String.Empty);
         }
 
-        public virtual IComboBox[] ComboBoxs()
+        public virtual IComboBox ComboBox(TestProperty[] propertiese)
         {
-            return ComboBoxs(null);
+            return ComboBoxs(propertiese)[0];
         }
 
         public virtual IComboBox ComboBox(string name)
@@ -232,22 +259,39 @@ namespace Shrinerain.AutoTester.Core
             return ComboBoxs(name)[0];
         }
 
+        public virtual IComboBox[] ComboBoxs()
+        {
+            return ComboBoxs(String.Empty);
+        }
+
         public virtual IComboBox[] ComboBoxs(string name)
         {
-            GetMapObjects("ComboBox", name);
+            GetMapObjects(TestObjectType.ComboBox, name);
             IComboBox[] tmp = new IComboBox[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
-        public virtual ISelectable DropList()
+        public virtual IComboBox[] ComboBoxs(TestProperty[] properties)
         {
-            return DropLists()[0];
+            GetMapObjects(TestObjectType.ComboBox, properties);
+            IComboBox[] tmp = new IComboBox[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
         }
 
-        public virtual ISelectable[] DropLists()
+        #endregion
+
+        #region droplist
+
+        public virtual ISelectable DropList()
         {
-            return DropLists(null);
+            return DropList(String.Empty);
+        }
+
+        public virtual ISelectable DropList(TestProperty[] properties)
+        {
+            return DropLists(properties)[0];
         }
 
         public virtual ISelectable DropList(string name)
@@ -255,22 +299,34 @@ namespace Shrinerain.AutoTester.Core
             return DropLists(name)[0];
         }
 
+        public virtual ISelectable[] DropLists()
+        {
+            return DropLists(String.Empty);
+        }
+
         public virtual ISelectable[] DropLists(string name)
         {
-            GetMapObjects("DropList", name);
+            GetMapObjects(TestObjectType.DropList, name);
             ISelectable[] tmp = new ISelectable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
-        public virtual IPicture Image()
+        public virtual ISelectable[] DropLists(TestProperty[] properties)
         {
-            return Images()[0];
+            GetMapObjects(TestObjectType.DropList, properties);
+            ISelectable[] tmp = new ISelectable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
         }
 
-        public virtual IPicture[] Images()
+        #endregion
+
+        #region picture
+
+        public virtual IPicture Image()
         {
-            return Images(null);
+            return Image(String.Empty);
         }
 
         public virtual IPicture Image(string name)
@@ -278,22 +334,39 @@ namespace Shrinerain.AutoTester.Core
             return Images(name)[0];
         }
 
+        public virtual IPicture Image(TestProperty[] properties)
+        {
+            return Images(properties)[0];
+        }
+
+        public virtual IPicture[] Images()
+        {
+            return Images(String.Empty);
+        }
+
         public virtual IPicture[] Images(string name)
         {
-            GetMapObjects("Image", name);
+            GetMapObjects(TestObjectType.Image, name);
             IPicture[] tmp = new IPicture[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
-        public virtual IText Label()
+        public virtual IPicture[] Images(TestProperty[] properties)
         {
-            return Labels()[0];
+            GetMapObjects(TestObjectType.Image, properties);
+            IPicture[] tmp = new IPicture[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
         }
 
-        public virtual IText[] Labels()
+        #endregion
+
+        #region label
+
+        public virtual IText Label()
         {
-            return Labels(null);
+            return Label(String.Empty);
         }
 
         public virtual IText Label(string name)
@@ -301,22 +374,39 @@ namespace Shrinerain.AutoTester.Core
             return Labels(name)[0];
         }
 
+        public virtual IText Label(TestProperty[] properties)
+        {
+            return Labels(properties)[0];
+        }
+
+        public virtual IText[] Labels()
+        {
+            return Labels(String.Empty);
+        }
+
         public virtual IText[] Labels(string name)
         {
-            GetMapObjects("Label", name);
+            GetMapObjects(TestObjectType.Label, name);
             IText[] tmp = new IText[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
-        public virtual IClickable Link()
+        public virtual IText[] Labels(TestProperty[] properties)
         {
-            return Links()[0];
+            GetMapObjects(TestObjectType.Label, properties);
+            IText[] tmp = new IText[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
         }
 
-        public virtual IClickable[] Links()
+        #endregion
+
+        #region link
+
+        public virtual IClickable Link()
         {
-            return Links(null);
+            return Link(String.Empty);
         }
 
         public virtual IClickable Link(string name)
@@ -324,22 +414,44 @@ namespace Shrinerain.AutoTester.Core
             return Links(name)[0];
         }
 
+        public virtual IClickable Link(TestProperty[] properties)
+        {
+            return Links(properties)[0];
+        }
+
+        public virtual IClickable[] Links()
+        {
+            return Links(String.Empty);
+        }
+
         public virtual IClickable[] Links(string name)
         {
-            GetMapObjects("Link", name);
+            GetMapObjects(TestObjectType.Link, name);
             IClickable[] tmp = new IClickable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
-        public virtual ISelectable ListBox()
+        public virtual IClickable[] Links(TestProperty[] properties)
         {
-            return ListBoxs()[0];
+            GetMapObjects(TestObjectType.Link, properties);
+            IClickable[] tmp = new IClickable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
         }
 
-        public virtual ISelectable[] ListBoxs()
+        #endregion
+
+        #region listbox
+
+        public virtual ISelectable ListBox()
         {
-            return ListBoxs(null);
+            return ListBox(String.Empty);
+        }
+
+        public virtual ISelectable ListBox(TestProperty[] properties)
+        {
+            return ListBoxs(properties)[0];
         }
 
         public virtual ISelectable ListBox(string name)
@@ -347,23 +459,39 @@ namespace Shrinerain.AutoTester.Core
             return ListBoxs(name)[0];
         }
 
+        public virtual ISelectable[] ListBoxs()
+        {
+            return ListBoxs(String.Empty);
+        }
+
         public virtual ISelectable[] ListBoxs(string name)
         {
-            GetMapObjects("ListBox", name);
+            GetMapObjects(TestObjectType.ListBox, name);
             ISelectable[] tmp = new ISelectable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
+        public virtual ISelectable[] ListBoxs(TestProperty[] properties)
+        {
+            GetMapObjects(TestObjectType.ListBox, properties);
+            ISelectable[] tmp = new ISelectable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
+
+        #region radiobox
 
         public virtual ICheckable RadioBox()
         {
-            return RadioBoxs()[0];
+            return RadioBox(String.Empty);
         }
 
-        public virtual ICheckable[] RadioBoxs()
+        public virtual ICheckable RadioBox(TestProperty[] properties)
         {
-            return RadioBoxs(null);
+            return RadioBoxs(properties)[0];
         }
 
         public virtual ICheckable RadioBox(string name)
@@ -371,22 +499,39 @@ namespace Shrinerain.AutoTester.Core
             return RadioBoxs(name)[0];
         }
 
+        public virtual ICheckable[] RadioBoxs()
+        {
+            return RadioBoxs(String.Empty);
+        }
+
         public virtual ICheckable[] RadioBoxs(string name)
         {
-            GetMapObjects("radiobox", name);
+            GetMapObjects(TestObjectType.RadioBox, name);
             ICheckable[] tmp = new ICheckable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
-        public virtual ITable Table()
+        public virtual ICheckable[] RadioBoxs(TestProperty[] properties)
         {
-            return Tables()[0];
+            GetMapObjects(TestObjectType.RadioBox, properties);
+            ICheckable[] tmp = new ICheckable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
         }
 
-        public virtual ITable[] Tables()
+        #endregion
+
+        #region table
+
+        public virtual ITable Table()
         {
-            return Tables(null);
+            return Table(String.Empty);
+        }
+
+        public virtual ITable Table(TestProperty[] properties)
+        {
+            return Tables(properties)[0];
         }
 
         public virtual ITable Table(String name)
@@ -394,22 +539,39 @@ namespace Shrinerain.AutoTester.Core
             return Tables(name)[0];
         }
 
+        public virtual ITable[] Tables()
+        {
+            return Tables(String.Empty);
+        }
+
         public virtual ITable[] Tables(String name)
         {
-            GetMapObjects("Table", name);
+            GetMapObjects(TestObjectType.Table, name);
             ITable[] tmp = new ITable[_lastObjects.Length];
             _lastObjects.CopyTo(tmp, 0);
             return tmp;
         }
 
+        public virtual ITable[] Tables(TestProperty[] properties)
+        {
+            GetMapObjects(TestObjectType.Table, properties);
+            ITable[] tmp = new ITable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
+
+        #region any type
+
         public virtual IVisible AnyObject()
         {
-            return AnyObjects()[0];
+            return AnyObject(String.Empty);
         }
 
         public virtual IVisible AnyObject(String name)
         {
-            return AnyObject(null, name);
+            return AnyObject(String.Empty, name);
         }
 
         public virtual IVisible AnyObject(String type, String name)
@@ -417,14 +579,24 @@ namespace Shrinerain.AutoTester.Core
             return AnyObjects(type, name)[0];
         }
 
+        public virtual IVisible AnyObject(TestProperty[] properties)
+        {
+            return AnyObjects(properties)[0];
+        }
+
+        public virtual IVisible AnyObject(string type, TestProperty[] properties)
+        {
+            return AnyObjects(type, properties)[0];
+        }
+
         public virtual IVisible[] AnyObjects()
         {
-            return AnyObjects(null);
+            return AnyObjects(String.Empty);
         }
 
         public virtual IVisible[] AnyObjects(String name)
         {
-            return AnyObjects(null, name);
+            return AnyObjects(String.Empty, name);
         }
 
         public virtual IVisible[] AnyObjects(String type, String name)
@@ -435,45 +607,100 @@ namespace Shrinerain.AutoTester.Core
             return tmp;
         }
 
-        public virtual IClickable Menu()
+        public virtual IVisible[] AnyObjects(TestProperty[] properties)
         {
-            throw new NotImplementedException();
+            return AnyObjects(String.Empty, properties);
         }
 
-        public virtual IClickable[] Menus()
+        public virtual IVisible[] AnyObjects(string type, TestProperty[] properties)
         {
-            throw new NotImplementedException();
+            GetMapObjects(type, properties);
+            IVisible[] tmp = new IVisible[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
+
+        #region menu
+
+        public virtual IClickable Menu()
+        {
+            return Menu(String.Empty);
         }
 
         public virtual IClickable Menu(string name)
         {
-            throw new NotImplementedException();
+            return Menus(name)[0];
+        }
+
+        public virtual IClickable Menu(TestProperty[] properties)
+        {
+            return Menus(properties)[0];
+        }
+
+        public virtual IClickable[] Menus()
+        {
+            return Menus(String.Empty);
         }
 
         public virtual IClickable[] Menus(string name)
         {
-            throw new NotImplementedException();
+            GetMapObjects(TestObjectType.MenuBar, name);
+            IClickable[] tmp = new IClickable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
         }
+
+        public virtual IClickable[] Menus(TestProperty[] properties)
+        {
+            GetMapObjects(TestObjectType.MenuBar, properties);
+            IClickable[] tmp = new IClickable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
+
+        #region tab
 
         public virtual IClickable Tab()
         {
-            throw new NotImplementedException();
-        }
-
-        public virtual IClickable[] Tabs()
-        {
-            throw new NotImplementedException();
+            return Tab(String.Empty);
         }
 
         public virtual IClickable Tab(string name)
         {
-            throw new NotImplementedException();
+            return Tabs(name)[0];
+        }
+
+        public virtual IClickable Tab(TestProperty[] properties)
+        {
+            return Tabs(properties)[0];
+        }
+
+        public virtual IClickable[] Tabs()
+        {
+            return Tabs(String.Empty);
         }
 
         public virtual IClickable[] Tabs(string name)
         {
-            throw new NotImplementedException();
+            GetMapObjects(TestObjectType.Tab, name);
+            IClickable[] tmp = new IClickable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
         }
+
+        public virtual IClickable[] Tabs(TestProperty[] properties)
+        {
+            GetMapObjects(TestObjectType.Tab, properties);
+            IClickable[] tmp = new IClickable[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
 
         #endregion
 
@@ -481,44 +708,26 @@ namespace Shrinerain.AutoTester.Core
 
         #region private methods
 
-        protected virtual TestObject[] GetMapObjects(string type, string name)
+        protected virtual TestObject[] GetMapObjects(string type, String description)
+        {
+            TestProperty[] properties = TestProperty.GetProperties(description);
+            return GetMapObjects(type, properties);
+        }
+
+        protected virtual TestObject[] GetMapObjects(string type, TestProperty[] properties)
         {
             try
             {
-                bool found = false;
                 TestException exception = null;
-
-                type = (type == null ? "" : type);
-                string key = BuildKey(type + name);
-                TestObject cacheObj;
-                if (_useCache && !String.IsNullOrEmpty(name) && ObjectCache.TryGetObjectFromCache(key, out cacheObj))
+                if (!TryGetObjectsFromPool(type, properties, out _lastObjects, out exception))
                 {
-                    _lastObjects = new TestObject[] { cacheObj };
-                    found = true;
-                }
-                else
-                {
-                    //parse the description text.
-                    //if the format is like "id=1", we think it is a property=value pair. 
-                    TestProperty[] properties = null;
-                    if (!TestProperty.TryGetProperties(name, out properties) && !String.IsNullOrEmpty(name))
+                    StringBuilder sb = new StringBuilder();
+                    foreach (TestProperty tp in properties)
                     {
-                        properties = new TestProperty[] { new TestProperty(TestObject.VisibleProperty, name) };
+                        sb.Append("{" + tp.ToString() + "},");
                     }
 
-                    found = TryGetObjectsFromPool(type, properties, out _lastObjects, out exception);
-                }
-
-                if (found)
-                {
-                    if (_useCache)
-                    {
-                        ObjectCache.InsertObjectToCache(key, _lastObjects[0]);
-                    }
-                }
-                else
-                {
-                    throw new ObjectNotFoundException(exception.ToString());
+                    throw new ObjectNotFoundException(String.Format("Can not get object {0} with error: {1} ", sb.ToString(), exception.ToString()));
                 }
             }
             catch (TestException)
@@ -527,11 +736,18 @@ namespace Shrinerain.AutoTester.Core
             }
             catch (Exception ex)
             {
-                throw new CannotGetMapObjectException("Can not get object from map: " + ex.ToString());
+                StringBuilder sb = new StringBuilder();
+                foreach (TestProperty tp in properties)
+                {
+                    sb.Append("{" + tp.ToString() + "},");
+                }
+
+                throw new ObjectNotFoundException(String.Format("Can not get object {0} with error: {1} ", sb.ToString(), ex.ToString()));
             }
 
             return _lastObjects;
         }
+
 
         private bool TryGetObjectsFromPool(string type, TestProperty[] properties, out TestObject[] obj, out TestException exception)
         {
@@ -573,29 +789,9 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        private void AddTypeObjectToMap(string methodName, string[] paras, TestObject obj)
-        {
-            if (!String.IsNullOrEmpty(methodName) && paras != null && obj != null)
-            {
-                if (paras.Length == 2)
-                {
-                    string name = paras[1];
-
-                    if (!String.IsNullOrEmpty(name))
-                    {
-                        Add(name, obj);
-                    }
-                }
-            }
-        }
-
-        private static String BuildKey(string feed)
-        {
-            return _keySplitter + feed;
-        }
-
         #endregion
 
         #endregion
+
     }
 }

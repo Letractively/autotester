@@ -13,8 +13,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         #region fields
 
-        private static Dictionary<HTMLTestObjectType, string[]> _objectTagsTable = new Dictionary<HTMLTestObjectType, string[]>(59);
-        private static Dictionary<string, HTMLTestObjectType> _objectTypeTable = new Dictionary<string, HTMLTestObjectType>(59);
+        private static Dictionary<HTMLTestObjectTypeEnum, string[]> _objectTagsTable = new Dictionary<HTMLTestObjectTypeEnum, string[]>(59);
+        private static Dictionary<string, HTMLTestObjectTypeEnum> _objectTypeTable = new Dictionary<string, HTMLTestObjectTypeEnum>(59);
 
         #endregion
 
@@ -31,16 +31,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
         * convert the type text to html type enum. 
         * eg: button to HTMLTestObjectType.Button
         */
-        public static HTMLTestObjectType GetHTMLTypeByString(string type)
+        public static HTMLTestObjectTypeEnum GetHTMLTypeByString(string type)
         {
             if (String.IsNullOrEmpty(type))
             {
-                return HTMLTestObjectType.Unknow;
+                return HTMLTestObjectTypeEnum.Unknow;
             }
 
             type = type.ToUpper().Trim();
 
-            HTMLTestObjectType htmlType = HTMLTestObjectType.Unknow;
+            HTMLTestObjectTypeEnum htmlType = HTMLTestObjectTypeEnum.Unknow;
             if (_objectTypeTable.TryGetValue(type, out htmlType))
             {
                 return htmlType;
@@ -48,51 +48,51 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (type == "BUTTON" || type == "BTN" || type == "B")
             {
-                htmlType = HTMLTestObjectType.Button;
+                htmlType = HTMLTestObjectTypeEnum.Button;
             }
             else if (type == "LABEL" || type == "LB")
             {
-                htmlType = HTMLTestObjectType.Label;
+                htmlType = HTMLTestObjectTypeEnum.Label;
             }
             else if (type == "TEXTBOX" || type == "TEXT" || type == "INPUTBOX" || type == "TXT" || type == "T")
             {
-                htmlType = HTMLTestObjectType.TextBox;
+                htmlType = HTMLTestObjectTypeEnum.TextBox;
             }
             else if (type == "LINK" || type == "HYPERLINK" || type == "LK" || type == "A")
             {
-                htmlType = HTMLTestObjectType.Link;
+                htmlType = HTMLTestObjectTypeEnum.Link;
             }
             else if (type == "IMAGE" || type == "IMG" || type == "PICTURE" || type == "PIC" || type == "I" || type == "P")
             {
-                htmlType = HTMLTestObjectType.Image;
+                htmlType = HTMLTestObjectTypeEnum.Image;
             }
             else if (type == "COMBOBOX" || type == "DROPDOWNBOX" || type == "DROPDOWNLIST" || type == "DROPDOWN" || type == "DROPLIST" || type == "CB")
             {
-                htmlType = HTMLTestObjectType.DropList;
+                htmlType = HTMLTestObjectTypeEnum.DropList;
             }
             else if (type == "LISTBOX" || type == "LIST" || type == "LST" || type == "LS")
             {
-                htmlType = HTMLTestObjectType.ListBox;
+                htmlType = HTMLTestObjectTypeEnum.ListBox;
             }
             else if (type == "RADIOBOX" || type == "RADIOBUTTON" || type == "RADIO" || type == "RAD" || type == "R")
             {
-                htmlType = HTMLTestObjectType.RadioBox;
+                htmlType = HTMLTestObjectTypeEnum.RadioBox;
             }
             else if (type == "CHECKBOX" || type == "CHECK" || type == "CHK" || type == "CK")
             {
-                htmlType = HTMLTestObjectType.CheckBox;
+                htmlType = HTMLTestObjectTypeEnum.CheckBox;
             }
             else if (type == "ACTIVEX")
             {
-                htmlType = HTMLTestObjectType.ActiveX;
+                htmlType = HTMLTestObjectTypeEnum.ActiveX;
             }
             else if (type == "TABLE" || type == "TBL" || type == "T")
             {
-                htmlType = HTMLTestObjectType.Table;
+                htmlType = HTMLTestObjectTypeEnum.Table;
             }
             else if (type == "DIALOG" || type == "WINDOWS")
             {
-                htmlType = HTMLTestObjectType.Dialog;
+                htmlType = HTMLTestObjectTypeEnum.Dialog;
             }
 
             _objectTypeTable.Add(type, htmlType);
@@ -103,7 +103,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /*  string[] GetObjectTags(HTMLTestObjectType type)
         *  convert HTMLTestObjectType to HTML tags.
         */
-        public static string[] GetObjectTags(HTMLTestObjectType type)
+        public static string[] GetObjectTags(HTMLTestObjectTypeEnum type)
         {
             string[] res = null;
             if (_objectTagsTable.TryGetValue(type, out res))
@@ -113,43 +113,43 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             switch (type)
             {
-                case HTMLTestObjectType.Label:
+                case HTMLTestObjectTypeEnum.Label:
                     res = new string[] { "label", "span", "font" };
                     break;
-                case HTMLTestObjectType.Link:
+                case HTMLTestObjectTypeEnum.Link:
                     res = new string[] { "a" };
                     break;
-                case HTMLTestObjectType.Button:
+                case HTMLTestObjectTypeEnum.Button:
                     res = new string[] { "input", "button" };
                     break;
-                case HTMLTestObjectType.TextBox:
+                case HTMLTestObjectTypeEnum.TextBox:
                     res = new string[] { "input", "textarea" };
                     break;
-                case HTMLTestObjectType.Image:
+                case HTMLTestObjectTypeEnum.Image:
                     res = new string[] { "img" };
                     break;
-                case HTMLTestObjectType.CheckBox:
+                case HTMLTestObjectTypeEnum.CheckBox:
                     res = new string[] { "input", "label" };
                     break;
-                case HTMLTestObjectType.RadioBox:
+                case HTMLTestObjectTypeEnum.RadioBox:
                     res = new string[] { "input", "label" };
                     break;
-                case HTMLTestObjectType.DropList:
+                case HTMLTestObjectTypeEnum.DropList:
                     res = new string[] { "select" };
                     break;
-                case HTMLTestObjectType.ListBox:
+                case HTMLTestObjectTypeEnum.ListBox:
                     res = new string[] { "select" };
                     break;
-                case HTMLTestObjectType.Table:
+                case HTMLTestObjectTypeEnum.Table:
                     res = new string[] { "table" };
                     break;
-                case HTMLTestObjectType.ActiveX:
+                case HTMLTestObjectTypeEnum.ActiveX:
                     res = new string[] { "object" };
                     break;
-                case HTMLTestObjectType.Dialog:
+                case HTMLTestObjectTypeEnum.Dialog:
                     res = new string[] { };
                     break;
-                case HTMLTestObjectType.Unknow:
+                case HTMLTestObjectTypeEnum.Unknow:
                     res = new string[] { };
                     break;
                 default:
@@ -164,64 +164,64 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /*  private static HTMLTestObjectType GetObjectType(IHTMLElement element)
          *  Get the HTMLTestObjectType from element's tag name.
          */
-        public static HTMLTestObjectType GetObjectType(IHTMLElement element)
+        public static HTMLTestObjectTypeEnum GetObjectType(IHTMLElement element)
         {
             string tag = element.tagName;
 
             if (string.IsNullOrEmpty(tag))
             {
-                return HTMLTestObjectType.Unknow;
+                return HTMLTestObjectTypeEnum.Unknow;
             }
             else if (tag == "A")
             {
-                return HTMLTestObjectType.Link;
+                return HTMLTestObjectTypeEnum.Link;
             }
             else if (tag == "SPAN" || tag == "LABEL" || tag == "FONT")
             {
-                return HTMLTestObjectType.Label;
+                return HTMLTestObjectTypeEnum.Label;
             }
             else if (tag == "IMG")
             {
-                return HTMLTestObjectType.Image;
+                return HTMLTestObjectTypeEnum.Image;
             }
             else if (tag == "BUTTON")
             {
-                return HTMLTestObjectType.Button;
+                return HTMLTestObjectTypeEnum.Button;
             }
             else if (tag == "INPUT")
             {
                 string inputType;
                 if (!HTMLTestObject.TryGetProperty(element, "type", out inputType))
                 {
-                    return HTMLTestObjectType.TextBox;
+                    return HTMLTestObjectTypeEnum.TextBox;
                 }
 
                 inputType = inputType.ToUpper();
                 if (inputType == "TEXT" || inputType == "PASSWORD")
                 {
-                    return HTMLTestObjectType.TextBox;
+                    return HTMLTestObjectTypeEnum.TextBox;
                 }
                 else if (inputType == "BUTTON" || inputType == "SUBMIT" || inputType == "RESET"
                       || inputType == "FILE" || inputType == "IMAGE")
                 {
-                    return HTMLTestObjectType.Button;
+                    return HTMLTestObjectTypeEnum.Button;
                 }
                 else if (inputType == "CHECKBOX")
                 {
-                    return HTMLTestObjectType.CheckBox;
+                    return HTMLTestObjectTypeEnum.CheckBox;
                 }
                 else if (inputType == "RADIO")
                 {
-                    return HTMLTestObjectType.RadioBox;
+                    return HTMLTestObjectTypeEnum.RadioBox;
                 }
             }
             else if (tag == "TEXTAREA")
             {
-                return HTMLTestObjectType.TextBox;
+                return HTMLTestObjectTypeEnum.TextBox;
             }
             else if (tag == "TABLE")
             {
-                return HTMLTestObjectType.Table;
+                return HTMLTestObjectTypeEnum.Table;
             }
             else if (tag == "SELECT")
             {
@@ -229,7 +229,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (!HTMLTestObject.TryGetProperty(element, "size", out selectValue))
                 {
-                    return HTMLTestObjectType.DropList;
+                    return HTMLTestObjectTypeEnum.DropList;
                 }
                 else
                 {
@@ -237,20 +237,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     if (selectSize < 2)
                     {
-                        return HTMLTestObjectType.DropList;
+                        return HTMLTestObjectTypeEnum.DropList;
                     }
                     else
                     {
-                        return HTMLTestObjectType.ListBox;
+                        return HTMLTestObjectTypeEnum.ListBox;
                     }
                 }
             }
             else if (tag == "OBJECT")
             {
-                return HTMLTestObjectType.ActiveX;
+                return HTMLTestObjectTypeEnum.ActiveX;
             }
 
-            return HTMLTestObjectType.Unknow;
+            return HTMLTestObjectTypeEnum.Unknow;
         }
 
         /* HTMLTestGUIObject BuildObjectByType(IHTMLElement element)
@@ -265,20 +265,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element, HTMLTestBrowser browser)
         {
-            return BuildHTMLTestObjectByType(element, HTMLTestObjectType.Unknow, browser);
+            return BuildHTMLTestObjectByType(element, HTMLTestObjectTypeEnum.Unknow, browser);
         }
 
         public static HTMLTestGUIObject BuildHTMLTestObject(IntPtr handle, HTMLTestBrowser browser)
         {
-            return BuildHTMLTestObjectByType(null, handle, HTMLTestObjectType.Dialog, browser);
+            return BuildHTMLTestObjectByType(null, handle, HTMLTestObjectTypeEnum.Dialog, browser);
         }
 
-        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, HTMLTestObjectType type, HTMLTestBrowser browser)
+        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, HTMLTestObjectTypeEnum type, HTMLTestBrowser browser)
         {
             return BuildHTMLTestObjectByType(element, IntPtr.Zero, type, browser);
         }
 
-        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, IntPtr handle, HTMLTestObjectType type, HTMLTestBrowser browser)
+        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, IntPtr handle, HTMLTestObjectTypeEnum type, HTMLTestBrowser browser)
         {
             if (element == null && handle == IntPtr.Zero)
             {
@@ -287,7 +287,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                if (type == HTMLTestObjectType.Unknow)
+                if (type == HTMLTestObjectTypeEnum.Unknow)
                 {
                     type = GetObjectType(element);
                 }
@@ -295,40 +295,40 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 HTMLTestGUIObject tmp;
                 switch (type)
                 {
-                    case HTMLTestObjectType.Label:
+                    case HTMLTestObjectTypeEnum.Label:
                         tmp = new HTMLTestLabel(element, browser);
                         break;
-                    case HTMLTestObjectType.Button:
+                    case HTMLTestObjectTypeEnum.Button:
                         tmp = new HTMLTestButton(element, browser);
                         break;
-                    case HTMLTestObjectType.TextBox:
+                    case HTMLTestObjectTypeEnum.TextBox:
                         tmp = new HTMLTestTextBox(element, browser);
                         break;
-                    case HTMLTestObjectType.ListBox:
+                    case HTMLTestObjectTypeEnum.ListBox:
                         tmp = new HTMLTestListBox(element, browser);
                         break;
-                    case HTMLTestObjectType.Link:
+                    case HTMLTestObjectTypeEnum.Link:
                         tmp = new HTMLTestLink(element, browser);
                         break;
-                    case HTMLTestObjectType.DropList:
+                    case HTMLTestObjectTypeEnum.DropList:
                         tmp = new HTMLTestDropList(element, browser);
                         break;
-                    case HTMLTestObjectType.Image:
+                    case HTMLTestObjectTypeEnum.Image:
                         tmp = new HTMLTestImage(element, browser);
                         break;
-                    case HTMLTestObjectType.RadioBox:
+                    case HTMLTestObjectTypeEnum.RadioBox:
                         tmp = new HTMLTestRadioBox(element, browser);
                         break;
-                    case HTMLTestObjectType.CheckBox:
+                    case HTMLTestObjectTypeEnum.CheckBox:
                         tmp = new HTMLTestCheckBox(element, browser);
                         break;
-                    case HTMLTestObjectType.Table:
+                    case HTMLTestObjectTypeEnum.Table:
                         tmp = new HTMLTestTable(element, browser);
                         break;
-                    case HTMLTestObjectType.ActiveX:
+                    case HTMLTestObjectTypeEnum.ActiveX:
                         tmp = new HTMLTestActiveXObject(element, browser);
                         break;
-                    case HTMLTestObjectType.Dialog:
+                    case HTMLTestObjectTypeEnum.Dialog:
                         tmp = new HTMLTestDialog(handle, browser);
                         break;
                     default:

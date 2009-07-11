@@ -248,10 +248,6 @@ namespace Shrinerain.AutoTester.Core
             return sb.ToString();
         }
 
-        /* GetProperties(string str, out string[] properties, out string[] values)
-        * Parse the text like "id=btnG", return the properties array and values array.
-        * eg: properties=new string[]{"id"} , values=new string[]{"btnG"}.
-        */
         public static bool TryGetProperties(string str, out TestProperty[] properties)
         {
             bool res = false;
@@ -272,31 +268,57 @@ namespace Shrinerain.AutoTester.Core
             return res;
         }
 
+        //parse string.
+        //properties is splitted by ";"
+        //eg: "id=btnG;name=google".
         public static TestProperty[] GetProperties(string str)
         {
-            if (str != null && !String.IsNullOrEmpty(str.Trim()) && str.IndexOf("=") > 0)
+            if (str != null && !String.IsNullOrEmpty(str.Trim()))
             {
-                //properties is splitted by ";"
-                //eg: "id=btnG;name=google".
-                string[] propPairs = str.Split(PropertySeparator);
-
-                List<TestProperty> properties = new List<TestProperty>(propPairs.Length);
-                for (int i = 0; i < propPairs.Length; i++)
+                List<TestProperty> properties = new List<TestProperty>();
+                int startIndex = 0;
+                int endIndex = 0;
+                for (int i = 0; i < str.Length; i++)
                 {
-                    string p = propPairs[i];
-                    if (!String.IsNullOrEmpty(p))
+                    char c = str[i];
+                    if (c == PropertySeparator || i == str.Length - 1)
                     {
-                        int ePos = p.LastIndexOf("=");
-                        if (ePos > 0)
+                        if (!IsEscaped(str, i))
                         {
-                            //get property name, before "="
-                            string prop = p.Substring(0, ePos);
-                            string val = "";
-                            if (ePos < p.Length - 1)
+                            endIndex = (c == PropertySeparator ? i : i + 1);
+                            string propertyStr = str.Substring(startIndex, endIndex - startIndex);
+                            int nameEndPos = 0;
+                            int valueStartPos = 0;
+                            for (int j = 0; j < propertyStr.Length; j++)
                             {
-                                val = p.Substring(ePos + 1, p.Length - ePos - 1);
+                                if (propertyStr[j] == '=' && !IsEscaped(propertyStr, j))
+                                {
+                                    nameEndPos = j;
+                                    valueStartPos = j + 1;
+                                    break;
+                                }
                             }
-                            properties.Add(new TestProperty(prop, val));
+
+                            string name = propertyStr.Substring(0, nameEndPos).Trim();
+                            string value = propertyStr.Substring(valueStartPos, propertyStr.Length - valueStartPos);
+                            bool isReg = false;
+                            if (String.IsNullOrEmpty(name))
+                            {
+                                name = TestConstants.PROPERTY_VISIBLE;
+                            }
+                            else
+                            {
+                                if (name.StartsWith(RegFlag))
+                                {
+                                    name = name.Remove(0, 1);
+                                    isReg = name.StartsWith(RegFlag);
+                                }
+                            }
+
+                            TestProperty p = new TestProperty(name, value, isReg);
+                            properties.Add(p);
+
+                            startIndex = endIndex + 1;
                         }
                     }
                 }
@@ -307,6 +329,17 @@ namespace Shrinerain.AutoTester.Core
             return null;
         }
 
+        private static bool IsEscaped(String str, int index)
+        {
+            if (index <= 0)
+            {
+                return false;
+            }
+            else
+            {
+                return str[index - 1] == '\\' && !IsEscaped(str, index - 2);
+            }
+        }
 
         #endregion
 

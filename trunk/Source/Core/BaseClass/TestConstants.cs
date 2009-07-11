@@ -50,6 +50,8 @@ namespace Shrinerain.AutoTester.Core
         public const string PROPERTY_VALUE = "Value";
         public const string PROPERTY_ISCHECKED = "IsChecked";
         public const string PROPERTY_CLASS = "class";
+        public const string PROPERTY_VISIBLE = "VisibleProperty";
+
 
         #endregion
 

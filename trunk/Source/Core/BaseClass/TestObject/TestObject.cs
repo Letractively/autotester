@@ -35,8 +35,7 @@ namespace Shrinerain.AutoTester.Core
         protected string _domain;
 
         protected List<String> _idenProperties = new List<String>();
-        protected const string _visibleProperty = "VisibleProperty";
-
+       
         #endregion
 
         #region properties
@@ -50,11 +49,6 @@ namespace Shrinerain.AutoTester.Core
         {
             get { return _parentApp; }
             set { _parentApp = value; }
-        }
-
-        public static string VisibleProperty
-        {
-            get { return _visibleProperty; }
         }
 
         #endregion
