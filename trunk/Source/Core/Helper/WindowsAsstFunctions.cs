@@ -7,10 +7,8 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class WindowsAsstFunctions
+    public sealed class WindowsAsstFunctions
     {
-        private const int MAX_TIMEOUT = 3;
-
         #region methods
 
         #region private
@@ -46,6 +44,14 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region public methods
+
+        public static void CloseWindow(IntPtr handle)
+        {
+            if (handle != IntPtr.Zero)
+            {
+                Win32API.SendMessage(handle, (int)Win32API.WindowMessages.WM_CLOSE, 0, 0);
+            }
+        }
 
         //get the sub windows of specific handle.
         public static List<IntPtr> GetSubWindows(IntPtr parent)

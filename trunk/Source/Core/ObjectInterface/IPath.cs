@@ -22,6 +22,6 @@ namespace Shrinerain.AutoTester.Core
         int GetDepth();
 
         //get objects at expected path, eg: "File->New->Project".
-        Object[] GetObjectsAtPath(String path);
+        Object[] GetObjectsByPath(String path);
     }
 }
