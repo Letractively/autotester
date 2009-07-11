@@ -80,13 +80,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                BeforeAction();
-
                 if (!IsChecked())
                 {
-                    Thread t = new Thread(new ThreadStart(Click));
-                    t.Start();
-                    t.Join(ActionTimeout);
+                    Click();
                 }
             }
             catch (TestException)
@@ -97,23 +93,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not perform Check action on checkbox: " + ex.ToString());
             }
-            finally
-            {
-                AfterAction();
-            }
         }
 
         public virtual void UnCheck()
         {
             try
             {
-                BeforeAction();
-
                 if (IsChecked())
                 {
-                    Thread t = new Thread(new ThreadStart(Click));
-                    t.Start();
-                    t.Join(ActionTimeout);
+                    Click();
                 }
             }
             catch (TestException)
@@ -123,10 +111,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform UnCheck action on checkbox: " + ex.ToString());
-            }
-            finally
-            {
-                AfterAction();
             }
         }
 
@@ -150,16 +134,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                Hover();
-                if (_sendMsgOnly)
-                {
-                    this._checkBoxElement.@checked = !this._checkBoxElement.@checked;
-                    FireEvent("onclick");
-                }
-                else
-                {
-                    MouseOp.Click();
-                }
+                BeforeAction();
+
+                Thread t = new Thread(new ThreadStart(PerformClick));
+                t.Start();
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -168,6 +147,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not click on the checkbox: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -279,6 +262,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region private
+
+        protected override void PerformClick()
+        {
+            Hover();
+            if (_sendMsgOnly)
+            {
+                this._checkBoxElement.@checked = !this._checkBoxElement.@checked;
+                FireEvent("onclick");
+            }
+            else
+            {
+                MouseOp.Click();
+            }
+        }
+
+        #endregion
         #endregion
     }
 }

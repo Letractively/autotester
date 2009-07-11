@@ -607,15 +607,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                if (_sendMsgOnly && this._sourceElement != null)
-                {
-                    this._sourceElement.click();
-                    FireEvent("onclick");
-                }
-                else if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
-                {
-                    MouseOp.Click(this._centerPoint);
-                }
+                BeforeAction();
+
+                Thread t = new Thread(new ThreadStart(PerformClick));
+                t.Start();
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -624,6 +620,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform mouse click: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -749,6 +749,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
+
+        protected virtual void PerformClick()
+        {
+            Hover();
+            if (_sendMsgOnly && this._sourceElement != null)
+            {
+                this._sourceElement.click();
+                FireEvent("onclick");
+            }
+            else if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
+            {
+                MouseOp.Click(this._centerPoint);
+            }
+        }
 
         protected virtual void BeforeAction()
         {

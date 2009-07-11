@@ -15,6 +15,7 @@
 *********************************************************************/
 
 using System;
+using System.Threading;
 
 using mshtml;
 
@@ -133,15 +134,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 BeforeAction();
 
-                Hover();
-                if (_sendMsgOnly)
-                {
-                    _acnchorElement.click();
-                }
-                else
-                {
-                    MouseOp.Click();
-                }
+                Thread t = new Thread(new ThreadStart(PerformClick));
+                t.Start();
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -193,24 +188,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public string GetFontFamily()
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public string GetFontSize()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public string GetFontColor()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         #endregion
-
-        #endregion
-
-        #region private methods
 
         #endregion
 

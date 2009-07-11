@@ -175,21 +175,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 BeforeAction();
 
-                Hover();
-                if (_sendMsgOnly)
-                {
-                    this._htmlSelectElement.selectedIndex = index;
-                    FireEvent("onchange");
-                }
-                else
-                {
-                    //get the actual position on the screen.
-                    Point itemPosition = GetItemPosition(index);
-                    MouseOp.Click(itemPosition);
-                }
-
-                //refresh the selected value.
-                this._selectedValue = this._allValues[index];
+                Thread t = new Thread(new ParameterizedThreadStart(SelectIndex));
+                t.Start(index);
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -377,6 +365,27 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
+
+        protected virtual void SelectIndex(Object indexObj)
+        {
+            int index = Convert.ToInt32(indexObj);
+
+            Hover();
+            if (_sendMsgOnly)
+            {
+                this._htmlSelectElement.selectedIndex = index;
+                FireEvent("onchange");
+            }
+            else
+            {
+                //get the actual position on the screen.
+                Point itemPosition = GetItemPosition(index);
+                MouseOp.Click(itemPosition);
+            }
+
+            //refresh the selected value.
+            this._selectedValue = this._allValues[index];
+        }
 
         /* int GetSelectedIndex()
          * get the index of selected value.
