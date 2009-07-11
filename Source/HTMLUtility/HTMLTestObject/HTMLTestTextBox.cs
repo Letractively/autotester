@@ -20,6 +20,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 using mshtml;
 
@@ -126,41 +127,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void Input(string value)
         {
-            value = (value == null ? "" : value);
             try
             {
                 BeforeAction();
 
-                Hover();
-                if (_sendMsgOnly)
-                {
-                    //set the text directly.
-                    if (this._tag == "INPUT")
-                    {
-                        this._textInputElement.value = value;
-                    }
-                    else if (this._tag == "TEXTAREA")
-                    {
-                        this._textAreaElement.value = value;
-                    }
-                    else
-                    {
-                        this._sourceElement.innerHTML = value;
-                    }
+                value = (value == null ? "" : value);
 
-                    FireEvent("onchange");
-                }
-                else
-                {
-                    //or send the chars by keyboard
-                    KeyboardOp.SendChars(value);
-
-                    //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
-                    //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
-                    //and we can not click this button, so we need to elimate it. 
-                    //click just above the text box, to elimate it.
-                    ClickAbove();
-                }
+                Thread t = new Thread(new ParameterizedThreadStart(SetValue));
+                t.Start(value);
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -214,18 +189,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 BeforeAction();
 
-                if (this._tag == "INPUT")
-                {
-                    this._textInputElement.value = "";
-                }
-                else if (this._tag == "TEXTAREA")
-                {
-                    this._textAreaElement.value = "";
-                }
-                else
-                {
-                    this._sourceElement.innerHTML = "";
-                }
+                Thread t = new Thread(new ParameterizedThreadStart(SetValue));
+                t.Start(null);
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -351,6 +317,41 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
+
+        protected virtual void SetValue(Object valueObj)
+        {
+            string value = valueObj == null ? "" : valueObj.ToString();
+            Hover();
+            if (_sendMsgOnly)
+            {
+                //set the text directly.
+                if (this._tag == "INPUT")
+                {
+                    this._textInputElement.value = value;
+                }
+                else if (this._tag == "TEXTAREA")
+                {
+                    this._textAreaElement.value = value;
+                }
+                else
+                {
+                    this._sourceElement.innerHTML = value;
+                }
+
+                FireEvent("onchange");
+            }
+            else
+            {
+                //or send the chars by keyboard
+                KeyboardOp.SendChars(value);
+
+                //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
+                //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
+                //and we can not click this button, so we need to elimate it. 
+                //click just above the text box, to elimate it.
+                ClickAbove();
+            }
+        }
 
         /* HTMLTestTextBoxType GetTextBoxType()
          * return the text box type by checking the "type" property.

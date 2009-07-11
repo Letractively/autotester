@@ -21,6 +21,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Drawing;
+using System.Threading;
 
 using mshtml;
 
@@ -114,27 +115,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 BeforeAction();
 
-                Hover();
-                if (_sendMsgOnly)
-                {
-                    //we can not click on an image without mouse action.
-                    //so click the link if have.
-                    HTMLAnchorElement linkElement = (HTMLAnchorElement)this._sourceElement.parentElement;
-
-                    if (linkElement != null)
-                    {
-                        linkElement.click();
-                        FireEvent("onclick");
-                    }
-                    else
-                    {
-                        throw new CannotPerformActionException("Can not click image.");
-                    }
-                }
-                else
-                {
-                    MouseOp.Click();
-                }
+                Thread t = new Thread(new ThreadStart(PerformClick));
+                t.Start();
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -222,6 +205,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
+
+        protected override void PerformClick()
+        {
+            Hover();
+            if (_sendMsgOnly)
+            {
+                //we can not click on an image without mouse action.
+                //so click the link if have.
+                HTMLAnchorElement linkElement = (HTMLAnchorElement)this._sourceElement.parentElement;
+                if (linkElement != null)
+                {
+                    linkElement.click();
+                    FireEvent("onclick");
+                }
+            }
+            else
+            {
+                MouseOp.Click();
+            }
+        }
 
         /* private void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
          * callback function when the image is downloaded.

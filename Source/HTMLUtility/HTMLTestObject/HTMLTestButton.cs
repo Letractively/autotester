@@ -125,8 +125,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 BeforeAction();
 
-                Hover();
-                Thread t = new Thread(new ThreadStart(MouseClick));
+                Thread t = new Thread(new ThreadStart(PerformClick));
                 t.Start();
                 t.Join(ActionTimeout);
             }

@@ -80,13 +80,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                BeforeAction();
-
                 if (!IsChecked())
                 {
-                    Thread t = new Thread(new ThreadStart(Click));
-                    t.Start();
-                    t.Join(ActionTimeout);
+                    Click();
                 }
             }
             catch (TestException)
@@ -97,23 +93,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not perform Check action on radio button: " + ex.ToString());
             }
-            finally
-            {
-                AfterAction();
-            }
         }
 
         public virtual void UnCheck()
         {
             try
             {
-                BeforeAction();
-
                 if (IsChecked())
                 {
-                    Thread t = new Thread(new ThreadStart(Click));
-                    t.Start();
-                    t.Join(ActionTimeout);
+                    Click();
                 }
             }
             catch (TestException)
@@ -123,10 +111,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not perform UnCheck action on radio button: " + ex.ToString());
-            }
-            finally
-            {
-                AfterAction();
             }
         }
 
@@ -150,16 +134,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                Hover();
-                if (_sendMsgOnly)
-                {
-                    this._radioElement.@checked = true;
-                    FireEvent("onclick");
-                }
-                else
-                {
-                    MouseOp.Click();
-                }
+                BeforeAction();
+
+                Thread t = new Thread(new ThreadStart(PerformClick));
+                t.Start();
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -168,6 +147,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotPerformActionException("Can not click on the radio button: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -276,6 +259,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 return null;
             }
         }
+        #endregion
+
+        #region private
+
+        protected override void PerformClick()
+        {
+            Hover();
+            if (_sendMsgOnly)
+            {
+                this._radioElement.@checked = true;
+                FireEvent("onclick");
+            }
+            else
+            {
+                MouseOp.Click();
+            }
+        }
+
         #endregion
 
         #endregion
