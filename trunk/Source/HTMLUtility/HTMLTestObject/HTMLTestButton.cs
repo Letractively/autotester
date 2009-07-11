@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
+using Accessibility;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
@@ -83,21 +84,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     this._inputElement = (IHTMLInputElement)element;
                     this._btnType = GetButtonType();
-                    if (this._btnType != HTMLTestButtonType.File)
-                    {
-                        this._buttonCaption = GetCaption();
-                    }
-                    else
-                    {
-                        this._buttonCaption = "File";
-                    }
                 }
                 else if (String.Compare(element.tagName, "BUTTON", true) == 0)
                 {
                     this._buttonElement = (IHTMLButtonElement)element;
-                    this._buttonCaption = GetCaption();
                     this._btnType = HTMLTestButtonType.Normal;
                 }
+
+                this._buttonCaption = GetCaption();
             }
             catch (Exception ex)
             {
@@ -278,10 +272,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         protected virtual String GetCaption()
         {
-            object caption;
-            if (!TryGetProperty("value", out caption))
+            object caption = null;
+            if (_btnType == HTMLTestButtonType.File)
             {
-                TryGetProperty("title", out caption);
+                try
+                {
+                    caption = (GetIAccInterface().accNavigate(5, 0) as IAccessible).get_accDescription(0);
+                }
+                catch
+                {
+                    caption = "Browse...";
+                }
+            }
+            else
+            {
+                if (!TryGetProperty("value", out caption))
+                {
+                    TryGetProperty("title", out caption);
+                }
             }
 
             return caption != null ? caption.ToString() : "";
