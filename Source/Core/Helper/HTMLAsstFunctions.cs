@@ -10,7 +10,7 @@ using SHDocVw;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class HTMLAsstFunctions
+    public sealed class HTMLAsstFunctions
     {
         public static bool IsDocumentValid(IHTMLDocument2 doc)
         {

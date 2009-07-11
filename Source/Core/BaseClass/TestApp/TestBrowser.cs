@@ -523,7 +523,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
-                    AsstFunctions.CloseWindow(_dialogHandle);
+                    WindowsAsstFunctions.CloseWindow(_dialogHandle);
                     this._dialogHandle = IntPtr.Zero;
                     AttachBrowser(this._browser);
                 }

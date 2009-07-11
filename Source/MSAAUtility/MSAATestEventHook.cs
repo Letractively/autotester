@@ -81,17 +81,18 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     this._startEvent = startEvent;
                     this._endEvent = endEvent;
 
-                    _eventHandler = this.WinEvent;
+                    _eventHandler = new Win32API.WinEventDelegate(WinEvent);
                     _eventHook = Win32API.SetWinEventHook(startEvent, endEvent, IntPtr.Zero, _eventHandler, processID, 0, 0x0000);
 
                     //install failed.
                     if (_eventHook != IntPtr.Zero)
                     {
                         GC.KeepAlive(_eventHook);
+                        GC.KeepAlive(_eventHandler);
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
 
@@ -111,7 +112,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     _eventHook = IntPtr.Zero;
                     _eventHandler = null;
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
             }
@@ -128,7 +129,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     OnWindowsEvent(eventType, hWnd, idObject, idChild);
                 }
-                catch (Exception ex)
+                catch
                 {
                 }
             }

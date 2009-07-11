@@ -63,7 +63,6 @@
     <Compile Include="BaseClass\TestApp\TestPageMap.cs" />
     <Compile Include="BaseClass\TestSession.cs" />
     <Compile Include="BaseClass\TestObject\TestProperty.cs" />
-    <Compile Include="Helper\AsstFunctions.cs" />
     <Compile Include="Helper\COMUtil.cs" />
     <Compile Include="Helper\HTMLAsstFunctions.cs" />
     <Compile Include="Helper\HttpHandler.cs" />

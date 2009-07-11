@@ -7,8 +7,8 @@ using Shrinerain.AutoTester.Win32;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public delegate void TestAppEventHandler(TestApp application, TestEventArgs args);
-    public delegate void TestObjectEventHandler(TestObject sender, TestEventArgs args);
+    public delegate void TestAppEventHandler(TestApp sender, TestEventArgs e);
+    public delegate void TestObjectEventHandler(TestObject sender, TestEventArgs e);
 
     public enum MouseButton
     {

@@ -14,8 +14,6 @@
 *
 *********************************************************************/
 
-
-
 namespace Shrinerain.AutoTester.Core
 {
     public interface IInteractive : IVisible

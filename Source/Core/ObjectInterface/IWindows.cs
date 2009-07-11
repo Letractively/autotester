@@ -22,10 +22,8 @@ namespace Shrinerain.AutoTester.Core
     {
         //get the windows handle
         IntPtr GetHandle();
-
         //get the windows class
         String GetClass();
-
         //get the text
         String GetCaption();
     }
