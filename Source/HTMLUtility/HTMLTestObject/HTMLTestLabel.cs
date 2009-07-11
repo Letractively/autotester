@@ -56,7 +56,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestLabel(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            this._type = HTMLTestObjectType.Label;
+            this._type = HTMLTestObjectTypeEnum.Label;
             try
             {
                 if (element.tagName == "LABEL")

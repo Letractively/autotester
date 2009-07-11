@@ -74,7 +74,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             : base(element, browser)
         {
             this._isDelayAfterAction = true;
-            this._type = HTMLTestObjectType.Link;
+            this._type = HTMLTestObjectTypeEnum.Link;
             try
             {
                 _acnchorElement = (HTMLAnchorElement)element;

@@ -67,6 +67,7 @@
     <Compile Include="HTMLTestObject\HTMLTestListBox.cs" />
     <Compile Include="HTMLTestObject\HTMLTestObject.cs" />
     <Compile Include="HTMLTestObjectFinder\HTMLTestObjectPool.cs" />
+    <Compile Include="HTMLTestObjectFinder\HTMLTestObjectType.cs" />
     <Compile Include="HTMLTestObject\HTMLTestRadioBox.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTable.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTextBox.cs" />
