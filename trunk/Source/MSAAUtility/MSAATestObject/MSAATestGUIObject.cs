@@ -275,6 +275,16 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return _centerPoint;
         }
 
+        protected virtual void BeforeAction()
+        {
+            _actionFinished.WaitOne();
+        }
+
+        protected virtual void AfterAction()
+        {
+            _actionFinished.Reset();
+        }
+
         #endregion
 
         #endregion

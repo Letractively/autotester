@@ -46,6 +46,7 @@
     <Compile Include="MSAATestEventHook.cs" />
     <Compile Include="MSAATestObjectFinder\MSAATestObjectMap.cs" />
     <Compile Include="MSAATestObjectFinder\MSAATestObjectPool.cs" />
+    <Compile Include="MSAATestObjectFinder\MSAATestObjectType.cs" />
     <Compile Include="MSAATestObject\MSAATestButton.cs" />
     <Compile Include="MSAATestObject\MSAATestCheckBox.cs" />
     <Compile Include="MSAATestObject\MSAATestComboBox.cs" />
