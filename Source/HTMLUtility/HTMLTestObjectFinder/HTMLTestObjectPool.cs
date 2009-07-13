@@ -355,7 +355,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             //if it is not an interactive object or the property is not found. 
                             if (HTMLTestObjectFactory.IsVisible(_tempElement))
                             {
-                                if (CheckObjectProperties(_tempElement, HTMLTestObjectTypeEnum.Unknow, properties, simPercent, out _testObj))
+                                if (CheckObjectProperties(_tempElement, HTMLTestObjectType.Unknown, properties, simPercent, out _testObj))
                                 {
                                     AfterObjectFound(_testObj);
                                     result.Add(_testObj);
@@ -426,8 +426,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //convert the TYPE text to valid internal type.
             // eg: "button" to HTMLTestObjectType.Button
-            HTMLTestObjectTypeEnum typeValue = HTMLTestObjectFactory.GetHTMLTypeByString(type);
-            if (typeValue == HTMLTestObjectTypeEnum.Unknow)
+            String typeValue = HTMLTestObjectFactory.GetHTMLTypeByString(type);
+            if (typeValue == HTMLTestObjectType.Unknown)
             {
                 throw new ObjectNotFoundException("Unknow HTML object type.");
             }
@@ -458,7 +458,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 List<TestObject> result = new List<TestObject>();
 
-                if (typeValue == HTMLTestObjectTypeEnum.Dialog)
+                if (typeValue == HTMLTestObjectType.Dialog)
                 {
                     IntPtr dialogHandle = GetHTMLDialogObject(properties);
                     if (dialogHandle != IntPtr.Zero)
@@ -645,9 +645,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("The width and height of rect can not be 0.");
             }
 
-            HTMLTestObjectTypeEnum type = HTMLTestObjectFactory.GetHTMLTypeByString(typeStr);
+            String type = HTMLTestObjectFactory.GetHTMLTypeByString(typeStr);
 
-            if (type == HTMLTestObjectTypeEnum.Unknow)
+            if (type == HTMLTestObjectType.Unknown)
             {
                 throw new ObjectNotFoundException("Unknow type.");
             }
@@ -857,7 +857,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region check test object
 
-        private bool CheckObjectProperties(IHTMLElement element, HTMLTestObjectTypeEnum type, TestProperty[] properties, int simPercent, out TestObject obj)
+        private bool CheckObjectProperties(IHTMLElement element, String type, TestProperty[] properties, int simPercent, out TestObject obj)
         {
             obj = null;
             int totalResult = 0;
@@ -914,18 +914,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        private bool CheckVisibleProperty(IHTMLElement element, HTMLTestObjectTypeEnum type, TestProperty property, int simPercent, out TestObject obj)
+        private bool CheckVisibleProperty(IHTMLElement element, String type, TestProperty property, int simPercent, out TestObject obj)
         {
             obj = null;
 
             try
             {
                 string visibleText = null;
-                if (type == HTMLTestObjectTypeEnum.Link || type == HTMLTestObjectTypeEnum.Label)
+                if (type == HTMLTestObjectType.Link || type == HTMLTestObjectType.Label)
                 {
                     visibleText = element.innerText;
                 }
-                else if (type == HTMLTestObjectTypeEnum.DropList || type == HTMLTestObjectTypeEnum.ListBox)
+                else if (type == HTMLTestObjectType.DropList || type == HTMLTestObjectType.ListBox)
                 {
                     visibleText = ((IHTMLOptionElement)(element as IHTMLSelectElement).item(0, 0)).text;
                 }

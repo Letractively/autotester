@@ -81,7 +81,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestDropList(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            this._type = HTMLTestObjectTypeEnum.DropList;
+            this._type = HTMLTestObjectType.DropList;
             try
             {
                 _htmlSelectElement = (IHTMLSelectElement)element;

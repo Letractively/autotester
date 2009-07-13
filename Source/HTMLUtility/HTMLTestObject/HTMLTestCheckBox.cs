@@ -51,7 +51,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestCheckBox(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            this._type = HTMLTestObjectTypeEnum.CheckBox;
+            this._type = HTMLTestObjectType.CheckBox;
             try
             {
                 this._checkBoxElement = (IHTMLInputElement)element;

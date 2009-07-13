@@ -44,13 +44,6 @@ namespace Shrinerain.AutoTester.Core
         ICheckable[] CheckBoxs(string description);
         ICheckable[] CheckBoxs(TestProperty[] properties);
 
-        IComboBox ComboBox();
-        IComboBox ComboBox(string description);
-        IComboBox ComboBox(TestProperty[] propertiese);
-        IComboBox[] ComboBoxs();
-        IComboBox[] ComboBoxs(string description);
-        IComboBox[] ComboBoxs(TestProperty[] properties);
-
         ISelectable DropList();
         ISelectable DropList(string description);
         ISelectable DropList(TestProperty[] properties);
@@ -99,20 +92,6 @@ namespace Shrinerain.AutoTester.Core
         ITable[] Tables();
         ITable[] Tables(String description);
         ITable[] Tables(TestProperty[] properties);
-
-        IClickable Menu();
-        IClickable Menu(String description);
-        IClickable Menu(TestProperty[] properties);
-        IClickable[] Menus();
-        IClickable[] Menus(String description);
-        IClickable[] Menus(TestProperty[] properties);
-
-        IClickable Tab();
-        IClickable Tab(String description);
-        IClickable Tab(TestProperty[] properties);
-        IClickable[] Tabs();
-        IClickable[] Tabs(String description);
-        IClickable[] Tabs(TestProperty[] properties);
 
         IVisible AnyObject();
         IVisible AnyObject(String description);

@@ -62,7 +62,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestTable(IHTMLElement element, HTMLTestBrowser browser)
             : base(element, browser)
         {
-            this._type = HTMLTestObjectTypeEnum.Table;
+            this._type = HTMLTestObjectType.Table;
             try
             {
                 _tableElement = (IHTMLTable)element;
@@ -165,7 +165,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* HTMLTestGUIObject GetObjectByCell(int row, int col)
          * return the first test object at expected cell.
          */
-        public virtual HTMLTestGUIObject GetObjectByCell(int row, int col, HTMLTestObjectTypeEnum objType)
+        public virtual HTMLTestGUIObject GetObjectByCell(int row, int col, String objType)
         {
             foreach (Object i in GetObjectsByCell(row, col))
             {

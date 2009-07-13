@@ -77,7 +77,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             : base(element, browser)
         {
             this._isDelayAfterAction = true;
-            this._type = HTMLTestObjectTypeEnum.Button;
+            this._type = HTMLTestObjectType.Button;
             try
             {
                 if (String.Compare(element.tagName, "INPUT", true) == 0)

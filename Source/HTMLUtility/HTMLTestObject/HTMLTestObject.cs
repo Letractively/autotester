@@ -46,8 +46,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _innerHTML;
         protected string _outterText;
         protected string _outterHTML;
+        protected string _type;
 
-        protected HTMLTestObjectTypeEnum _type;
         protected IHTMLElement _sourceElement;
         //the host browser of this object.
         protected HTMLTestBrowser _browser;
@@ -103,7 +103,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _className; }
         }
 
-        public HTMLTestObjectTypeEnum Type
+        public String Type
         {
             get { return _type; }
         }
