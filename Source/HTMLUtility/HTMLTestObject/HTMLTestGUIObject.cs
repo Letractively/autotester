@@ -176,7 +176,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 IHTMLElement tmp = this._sourceElement;
                 Point p = new Point(0, 0);
-                while ((p.X != 0 || p.Y != 0) && tmp != null)
+                while (p.X == 0 && p.Y == 0 && tmp != null)
                 {
                     MSAATestObject obj = new MSAATestObject(tmp);
                     if (obj.GetIAccInterface() != null)
