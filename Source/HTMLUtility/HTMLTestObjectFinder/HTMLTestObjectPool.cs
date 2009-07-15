@@ -35,7 +35,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the default similar pencent to  find an object, if 100, that means we should make sure 100% match. 
         private bool _useFuzzySearch = false;
-        private bool _autoAdjustSimilarPercent = true;
         private const int _defaultPercent = 100;
         private int _similarPercentUpBound = 100;
         private int _similarPercentLowBound = 70;
@@ -51,7 +50,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private TestObject _testObj;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
-        private int _maxWaitSeconds = 15;
+        private int _searchTimeout = 15;
         //very time we sleep for 2 seconds, and find again.
         private const int Interval = 2;
 
@@ -73,10 +72,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
             set { _htmlTestBrowser = value; }
         }
 
-        public int MaxWaitSeconds
+        public int SearchTimeout
         {
-            get { return _maxWaitSeconds; }
-            set { _maxWaitSeconds = value; }
+            get { return _searchTimeout; }
+            set { _searchTimeout = value; }
+        }
+
+        public bool FuzzySearch
+        {
+            get { return _useFuzzySearch; }
+            set { _useFuzzySearch = value; }
         }
 
         #endregion
@@ -122,22 +127,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public TestObject GetObjectByID(string id)
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
+            BeforeObjectFound();
 
             if (String.IsNullOrEmpty(id))
             {
                 throw new ObjectNotFoundException("Can not find object by id: id can not be empty.");
             }
 
-            BeforeObjectFound();
-
             id = id.Trim();
             //we will try 30 seconds to find an object.
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 try
                 {
@@ -172,22 +172,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public TestObject[] GetObjectsByName(string name)
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
+            BeforeObjectFound();
 
             if (string.IsNullOrEmpty(name))
             {
                 throw new ObjectNotFoundException("Can not find object by name: name can not be empty.");
             }
 
-            BeforeObjectFound();
-
             name = name.Trim();
             //we will try 30s to find a object
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 try
                 {
@@ -230,11 +225,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public TestObject GetObjectByIndex(int index)
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
             BeforeObjectFound();
 
             if (index < 0)
@@ -243,7 +233,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 try
                 {
@@ -280,30 +270,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public TestObject[] GetObjectsByProperties(TestProperty[] properties)
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
+            BeforeObjectFound();
 
             if (properties == null || properties.Length == 0)
             {
-                throw new ObjectNotFoundException("Properties can not be empty.");
+                throw new ObjectNotFoundException("Object properties can not be empty.");
             }
             //the similar percent to find an object.
             int simPercent = _defaultPercent;
             if (_useFuzzySearch)
             {
-                if (_autoAdjustSimilarPercent)
-                {
-                    simPercent = _similarPercentUpBound;
-                }
+                simPercent = _similarPercentUpBound;
             }
-
-            BeforeObjectFound();
 
             //we will try 30s to find an object.
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 IHTMLElement[] candidateElements = GetElementsByCommonProperty(properties);
                 if (candidateElements == null)
@@ -385,7 +367,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Thread.Sleep(Interval * 1000);
 
                 //while current simpercent is bigger than the low bound,we can still try lower similarity
-                if (_useFuzzySearch && _autoAdjustSimilarPercent)
+                if (_useFuzzySearch)
                 {
                     if (simPercent > _similarPercentLowBound)
                     {
@@ -410,10 +392,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public TestObject[] GetObjectsByType(string type, TestProperty[] properties)
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
+            BeforeObjectFound();
 
             if (type == null || type.Trim() == "")
             {
@@ -429,7 +408,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             String typeValue = HTMLTestObjectFactory.GetHTMLTypeByString(type);
             if (typeValue == HTMLTestObjectType.Unknown)
             {
-                throw new ObjectNotFoundException("Unknow HTML object type.");
+                throw new ObjectNotFoundException("Unknow type.");
             }
 
             //convert the type to HTML tags.
@@ -444,17 +423,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int simPercent = _defaultPercent;
             if (_useFuzzySearch)
             {
-                if (_autoAdjustSimilarPercent)
-                {
-                    simPercent = _similarPercentUpBound;
-                }
+                simPercent = _similarPercentUpBound;
             }
-
-            BeforeObjectFound();
 
             //we will try 30s to find an object.
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 List<TestObject> result = new List<TestObject>();
 
@@ -571,7 +545,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 Thread.Sleep(Interval * 1000);
 
                 //not found, we will try lower similarity
-                if (_useFuzzySearch && _autoAdjustSimilarPercent)
+                if (_useFuzzySearch)
                 {
                     if (simPercent > _similarPercentLowBound)
                     {
@@ -594,15 +568,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public TestObject GetObjectByPoint(int x, int y)
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
             BeforeObjectFound();
 
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 try
                 {
@@ -635,10 +604,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public TestObject GetObjectByRect(int left, int top, int width, int height, string typeStr, bool isPercent)
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
+            BeforeObjectFound();
 
             if (width < 1 || height < 1)
             {
@@ -646,21 +612,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             String type = HTMLTestObjectFactory.GetHTMLTypeByString(typeStr);
-
             if (type == HTMLTestObjectType.Unknown)
             {
                 throw new ObjectNotFoundException("Unknow type.");
             }
 
-            BeforeObjectFound();
-
             int x = 0;
             int y = 0;
-
             if (isPercent)
             {
                 isPercent = false;
-
                 if ((left >= 1 && left <= 100) && (top >= 1 && top <= 100))
                 {
                     x = _htmlTestBrowser.ClientWidth * left / 100;
@@ -677,16 +638,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 y = top + height / 2;
             }
 
-            BeforeObjectFound();
+            int originalTimeout = this._searchTimeout;
+            this._searchTimeout = 3;
 
             //try to get 5 objects from different area.
             HTMLTestGUIObject[] tmpObj = new HTMLTestGUIObject[5];
-
-            int originMaxWaitTime = this._maxWaitSeconds;
-
-            //set the max time 
-            this._maxWaitSeconds = 3;
-
             for (int i = 0; i < tmpObj.Length; i++)
             {
                 try
@@ -729,7 +685,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
-            this._maxWaitSeconds = originMaxWaitTime;
+            this._searchTimeout = originalTimeout;
 
             throw new ObjectNotFoundException("Can not get object by rect.");
         }
@@ -740,24 +696,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public TestObject[] GetAllObjects()
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
             BeforeObjectFound();
 
-            //firstly, get all IHTMLElement from the browser
-            GetAllElements();
-            _allObjects = new TestObject[this._allElements.Length];
-
-            //convert IHTMLELementCollection to an array.
-            for (int i = 0; i < this._allElements.Length; i++)
+            try
             {
-                _allObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject((IHTMLElement)this._allElements[i], this._htmlTestBrowser);
-            }
+                //firstly, get all IHTMLElement from the browser
+                GetAllElements();
+                _allObjects = new TestObject[this._allElements.Length];
 
-            return _allObjects;
+                //convert IHTMLELementCollection to an array.
+                for (int i = 0; i < this._allElements.Length; i++)
+                {
+                    _allObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject((IHTMLElement)this._allElements[i], this._htmlTestBrowser);
+                }
+
+                return _allObjects;
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new ObjectNotFoundException("Can not get all elements: " + ex.ToString());
+            }
         }
 
         /* Object GetLastObject()
@@ -766,24 +728,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public TestObject GetLastObject()
         {
             return _testObj;
-        }
-
-        public void SetTimeout(int seconds)
-        {
-            if (seconds >= 0)
-            {
-                this._maxWaitSeconds = seconds;
-            }
-        }
-
-        public int GetTimeout()
-        {
-            return this._maxWaitSeconds;
-        }
-
-        public void EnableFuzzySearch(bool isEnable)
-        {
-            this._useFuzzySearch = isEnable;
         }
 
         #endregion
@@ -799,20 +743,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * just reload when the _needRefresh flag is set to ture.
          * 
          */
-        private void GetAllElements()
+        private IHTMLElement[] GetAllElements()
         {
-            if (_htmlTestBrowser == null)
-            {
-                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
-            }
-
-            try
-            {
-                this._allElements = _htmlTestBrowser.GetAllHTMLElements();
-            }
-            catch
-            {
-            }
+            this._allElements = _htmlTestBrowser.GetAllHTMLElements();
+            return this._allElements;
         }
 
         //if the properties contains "id","name","tagName".
@@ -995,8 +929,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private void BeforeObjectFound()
         {
+            if (_htmlTestBrowser == null)
+            {
+                throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
+            }
+
             int times = 0;
-            while (times < _maxWaitSeconds && this._htmlTestBrowser.IsLoading())
+            while (times < _searchTimeout && this._htmlTestBrowser.IsLoading())
             {
                 times += Interval;
                 Thread.Sleep(Interval * 1000);

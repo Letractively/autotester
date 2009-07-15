@@ -78,9 +78,8 @@ namespace Shrinerain.AutoTester.Core
         void SetTestApp(ITestApp testApp);
         void SetTestBrowser(ITestBrowser browser);
 
-        void SetTimeout(int seconds);
-        int GetTimeout();
+        int SearchTimeout { set; get; }
 
-        void EnableFuzzySearch(bool isEnableFuzzySearch);
+        bool FuzzySearch{ set; get; }
     }
 }

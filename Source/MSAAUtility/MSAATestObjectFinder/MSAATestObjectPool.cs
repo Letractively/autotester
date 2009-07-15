@@ -38,7 +38,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         private TestObject _testObj;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
-        private int _maxWaitSeconds = 15;
+        private int _searchTimeout = 15;
 
         //very time we sleep for 3 seconds, and find again.
         private const int Interval = 3;
@@ -55,6 +55,33 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region properties
 
+        public int SearchTimeout
+        {
+            get
+            {
+                return _searchTimeout;
+            }
+            set
+            {
+                if (value > 0)
+                {
+                    _searchTimeout = value;
+                }
+            }
+        }
+
+        public bool FuzzySearch
+        {
+            get
+            {
+                return true;
+            }
+
+            set
+            {
+
+            }
+        }
 
         #endregion
 
@@ -93,7 +120,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             //we will try 30s to find an object.
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 try
                 {
@@ -165,7 +192,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             //we will try 30s to find an object.
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 try
                 {
@@ -224,7 +251,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             //we will try 30s to find an object.
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 try
                 {
@@ -268,7 +295,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
             //we will try 30s to find an object.
             int times = 0;
-            while (times <= _maxWaitSeconds)
+            while (times <= _searchTimeout)
             {
                 try
                 {
@@ -329,13 +356,13 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             if (seconds >= 0)
             {
-                this._maxWaitSeconds = seconds;
+                this._searchTimeout = seconds;
             }
         }
 
         public int GetTimeout()
         {
-            return this._maxWaitSeconds;
+            return this._searchTimeout;
         }
 
         public void EnableFuzzySearch(bool isEnable)

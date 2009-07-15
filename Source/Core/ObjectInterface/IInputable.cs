@@ -21,9 +21,6 @@ namespace Shrinerain.AutoTester.Core
         //input normal characters, like "asdf12345"
         void Input(string values);
 
-        //input special keys, like "tab, ctrl"
-        void InputKeys(string keys);
-
         //clear text.
         void Clear();
     }

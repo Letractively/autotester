@@ -47,7 +47,7 @@ namespace Shrinerain.AutoTester.Core
         protected int _height;
 
         //max wait time is 30.
-        protected int _maxWaitSeconds = 30;
+        protected int _appTimeout = 60;
         protected const int Interval = 2;
 
         //sync event
@@ -87,6 +87,11 @@ namespace Shrinerain.AutoTester.Core
             set { _appPath = value; }
         }
 
+        public int AppTimeout
+        {
+            get { return _appTimeout; }
+            set { _appTimeout = value; }
+        }
 
         public string AppArgs
         {
@@ -97,10 +102,7 @@ namespace Shrinerain.AutoTester.Core
         //return the handle of the application.
         public IntPtr Handle
         {
-            get
-            {
-                return this._rootHandle;
-            }
+            get { return this._rootHandle; }
         }
 
         #endregion
@@ -158,7 +160,7 @@ namespace Shrinerain.AutoTester.Core
                 else
                 {
                     int times = 0;
-                    while (times < _maxWaitSeconds)
+                    while (times < _appTimeout)
                     {
                         Thread.Sleep(Interval * 1000);
                         times += Interval;
@@ -475,7 +477,7 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 int times = 0;
-                while (times <= _maxWaitSeconds)
+                while (times <= _appTimeout)
                 {
                     if (Win32API.IsWindowVisible(this._rootHandle))
                     {
@@ -510,7 +512,7 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 int times = 0;
-                while (times <= _maxWaitSeconds)
+                while (times <= _appTimeout)
                 {
                     if (!Win32API.IsWindowVisible(this._rootHandle))
                     {

@@ -6,11 +6,13 @@ using System.Reflection;
 
 namespace Shrinerain.AutoTester.Core
 {
+    //defines the supported types.
     public class TestObjectType
     {
         #region fields
 
         public const String Unknown = "UnKnown";
+        public const String AnyType = "AnyType";   
         public const String Button = "Button";
         public const String TextBox = "TextBox";
         public const String Label = "Label";
@@ -49,9 +51,14 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        public virtual List<String> GetValieTypes()
+        {
+            return this._validTypes;
+        }
+
         public virtual bool IsValidType(String typeStr)
         {
-            if (!String.IsNullOrEmpty(typeStr) && _validTypes != null)
+            if (!String.IsNullOrEmpty(typeStr))
             {
                 typeStr = typeStr.Trim().ToUpper();
                 return _validTypes.Contains(typeStr);

@@ -58,7 +58,7 @@ namespace Shrinerain.AutoTester.Core
         string GetTitle();
         string GetUrl();
         bool IsLoading();
-        HTMLDocument GetDocument();
+        IHTMLDocument GetDocument();
 
         //find sub pages/tabs
         ITestBrowser GetPage(int index);
