@@ -14,10 +14,11 @@
 *********************************************************************/
 
 
-using System.Drawing;
-
 namespace Shrinerain.AutoTester.Core
 {
+    using System;
+    using System.Drawing;
+
     public interface IVisible
     {
         //some visible information for object.
@@ -35,6 +36,7 @@ namespace Shrinerain.AutoTester.Core
         //move mouse to the top of control
         void Hover();
         void MouseClick();
+        void KeyboardInput(String value);
 
         //high light the object.
         void HighLight();

@@ -101,7 +101,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     _actionFinished.WaitOne();
                     Hover();
                     MouseOp.Click();
-                    KeyboardOp.SendKey(values);
+                    KeyboardOp.SendChars(values);
                     _actionFinished.Set();
                 }
                 else
@@ -113,7 +113,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                     }
                     else
                     {
-                        Win32API.SetWindowText(handle, values);
+                        KeyboardOp.SendChars(handle, values);
                     }
                 }
 
@@ -123,11 +123,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
             {
                 throw new CannotPerformActionException("Can not input string: " + ex.ToString());
             }
-        }
-
-        public void InputKeys(string keys)
-        {
-            throw new NotImplementedException();
         }
 
         public void Clear()

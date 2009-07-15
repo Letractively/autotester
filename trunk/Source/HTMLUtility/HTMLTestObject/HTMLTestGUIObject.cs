@@ -603,6 +603,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public virtual void KeyboardInput(String value)
+        {
+            if (!String.IsNullOrEmpty(value))
+            {
+                try
+                {
+                    BeforeAction();
+                    KeyboardOp.SendChars(value);
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotPerformActionException(String.Format("Can not input {0} : {1}", value, ex.ToString()));
+                }
+                finally
+                {
+                    AfterAction();
+                }
+            }
+        }
+
         public virtual void MouseClick()
         {
             try

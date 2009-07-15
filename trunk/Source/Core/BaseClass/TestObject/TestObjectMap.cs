@@ -636,8 +636,8 @@ namespace Shrinerain.AutoTester.Core
             exception = null;
 
             int currentTimeout = _timeout;
-            int oriTimeout = this._objPool.GetTimeout();
-            this._objPool.SetTimeout(currentTimeout);
+            int oriTimeout = this._objPool.SearchTimeout;
+            this._objPool.SearchTimeout = currentTimeout;
 
             try
             {
@@ -666,7 +666,7 @@ namespace Shrinerain.AutoTester.Core
             }
             finally
             {
-                this._objPool.SetTimeout(oriTimeout);
+                this._objPool.SearchTimeout = oriTimeout;
             }
         }
 

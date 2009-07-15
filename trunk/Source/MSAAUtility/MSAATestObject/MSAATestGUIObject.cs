@@ -214,6 +214,11 @@ namespace Shrinerain.AutoTester.MSAAUtility
             MouseOp.Click();
         }
 
+        public virtual void KeyboardInput(String value)
+        {
+            KeyboardOp.SendChars(value);
+        }
+
         public virtual string GetLabel()
         {
             return "";

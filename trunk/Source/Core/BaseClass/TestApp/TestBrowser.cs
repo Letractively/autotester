@@ -107,18 +107,6 @@ namespace Shrinerain.AutoTester.Core
 
         #region Properties
 
-        public int MaxWaitSeconds
-        {
-            get { return this._maxWaitSeconds; }
-            set
-            {
-                if (value >= 0)
-                {
-                    this._maxWaitSeconds = value;
-                }
-            }
-        }
-
         public int Left
         {
             get { return _browserLeft; }
@@ -165,11 +153,7 @@ namespace Shrinerain.AutoTester.Core
         }
         public int ScrollTop
         {
-            get
-            {
-                GetScrollRect();
-                return _scrollTop;
-            }
+            get { return _scrollTop; }
         }
         public int ScrollWidth
         {
@@ -178,18 +162,6 @@ namespace Shrinerain.AutoTester.Core
         public int ScrollHeight
         {
             get { return _scrollHeight; }
-        }
-
-        //main handle of ie window
-        public IntPtr MainHandle
-        {
-            get { return _rootHandle; }
-        }
-
-        //handle of client area, Internet Explorer_Server
-        public IntPtr IEServerHandle
-        {
-            get { return _ieServerHandle; }
         }
 
         #endregion
@@ -277,7 +249,7 @@ namespace Shrinerain.AutoTester.Core
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
                 ieExistT.Start(null);
                 //wait until the internet explorer started.
-                _browserExisted.WaitOne(_maxWaitSeconds * 1000, true);
+                _browserExisted.WaitOne(AppTimeout * 1000, true);
                 if (_browser == null)
                 {
                     throw new CannotStartBrowserException("Can not start test browser.");
@@ -317,7 +289,7 @@ namespace Shrinerain.AutoTester.Core
                 Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
                 ieExistT.Start(browserTitle);
                 //wait until the internet explorer is found.
-                _browserExisted.WaitOne(this._maxWaitSeconds * 1000, true);
+                _browserExisted.WaitOne(this.AppTimeout * 1000, true);
 
                 if (_browser != null)
                 {
@@ -402,7 +374,7 @@ namespace Shrinerain.AutoTester.Core
             //wait until the HTML web page is loaded successfully.
             if (waitForPage)
             {
-                this._documentLoadComplete.WaitOne(_maxWaitSeconds * 1000, true);
+                this._documentLoadComplete.WaitOne(AppTimeout * 1000, true);
             }
         }
 
@@ -757,7 +729,7 @@ namespace Shrinerain.AutoTester.Core
         public virtual float GetPerformanceTimeForCurrentPage()
         {
             int times = 0;
-            while (times < this._maxWaitSeconds)
+            while (times < this.AppTimeout)
             {
                 if (IsLoading())
                 {
@@ -827,12 +799,12 @@ namespace Shrinerain.AutoTester.Core
             return sb.ToString();
         }
 
-        public virtual HTMLDocument GetDocument()
+        public virtual IHTMLDocument GetDocument()
         {
             if (_browser != null)
             {
                 _rootDocument = _browser.Document as HTMLDocument;
-                return _rootDocument;
+                return _rootDocument as IHTMLDocument;
             }
 
             return null;
@@ -883,13 +855,13 @@ namespace Shrinerain.AutoTester.Core
                 }
                 //we will try 30s to find an object.
                 int times = 0;
-                while (times <= _maxWaitSeconds)
+                while (times <= AppTimeout)
                 {
                     if (index >= 0 && index < _browserList.Count)
                     {
                         InternetExplorer ie = _browserList[index];
 
-                        if (times >= _maxWaitSeconds || ie.ReadyState == tagREADYSTATE.READYSTATE_INTERACTIVE ||
+                        if (times >= AppTimeout || ie.ReadyState == tagREADYSTATE.READYSTATE_INTERACTIVE ||
                             ie.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE)
                         {
                             AttachBrowser(ie);
@@ -926,7 +898,7 @@ namespace Shrinerain.AutoTester.Core
 
                 //we will try 30s to find an object.
                 int times = 0;
-                while (times <= _maxWaitSeconds)
+                while (times <= AppTimeout)
                 {
                     if (_browserList.Count > 0)
                     {
@@ -999,7 +971,7 @@ namespace Shrinerain.AutoTester.Core
          */
         public virtual void WaitDocumentLoadComplete()
         {
-            WaitDocumentLoadComplete(this._maxWaitSeconds);
+            WaitDocumentLoadComplete(this.AppTimeout);
         }
 
         public virtual void WaitDocumentLoadComplete(int seconds)
@@ -1108,13 +1080,13 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void WaitForBrowserExist()
         {
-            WaitForBrowserExist(null, null, _maxWaitSeconds);
+            WaitForBrowserExist(null, null, AppTimeout);
         }
 
         protected virtual void WaitForBrowserExist(object title)
         {
             String titleStr = title == null ? "" : title.ToString();
-            WaitForBrowserExist(titleStr, null, _maxWaitSeconds);
+            WaitForBrowserExist(titleStr, null, AppTimeout);
         }
 
         /* void WaitForNewBrowserSync()
@@ -1123,7 +1095,7 @@ namespace Shrinerain.AutoTester.Core
         protected virtual void WaitForNewBrowserSync()
         {
             int times = 0;
-            while (times < this._maxWaitSeconds)
+            while (times < this.AppTimeout)
             {
                 InternetExplorer ie = GetTopmostBrowser();
                 if (this._browser != ie)
@@ -1423,24 +1395,25 @@ namespace Shrinerain.AutoTester.Core
          */
         protected void GetScrollRect()
         {
-            //if (_ie != null && _ie.Document != null)
-            //{
-            //    try
-            //    {
-            //        _rootDocument = (HTMLDocument)_ie.Document;
-            //        HTMLBody bodyElement = (HTMLBody)_rootDocument.body;
-            //        _scrollWidth = bodyElement.scrollWidth;
-            //        _scrollHeight = bodyElement.scrollHeight;
-
-            //        // scrollLeft means the left that Can Not been seen, scrollTop the same.
-            //        _scrollLeft = bodyElement.scrollLeft;
-            //        _scrollTop = bodyElement.scrollTop;
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        throw new CannotAttachBrowserException("Can not get scroll size: " + ex.ToString());
-            //    }
-            //}
+            if (_rootDocument != null)
+            {
+                try
+                {
+                    IAccessible pAcc = COMUtil.IHTMLElementToMSAA(_rootDocument.body);
+                    if (pAcc != null)
+                    {
+                        pAcc.accLocation(out _scrollLeft, out _scrollTop, out _scrollWidth, out _scrollHeight, 0);
+                    }
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotAttachBrowserException("Can not get scroll size: " + ex.ToString());
+                }
+            }
         }
 
         #endregion
@@ -1608,7 +1581,6 @@ namespace Shrinerain.AutoTester.Core
                 RegDownloadEvent(ie);
                 RegDocumentCompleteEvent(ie);
                 RegNavigateEvent(ie);
-                RegRectChangeEvent(ie);
                 RegNewWindowEvent(ie);
                 RegQuitEvent(ie);
                 ie.PutProperty(TestConstants.IE_ALREADY_REGISTERED, true);
@@ -1668,21 +1640,6 @@ namespace Shrinerain.AutoTester.Core
             catch (Exception ex)
             {
                 throw new CannotAttachBrowserException("Can not register document complete event: " + ex.ToString());
-            }
-        }
-
-        protected virtual void RegRectChangeEvent(InternetExplorer ie)
-        {
-            try
-            {
-                ie.WindowSetTop += new DWebBrowserEvents2_WindowSetTopEventHandler(OnRectChanged);
-                ie.WindowSetLeft += new DWebBrowserEvents2_WindowSetLeftEventHandler(OnRectChanged);
-                ie.WindowSetWidth += new DWebBrowserEvents2_WindowSetWidthEventHandler(OnRectChanged);
-                ie.WindowSetHeight += new DWebBrowserEvents2_WindowSetHeightEventHandler(OnRectChanged);
-            }
-            catch (Exception ex)
-            {
-                throw new CannotAttachBrowserException("Can not register Rect change event: " + ex.ToString());
             }
         }
 
@@ -1814,22 +1771,6 @@ namespace Shrinerain.AutoTester.Core
             catch (Exception ex)
             {
                 throw new CannotAttachBrowserException("Error OnDocumentLoadComplete: " + ex.ToString());
-            }
-        }
-
-        protected virtual void OnRectChanged(int size)
-        {
-            try
-            {
-                GetSize();
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotAttachBrowserException("Error OnRectChanged: " + ex.ToString());
             }
         }
 

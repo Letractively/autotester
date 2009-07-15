@@ -131,11 +131,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 BeforeAction();
 
-                value = (value == null ? "" : value);
-
-                Thread t = new Thread(new ParameterizedThreadStart(SetValue));
-                t.Start(value);
-                t.Join(ActionTimeout);
+                if (!String.IsNullOrEmpty(value))
+                {
+                    Thread t = new Thread(new ParameterizedThreadStart(SetValue));
+                    t.Start(value);
+                    t.Join(ActionTimeout);
+                }
             }
             catch (TestException)
             {
@@ -148,35 +149,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             finally
             {
                 AfterAction();
-            }
-        }
-
-        /* void InputKeys(string keys)
-         * Input special keys , eg: {tab}
-         */
-        public virtual void InputKeys(string keys)
-        {
-            if (!String.IsNullOrEmpty(keys))
-            {
-                try
-                {
-                    BeforeAction();
-
-                    Focus();
-                    KeyboardOp.SendKey(keys);
-                }
-                catch (TestException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    throw new CannotPerformActionException("Can not input keys: " + keys + " to textbox :" + ex.ToString());
-                }
-                finally
-                {
-                    AfterAction();
-                }
             }
         }
 
@@ -344,12 +316,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 //or send the chars by keyboard
                 KeyboardOp.SendChars(value);
-
-                //on some website like google.com, when you are typing something in the textbox, here is a dropdown list to
-                //let you to choose, this dropdown list may cover some other controls, eg: it may cover the "Google Search" button
-                //and we can not click this button, so we need to elimate it. 
-                //click just above the text box, to elimate it.
-                ClickAbove();
             }
         }
 
@@ -369,26 +335,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return HTMLTestTextBoxType.SingleLine;
-        }
-
-        /* protected virtual void ClickAbove()
-         * Click at the top of the object.
-         * Sometimes we will meet auto fill like Google.com, if you input some words, there may display
-         * a dropdown list to let you to select, this dropdown list may cover some objects we need, so after
-         * input some string, we need click above the text box, to make the dropdown list disappear.
-         */
-        protected virtual void ClickAbove()
-        {
-            try
-            {
-                //move just above the text box.
-                MouseOp.MoveShift(0, -(this._rect.Height / 2 + 1));
-                MouseOp.Click();
-            }
-            catch
-            {
-                //throw new CannotPerformActionException("Can not click above the text box: " + ex.ToString());
-            }
         }
         #endregion
 
