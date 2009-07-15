@@ -174,10 +174,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                MSAATestObject obj = new MSAATestObject(this._sourceElement);
-                this._rect = obj.GetRect();
-                this._centerPoint = obj.GetCenterPoint();
-                return _rect;
+                IHTMLElement tmp = this._sourceElement;
+                Point p = new Point(0, 0);
+                while ((p.X != 0 || p.Y != 0) && tmp != null)
+                {
+                    MSAATestObject obj = new MSAATestObject(tmp);
+                    if (obj.GetIAccInterface() != null)
+                    {
+                        this._rect = obj.GetRect();
+                        this._centerPoint = obj.GetCenterPoint();
+                        break;
+                    }
+
+                    tmp = tmp.parentElement;
+                }
+
+                return this._rect;
             }
             catch (TestException)
             {
