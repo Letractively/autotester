@@ -24,9 +24,10 @@ That means {{{  test.Objects.Button("Google Searc").Click(); }}} can also return
 
 == How to enable/disable fuzzy search == 
 
-By passing the parameter "true" to EnableFuzzySearch , passing "false" to disable Fuzzy search.
+By passing the parameter "true" to FuzzySearch, passing "false" to disable Fuzzy search.
+
 Note that Fuzzy Seach is disabled by default!!!
 {{{
-            test.Objects.ObjectPool.EnableFuzzySearch(true);
+            test.Objects.ObjectPool.FuzzySearch = true;
             test.Objects.Button("Google Searc").Click(); // now it can work correctly.
 }}}
