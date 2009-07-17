@@ -854,7 +854,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                string visibleText = null;
+                string visibleText = "";
                 if (type == HTMLTestObjectType.Link || type == HTMLTestObjectType.Label)
                 {
                     visibleText = element.innerText;
@@ -866,7 +866,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 else
                 {
                     obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser);
-                    visibleText = ((HTMLTestGUIObject)obj).GetLabel().Trim();
+                    visibleText = ((HTMLTestGUIObject)obj).GetLabel();
                     string propertyValue;
                     if (String.IsNullOrEmpty(visibleText) && HTMLTestObject.TryGetProperty(element, "innerText", out propertyValue))
                     {
@@ -874,6 +874,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                 }
 
+                visibleText = visibleText.Trim();
                 if (!String.IsNullOrEmpty(visibleText))
                 {
                     return property.IsValueMatch(visibleText, simPercent);

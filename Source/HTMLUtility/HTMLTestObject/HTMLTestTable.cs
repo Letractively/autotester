@@ -22,7 +22,7 @@ using Shrinerain.AutoTester.Core;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestTable : HTMLTestGUIObject, IText, ITable
+    public class HTMLTestTable : HTMLTestGUIObject, ITable
     {
         #region fields
 
@@ -226,53 +226,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 throw new ObjectNotFoundException("Can not get objects by cell[" + row.ToString() + "],[" + col.ToString() + "]: " + ex.ToString());
             }
         }
-
-        #endregion
-
-        #region IInteractive Members
-
-        public virtual string GetAction()
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void DoAction(object parameter)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region IText Members
-
-        public virtual string GetText()
-        {
-            return GetTextByCell(0, 0);
-        }
-
-        public override string GetLabel()
-        {
-            return null;
-        }
-
-        public virtual string GetFontFamily()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetFontSize()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public string GetFontColor()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        #endregion
-
-        #region IContainer Members
 
         #endregion
 

@@ -55,6 +55,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //label splitter
         protected const string _labelSplitter = "__shrinerain__";
+        protected string _label;
 
         //when finish action, sleep for a moment.
         protected bool _isDelayAfterAction = false;
@@ -243,7 +244,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual String GetLabel()
         {
-            return "";
+            return _label;
         }
 
         /* GetAroundText(IHTMLElement element)
@@ -639,15 +640,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public virtual void MouseClick()
+        public virtual void MouseClick(int x, int y)
         {
             try
             {
                 BeforeAction();
 
-                Thread t = new Thread(new ThreadStart(PerformClick));
-                t.Start();
-                t.Join(ActionTimeout);
+                if (x <= 0 && y <= 0)
+                {
+                    Thread t = new Thread(new ThreadStart(PerformClick));
+                    t.Start();
+                    t.Join(ActionTimeout);
+                }
+                else
+                {
+                    GetRectOnScreen();
+                    int actualX = this._rect.Left + x;
+                    int actualY = this._rect.Top + y;
+
+                    MouseOp.Click(actualX, actualY);
+                }
             }
             catch (TestException)
             {

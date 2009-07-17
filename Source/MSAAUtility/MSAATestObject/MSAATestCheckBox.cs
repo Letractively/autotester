@@ -141,11 +141,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public void MiddleClick()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         #endregion
 
         #region IInteractive Members

@@ -87,27 +87,34 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 //get the link text
-                _linkText = _acnchorElement.innerText;
+                _linkText = _acnchorElement.innerText.Trim();
             }
             catch
             {
                 _linkText = "";
             }
 
-            // if the text is null, it maybe a image link, try to get the image.
-            if (String.IsNullOrEmpty(_linkText))
+            _label = _linkText;
+
+            try
             {
-                try
+                IHTMLElementCollection childrenElements = _acnchorElement.children as IHTMLElementCollection;
+                if (childrenElements != null && childrenElements.length > 0)
                 {
-                    _linkImgElement = _acnchorElement.firstChild as IHTMLImgElement;
-                    if (_linkImgElement != null)
+                    for (int i = 0; i < childrenElements.length; i++)
                     {
-                        _linkImgSrc = _linkImgElement.src;
+                        IHTMLElement ele = childrenElements.item(i, i) as IHTMLElement;
+                        _linkImgElement = ele as IHTMLImgElement;
+                        if (_linkImgElement != null)
+                        {
+                            _linkImgSrc = _linkImgElement.src;
+                            break;
+                        }
                     }
                 }
-                catch
-                {
-                }
+            }
+            catch
+            {
             }
 
             try
@@ -160,10 +167,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public virtual void MiddleClick()
-        {
-        }
-
         public virtual string GetAction()
         {
             return "Click";
@@ -179,11 +182,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public string GetText()
         {
             return this._linkText;
-        }
-
-        public override string GetLabel()
-        {
-            return GetText();
         }
 
         public string GetFontFamily()

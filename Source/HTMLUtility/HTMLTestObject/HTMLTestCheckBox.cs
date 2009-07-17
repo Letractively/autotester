@@ -156,17 +156,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void DoubleClick()
         {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         public virtual void RightClick()
         {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public virtual void MiddleClick()
-        {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion
@@ -209,13 +202,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public override string GetLabel()
         {
-            return GetLabelForCheckBox(this._sourceElement);
+            if (String.IsNullOrEmpty(_label))
+            {
+                _label = GetLabelForCheckBox(this._sourceElement).Trim();
+            }
+            return _label;
         }
 
         /* string GetLabelForCheckBox(IHTMLElement element)
          * return the text around check box, firstly we will try current cell, then try right cell and up cell.
          */
-        public static string GetLabelForCheckBox(IHTMLElement element)
+        protected static string GetLabelForCheckBox(IHTMLElement element)
         {
             try
             {
@@ -249,14 +246,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         }
                     }
                 }
-
-                return null;
             }
             catch
             {
-                return null;
             }
 
+            return "";
         }
         #endregion
 

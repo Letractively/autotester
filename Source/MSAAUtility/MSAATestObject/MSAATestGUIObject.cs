@@ -208,10 +208,19 @@ namespace Shrinerain.AutoTester.MSAAUtility
             MouseOp.MoveTo(_centerPoint);
         }
 
-        public virtual void MouseClick()
+        public virtual void MouseClick(int x, int y)
         {
             Hover();
-            MouseOp.Click();
+            if (x <= 0 && y <= 0)
+            {
+                MouseOp.Click();
+            }
+            else
+            {
+                int actualX = this._rect.Left + x;
+                int actualY = this._rect.Top + y;
+                MouseOp.Click(actualX, actualY);
+            }
         }
 
         public virtual void KeyboardInput(String value)

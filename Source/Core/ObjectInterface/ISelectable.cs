@@ -35,7 +35,5 @@ namespace Shrinerain.AutoTester.Core
 
         //get all values of a select object.
         String[] GetAllValues();
-
-        bool IsInputable();
     }
 }

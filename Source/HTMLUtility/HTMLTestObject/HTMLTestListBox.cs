@@ -310,11 +310,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return values;
         }
 
-        public bool IsInputable()
-        {
-            return false;
-        }
-
         #region IInteractive interface
 
         public virtual string GetAction()
@@ -407,7 +402,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             try
             {
-                return this._allValues[_htmlSelectElement.selectedIndex];
+                return this._allValues[_htmlSelectElement.selectedIndex].Trim();
             }
             catch
             {

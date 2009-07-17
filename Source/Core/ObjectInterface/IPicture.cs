@@ -6,7 +6,6 @@ namespace Shrinerain.AutoTester.Core
 {
     public interface IPicture : IVisible
     {
-        void Click();
         String GetSrc();
         void Download(string path);
     }

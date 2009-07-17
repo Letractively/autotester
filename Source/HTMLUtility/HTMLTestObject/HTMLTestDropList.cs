@@ -176,10 +176,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new CannotPerformActionException("Can not select more than 1 item in  Combo box.");
         }
 
-        public bool IsInputable()
-        {
-            return false;
-        }
 
         #region IInteractive methods
 
@@ -297,7 +293,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                return this._allValues[_htmlSelectElement.selectedIndex];
+                return this._allValues[_htmlSelectElement.selectedIndex].Trim();
             }
             catch
             {
@@ -404,10 +400,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int y = this.Rect.Top + height / 2;
 
             MouseOp.Click(x, y);
-
-            //sleep for 0.2 second, make sure the user can see this action.
-            //if no sleep, the the action may too fast.
-            System.Threading.Thread.Sleep(200 * 1);
         }
 
         /*  void HighLightRectCallback(object obj)

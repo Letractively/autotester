@@ -35,7 +35,7 @@ namespace Shrinerain.AutoTester.Core
 
         //move mouse to the top of control
         void Hover();
-        void MouseClick();
+        void MouseClick(int x, int y);
         void KeyboardInput(String value);
 
         //high light the object.
