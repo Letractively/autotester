@@ -135,17 +135,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void DoubleClick()
         {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         public virtual void RightClick()
         {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public virtual void MiddleClick()
-        {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         #endregion

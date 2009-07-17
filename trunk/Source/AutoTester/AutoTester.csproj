@@ -53,6 +53,7 @@
     <Compile Include="Test\FCKEditor.cs" />
     <Compile Include="Test\Google.cs" />
     <Compile Include="Test\gougou.cs" />
+    <Compile Include="Test\KaiXin.cs" />
     <Compile Include="Test\Marry5.cs" />
     <Compile Include="Test\maxthon.cs" />
     <Compile Include="Test\Mitbbs.cs" />

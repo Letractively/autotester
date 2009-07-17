@@ -18,7 +18,7 @@ using System;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public interface ITable : IInteractive, IHierarchy, IText
+    public interface ITable : IHierarchy
     {
         //get total row or col count.
         int GetRowCount(int col);

@@ -4,6 +4,7 @@ namespace Shrinerain.AutoTester.Core
     {
         object GetParent();
         object[] GetChildren();
+        int GetChildCount();
         object GetChild(int childIndex);
     }
 }

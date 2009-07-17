@@ -220,7 +220,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public override string GetLabel()
         {
-            return GetLabelForTextBox(this._sourceElement);
+            if (String.IsNullOrEmpty(_label))
+            {
+                _label = GetLabelForTextBox(this._sourceElement).Trim();
+            }
+
+            return _label;
         }
 
         public virtual string GetFontFamily()
@@ -241,7 +246,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* string GetLabelForTextBox(IHTMLElement element)
          * return the text around textbox, firstly we will try current cell, then try left cell and up cell.
          */
-        public static string GetLabelForTextBox(IHTMLElement element)
+        protected static string GetLabelForTextBox(IHTMLElement element)
         {
             try
             {

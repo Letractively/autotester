@@ -292,7 +292,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
             }
 
-            return caption != null ? caption.ToString() : "";
+            return caption != null ? caption.ToString().Trim() : "";
         }
 
         #endregion

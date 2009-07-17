@@ -385,13 +385,35 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return null;
         }
 
+        public virtual int GetChildCount()
+        {
+            if (this._sourceElement != null)
+            {
+                try
+                {
+                    IHTMLElementCollection childrenElements = this._sourceElement.children as IHTMLElementCollection;
+                    return childrenElements == null ? 0 : childrenElements.length;
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotGetChildrenException(ex.ToString());
+                }
+            }
+
+            return 0;
+        }
+
         public virtual object[] GetChildren()
         {
             if (this._sourceElement != null)
             {
                 try
                 {
-                    IHTMLElementCollection childrenElements = this._sourceElement.all as IHTMLElementCollection;
+                    IHTMLElementCollection childrenElements = this._sourceElement.children as IHTMLElementCollection;
                     if (childrenElements != null && childrenElements.length > 0)
                     {
                         List<HTMLTestObject> children = new List<HTMLTestObject>(childrenElements.length);
@@ -434,7 +456,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
-                    IHTMLElementCollection childrenElements = this._sourceElement.all as IHTMLElementCollection;
+                    IHTMLElementCollection childrenElements = this._sourceElement.children as IHTMLElementCollection;
                     if (childrenElements != null && childIndex < childrenElements.length)
                     {
                         IHTMLElement ele = childrenElements.item(childIndex, childIndex) as IHTMLElement;

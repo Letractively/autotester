@@ -164,11 +164,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public virtual void MiddleClick()
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
         #endregion
 
         #region IInteractive Members
@@ -197,7 +192,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public override string GetLabel()
         {
-            return GetLabelForRadioBox(this._sourceElement);
+            if (String.IsNullOrEmpty(_label))
+            {
+                _label = GetLabelForRadioBox(this._sourceElement).Trim();
+            }
+
+            return _label;
         }
 
         public virtual string GetFontFamily()
@@ -218,7 +218,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* string GetLabelForRadioBox(IHTMLElement element)
          * return the text around radio button, firstly we will try current cell, then try right cell and up cell.
          */
-        public static string GetLabelForRadioBox(IHTMLElement element)
+        protected static string GetLabelForRadioBox(IHTMLElement element)
         {
             try
             {
@@ -251,13 +251,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         }
                     }
                 }
-
-                return null;
             }
             catch
             {
-                return null;
             }
+
+            return "";
         }
         #endregion
 

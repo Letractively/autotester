@@ -21,6 +21,5 @@ namespace Shrinerain.AutoTester.Core
         void Click();
         void DoubleClick();
         void RightClick();
-        void MiddleClick();
     }
 }

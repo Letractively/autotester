@@ -36,7 +36,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //<font>
         protected IHTMLFontElement _fontElement;
 
-        protected string _labelText;
         protected string _styleStr;
         #endregion
 
@@ -79,7 +78,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             //get text of the label.
-            if (!HTMLTestObject.TryGetProperty(element, "innerText", out _labelText))
+            if (!HTMLTestObject.TryGetProperty(element, "innerText", out _label))
             {
                 throw new CannotBuildObjectException("Can not get text of label.");
             }
@@ -93,12 +92,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public string GetText()
         {
-            return _labelText;
-        }
-
-        public override string GetLabel()
-        {
-            return GetText();
+            return _label;
         }
 
         public string GetFontFamily()

@@ -190,11 +190,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
-        public bool IsInputable()
-        {
-            return this._role == RoleType.ComboBox;
-        }
-
         #endregion
 
         #region IInteractive Members
