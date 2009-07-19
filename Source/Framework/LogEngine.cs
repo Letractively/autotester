@@ -24,6 +24,8 @@ using System.IO;
 
 using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
 
 namespace Shrinerain.AutoTester.Framework
 {

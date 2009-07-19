@@ -22,6 +22,9 @@ using mshtml;
 using SHDocVw;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.Interface;
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {

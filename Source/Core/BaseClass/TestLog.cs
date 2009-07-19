@@ -26,6 +26,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using Shrinerain.AutoTester.Win32;
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
 
 namespace Shrinerain.AutoTester.Core
 {

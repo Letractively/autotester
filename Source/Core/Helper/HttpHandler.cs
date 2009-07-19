@@ -6,7 +6,7 @@ using System.Net;
 using System.IO;
 using System.IO.Compression;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Helper
 {
     public sealed class HttpHandler
     {

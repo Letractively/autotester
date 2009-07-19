@@ -5,7 +5,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Helper
 {
     public sealed class SocketWrapper : IDisposable
     {

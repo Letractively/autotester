@@ -28,7 +28,7 @@ using System.Text.RegularExpressions;
 
 //using Shrinerain.AutoTester.AIUtility;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Helper
 {
     public sealed class Searcher
     {

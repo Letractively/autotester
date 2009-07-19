@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
+
 namespace Shrinerain.AutoTester.Core
 {
     //this class defines properties we may use in recording/playback.

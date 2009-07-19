@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
+using Shrinerain.AutoTester.Core.Interface;
+
 namespace Shrinerain.AutoTester.Core
 {
     public class TestObjectMap : ITestObjectMap

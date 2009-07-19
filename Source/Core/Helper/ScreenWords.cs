@@ -22,7 +22,7 @@ using System.Threading;
 
 using Shrinerain.AutoTester.Win32;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Helper
 {
     public sealed class ScreenWords
     {

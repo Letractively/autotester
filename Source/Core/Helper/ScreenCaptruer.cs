@@ -19,9 +19,10 @@ using System.Drawing;
 using System.IO;
 using System.Threading;
 
+using Shrinerain.AutoTester.Core.TestExceptions;
 using Shrinerain.AutoTester.Win32;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Helper
 {
     public sealed class ScreenCaptruer
     {

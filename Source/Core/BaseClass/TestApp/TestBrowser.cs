@@ -25,7 +25,10 @@ using mshtml;
 using SHDocVw;
 using Accessibility;
 
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
 using Shrinerain.AutoTester.Win32;
+using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.Core
 {

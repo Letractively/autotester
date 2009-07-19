@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
