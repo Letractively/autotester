@@ -402,14 +402,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             MouseOp.Click(x, y);
         }
 
-        /*  void HighLightRectCallback(object obj)
-         *  Combo box is a standard windows control, so we need to override this function.
-         */
-        protected override void HighLightRectCallback(object obj)
-        {
-            base.HighLightRect(true);
-        }
-
         #endregion
 
         #endregion

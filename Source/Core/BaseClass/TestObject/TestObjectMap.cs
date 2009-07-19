@@ -11,7 +11,7 @@ namespace Shrinerain.AutoTester.Core
         //object pool for this map.
         protected ITestObjectPool _objPool;
         protected TestObject[] _lastObjects;
-        protected static int _timeout = 5;
+        protected int _timeout = 15;
 
         #endregion
 
@@ -25,8 +25,8 @@ namespace Shrinerain.AutoTester.Core
 
         public int Timeout
         {
-            get { return TestObjectMap._timeout; }
-            set { TestObjectMap._timeout = value; }
+            get { return _timeout; }
+            set { _timeout = value; }
         }
 
         #endregion

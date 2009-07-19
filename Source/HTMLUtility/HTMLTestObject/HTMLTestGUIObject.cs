@@ -42,6 +42,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         //the rectangle on screen of the object.
         protected Rectangle _rect;
+        protected MSAATestObject _rectObj;
 
         //the center point of the object, this is very useful for GUI testing.
         //lot's of our actions we need move the mouse to the center point.
@@ -83,46 +84,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public virtual int X
+        public virtual Point CenterPoint
         {
             get
             {
                 GetRectOnScreen();
-                return _rect.X;
+                return _centerPoint;
             }
-        }
-
-        public virtual int Y
-        {
-            get
-            {
-                GetRectOnScreen();
-                return _rect.Y;
-            }
-        }
-
-        public virtual int Width
-        {
-            get
-            {
-                GetRectOnScreen();
-                return _rect.Width;
-            }
-        }
-
-        public virtual int Height
-        {
-            get
-            {
-                GetRectOnScreen();
-                return _rect.Height;
-            }
-        }
-
-        public bool SendMsgOnly
-        {
-            get { return _sendMsgOnly; }
-            set { _sendMsgOnly = value; }
         }
 
         #endregion
@@ -175,19 +143,28 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                IHTMLElement tmp = this._sourceElement;
-                Point p = new Point(0, 0);
-                while (p.X == 0 && p.Y == 0 && tmp != null)
+                if (_rectObj == null)
                 {
-                    MSAATestObject obj = new MSAATestObject(tmp);
-                    if (obj.GetIAccInterface() != null)
+                    IHTMLElement tmp = this._sourceElement;
+                    while (tmp != null)
                     {
-                        this._rect = obj.GetRect();
-                        this._centerPoint = obj.GetCenterPoint();
-                        break;
+                        MSAATestObject obj = new MSAATestObject(tmp);
+                        if (obj.GetIAccInterface() != null)
+                        {
+                            _rectObj = obj;
+                            break;
+                        }
+                        else
+                        {
+                            tmp = tmp.parentElement;
+                        }
                     }
+                }
 
-                    tmp = tmp.parentElement;
+                if (_rectObj != null)
+                {
+                    this._rect = _rectObj.GetRect();
+                    this._centerPoint = _rectObj.GetCenterPoint();
                 }
 
                 return this._rect;
@@ -210,6 +187,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
+                GetRectOnScreen();
+
                 return new Bitmap(ScreenCaptruer.CaptureScreenArea(_rect.Left + 2, _rect.Top + 2, _rect.Width, _rect.Height));
             }
             catch (TestException)
@@ -250,7 +229,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* GetAroundText(IHTMLElement element)
        * return the text around the control.
        */
-        public static string GetAroundText(IHTMLElement element)
+        protected static string GetAroundText(IHTMLElement element)
         {
             if (element != null)
             {
@@ -601,9 +580,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                     //get the center point of the object, and move mouse to it.
                     MouseOp.MoveTo(_centerPoint);
-
-                    //after move mouse to the control, wait for 0.2s, make it looks like human action.
-                    Thread.Sleep(200 * 1);
                 }
             }
             catch (TestException)
@@ -682,7 +658,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                _actionFinished.WaitOne();
+                BeforeAction();
                 ThreadPool.QueueUserWorkItem(HighLightRectCallback, null);
             }
             catch (TestException)
@@ -692,6 +668,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             catch (Exception ex)
             {
                 throw new CannotHighlightObjectException("Can not highlight the object: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
             }
         }
 
@@ -779,11 +759,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void Focus()
         {
-            if (this._sourceElement == null)
-            {
-                throw new CannotPerformActionException("Can not focus on null element.");
-            }
-
             try
             {
                 (this._sourceElement as IHTMLElement2).focus();
@@ -808,6 +783,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
             {
+                GetRectOnScreen();
                 MouseOp.Click(this._centerPoint);
             }
         }
@@ -876,46 +852,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int currentWidth = _browser.ClientLeft + _browser.ClientWidth;
             int currentHeight = _browser.ClientTop + _browser.ClientHeight;
 
-            int oriTop = _browser.ScrollTop;
-            int oriLeft = _browser.ScrollLeft;
-
             //if the object is not visible, then move the scrollbar.
             if (right > currentWidth || buttom > currentHeight)
             {
                 this._sourceElement.scrollIntoView(false);
-                if (oriTop == _browser.ScrollTop && oriLeft == _browser.ScrollLeft)
-                {
-                    //!!!need update here!!!
-                    int newTop = _browser.ClientTop + _browser.ClientHeight - 10 - this._rect.Height / 2;
-                    this._rect = new Rectangle(this._rect.Left, newTop, this._rect.Width, this._rect.Height);
-                    CalCenterPoint(this._rect.Left, newTop, this._rect.Width, this._rect.Height);
-                    //this._browser.Find(this._browser.GetTitle());
-
-                    //System.Threading.Thread.Sleep(1 * 1000);
-                    //times++;
-                    // continue;
-                }
-                else
-                {
-                    //re-calculate the position, because we had move it.
-                    GetRectOnScreen();
-                }
             }
             else if (this._rect.Top < this._browser.ScrollTop || this._rect.Left < this._browser.ScrollLeft)
             {
                 this._sourceElement.scrollIntoView(true);
-
-                if (oriTop == _browser.ScrollTop && oriLeft == _browser.ScrollLeft)
-                {
-                    int newTop = _browser.ClientTop + 10 - this._rect.Height / 2;
-                    this._rect = new Rectangle(this._rect.Left, newTop, this._rect.Width, this._rect.Height);
-                    CalCenterPoint(this._rect.Left, newTop, this._rect.Width, this._rect.Height);
-                }
-                else
-                {
-                    GetRectOnScreen();
-                }
             }
+
+            //re-calculate the position, because we had move it.
+            GetRectOnScreen();
         }
 
         /* void HighLightRectCallback(Object obj)
@@ -923,31 +871,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         protected virtual void HighLightRectCallback(Object obj)
         {
-            HighLightRect(false);
-        }
-
-        /* void HighLightRect(bool isWindowsControl)
-         * Highlight the object.
-         * is it is not a windows control, we need to minus the browser position.
-         */
-        protected virtual void HighLightRect(bool isWindowsControl)
-        {
             try
             {
+                GetRectOnScreen();
+
                 int left = this._rect.Left;
                 int top = this._rect.Top;
                 int width = this._rect.Width;
                 int height = this._rect.Height;
-
-                //if the control is not a windows standard control,we need to minus the browser top and left.
-                //because if it is NOT a windows control, then we consider it is a HTML control, when we get the handle,
-                //the handle is belonged to "Internet Explorer_Server", it not include the menu bar...
-                //so we need to minus the menu bar height and top to get the actual position.
-                if (!isWindowsControl)
-                {
-                    left -= _browser.ClientLeft;
-                    top -= _browser.ClientTop;
-                }
 
                 ScreenCaptruer.HighlightScreenRect(left, top, width, height, 1000);
             }
@@ -955,17 +886,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotHighlightObjectException("Can not high light object: " + ex.ToString());
             }
-        }
-
-        /* CalCenterPoint(int top, int left, int width, int height)
-         * get the center point of the control
-         */
-        protected virtual Point CalCenterPoint(int left, int top, int width, int height)
-        {
-            _centerPoint.X = left + width / 2;
-            _centerPoint.Y = top + height / 2;
-
-            return _centerPoint;
         }
 
         #endregion

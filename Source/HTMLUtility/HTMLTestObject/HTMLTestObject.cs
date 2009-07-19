@@ -52,6 +52,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //the host browser of this object.
         protected HTMLTestBrowser _browser;
 
+        protected IAccessible _pAcc;
+
         protected static Dictionary<string, bool> _commonProperties = new Dictionary<string, bool>(17);
 
         #endregion
@@ -482,12 +484,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual IAccessible GetIAccInterface()
         {
-            if (this._sourceElement != null)
+            if (this._pAcc == null)
             {
-                return COMUtil.IHTMLElementToMSAA(this._sourceElement);
+                _pAcc = COMUtil.IHTMLElementToMSAA(this._sourceElement);
             }
 
-            return null;
+            return _pAcc;
         }
 
         public virtual int GetChildID()

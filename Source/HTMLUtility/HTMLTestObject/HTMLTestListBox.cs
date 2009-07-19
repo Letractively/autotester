@@ -521,15 +521,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return res;
         }
 
-        /* void HighLightRectCallback(object obj)
-         * HTMLTestListBox is NOT a HTML object, it is a standard Windwos control.
-         * So we need to override this function.
-         */
-        protected override void HighLightRectCallback(object obj)
-        {
-            base.HighLightRect(true);
-        }
-
         #endregion
 
         #endregion
