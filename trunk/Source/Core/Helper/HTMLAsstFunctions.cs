@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using mshtml;
 using SHDocVw;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Helper
 {
     public sealed class HTMLAsstFunctions
     {

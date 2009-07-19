@@ -17,7 +17,7 @@
 *
 *********************************************************************/
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Interface
 {
     using System;
     using System.Collections.Generic;

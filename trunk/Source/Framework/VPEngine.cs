@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.Framework
 {

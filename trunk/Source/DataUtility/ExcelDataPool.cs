@@ -20,6 +20,8 @@ using System.IO;
 using System.Data.OleDb;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
 
 namespace Shrinerain.AutoTester.DataUtility
 {

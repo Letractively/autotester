@@ -17,7 +17,7 @@
 
 using System;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Interface
 {
     public interface ITestCheckPoint
     {

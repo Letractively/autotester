@@ -6,6 +6,8 @@ using Accessibility;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.TestExceptions;
+using Shrinerain.AutoTester.Core.Helper;
 using Shrinerain.AutoTester.MSAAUtility;
 using Shrinerain.AutoTester.Win32;
 

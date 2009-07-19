@@ -11,7 +11,7 @@ using Accessibility;
 
 using Shrinerain.AutoTester.Win32;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Helper
 {
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

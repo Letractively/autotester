@@ -20,7 +20,7 @@ using System.Text;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.TestExceptions
 {
     [Serializable]
     public class TestException : Exception

@@ -19,6 +19,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 
+using Shrinerain.AutoTester.Core.Interface;
+
 namespace Shrinerain.AutoTester.Core
 {
     public class TestCheckPoint : ITestCheckPoint

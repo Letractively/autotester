@@ -20,7 +20,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Interface
 {
     public interface ITestApp
     {

@@ -28,7 +28,7 @@ using Outlook = Microsoft.Office.Interop.Outlook;
 #endif
 
 
-namespace Shrinerain.AutoTester.Core
+namespace Shrinerain.AutoTester.Core.Helper
 {
     //we have two types, normal TEXT and HTML.
     public enum MailType : int
