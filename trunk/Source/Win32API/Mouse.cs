@@ -126,6 +126,11 @@ namespace Shrinerain.AutoTester.Win32
             }
         }
 
+        public static void DoubleClick(Point p)
+        {
+            NClick(p.X, p.Y, 2);
+        }
+
         public static void DoubleClick(int x, int y)
         {
             NClick(x, y, 2);
@@ -147,6 +152,11 @@ namespace Shrinerain.AutoTester.Win32
             {
                 NRightClick(-99, -99, 1);
             }
+        }
+
+        public static void RightClick(Point p)
+        {
+            NRightClick(p.X, p.Y, 1);
         }
 
         public static void RightClick(int x, int y)

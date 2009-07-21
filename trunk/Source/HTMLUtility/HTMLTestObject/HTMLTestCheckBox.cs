@@ -162,6 +162,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void RightClick()
         {
+            try
+            {
+                BeforeAction();
+
+                Thread t = new Thread(new ThreadStart(PerformRightClick));
+                t.Start();
+                t.Join(ActionTimeout);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not perform right click action: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
+            }
         }
 
         #endregion
@@ -189,17 +209,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual string GetFontFamily()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public virtual string GetFontSize()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public virtual string GetFontColor()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public override string GetLabel()
@@ -271,7 +291,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else
             {
-                MouseOp.Click();
+                MouseOp.Click(this._centerPoint);
             }
         }
 

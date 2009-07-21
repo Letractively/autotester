@@ -682,21 +682,41 @@ namespace Shrinerain.AutoTester.HTMLUtility
        */
         public virtual bool IsVisible()
         {
-            string isVisible;
 
             if (this._sourceElement.offsetWidth < 1 || this._sourceElement.offsetHeight < 1)
             {
                 return false;
             }
 
-            if (!TryGetProperty(this._sourceElement, "visibility", out isVisible))
+            string isDisabled;
+            if (HTMLTestObject.TryGetProperty(_sourceElement, "disabled", out isDisabled))
             {
-                return true && IsDisplayed(this._sourceElement);
+                if (String.Compare("true", isDisabled, true) == 0)
+                {
+                    return false;
+                }
             }
-            else
+
+            string isDisplayed;
+            if (HTMLTestObject.TryGetProperty(_sourceElement, "style", out isDisplayed))
             {
-                return String.Compare(isVisible, "HIDDEN", true) == 0;
+                isDisplayed = isDisplayed.Replace(" ", "");
+                if (isDisplayed.IndexOf("display:none", StringComparison.CurrentCultureIgnoreCase) >= 0)
+                {
+                    return false;
+                }
             }
+
+            string isVisible;
+            if (TryGetProperty(this._sourceElement, "visibility", out isVisible))
+            {
+                if (String.Compare(isVisible, "HIDDEN", true) == 0)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /* bool IsEnable()
@@ -785,8 +805,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
             {
-                GetRectOnScreen();
                 MouseOp.Click(this._centerPoint);
+            }
+        }
+
+        protected virtual void PerformRightClick()
+        {
+            Hover();
+            if (_sendMsgOnly && this._sourceElement != null)
+            {
+                IHTMLElement3 element3 = _sourceElement as IHTMLElement3;
+                IHTMLDocument4 doc4 = _sourceElement.document as IHTMLDocument4;
+                object dummy = null;
+                object eventObj = doc4.CreateEventObject(ref dummy);
+                element3.FireEvent("oncontextmenu", ref eventObj);
+            }
+            else if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)
+            {
+                MouseOp.RightClick(this._centerPoint);
             }
         }
 
@@ -806,38 +842,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 System.Threading.Thread.Sleep(ActionDelayTime);
             }
             _actionFinished.Set();
-        }
-
-        /* bool IsDisplay(IHTMLElement element)
-        * Check the style
-        */
-        protected virtual bool IsDisplayed(IHTMLElement element)
-        {
-            if (element == null)
-            {
-                return false;
-            }
-
-            string isDisabled;
-            if (HTMLTestObject.TryGetProperty(element, "disabled", out isDisabled))
-            {
-                if (String.Compare("true", isDisabled, true) == 0)
-                {
-                    return false;
-                }
-            }
-
-            string isDisplayed;
-            if (HTMLTestObject.TryGetProperty(element, "style", out isDisplayed))
-            {
-                isDisplayed = isDisplayed.Replace(" ", "");
-                if (isDisplayed.IndexOf("display:none", StringComparison.CurrentCultureIgnoreCase) >= 0)
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         /* void ScrollIntoView(bool toTop)

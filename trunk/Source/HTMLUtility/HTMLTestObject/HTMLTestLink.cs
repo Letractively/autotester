@@ -167,6 +167,26 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void RightClick()
         {
+            try
+            {
+                BeforeAction();
+
+                Thread t = new Thread(new ThreadStart(PerformRightClick));
+                t.Start();
+                t.Join(ActionTimeout);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not perform right click action: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
+            }
         }
 
         public virtual string GetAction()

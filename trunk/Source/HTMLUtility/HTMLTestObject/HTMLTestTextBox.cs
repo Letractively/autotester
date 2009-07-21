@@ -320,6 +320,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else
             {
+                MouseOp.Click(_centerPoint);
                 //or send the chars by keyboard
                 KeyboardOp.SendChars(value);
             }

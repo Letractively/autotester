@@ -158,12 +158,30 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual void DoubleClick()
         {
-            throw new Exception("The method or operation is not implemented.");
         }
 
         public virtual void RightClick()
         {
-            throw new Exception("The method or operation is not implemented.");
+            try
+            {
+                BeforeAction();
+
+                Thread t = new Thread(new ThreadStart(PerformRightClick));
+                t.Start();
+                t.Join(ActionTimeout);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotPerformActionException("Can not perform right click action: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
+            }
         }
 
         #endregion
@@ -204,17 +222,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public virtual string GetFontFamily()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public virtual string GetFontSize()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public virtual string GetFontColor()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         /* string GetLabelForRadioBox(IHTMLElement element)
@@ -274,7 +292,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else
             {
-                MouseOp.Click();
+                MouseOp.Click(_centerPoint);
             }
         }
 

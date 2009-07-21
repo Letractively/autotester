@@ -350,12 +350,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public string GetFontSize()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public string GetFontColor()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         #endregion
