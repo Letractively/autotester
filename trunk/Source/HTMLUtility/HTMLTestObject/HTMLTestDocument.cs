@@ -17,6 +17,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region fields
 
         protected IHTMLDocument2 _document;
+        protected HTMLTestBrowser _browser;
 
         public delegate void DocumentChangeHandler(IHTMLDocument2 doc);
         public event DocumentChangeHandler OnDocumentChange;
@@ -26,10 +27,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected Dictionary<String, IHTMLElement[]> _tagElements = new Dictionary<string, IHTMLElement[]>(199);
         protected Dictionary<String, IHTMLElement[]> _nameElements = new Dictionary<string, IHTMLElement[]>(199);
 
+        #endregion
+
+        #region property
 
         public IHTMLDocument Document
         {
             get { return _document; }
+        }
+
+        public HTMLTestBrowser Browser
+        {
+            get { return this._browser; }
         }
 
         #endregion
@@ -39,14 +48,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region ctor
 
         public HTMLTestDocument(IHTMLDocument2 doc)
+            : this(doc, null)
+        {
+        }
+
+        public HTMLTestDocument(IHTMLDocument2 doc, HTMLTestBrowser browser)
             : base()
         {
             if (doc == null)
             {
-                throw new TestObjectException("Document can not be null.");
+                throw new CannotBuildObjectException("Document can not be null.");
             }
 
             this._document = doc;
+            this._browser = browser;
             RegisterEvents();
         }
 
