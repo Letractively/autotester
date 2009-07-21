@@ -144,25 +144,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void DoubleClick()
         {
-            try
-            {
-                BeforeAction();
-
-                Hover();
-                MouseOp.DoubleClick();
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotPerformActionException("Can not perform double click action: " + ex.ToString());
-            }
-            finally
-            {
-                AfterAction();
-            }
         }
 
         /* void RightClick()
@@ -174,8 +155,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 BeforeAction();
 
-                Hover();
-                MouseOp.RightClick();
+                Thread t = new Thread(new ThreadStart(PerformRightClick));
+                t.Start();
+                t.Join(ActionTimeout);
             }
             catch (TestException)
             {
@@ -189,14 +171,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 AfterAction();
             }
-        }
-
-        /* void MiddleClick()
-         * middle click on the button
-         */
-        public virtual void MiddleClick()
-        {
-            throw new CannotPerformActionException("Can not perform middle click.");
         }
 
         #region IInteractive methods

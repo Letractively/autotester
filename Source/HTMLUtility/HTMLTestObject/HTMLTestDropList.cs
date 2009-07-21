@@ -220,12 +220,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public string GetFontSize()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         public string GetFontColor()
         {
-            throw new Exception("The method or operation is not implemented.");
+            return null;
         }
 
         #endregion
@@ -273,7 +273,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             else
             {
                 //click the object.
-                Click();
+                ClickRightCorner();
                 //get the position on the screen 
                 Point itemPosition = GetItemPosition(index);
                 //click on the actual item.
@@ -392,7 +392,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * For a combo box, we don't click it's center point.
          * we click on it's right side to make it pop up the drop down list.
          */
-        protected virtual void Click()
+        protected virtual void ClickRightCorner()
         {
             //get the right point
             int right = this._rect.Left + this._rect.Width;
