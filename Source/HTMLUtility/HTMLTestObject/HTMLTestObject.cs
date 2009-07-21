@@ -117,6 +117,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _browser; }
         }
 
+        public IHTMLDocument Document
+        {
+            get { return _sourceElement.document as IHTMLDocument; }
+        }
+
         #endregion
 
         #region methods
