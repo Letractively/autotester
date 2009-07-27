@@ -14,7 +14,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         private MSAATestEventDispatcher _dispacher;
         private MSAATestObjectPool _objectPool;
         private MSAATestObjectMap _objectMap;
-        private MSAATestWindowMap _windowMap;
 
         private MSAATestObject _rootObj;
 
@@ -28,13 +27,13 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #region methods
 
-        public override void AfterStart()
+        protected override void AfterStart()
         {
             base.AfterStart();
             _rootObj = new MSAATestObject(this._rootHandle);
         }
 
-        public override void AfterFound()
+        protected override void AfterFound()
         {
             base.AfterFound();
             _rootObj = new MSAATestObject(this._rootHandle);
@@ -48,35 +47,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 _dispacher.Start(this);
             }
             return _dispacher;
-        }
-
-        public override ITestObjectPool GetObjectPool()
-        {
-            if (_objectPool == null)
-            {
-                _objectPool = new MSAATestObjectPool();
-                _objectPool.SetTestApp(this);
-            }
-            return _objectPool;
-        }
-
-        public override ITestObjectMap GetObjectMap()
-        {
-            if (_objectMap == null)
-            {
-                GetObjectPool();
-                _objectMap = new MSAATestObjectMap(_objectPool);
-            }
-            return _objectMap;
-        }
-
-        public override ITestWindowMap GetWindowMap()
-        {
-            if (_windowMap == null)
-            {
-                _windowMap = new MSAATestWindowMap(this);
-            }
-            return _windowMap;
         }
 
         #endregion

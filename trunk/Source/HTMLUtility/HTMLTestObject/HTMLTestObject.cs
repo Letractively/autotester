@@ -51,8 +51,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _type;
 
         protected IHTMLElement _sourceElement;
-        //the host browser of this object.
-        protected HTMLTestBrowser _browser;
+        protected HTMLTestPage _page;
 
         protected IAccessible _pAcc;
 
@@ -112,9 +111,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _type; }
         }
 
-        public HTMLTestBrowser Browser
+        public HTMLTestPage Page
         {
-            get { return _browser; }
+            get { return _page; }
         }
 
         public IHTMLDocument Document
@@ -139,7 +138,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestObject(IHTMLElement element, HTMLTestBrowser browser)
+        public HTMLTestObject(IHTMLElement element, HTMLTestPage page)
             : base()
         {
             if (element == null)
@@ -166,7 +165,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     this._name = "";
                 }
 
-                this._browser = browser;
+                this._page = page;
             }
             catch (Exception ex)
             {
@@ -378,7 +377,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     IHTMLElement ele = this._sourceElement.parentElement;
-                    HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._browser);
+                    HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._page);
                     return obj;
                 }
                 catch (TestException)
@@ -431,7 +430,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             try
                             {
                                 IHTMLElement ele = childrenElements.item(i, i) as IHTMLElement;
-                                HTMLTestGUIObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._browser);
+                                HTMLTestGUIObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._page);
                                 if (obj != null)
                                 {
                                     children.Add(obj);
@@ -469,7 +468,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (childrenElements != null && childIndex < childrenElements.length)
                     {
                         IHTMLElement ele = childrenElements.item(childIndex, childIndex) as IHTMLElement;
-                        return HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._browser);
+                        return HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._page);
                     }
                 }
                 catch (TestException)

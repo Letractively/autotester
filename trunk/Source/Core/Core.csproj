@@ -47,6 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClass\TestApp\TestBrowser.cs" />
+    <Compile Include="BaseClass\TestApp\TestPage.cs" />
+    <Compile Include="BaseClass\TestApp\TestWindow.cs" />
     <Compile Include="BaseClass\TestConstants.cs" />
     <Compile Include="BaseClass\TestEvent.cs" />
     <Compile Include="BaseClass\TestException\TestAppException.cs" />
@@ -60,7 +63,6 @@
     <Compile Include="BaseClass\TestCheckPoint.cs" />
     <Compile Include="BaseClass\TestObject\TestObjectMap.cs" />
     <Compile Include="BaseClass\TestObject\TestObjectType.cs" />
-    <Compile Include="BaseClass\TestApp\TestPageMap.cs" />
     <Compile Include="BaseClass\TestSession.cs" />
     <Compile Include="BaseClass\TestObject\TestProperty.cs" />
     <Compile Include="Helper\COMUtil.cs" />
@@ -76,9 +78,9 @@
     <Compile Include="Helper\WindowsAsstFunctions.cs" />
     <Compile Include="Interface\ITestEventDispatcher.cs" />
     <Compile Include="Interface\ITestObjectMap.cs" />
-    <Compile Include="Interface\ITestPageMap.cs" />
+    <Compile Include="Interface\ITestPage.cs" />
     <Compile Include="Interface\ITestSession.cs" />
-    <Compile Include="Interface\ITestWindowMap.cs" />
+    <Compile Include="Interface\ITestWindow.cs" />
     <Compile Include="BaseClass\TestObject\Interface\ICheckable.cs" />
     <Compile Include="BaseClass\TestObject\Interface\IComboBox.cs" />
     <Compile Include="BaseClass\TestObject\Interface\IHTML.cs" />
@@ -103,12 +105,10 @@
     <Compile Include="Interface\ITestObjectPool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BaseClass\TestApp\TestApp.cs" />
-    <Compile Include="BaseClass\TestApp\TestBrowser.cs" />
     <Compile Include="BaseClass\TestDataPool.cs" />
     <Compile Include="BaseClass\TestException\TestException.cs" />
     <Compile Include="BaseClass\TestLog.cs" />
     <Compile Include="BaseClass\TestObject\TestObject.cs" />
-    <Compile Include="BaseClass\TestApp\TestWindowMap.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="MSHTML">

@@ -238,14 +238,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             IHTMLDocument3 doc3 = this._document as IHTMLDocument3;
             if (doc3 != null)
             {
-                doc3.attachEvent("propertychange", this);
+                doc3.attachEvent("onpropertychange", this);
             }
         }
 
         [DispId(0)]
         public void HandleEvent(IHTMLEventObj pEvtObj)
         {
-            if (pEvtObj.type == "propertychange")
+            if (pEvtObj.type == "onpropertychange")
             {
                 IHTMLEventObj2 e2 = pEvtObj as IHTMLEventObj2;
                 if (String.Compare("innerHTML", e2.propertyName, false) == 0 ||

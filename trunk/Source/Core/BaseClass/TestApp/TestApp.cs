@@ -30,9 +30,9 @@ namespace Shrinerain.AutoTester.Core
     {
         #region fields
 
-        protected TestApp _parent;
         protected IntPtr _rootHandle = IntPtr.Zero;
         protected Process _appProcess;
+        protected TestWindow _currentWindow;
         protected bool _isHide;
 
         protected string _appPath;
@@ -107,6 +107,10 @@ namespace Shrinerain.AutoTester.Core
             get { return this._rootHandle; }
         }
 
+        public ITestWindow CurrentWindow
+        {
+            get { return this._currentWindow; }
+        }
         #endregion
 
         #region methods
@@ -286,37 +290,22 @@ namespace Shrinerain.AutoTester.Core
         }
 
 
-        public virtual ITestApp[] GetChildren()
+        public virtual ITestWindow[] AllWindows()
         {
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public virtual ITestApp GetParent()
-        {
-            return this._parent;
-        }
-
-        public ITestApp GetWindow(int index)
+        public ITestWindow Window(int index)
         {
             throw new NotImplementedException();
         }
 
-        public ITestApp GetWindow(IntPtr handle)
+        public ITestWindow Window(IntPtr handle)
         {
             throw new NotImplementedException();
         }
 
-        public ITestApp GetWindow(string title)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ITestApp GetWindow(string title, string className)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ITestApp GetMostRecentWindow()
+        public ITestWindow Window(string title, string className)
         {
             throw new NotImplementedException();
         }
@@ -787,37 +776,37 @@ namespace Shrinerain.AutoTester.Core
         public event TestAppEventHandler OnAfterAppFound;
 
 
-        public virtual void BeforeStart()
+        protected virtual void BeforeStart()
         {
             if (OnBeforeAppStart != null)
                 OnBeforeAppStart(this, null);
         }
 
-        public virtual void AfterStart()
+        protected virtual void AfterStart()
         {
             if (OnAfterAppStart != null)
                 OnAfterAppStart(this, null);
         }
 
-        public virtual void BeforeFound()
+        protected virtual void BeforeFound()
         {
             if (OnBeforeAppFound != null)
                 OnBeforeAppFound(this, null);
         }
 
-        public virtual void AfterFound()
+        protected virtual void AfterFound()
         {
             if (OnAfterAppFound != null)
                 OnAfterAppFound(this, null);
         }
 
-        public virtual void BoforeClose()
+        protected virtual void BoforeClose()
         {
             if (OnBeforeAppClose != null)
                 OnBeforeAppClose(this, null);
         }
 
-        public virtual void AfterClose()
+        protected virtual void AfterClose()
         {
             if (OnAfterAppClose != null)
                 OnAfterAppClose(this, null);
@@ -826,21 +815,6 @@ namespace Shrinerain.AutoTester.Core
         public virtual ITestEventDispatcher GetEventDispatcher()
         {
             return null;
-        }
-
-        public virtual ITestObjectPool GetObjectPool()
-        {
-            return null;
-        }
-
-        public virtual ITestObjectMap GetObjectMap()
-        {
-            throw null;
-        }
-
-        public virtual ITestWindowMap GetWindowMap()
-        {
-            throw null;
         }
 
         #endregion

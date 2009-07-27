@@ -32,7 +32,8 @@ namespace Shrinerain.AutoTester.MSAAUtility
     {
         #region fields
 
-        private MSAATestApp _testApp;
+        private MSAATestWindow _msaaTestWin;
+        private MSAATestObject _rootObj;
 
         IAccessible _curIACC;
         int _curChildID;
@@ -98,8 +99,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public MSAATestObjectPool(MSAATestObject rootObj)
         {
-            this._testApp = new MSAATestApp();
-            this._testApp.RootObject = rootObj;
+            this._rootObj = rootObj;
         }
 
         #endregion
@@ -116,11 +116,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public TestObject[] GetObjectsByProperties(TestProperty[] properties)
         {
-            if (this._testApp == null)
-            {
-                throw new AppNotFoundExpcetion("Can not find test app.");
-            }
-
             //we will try 30s to find an object.
             int times = 0;
             while (times <= _searchTimeout)
@@ -179,11 +174,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public TestObject[] GetObjectsByName(string name)
         {
-            if (this._testApp == null)
-            {
-                throw new AppNotFoundExpcetion("Can not find test app.");
-            }
-
             if (name == null || name.Trim().Length == 0)
             {
                 throw new ObjectNotFoundException("Can not find object by name: name can not be empty.");
@@ -229,11 +219,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public TestObject[] GetObjectsByType(string type, TestProperty[] properties)
         {
-            if (this._testApp == null)
-            {
-                throw new AppNotFoundExpcetion("Can not find test app.");
-            }
-
             if (type == null || type.Trim() == "")
             {
                 throw new ObjectNotFoundException("Can not get object by type: type can not be empty.");
@@ -291,11 +276,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public TestObject GetObjectByPoint(int x, int y)
         {
-            if (this._testApp == null)
-            {
-                throw new AppNotFoundExpcetion("Can not find test app.");
-            }
-
             //we will try 30s to find an object.
             int times = 0;
             while (times <= _searchTimeout)
@@ -338,19 +318,19 @@ namespace Shrinerain.AutoTester.MSAAUtility
             throw new ObjectNotFoundException("Can not find object at Point:[" + x + "," + y + "]");
         }
 
-        public void SetTestApp(ITestApp testApp)
+        public void SetTestWindow(ITestWindow testWin)
         {
-            if (testApp == null)
+            if (testWin == null)
             {
                 throw new AppNotFoundExpcetion("Application is not exist.");
             }
             else
             {
-                this._testApp = (MSAATestApp)testApp;
+                this._msaaTestWin = (MSAATestWindow)_msaaTestWin;
             }
         }
 
-        public void SetTestBrowser(ITestBrowser browser)
+        public void SetTestPage(ITestPage page)
         {
             throw new NotImplementedException();
         }
@@ -482,7 +462,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
 
             Queue<IAccessible> que = new Queue<IAccessible>();
-            MSAATestObject rootObj = this._testApp.RootObject;
+            MSAATestObject rootObj = this._rootObj;
             System.Drawing.Rectangle rootRect = rootObj.GetRect();
             que.Enqueue(rootObj.IAcc);
 

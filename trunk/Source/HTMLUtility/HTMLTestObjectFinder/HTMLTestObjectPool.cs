@@ -34,7 +34,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region fields
 
-        private HTMLTestBrowser _htmlTestBrowser;
+        private HTMLTestPage _htmlTestPage;
 
         //the default similar pencent to  find an object, if 100, that means we should make sure 100% match. 
         private bool _useFuzzySearch = false;
@@ -69,10 +69,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #region Properties
 
         //set the browser for this object pool, we get objects from a browser
-        public HTMLTestBrowser TestBrower
+        public HTMLTestPage TestPage
         {
-            get { return _htmlTestBrowser; }
-            set { _htmlTestBrowser = value; }
+            get { return _htmlTestPage; }
+            set { _htmlTestPage = value; }
         }
 
         public int SearchTimeout
@@ -101,9 +101,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestObjectPool(ITestBrowser brower)
+        public HTMLTestObjectPool(ITestPage page)
         {
-            _htmlTestBrowser = (HTMLTestBrowser)brower;
+            _htmlTestPage = page as HTMLTestPage;
         }
 
         #endregion
@@ -112,12 +112,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * Set the related browser, we will get object from this browser.
          * 
          */
-        public void SetTestBrowser(ITestBrowser brower)
+        public void SetTestPage(ITestPage page)
         {
-            _htmlTestBrowser = (HTMLTestBrowser)brower;
+            this._htmlTestPage = page as HTMLTestPage;
         }
 
-        public void SetTestApp(ITestApp app)
+        public void SetTestWindow(ITestWindow win)
         {
             //for HTML tesing, no desktop application is needed.
         }
@@ -145,11 +145,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     //get IHTMLElement interface
-                    _tempElement = _htmlTestBrowser.GetObjectByID(id);
+                    _tempElement = _htmlTestPage.GetObjectByID(id);
                     if (_tempElement != null)
                     {
                         //build actual test object.
-                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestPage);
                         AfterObjectFound(_testObj);
                         return _testObj;
                     }
@@ -191,13 +191,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     List<TestObject> result = new List<TestObject>();
 
-                    IHTMLElement[] nameObjectsCol = _htmlTestBrowser.GetObjectsByName(name);
+                    IHTMLElement[] nameObjectsCol = _htmlTestPage.GetObjectsByName(name);
                     for (int i = 0; i < nameObjectsCol.Length; i++)
                     {
                         _tempElement = (IHTMLElement)nameObjectsCol[i];
                         if (HTMLTestObjectFactory.IsVisible(_tempElement))
                         {
-                            _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser);
+                            _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestPage);
                             AfterObjectFound(_testObj);
                             result.Add(_testObj);
                         }
@@ -245,7 +245,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     _tempElement = _allElements[index];
                     if (HTMLTestObjectFactory.IsVisible(_tempElement))
                     {
-                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestPage);
                         AfterObjectFound(_testObj);
                         return _testObj;
                     }
@@ -310,7 +310,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
                         if (!String.IsNullOrEmpty(searchVal))
                         {
-                            string htmlContent = _htmlTestBrowser.GetAllHTMLContent();
+                            string htmlContent = this._htmlTestPage.GetAllHTML();
                             int startPos = htmlContent.IndexOf(searchVal);
                             if (startPos > 0)
                             {
@@ -440,7 +440,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     IntPtr dialogHandle = GetHTMLDialogObject(properties);
                     if (dialogHandle != IntPtr.Zero)
                     {
-                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(dialogHandle, this._htmlTestBrowser);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(dialogHandle, this._htmlTestPage);
                         AfterObjectFound(_testObj);
                         result.Add(_testObj);
                     }
@@ -456,7 +456,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         if (candidateElements == null)
                         {
-                            candidateElements = _htmlTestBrowser.GetObjectsByTagName(tag);
+                            candidateElements = this._htmlTestPage.GetObjectsByTagName(tag);
                         }
 
                         if (candidateElements != null && candidateElements.Length > 0)
@@ -475,7 +475,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                         _regCache.Add(tag, tagReg);
                                     }
 
-                                    string htmlContent = _htmlTestBrowser.GetAllHTMLContent();
+                                    string htmlContent = this._htmlTestPage.GetAllHTML();
                                     int startPos = htmlContent.IndexOf(searchVal);
                                     if (startPos > 0)
                                     {
@@ -578,10 +578,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
-                    _tempElement = this._htmlTestBrowser.GetObjectFromPoint(x, y);
+                    _tempElement = this._htmlTestPage.GetObjectFromPoint(x, y);
                     if (HTMLTestObjectFactory.IsVisible(_tempElement))
                     {
-                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestBrowser);
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestPage);
                         AfterObjectFound(_testObj);
 
                         return _testObj;
@@ -627,8 +627,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 isPercent = false;
                 if ((left >= 1 && left <= 100) && (top >= 1 && top <= 100))
                 {
-                    x = _htmlTestBrowser.ClientWidth * left / 100;
-                    y = _htmlTestBrowser.ClientHeight * top / 100;
+                    HTMLTestBrowser browser = this._htmlTestPage.Browser as HTMLTestBrowser;
+                    x = browser.ClientWidth * left / 100;
+                    y = browser.ClientHeight * top / 100;
                 }
                 else
                 {
@@ -710,7 +711,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 //convert IHTMLELementCollection to an array.
                 for (int i = 0; i < this._allElements.Length; i++)
                 {
-                    _allObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject((IHTMLElement)this._allElements[i], this._htmlTestBrowser);
+                    _allObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject((IHTMLElement)this._allElements[i], this._htmlTestPage);
                 }
 
                 return _allObjects;
@@ -748,7 +749,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private IHTMLElement[] GetAllElements()
         {
-            this._allElements = _htmlTestBrowser.GetAllHTMLElements();
+            this._allElements = this._htmlTestPage.GetAllHTMLElements();
             return this._allElements;
         }
 
@@ -764,7 +765,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     if (!String.IsNullOrEmpty(id))
                     {
-                        IHTMLElement element = _htmlTestBrowser.GetObjectByID(id);
+                        IHTMLElement element = this._htmlTestPage.GetObjectByID(id);
                         if (element != null)
                         {
                             return new IHTMLElement[] { element };
@@ -772,7 +773,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else if (!String.IsNullOrEmpty(name))
                     {
-                        IHTMLElement[] tmp = _htmlTestBrowser.GetObjectsByName(name);
+                        IHTMLElement[] tmp = this._htmlTestPage.GetObjectsByName(name);
                         if (tmp != null && tmp.Length > 0)
                         {
                             return tmp;
@@ -780,7 +781,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else if (!String.IsNullOrEmpty(tagName))
                     {
-                        IHTMLElement[] tmp = _htmlTestBrowser.GetObjectsByTagName(tagName);
+                        IHTMLElement[] tmp = this._htmlTestPage.GetObjectsByTagName(tagName);
                         if (tmp != null && tmp.Length > 0)
                         {
                             return tmp;
@@ -840,7 +841,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 if (obj == null)
                 {
-                    obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser);
+                    obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestPage);
                 }
 
                 return true;
@@ -868,7 +869,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestBrowser);
+                    obj = HTMLTestObjectFactory.BuildHTMLTestObjectByType(element, type, this._htmlTestPage);
                     visibleText = ((HTMLTestGUIObject)obj).GetLabel();
                     string propertyValue;
                     if (String.IsNullOrEmpty(visibleText) && HTMLTestObject.TryGetProperty(element, "innerText", out propertyValue))
@@ -933,13 +934,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private void BeforeObjectFound()
         {
-            if (_htmlTestBrowser == null)
+            if (this._htmlTestPage == null)
             {
                 throw new BrowserNotFoundException("Can not find HTML test browser for HTMLTestObjectPool.");
             }
 
             int times = 0;
-            while (times < _searchTimeout && this._htmlTestBrowser.IsLoading())
+            while (times < _searchTimeout && this._htmlTestPage.Browser.IsLoading())
             {
                 times += Interval;
                 Thread.Sleep(Interval * 1000);

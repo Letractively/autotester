@@ -18,14 +18,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
         }
 
-        public new MSAATestWindowMap Windows
-        {
-            get
-            {
-                return _windowMap as MSAATestWindowMap;
-            }
-        }
-
         #endregion
 
         #region methods
@@ -33,7 +25,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public MSAATestSession()
         {
             this._app = new MSAATestApp();
-            Init();
         }
 
         #endregion

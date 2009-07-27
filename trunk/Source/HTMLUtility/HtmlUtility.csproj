@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HTMLTestBrowser\HTMLTestPage.cs" />
     <Compile Include="HTMLTestEventDispatcher.cs" />
     <Compile Include="HTMLTestObjectFinder\HTMLTestObjectFactory.cs" />
     <Compile Include="HTMLTestObjectFinder\HTMLTestObjectMap.cs" />
@@ -72,8 +73,7 @@
     <Compile Include="HTMLTestObject\HTMLTestTable.cs" />
     <Compile Include="HTMLTestObject\HTMLTestTextBox.cs" />
     <Compile Include="HTMLTestCheckPoint.cs" />
-    <Compile Include="HTMLTestBrowser.cs" />
-    <Compile Include="HTMLTestPageMap.cs" />
+    <Compile Include="HTMLTestBrowser\HTMLTestBrowser.cs" />
     <Compile Include="HTMLTestSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

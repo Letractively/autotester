@@ -145,7 +145,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             if (obj == null)
                             {
-                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser.CurrentPage);
                             }
                             OnClick(obj, null);
                         }
@@ -153,7 +153,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             if (obj == null)
                             {
-                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser.CurrentPage);
                             }
                             OnTextChange(obj, null);
                         }
@@ -161,7 +161,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             if (obj == null)
                             {
-                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser.CurrentPage);
                             }
                             OnSelectIndexChange(obj, null);
                         }
@@ -169,7 +169,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             if (obj == null)
                             {
-                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser.CurrentPage);
                             }
                             OnCheck(obj, null);
                         }
@@ -177,7 +177,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             if (obj == null)
                             {
-                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser.CurrentPage);
                             }
                             OnUncheck(obj, null);
                         }
@@ -185,7 +185,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         {
                             if (obj == null)
                             {
-                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                                obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser.CurrentPage);
                             }
                             OnFocus(obj, null);
                         }
@@ -205,7 +205,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     try
                     {
                         IHTMLElement src = pEvtObj.srcElement;
-                        obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                        obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser.CurrentPage);
                         TestEventArgs mouseEventArgs = BuildMouseEventArgs(pEvtObj);
 
                         if (String.Compare(tp, "mousedown", true) == 0)
@@ -256,7 +256,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     try
                     {
                         IHTMLElement src = pEvtObj.srcElement;
-                        obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser);
+                        obj = HTMLTestObjectFactory.BuildHTMLTestObject(src, _browser.CurrentPage);
                         if (String.Compare(tp, "keydown", true) == 0)
                         {
                             if (OnKeyDown != null)
@@ -454,7 +454,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (application != null && application is HTMLTestBrowser)
             {
                 this._browser = application as HTMLTestBrowser;
-                RegisterEvents(this._browser.GetDocument() as IHTMLDocument2);
+                RegisterEvents(this._browser.CurrentPage.GetDocument() as IHTMLDocument2);
             }
         }
 
@@ -463,7 +463,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (application != null && application is HTMLTestBrowser)
             {
                 this._browser = application as HTMLTestBrowser;
-                RegisterEvents(this._browser.GetDocument() as IHTMLDocument2);
+                RegisterEvents(this._browser.CurrentPage.GetDocument() as IHTMLDocument2);
             }
         }
 
@@ -481,7 +481,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._browser = app as HTMLTestBrowser;
                 this._browser.OnAfterAppStart += new TestAppEventHandler(OnBrowserStart);
                 this._browser.OnAfterAppFound += new TestAppEventHandler(OnBrowserFound);
-                RegisterEvents(this._browser.GetDocument() as IHTMLDocument2);
+                RegisterEvents(this._browser.CurrentPage.GetDocument() as IHTMLDocument2);
                 return true;
             }
             else

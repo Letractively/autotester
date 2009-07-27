@@ -1,91 +1,70 @@
-/********************************************************************
-*                      AutoTester     
-*                        Wan,Yu
-* AutoTester is a free software, you can use it in any commercial work. 
-* But you CAN NOT redistribute it and/or modify it.
-*--------------------------------------------------------------------
-* Component: HTMLTestBrowser.cs
-*
-* Description: This class defines the the actions to support HTML test.
-*              we use HTML DOM to get the object from Internet Explorer.
-*
-* History: 2007/09/04 wan,yu Init version
-*          2008/01/15 wan,yu update, modify some static memebers to instance 
-*
-*********************************************************************/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.Text;
 
 using mshtml;
-using SHDocVw;
 
 using Shrinerain.AutoTester.Core;
-using Shrinerain.AutoTester.Core.Interface;
 using Shrinerain.AutoTester.Core.TestExceptions;
-using Shrinerain.AutoTester.Core.Helper;
+using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestBrowser : TestBrowser
+    public class HTMLTestPage : TestPage
     {
-        #region Fileds
+        #region fields
 
-        private HTMLTestObjectPool _pool;
-        private HTMLTestEventDispatcher _dispatcher;
-        private HTMLTestObjectMap _objMap;
-        private HTMLTestPageMap _pageMap;
-
-        private HTMLTestDocument[] _allDocuments;
+        private HTMLTestDocument _htmlDoc;
+        private HTMLTestObjectPool _objPool;
 
         #endregion
 
-        #region Properties
+        #region properties
+
+        public new HTMLTestObjectMap Objects
+        {
+            get { return _objMap as HTMLTestObjectMap; }
+        }
 
         #endregion
 
-        #region Methods
+        #region methods
 
-        public HTMLTestBrowser()
+        #region ctor
+
+        public HTMLTestPage(HTMLTestBrowser browser, IHTMLDocument document)
+            : base(browser, document)
         {
+            this._htmlDoc = new HTMLTestDocument(document as IHTMLDocument2);
+            HTMLTestObjectPool pool = new HTMLTestObjectPool(this);
+            this._objMap = new HTMLTestObjectMap(pool);
         }
 
-        ~HTMLTestBrowser()
+        #endregion
+
+        public override IHTMLDocument[] GetAllDocuments()
         {
-            Dispose();
-        }
-
-        #region public methods
-
-        #region GetObject methods
-
-        public override HTMLDocument[] GetAllDocuments()
-        {
-            if (this._allDocuments == null)
+            IHTMLDocument[] allDocs = base.GetAllDocuments();
+            HTMLTestDocument[] allDocuments = new HTMLTestDocument[allDocs.Length];
+            for (int i = 0; i < allDocs.Length; i++)
             {
-                HTMLDocument[] allDocs = base.GetAllDocuments();
-                _allDocuments = new HTMLTestDocument[allDocs.Length];
-                for (int i = 0; i < allDocs.Length; i++)
+                try
                 {
-                    try
-                    {
-                        HTMLDocument doc = allDocs[i];
-                        HTMLTestDocument testDoc = new HTMLTestDocument(doc as IHTMLDocument2);
-                        _allDocuments[i] = testDoc;
-                    }
-                    catch
-                    {
-                    }
+                    IHTMLDocument doc = allDocs[i];
+                    HTMLTestDocument testDoc = new HTMLTestDocument(doc as IHTMLDocument2);
+                    allDocuments[i] = testDoc;
+                }
+                catch
+                {
                 }
             }
 
-            return _allDocuments;
+            return allDocuments;
         }
 
         /* IHTMLElementCollection GetAllObjects()
-         * return all element of HTML DOM.
-         */
+ * return all element of HTML DOM.
+ */
         public IHTMLElement[] GetAllHTMLElements()
         {
             if (_rootDocument == null)
@@ -95,7 +74,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                HTMLTestDocument[] allDocs = GetAllDocuments() as HTMLTestDocument[];
+                IHTMLDocument[] allDocs = GetAllDocuments();
                 foreach (HTMLTestDocument doc in allDocs)
                 {
                     try
@@ -132,10 +111,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                IHTMLElement element = _rootDocument.getElementById(id);
+                IHTMLElement element = _htmlDoc.GetElementByID(id);
                 if (element == null)
                 {
-                    HTMLTestDocument[] allDocs = GetAllDocuments() as HTMLTestDocument[];
+                    IHTMLDocument[] allDocs = GetAllDocuments();
                     foreach (HTMLTestDocument doc in allDocs)
                     {
                         element = doc.GetElementByID(id);
@@ -173,7 +152,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 name = name.ToUpper();
                 List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                HTMLTestDocument[] allDocs = GetAllDocuments() as HTMLTestDocument[];
+                IHTMLDocument[] allDocs = GetAllDocuments();
                 foreach (HTMLTestDocument doc in allDocs)
                 {
                     try
@@ -213,7 +192,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 tag = tag.ToUpper();
 
                 List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                HTMLTestDocument[] allDocs = GetAllDocuments() as HTMLTestDocument[];
+                IHTMLDocument[] allDocs = GetAllDocuments();
                 foreach (HTMLTestDocument doc in allDocs)
                 {
                     try
@@ -240,7 +219,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                return _rootDocument.elementFromPoint(x, y);
+                return _htmlDoc.GetElementByPoint(x, y);
             }
             catch (Exception ex)
             {
@@ -248,99 +227,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
-        public override ITestObjectMap GetObjectMap()
-        {
-            if (_objMap == null)
-            {
-                GetObjectPool();
-                _objMap = new HTMLTestObjectMap(_pool);
-            }
-            return _objMap;
-        }
-
         public override ITestObjectPool GetObjectPool()
         {
-            if (_pool == null)
+            if (_objPool == null)
             {
-                _pool = new HTMLTestObjectPool(this);
-            }
-            return _pool;
-        }
-
-        public override ITestPageMap GetPageMap()
-        {
-            if (_pageMap == null)
-            {
-                _pageMap = new HTMLTestPageMap(this);
-            }
-            return _pageMap;
-        }
-
-        public override ITestEventDispatcher GetEventDispatcher()
-        {
-            if (_dispatcher == null)
-            {
-                _dispatcher = HTMLTestEventDispatcher.GetInstance();
-                _dispatcher.Start(this);
-            }
-            return _dispatcher;
-        }
-
-        #endregion
-
-        #endregion
-
-        #region private help methods
-
-        protected bool IsDocumentContained(IHTMLDocument doc)
-        {
-            if (this._allDocuments != null && doc != null)
-            {
-                IntPtr newDocIUnknown = Marshal.GetIUnknownForObject(doc);
-                foreach (HTMLTestDocument existedDoc in this._allDocuments)
-                {
-                    IntPtr existedDocIUnknown = Marshal.GetIUnknownForObject(existedDoc);
-                    if (newDocIUnknown == existedDocIUnknown)
-                    {
-                        return true;
-                    }
-                }
+                _objPool = new HTMLTestObjectPool(this);
             }
 
-            return false;
+            return _objPool;
         }
-
-        protected override void RegBrowserEvent(InternetExplorer ie)
-        {
-            base.RegBrowserEvent(ie);
-            if (_dispatcher != null)
-            {
-                _dispatcher.RegisterEvents(ie.Document as IHTMLDocument2);
-            }
-        }
-
-        protected override void AllDocumentComplete()
-        {
-            base.AllDocumentComplete();
-            if (_dispatcher != null)
-            {
-                _dispatcher.RegisterEvents(_rootDocument as IHTMLDocument2);
-            }
-            NeedRefresh();
-        }
-
-        protected override void PageChange(InternetExplorer ie)
-        {
-            base.PageChange(ie);
-            NeedRefresh();
-        }
-
-        protected void NeedRefresh()
-        {
-            _allDocuments = null;
-        }
-
-        #endregion
 
         #endregion
     }

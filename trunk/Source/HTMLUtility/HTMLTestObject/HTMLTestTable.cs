@@ -61,8 +61,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestTable(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestTable(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             this._type = HTMLTestObjectType.Table;
             try
@@ -204,7 +204,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         try
                         {
                             tmpElement = (IHTMLElement)cellChildren.item(index, index);
-                            tmpObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject(tmpElement, this._browser);
+                            tmpObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject(tmpElement, this._page);
                         }
                         catch
                         {

@@ -57,8 +57,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestImage(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestImage(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             this._type = HTMLTestObjectType.Image;
             try

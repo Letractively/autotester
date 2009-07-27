@@ -37,33 +37,15 @@ namespace Shrinerain.AutoTester.Core.Interface
 
         //event dispatcher will fire event to recorder.
         ITestEventDispatcher GetEventDispatcher();
-        ITestObjectPool GetObjectPool();
-        ITestObjectMap GetObjectMap();
-        ITestWindowMap GetWindowMap();
 
         //operation on desktop applicatoin
-        void BeforeStart();
         void Start(string appFullPath);
         void Start(string appFullPath, string parameters);
-        void AfterStart();
-        void BeforeFound();
         void Find(IntPtr handle);
         void Find(String title);
         void Find(String title, String className);
         void Find(String processName, int index);
-        void AfterFound();
-        void BoforeClose();
         void Close();
-        void AfterClose();
-
-        //find sub windows.
-        ITestApp[] GetChildren();
-        ITestApp GetParent();
-        ITestApp GetWindow(int index);
-        ITestApp GetWindow(IntPtr handle);
-        ITestApp GetWindow(String title);
-        ITestApp GetWindow(String title, String className);
-        ITestApp GetMostRecentWindow();
 
         void Move(int x, int y);
         void Resize(int left, int top, int width, int height);
@@ -111,5 +93,11 @@ namespace Shrinerain.AutoTester.Core.Interface
         string GetVersion();
         string GetCompany();
         string GetAuthor();
+
+        ITestWindow[] AllWindows();
+        ITestWindow Window(int index);
+        ITestWindow Window(IntPtr handle);
+        ITestWindow Window(string title, string className);
+        ITestWindow CurrentWindow { get; }
     }
 }

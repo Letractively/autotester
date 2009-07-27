@@ -26,8 +26,7 @@ namespace Shrinerain.AutoTester.Core.Interface
         #region event
 
         event TestAppEventHandler OnBrowserStart;
-        event TestAppEventHandler OnBrowserNavigate;
-        event TestAppEventHandler OnBrowserPageChange;
+        event TestAppEventHandler OnBrowserNavigate;       
         event TestAppEventHandler OnBrowserBack;
         event TestAppEventHandler OnBrowserForward;
         event TestAppEventHandler OnBrowserRefresh;
@@ -35,10 +34,9 @@ namespace Shrinerain.AutoTester.Core.Interface
         event TestAppEventHandler OnBrowserAttached;
         event TestAppEventHandler OnNewWindow;
         event TestAppEventHandler OnPopupDialog;
+        event TestAppEventHandler OnSelectPageChange;
 
         #endregion
-
-        ITestPageMap GetPageMap();
 
         //Browser actions
         void Start();
@@ -58,11 +56,13 @@ namespace Shrinerain.AutoTester.Core.Interface
         string GetTitle();
         string GetUrl();
         bool IsLoading();
-        IHTMLDocument GetDocument();
 
         //find sub pages/tabs
-        ITestBrowser GetPage(int index);
-        ITestBrowser GetPage(String title, String url);
-        ITestBrowser GetMostRecentPage();
+        ITestPage[] AllPages();
+        ITestPage Page(int index);
+        ITestPage Page(string title, string url);
+        ITestPage CurrentPage { get; }
+        ITestPage GetPage(ITestBrowser browser, int pageIndex);
+        int GetPageIndex(ITestPage page);
     }
 }

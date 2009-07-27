@@ -15,8 +15,6 @@ namespace Shrinerain.AutoTester.Core
         protected TestApp _app;
         protected TestBrowser _browser;
         protected TestObjectMap _objectMap;
-        protected TestWindowMap _windowMap;
-        protected TestPageMap _pageMap;
         protected TestCheckPoint _cp;
         protected ITestEventDispatcher _dispatcher;
 
@@ -36,22 +34,36 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual ITestObjectMap Objects
         {
-            get { return _objectMap; }
-        }
+            get
+            {
+                if (this._browser != null)
+                {
+                    this._objectMap = this._browser.CurrentPage.Objects as TestObjectMap;
+                }
+                else if (this._app != null)
+                {
+                    this._objectMap = this._app.CurrentWindow.Objects as TestObjectMap;
+                }
 
-        public virtual ITestWindowMap Windows
-        {
-            get { return _windowMap; }
-        }
-
-        public virtual ITestPageMap Pages
-        {
-            get { return _pageMap; }
+                return _objectMap;
+            }
         }
 
         public virtual ITestEventDispatcher Event
         {
-            get { return _dispatcher; }
+            get
+            {
+                if (this._browser != null)
+                {
+                    this._dispatcher = _browser.GetEventDispatcher();
+                }
+                else if (this._app != null)
+                {
+                    this._dispatcher = _app.GetEventDispatcher();
+                }
+
+                return this._dispatcher;
+            }
         }
 
         public virtual ITestCheckPoint CheckPoint
@@ -72,55 +84,16 @@ namespace Shrinerain.AutoTester.Core
         public TestSession(TestApp application)
         {
             this._app = application;
-            Init();
         }
 
         public TestSession(TestBrowser browser)
         {
             this._browser = browser;
-            Init();
-        }
-
-        protected virtual void Init()
-        {
-            if (this._objectMap == null)
-            {
-                try
-                {
-                    if (this._app != null)
-                    {
-                        this._objectMap = this._app.GetObjectMap() as TestObjectMap;
-                        this._windowMap = this._app.GetWindowMap() as TestWindowMap;
-                        this._dispatcher = _app.GetEventDispatcher();
-                    }
-
-                    if (this._browser != null)
-                    {
-                        this._objectMap = this._browser.GetObjectMap() as TestObjectMap;
-                        this._pageMap = this._browser.GetPageMap() as TestPageMap;
-                        this._dispatcher = _browser.GetEventDispatcher();
-                    }
-                }
-                catch (TestException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    throw new TestSessionException(ex.ToString());
-                }
-            }
-
-            if (this._objectMap == null)
-            {
-                throw new TestSessionException("Can not start test session");
-            }
         }
 
         #endregion
 
         #region public methods
-
         #endregion
 
         #region private methods

@@ -104,7 +104,7 @@ namespace Shrinerain.AutoTester.Core.Interface
         IVisible[] AnyObjects(String type, String description);
         IVisible[] AnyObjects(String type, TestProperty[] properties);
 
-        ITestObjectPool ObjectPool { get; }
+        ITestObjectPool ObjectPool { set; get; }
 
         #endregion
     }

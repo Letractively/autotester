@@ -140,12 +140,12 @@ namespace Shrinerain.AutoTester.Framework
             if (TestFactory.AppType == TestAppType.Desktop)
             {
                 _testApp = TestFactory.CreateTestApp();
-                _objPool.SetTestApp(_testApp);
+                _objPool.SetTestWindow(_testApp.CurrentWindow);
             }
             else if (TestFactory.AppType == TestAppType.Web)
             {
                 _testBrowser = TestFactory.CreateTestBrowser();
-                _objPool.SetTestBrowser(_testBrowser);
+                _objPool.SetTestPage(_testBrowser.CurrentPage);
             }
             else
             {

@@ -265,22 +265,22 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return BuildHTMLTestObject(element, null);
         }
 
-        public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element, HTMLTestBrowser browser)
+        public static HTMLTestGUIObject BuildHTMLTestObject(IHTMLElement element, HTMLTestPage page)
         {
-            return BuildHTMLTestObjectByType(element, HTMLTestObjectType.Unknown, browser);
+            return BuildHTMLTestObjectByType(element, HTMLTestObjectType.Unknown, page);
         }
 
-        public static HTMLTestGUIObject BuildHTMLTestObject(IntPtr handle, HTMLTestBrowser browser)
+        public static HTMLTestGUIObject BuildHTMLTestObject(IntPtr handle, HTMLTestPage page)
         {
-            return BuildHTMLTestObjectByType(null, handle, HTMLTestObjectType.Dialog, browser);
+            return BuildHTMLTestObjectByType(null, handle, HTMLTestObjectType.Dialog, page);
         }
 
-        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, String type, HTMLTestBrowser browser)
+        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, String type, HTMLTestPage page)
         {
-            return BuildHTMLTestObjectByType(element, IntPtr.Zero, type, browser);
+            return BuildHTMLTestObjectByType(element, IntPtr.Zero, type, page);
         }
 
-        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, IntPtr handle, String type, HTMLTestBrowser browser)
+        public static HTMLTestGUIObject BuildHTMLTestObjectByType(IHTMLElement element, IntPtr handle, String type, HTMLTestPage page)
         {
             if (element == null && handle == IntPtr.Zero)
             {
@@ -298,43 +298,43 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 switch (type)
                 {
                     case HTMLTestObjectType.Label:
-                        tmp = new HTMLTestLabel(element, browser);
+                        tmp = new HTMLTestLabel(element, page);
                         break;
                     case HTMLTestObjectType.Button:
-                        tmp = new HTMLTestButton(element, browser);
+                        tmp = new HTMLTestButton(element, page);
                         break;
                     case HTMLTestObjectType.TextBox:
-                        tmp = new HTMLTestTextBox(element, browser);
+                        tmp = new HTMLTestTextBox(element, page);
                         break;
                     case HTMLTestObjectType.ListBox:
-                        tmp = new HTMLTestListBox(element, browser);
+                        tmp = new HTMLTestListBox(element, page);
                         break;
                     case HTMLTestObjectType.Link:
-                        tmp = new HTMLTestLink(element, browser);
+                        tmp = new HTMLTestLink(element, page);
                         break;
                     case HTMLTestObjectType.DropList:
-                        tmp = new HTMLTestDropList(element, browser);
+                        tmp = new HTMLTestDropList(element, page);
                         break;
                     case HTMLTestObjectType.Image:
-                        tmp = new HTMLTestImage(element, browser);
+                        tmp = new HTMLTestImage(element, page);
                         break;
                     case HTMLTestObjectType.RadioBox:
-                        tmp = new HTMLTestRadioBox(element, browser);
+                        tmp = new HTMLTestRadioBox(element, page);
                         break;
                     case HTMLTestObjectType.CheckBox:
-                        tmp = new HTMLTestCheckBox(element, browser);
+                        tmp = new HTMLTestCheckBox(element, page);
                         break;
                     case HTMLTestObjectType.Table:
-                        tmp = new HTMLTestTable(element, browser);
+                        tmp = new HTMLTestTable(element, page);
                         break;
                     case HTMLTestObjectType.ActiveX:
-                        tmp = new HTMLTestActiveXObject(element, browser);
+                        tmp = new HTMLTestActiveXObject(element, page);
                         break;
                     case HTMLTestObjectType.Dialog:
-                        tmp = new HTMLTestDialog(handle, browser);
+                        tmp = new HTMLTestDialog(handle, page);
                         break;
                     default:
-                        tmp = new HTMLTestGUIObject(element, browser);
+                        tmp = new HTMLTestGUIObject(element, page);
                         break;
                 }
 
