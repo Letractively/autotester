@@ -44,8 +44,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestActiveXObject(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestActiveXObject(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             try
             {

@@ -4,12 +4,12 @@ using System.Text;
 
 namespace Shrinerain.AutoTester.Core.Interface
 {
-    public interface ITestSession
+    public interface ITestWindow
     {
+        String Caption { get; }
+        String ClassName { get; }
+        IntPtr Handle { get; }
         ITestApp App { get; }
-        ITestBrowser Browser { get; }
         ITestObjectMap Objects { get; }
-        ITestEventDispatcher Event { get; }
-        ITestCheckPoint CheckPoint { get; }
     }
 }

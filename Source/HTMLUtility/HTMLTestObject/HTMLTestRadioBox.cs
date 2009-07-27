@@ -50,8 +50,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestRadioBox(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestRadioBox(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             this._type = HTMLTestObjectType.RadioBox;
             try

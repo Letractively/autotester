@@ -41,7 +41,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestDialog(IntPtr handle, HTMLTestBrowser browser)
+        public HTMLTestDialog(IntPtr handle, HTMLTestPage page)
         {
             if (handle == IntPtr.Zero)
             {

@@ -111,8 +111,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestGUIObject(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestGUIObject(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             if (!_sendMsgOnly)
             {
@@ -575,7 +575,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    this._browser.Active();
+                    this.Page.Browser.Active();
 
                     //if the object is not visible, then move it.
                     ScrollIntoView();
@@ -855,15 +855,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int right = this._rect.X + this._rect.Width;
             int buttom = this._rect.Y + this._rect.Height;
 
-            int currentWidth = _browser.ClientLeft + _browser.ClientWidth;
-            int currentHeight = _browser.ClientTop + _browser.ClientHeight;
+            HTMLTestBrowser browser = this.Page.Browser as HTMLTestBrowser;
+            int currentWidth = browser.ClientLeft + browser.ClientWidth;
+            int currentHeight = browser.ClientTop + browser.ClientHeight;
 
             //if the object is not visible, then move the scrollbar.
             if (right > currentWidth || buttom > currentHeight)
             {
                 this._sourceElement.scrollIntoView(false);
             }
-            else if (this._rect.Top < this._browser.ScrollTop || this._rect.Left < this._browser.ScrollLeft)
+            else if (this._rect.Top < browser.ScrollTop || this._rect.Left < browser.ScrollLeft)
             {
                 this._sourceElement.scrollIntoView(true);
             }

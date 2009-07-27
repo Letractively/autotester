@@ -60,14 +60,14 @@ namespace Shrinerain.AutoTester.Core.Helper
             return null;
         }
 
-        public static HTMLDocument GetFrameDocument(IHTMLWindow2 frameWindow)
+        public static IHTMLDocument GetFrameDocument(IHTMLWindow2 frameWindow)
         {
             if (frameWindow != null)
             {
                 bool ex = false;
                 try
                 {
-                    return frameWindow.document as HTMLDocument;
+                    return frameWindow.document as IHTMLDocument;
                 }
                 catch
                 {
@@ -81,7 +81,7 @@ namespace Shrinerain.AutoTester.Core.Helper
                         IWebBrowser2 browser = HTMLWindowToWebBrowser(frameWindow);
                         if (browser != null)
                         {
-                            return browser.Document as HTMLDocument;
+                            return browser.Document as IHTMLDocument;
                         }
                     }
                     catch
@@ -116,28 +116,32 @@ namespace Shrinerain.AutoTester.Core.Helper
             return spWebBrws as IWebBrowser2;
         }
 
-        public static HTMLDocument[] GetFrames(HTMLDocument doc)
+        public static IHTMLDocument[] GetFrames(IHTMLDocument doc)
         {
             if (doc != null)
             {
                 try
                 {
-                    IHTMLFramesCollection2 frames = doc.frames;
-                    if (frames != null && frames.length > 0)
+                    IHTMLDocument2 doc2 = doc as IHTMLDocument2;
+                    if (doc2 != null)
                     {
-                        List<HTMLDocument> res = new List<HTMLDocument>();
-                        for (int i = 0; i < frames.length; i++)
+                        IHTMLFramesCollection2 frames = doc2.frames;
+                        if (frames != null && frames.length > 0)
                         {
-                            object index = i;
-                            IHTMLWindow2 frame = frames.item(ref index) as IHTMLWindow2;
-                            HTMLDocument temp = GetFrameDocument(frame);
-                            HTMLDocument[] curFrameDocs = GetFrames(temp);
-                            if (curFrameDocs != null)
+                            List<IHTMLDocument> res = new List<IHTMLDocument>();
+                            for (int i = 0; i < frames.length; i++)
                             {
-                                res.AddRange(curFrameDocs);
+                                object index = i;
+                                IHTMLWindow2 frame = frames.item(ref index) as IHTMLWindow2;
+                                IHTMLDocument temp = GetFrameDocument(frame);
+                                IHTMLDocument[] curFrameDocs = GetFrames(temp);
+                                if (curFrameDocs != null)
+                                {
+                                    res.AddRange(curFrameDocs);
+                                }
                             }
+                            return res.ToArray();
                         }
-                        return res.ToArray();
                     }
                 }
                 catch

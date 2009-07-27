@@ -73,8 +73,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestTextBox(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestTextBox(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             this._type = HTMLTestObjectType.TextBox;
             try

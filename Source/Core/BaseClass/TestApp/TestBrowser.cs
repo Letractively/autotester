@@ -1,24 +1,8 @@
-/********************************************************************
-*                      AutoTester     
-*                        Wan,Yu
-* AutoTester is a free software, you can use it in any commercial work. 
-* But you CAN NOT redistribute it and/or modify it.
-*--------------------------------------------------------------------
-* Component: TestBrowser.cs
-*
-* Description: TestBrowser support Internet Explorer. It implent 
-*              ITestBrowser interface. You can use TestBrowser to 
-*              interactive with Internet Explorer, and get the information
-*              of Internet Explorer. 
-*         
-*
-*********************************************************************/
-using System;
-using System.Text;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Text;
 using System.Threading;
-using System.Net;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using mshtml;
@@ -30,6 +14,7 @@ using Shrinerain.AutoTester.Core.Helper;
 using Shrinerain.AutoTester.Win32;
 using Shrinerain.AutoTester.Core.Interface;
 
+
 namespace Shrinerain.AutoTester.Core
 {
     public class TestBrowser : TestApp, IDisposable, ITestBrowser
@@ -37,9 +22,10 @@ namespace Shrinerain.AutoTester.Core
         #region Fileds
 
         //stack to save the browser status.
-        protected static List<InternetExplorer> _browserList = new List<InternetExplorer>(16);
+        protected List<InternetExplorer> _browserList = new List<InternetExplorer>(16);
         //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
         protected InternetExplorer _browser;
+        protected TestPage _currentPage;
 
         //handle of client area.
         // client area means the area to display web pages, not include the menu, address bar, etc.
@@ -51,8 +37,6 @@ namespace Shrinerain.AutoTester.Core
         protected IntPtr _dialogHandle;
         protected IntPtr _tabHandle;
 
-        //HTML dom, we use HTML dom to get the HTML object.
-        protected HTMLDocument _rootDocument;
 
         //timespan to store the response time.
         //the time is the interval between starting download and downloading finish.
@@ -109,6 +93,14 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region Properties
+
+        public ITestPage CurrentPage
+        {
+            get
+            {
+                return this._currentPage;
+            }
+        }
 
         public int Left
         {
@@ -492,7 +484,7 @@ namespace Shrinerain.AutoTester.Core
         /* void CloseDialog()
          * 
          */
-        public virtual void CloseDialog()
+        protected virtual void CloseDialog()
         {
             if (this._dialogHandle != IntPtr.Zero)
             {
@@ -500,7 +492,6 @@ namespace Shrinerain.AutoTester.Core
                 {
                     WindowsAsstFunctions.CloseWindow(_dialogHandle);
                     this._dialogHandle = IntPtr.Zero;
-                    AttachBrowser(this._browser);
                 }
                 catch (TestException)
                 {
@@ -517,6 +508,11 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
+                if (tabIndex < 0)
+                {
+                    return;
+                }
+
                 IntPtr tabHandle = GetTabHandle();
                 if (tabHandle != IntPtr.Zero)
                 {
@@ -550,6 +546,151 @@ namespace Shrinerain.AutoTester.Core
             catch
             {
             }
+        }
+
+        public virtual ITestPage[] AllPages()
+        {
+            if (_browserList != null && _browserList.Count > 0)
+            {
+                List<ITestPage> pages = new List<ITestPage>();
+                foreach (InternetExplorer ie in _browserList)
+                {
+                    try
+                    {
+                        TestPage page = new TestPage(this, ie.Document as IHTMLDocument);
+                        pages.Add(page);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                }
+
+                return pages.ToArray();
+            }
+
+            return null;
+        }
+
+        public virtual ITestPage Page(int index)
+        {
+            try
+            {
+                if (index < 0)
+                {
+                    index = 0;
+                }
+                //we will try 30s to find an object.
+                int times = 0;
+                while (times <= AppTimeout)
+                {
+                    if (index >= 0 && index < _browserList.Count)
+                    {
+                        InternetExplorer ie = _browserList[index];
+
+                        if (times >= AppTimeout || ie.ReadyState == tagREADYSTATE.READYSTATE_INTERACTIVE ||
+                            ie.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE)
+                        {
+                            return PageChange(this, index);
+                        }
+                    }
+
+                    Thread.Sleep(Interval * 1000);
+                    times += Interval;
+                }
+
+                throw new BrowserNotFoundException("Can not find page by index: " + index);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new BrowserNotFoundException("Can not find page by index: " + index + " with exception: " + ex.ToString());
+            }
+        }
+
+        public virtual ITestPage Page(string title, string url)
+        {
+            try
+            {
+                if (String.IsNullOrEmpty(title) && String.IsNullOrEmpty(url))
+                {
+                    throw new BrowserNotFoundException("Page title and url can not both be empty.");
+                }
+
+                //we will try 30s to find an object.
+                int times = 0;
+                while (times <= AppTimeout)
+                {
+                    if (_browserList.Count > 0)
+                    {
+                        for (int i = 0; i < _browserList.Count; i++)
+                        {
+                            InternetExplorer ie = _browserList[i];
+                            String curTitle = ie.LocationName;
+                            String curUrl = ie.LocationURL;
+                            if ((String.IsNullOrEmpty(title) || String.Compare(curTitle, title, true) == 0) &&
+                                (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
+                            {
+                                return PageChange(this, i);
+                            }
+                        }
+                    }
+
+                    Thread.Sleep(Interval * 1000);
+                    times += Interval;
+                }
+
+                throw new BrowserNotFoundException("Can not find page by title: " + title + " and url: " + url);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new BrowserNotFoundException("Can not find page by title: " + title + " and url: " + url + " with exception: " + ex.ToString());
+            }
+        }
+
+        public virtual ITestPage GetPage(ITestBrowser browser, int pageIndex)
+        {
+            if (browser != null && pageIndex >= 0 && pageIndex < this._browserList.Count)
+            {
+                try
+                {
+                    InternetExplorer ie = _browserList[pageIndex];
+                    return new TestPage(browser as TestBrowser, ie.Document as IHTMLDocument);
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotGetTestPageException(ex.ToString());
+                }
+            }
+
+            return null;
+        }
+
+        public virtual int GetPageIndex(ITestPage page)
+        {
+            if (page != null)
+            {
+                for (int i = 0; i < _browserList.Count; i++)
+                {
+                    InternetExplorer ie = _browserList[i];
+                    IntPtr curIUnknown = Marshal.GetIUnknownForObject(ie.Document);
+                    IntPtr pageIUnknown = Marshal.GetIUnknownForObject(page.Document);
+
+                    if (curIUnknown == pageIUnknown)
+                    {
+                        return i;
+                    }
+                }
+            }
+
+            return -1;
         }
 
         #endregion
@@ -778,192 +919,6 @@ namespace Shrinerain.AutoTester.Core
             return (float)DateTime.Now.Second + ((float)DateTime.Now.Millisecond) / 1000;
         }
 
-        /* string GetHTML()
-         * return the HTML code of current page.
-         */
-        public virtual string GetAllHTMLContent()
-        {
-            HTMLDocument[] allDocs = GetAllDocuments();
-            StringBuilder sb = new StringBuilder();
-            foreach (HTMLDocument doc in allDocs)
-            {
-                try
-                {
-                    if (doc.body != null && doc.body.innerHTML != null)
-                    {
-                        sb.Append(doc.body.innerHTML);
-                    }
-                }
-                catch
-                {
-                    continue;
-                }
-            }
-            return sb.ToString();
-        }
-
-        public virtual IHTMLDocument GetDocument()
-        {
-            if (_browser != null)
-            {
-                _rootDocument = _browser.Document as HTMLDocument;
-                return _rootDocument as IHTMLDocument;
-            }
-
-            return null;
-        }
-
-        //return all documents, include frames.
-        public virtual HTMLDocument[] GetAllDocuments()
-        {
-            if (_browser != null)
-            {
-                try
-                {
-                    _rootDocument = _browser.Document as HTMLDocument;
-                    if (_rootDocument != null)
-                    {
-                        List<HTMLDocument> res = new List<HTMLDocument>();
-                        res.Add(_rootDocument);
-
-                        HTMLDocument[] frames = COMUtil.GetFrames(_rootDocument);
-                        if (frames != null)
-                        {
-                            res.AddRange(frames);
-                        }
-
-                        return res.ToArray();
-                    }
-                }
-                catch
-                {
-                }
-            }
-
-            return null;
-        }
-
-        public virtual ITestPageMap GetPageMap()
-        {
-            return null;
-        }
-
-        public virtual ITestBrowser GetPage(int index)
-        {
-            try
-            {
-                if (index < 0)
-                {
-                    index = 0;
-                }
-                //we will try 30s to find an object.
-                int times = 0;
-                while (times <= AppTimeout)
-                {
-                    if (index >= 0 && index < _browserList.Count)
-                    {
-                        InternetExplorer ie = _browserList[index];
-
-                        if (times >= AppTimeout || ie.ReadyState == tagREADYSTATE.READYSTATE_INTERACTIVE ||
-                            ie.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE)
-                        {
-                            AttachBrowser(ie);
-                            PageChange(ie);
-                            ActiveTab(index);
-                            return this;
-                        }
-                    }
-
-                    Thread.Sleep(Interval * 1000);
-                    times += Interval;
-                }
-
-                throw new BrowserNotFoundException("Can not find page by index: " + index);
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new BrowserNotFoundException("Can not find page by index: " + index + " with exception: " + ex.ToString());
-            }
-        }
-
-        public virtual ITestBrowser GetPage(string title, string url)
-        {
-            try
-            {
-                if (String.IsNullOrEmpty(title) && String.IsNullOrEmpty(url))
-                {
-                    throw new BrowserNotFoundException("Page title and url can not both be empty.");
-                }
-
-                //we will try 30s to find an object.
-                int times = 0;
-                while (times <= AppTimeout)
-                {
-                    if (_browserList.Count > 0)
-                    {
-                        foreach (InternetExplorer ie in _browserList)
-                        {
-                            String curTitle = ie.LocationName;
-                            String curUrl = ie.LocationURL;
-                            if ((String.IsNullOrEmpty(title) || String.Compare(curTitle, title, true) == 0) &&
-                                (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
-                            {
-                                AttachBrowser(ie);
-                                PageChange(ie);
-                                return this;
-                            }
-                        }
-                    }
-
-                    Thread.Sleep(Interval * 1000);
-                    times += Interval;
-                }
-
-                throw new BrowserNotFoundException("Can not find page by title: " + title + " and url: " + url);
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new BrowserNotFoundException("Can not find page by title: " + title + " and url: " + url + " with exception: " + ex.ToString());
-            }
-        }
-
-        public virtual ITestBrowser GetMostRecentPage()
-        {
-            try
-            {
-                InternetExplorer ie = _browserList[_browserList.Count - 1];
-                AttachBrowser(ie);
-                PageChange(ie);
-                return this;
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotAttachBrowserException("Can not get most recent browser: " + ex.ToString());
-            }
-        }
-
-        protected virtual int GetPageIndex(InternetExplorer ie)
-        {
-            if (ie != null)
-            {
-                return _browserList.IndexOf(ie);
-            }
-
-            return -1;
-        }
-
         #endregion
 
         #region SYNC
@@ -972,12 +927,12 @@ namespace Shrinerain.AutoTester.Core
          * wait until the HTML document load completely.
          * default will wait for 120s.
          */
-        public virtual void WaitDocumentLoadComplete()
+        protected virtual void WaitDocumentLoadComplete()
         {
             WaitDocumentLoadComplete(this.AppTimeout);
         }
 
-        public virtual void WaitDocumentLoadComplete(int seconds)
+        protected virtual void WaitDocumentLoadComplete(int seconds)
         {
             if (seconds < 0)
             {
@@ -1132,7 +1087,6 @@ namespace Shrinerain.AutoTester.Core
         //when all documents(including sub frames) load complete.
         protected virtual void AllDocumentComplete()
         {
-            _rootDocument = _browser.Document as HTMLDocument;
             GetSize();
             CalPerformanceTime();
             _documentLoadComplete.Set();
@@ -1243,12 +1197,9 @@ namespace Shrinerain.AutoTester.Core
 
                     this._browser = ie;
                     this._rootHandle = (IntPtr)ie.HWND;
-                    try
+                    if (this._currentPage == null)
                     {
-                        this._rootDocument = ie.Document as HTMLDocument;
-                    }
-                    catch
-                    {
+                        this._currentPage = GetPage(this, 0) as TestPage;
                     }
 
                     GetSize();
@@ -1277,18 +1228,36 @@ namespace Shrinerain.AutoTester.Core
             return this._browser;
         }
 
-        protected virtual void PageChange(InternetExplorer ie)
+        protected virtual ITestPage PageChange(ITestBrowser browser, int pageIndex)
         {
-            int pageIndex = GetPageIndex(ie);
-            if (pageIndex >= 0)
+
+            if (browser != null && pageIndex >= 0 && pageIndex < this._browserList.Count)
             {
-                ActiveTab(pageIndex);
+                InternetExplorer ie = _browserList[pageIndex];
+                try
+                {
+                    AttachBrowser(ie);
+                    ActiveTab(pageIndex);
+
+                    _currentPage = GetPage(browser, pageIndex) as TestPage;
+
+                    if (OnSelectPageChange != null)
+                    {
+                        TestEventArgs e = new TestEventArgs("PageIndex", pageIndex);
+                        OnSelectPageChange(this, e);
+                    }
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotAttachBrowserException(ex.ToString());
+                }
             }
-            if (OnBrowserPageChange != null)
-            {
-                TestEventArgs e = new TestEventArgs("PageIndex", pageIndex);
-                OnBrowserPageChange(this, e);
-            }
+
+            return _currentPage;
         }
 
         #region get size
@@ -1331,65 +1300,39 @@ namespace Shrinerain.AutoTester.Core
         protected void GetClientRect()
         {
             _rootHandle = GetMainHandle();
-            if (_rootHandle == IntPtr.Zero)
+            if (_rootHandle != IntPtr.Zero)
             {
-                throw new BrowserNotFoundException("Can not get main handle of test browser.");
-            }
-
-            _shellDocHandle = GetShellDocHandle(_rootHandle);
-            if (_shellDocHandle == IntPtr.Zero)
-            {
-                throw new BrowserNotFoundException("Can not get shell handle of test browser");
-            }
-
-            //determine the yellow warning bar, for example, if the web page contains ActiveX, we can see the yellow bar at the top of the web page.
-            //if the warning bar exist, we need to add 20 height to each html control.
-            IntPtr warnBar = GetWarnBarHandle(_shellDocHandle);
-            int addHeight = 0;
-            if (warnBar != IntPtr.Zero)
-            {
-                Win32API.Rect warnRect = new Win32API.Rect();
-                if (Win32API.GetWindowRect(warnBar, ref warnRect))
+                _shellDocHandle = GetShellDocHandle(_rootHandle);
+                if (_shellDocHandle != IntPtr.Zero)
                 {
-                    addHeight = warnRect.Height;
-                }
-                else
-                {
-                    throw new CannotAttachBrowserException("Can not get warn bar size.");
-                }
-            }
-
-            //Get the actual client area rect, which shows web page to the end user.
-
-            _ieServerHandle = GetIEServerHandle(_shellDocHandle);
-            if (_ieServerHandle == IntPtr.Zero)
-            {
-                throw new BrowserNotFoundException("Can not get ie_server handle of test browser");
-            }
-
-            try
-            {
-                Win32API.Rect tmpRect = new Win32API.Rect();
-                if (Win32API.GetWindowRect(_ieServerHandle, ref tmpRect))
-                {
-                    _clientLeft = tmpRect.left;
-                    _clientTop = tmpRect.top + addHeight;
-                    _clientWidth = tmpRect.Width;
-                    _clientHeight = tmpRect.Height;
-                }
-                else
-                {
-                    throw new CannotAttachBrowserException("Can not get client size of test browser.");
+                    _ieServerHandle = GetIEServerHandle(_shellDocHandle);
+                    if (_ieServerHandle != IntPtr.Zero)
+                    {
+                        try
+                        {
+                            Win32API.Rect tmpRect = new Win32API.Rect();
+                            if (Win32API.GetWindowRect(_ieServerHandle, ref tmpRect))
+                            {
+                                _clientLeft = tmpRect.left;
+                                _clientTop = tmpRect.top;
+                                _clientWidth = tmpRect.Width;
+                                _clientHeight = tmpRect.Height;
+                                return;
+                            }
+                        }
+                        catch (TestException)
+                        {
+                            throw;
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new CannotAttachBrowserException("Can not get client size of test browser: " + ex.ToString());
+                        }
+                    }
                 }
             }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotAttachBrowserException("Can not get client size of test browser: " + ex.ToString());
-            }
+
+            throw new BrowserNotFoundException("Can not get handles of test browser");
         }
 
         /* void GetScrollRect()
@@ -1398,11 +1341,12 @@ namespace Shrinerain.AutoTester.Core
          */
         protected void GetScrollRect()
         {
-            if (_rootDocument != null)
+            if (_currentPage != null)
             {
                 try
                 {
-                    IAccessible pAcc = COMUtil.IHTMLElementToMSAA(_rootDocument.body);
+                    IHTMLDocument2 doc2 = _currentPage.GetDocument() as IHTMLDocument2;
+                    IAccessible pAcc = COMUtil.IHTMLElementToMSAA(doc2.body);
                     if (pAcc != null)
                     {
                         pAcc.accLocation(out _scrollLeft, out _scrollTop, out _scrollWidth, out _scrollHeight, 0);
@@ -1487,20 +1431,6 @@ namespace Shrinerain.AutoTester.Core
             }
 
             return _shellDocHandle;
-        }
-
-        /* IntPtr GetWarnBarHandle(IntPtr shellHandle)
-         * return the warning bar handle. in Internet Explorer 6.0 with XP2 or Internet Explorer 7.0.
-         * when the web page contains ActiveX (eg: FlashPlayer), we can see a yellow bar on the browser.
-         */
-        protected IntPtr GetWarnBarHandle(IntPtr shellHandle)
-        {
-            if (shellHandle == IntPtr.Zero)
-            {
-                shellHandle = GetShellDocHandle(IntPtr.Zero);
-            }
-
-            return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, TestConstants.WIN_Dialog_Class, null);
         }
 
         /* IntPtr GetIEServerHandle(IntPtr shellHandle)
@@ -1787,7 +1717,7 @@ namespace Shrinerain.AutoTester.Core
             if (_browserList.Count > 0)
             {
                 InternetExplorer ie = _browserList[0];
-                AttachBrowser(ie);
+                PageChange(this, 0);
             }
         }
 
@@ -1799,14 +1729,14 @@ namespace Shrinerain.AutoTester.Core
 
         #region ITestBrowser events
 
-        public override void BeforeStart()
+        protected override void BeforeStart()
         {
             base.BeforeStart();
             if (OnBrowserStart != null)
                 OnBrowserStart(this, null);
         }
 
-        public override void AfterClose()
+        protected override void AfterClose()
         {
             base.AfterClose();
             if (OnBrowserClose != null)
@@ -1817,7 +1747,7 @@ namespace Shrinerain.AutoTester.Core
 
         public event TestAppEventHandler OnBrowserNavigate;
 
-        public event TestAppEventHandler OnBrowserPageChange;
+        public event TestAppEventHandler OnSelectPageChange;
 
         public event TestAppEventHandler OnBrowserBack;
 

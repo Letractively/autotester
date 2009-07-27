@@ -59,7 +59,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
-                    actualResult = this._htmlObjPool.TestBrower.GetAllHTMLContent();
+                    actualResult = this._htmlObjPool.TestPage.GetAllHTML();
 
                     if (String.IsNullOrEmpty(actualResult))
                     {
@@ -104,7 +104,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             return false;
                         }
 
-                        String curHTML = obj.Browser.GetAllHTMLContent();
+                        String curHTML = obj.Page.GetAllHTML();
 
                         curHTML = _htmlTagReg.Replace(curHTML, "");
 

@@ -22,15 +22,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get
             {
-                return _objectMap as HTMLTestObjectMap;
-            }
-        }
-
-        public new HTMLTestPageMap Pages
-        {
-            get
-            {
-                return _pageMap as HTMLTestPageMap;
+                return base.Objects as HTMLTestObjectMap;
             }
         }
 
@@ -38,7 +30,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get
             {
-                return _dispatcher as HTMLTestEventDispatcher;
+                return base.Event as HTMLTestEventDispatcher;
             }
         }
 
@@ -51,7 +43,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public HTMLTestSession()
         {
             this._browser = new HTMLTestBrowser();
-            Init();
         }
 
         #endregion

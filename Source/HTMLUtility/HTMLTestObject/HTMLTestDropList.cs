@@ -80,8 +80,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             : this(element, null)
         {
         }
-        public HTMLTestDropList(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestDropList(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             this._type = HTMLTestObjectType.DropList;
             try

@@ -54,8 +54,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
         }
 
-        public HTMLTestLabel(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestLabel(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             this._type = HTMLTestObjectType.Label;
             try

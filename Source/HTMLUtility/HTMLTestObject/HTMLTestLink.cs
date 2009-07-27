@@ -72,8 +72,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             : this(element, null)
         {
         }
-        public HTMLTestLink(IHTMLElement element, HTMLTestBrowser browser)
-            : base(element, browser)
+        public HTMLTestLink(IHTMLElement element, HTMLTestPage page)
+            : base(element, page)
         {
             this._isDelayAfterAction = true;
             this._type = HTMLTestObjectType.Link;
