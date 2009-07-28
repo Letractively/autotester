@@ -17,7 +17,7 @@ using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class TestBrowser : TestApp, IDisposable, ITestBrowser
+    public class TestInternetExplorer : TestApp, IDisposable, ITestBrowser
     {
         #region Fileds
 
@@ -25,7 +25,7 @@ namespace Shrinerain.AutoTester.Core
         protected List<InternetExplorer> _browserList = new List<InternetExplorer>(16);
         //InternetExplorer is under SHDocVw namespace, we use this to attach to a browser.
         protected InternetExplorer _browser;
-        protected TestPage _currentPage;
+        protected TestIEPage _currentPage;
 
         //handle of client area.
         // client area means the area to display web pages, not include the menu, address bar, etc.
@@ -165,7 +165,7 @@ namespace Shrinerain.AutoTester.Core
 
         #region ctor
         //I keep the constructor as "public" because of reflecting
-        public TestBrowser()
+        public TestInternetExplorer()
         {
             //currently, just support internet explorer
             _browserName = TestConstants.IE_Browser_Name;
@@ -173,7 +173,7 @@ namespace Shrinerain.AutoTester.Core
             _majorVersion = Convert.ToInt32(_version[0].ToString());
         }
 
-        ~TestBrowser()
+        ~TestInternetExplorer()
         {
             // when GC, close AutoResetEvent.
             Dispose();
@@ -557,7 +557,8 @@ namespace Shrinerain.AutoTester.Core
                 {
                     try
                     {
-                        TestPage page = new TestPage(this, ie.Document as IHTMLDocument);
+                        TestIEDocument doc = new TestIEDocument(ie.Document as IHTMLDocument2);
+                        TestIEPage page = new TestIEPage(this, doc);
                         pages.Add(page);
                     }
                     catch
@@ -655,14 +656,15 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public virtual ITestPage GetPage(ITestBrowser browser, int pageIndex)
+        protected virtual ITestPage GetPage(int pageIndex)
         {
-            if (browser != null && pageIndex >= 0 && pageIndex < this._browserList.Count)
+            if (pageIndex >= 0 && pageIndex < this._browserList.Count)
             {
                 try
                 {
                     InternetExplorer ie = _browserList[pageIndex];
-                    return new TestPage(browser as TestBrowser, ie.Document as IHTMLDocument);
+                    TestIEDocument doc = new TestIEDocument(ie.Document as IHTMLDocument2);
+                    return new TestIEPage(this, doc);
                 }
                 catch (Exception ex)
                 {
@@ -1199,7 +1201,7 @@ namespace Shrinerain.AutoTester.Core
                     this._rootHandle = (IntPtr)ie.HWND;
                     if (this._currentPage == null)
                     {
-                        this._currentPage = GetPage(this, 0) as TestPage;
+                        this._currentPage = GetPage(0) as TestIEPage;
                     }
 
                     GetSize();
@@ -1239,7 +1241,7 @@ namespace Shrinerain.AutoTester.Core
                     AttachBrowser(ie);
                     ActiveTab(pageIndex);
 
-                    _currentPage = GetPage(browser, pageIndex) as TestPage;
+                    _currentPage = GetPage(pageIndex) as TestIEPage;
 
                     if (OnSelectPageChange != null)
                     {
@@ -1345,7 +1347,7 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
-                    IHTMLDocument2 doc2 = _currentPage.GetDocument() as IHTMLDocument2;
+                    IHTMLDocument2 doc2 = (_currentPage.GetDocument() as TestIEDocument).Document as IHTMLDocument2;
                     IAccessible pAcc = COMUtil.IHTMLElementToMSAA(doc2.body);
                     if (pAcc != null)
                     {

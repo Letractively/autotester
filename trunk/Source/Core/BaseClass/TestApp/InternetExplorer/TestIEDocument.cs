@@ -6,18 +6,23 @@ using System.Runtime.InteropServices;
 using mshtml;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.Interface;
 using Shrinerain.AutoTester.Core.TestExceptions;
 using Shrinerain.AutoTester.Core.Helper;
 
-namespace Shrinerain.AutoTester.HTMLUtility
+namespace Shrinerain.AutoTester.Core
 {
     [ComVisible(true)]
-    public class HTMLTestDocument : HTMLDocumentClass
+    public class TestIEDocument : ITestDocument
     {
         #region fields
 
         protected IHTMLDocument2 _document;
-        protected HTMLTestBrowser _browser;
+        protected TestInternetExplorer _browser;
+        protected TestIEPage _page;
+
+        protected String _url;
+        protected String _title;
 
         public delegate void DocumentChangeHandler(IHTMLDocument2 doc);
         public event DocumentChangeHandler OnDocumentChange;
@@ -36,9 +41,40 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _document; }
         }
 
-        public HTMLTestBrowser Browser
+        public TestInternetExplorer Browser
         {
             get { return this._browser; }
+        }
+
+        public String URL
+        {
+            get
+            {
+                if (_document != null)
+                {
+                    _url = _document.url;
+                }
+
+                return _url;
+            }
+        }
+
+        public String Title
+        {
+            get
+            {
+                if (_document != null)
+                {
+                    _title = _document.title;
+                }
+
+                return _title;
+            }
+        }
+
+        public ITestPage Page
+        {
+            get { return _page; }
         }
 
         #endregion
@@ -47,13 +83,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
-        public HTMLTestDocument(IHTMLDocument2 doc)
+        public TestIEDocument(IHTMLDocument2 doc)
             : this(doc, null)
         {
         }
 
-        public HTMLTestDocument(IHTMLDocument2 doc, HTMLTestBrowser browser)
-            : base()
+        public TestIEDocument(IHTMLDocument2 doc, TestInternetExplorer browser)
         {
             if (doc == null)
             {
@@ -69,7 +104,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public
 
-        public IHTMLElement GetElementByID(String id)
+        public Object GetElementByID(String id)
         {
             if (!String.IsNullOrEmpty(id) && this._document != null)
             {
@@ -89,7 +124,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return null;
         }
 
-        public IHTMLElement GetElementByPoint(int x, int y)
+        public Object GetElementByPoint(int x, int y)
         {
             if (this._document != null)
             {
@@ -105,7 +140,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return null;
         }
 
-        public IHTMLElement[] GetElementsByName(string name)
+        public Object[] GetElementsByName(string name)
         {
             IHTMLElement[] result = null;
             if (!String.IsNullOrEmpty(name) && this._document != null)
@@ -142,7 +177,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return result;
         }
 
-        public IHTMLElement[] GetElementsByTagName(String tag)
+        public Object[] GetElementsByTagName(String tag)
         {
             IHTMLElement[] result = null;
             if (!String.IsNullOrEmpty(tag) && this._document != null)
@@ -179,7 +214,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return result;
         }
 
-        public IHTMLElement[] GetAllElements()
+        public Object[] GetAllElements()
         {
             if (_allElements == null && _document != null)
             {
@@ -201,33 +236,71 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return _allElements;
         }
 
-        #region overide
+        public ITestDocument GetParent()
+        {
+            if (this._document != null)
+            {
+                try
+                {
+                    IHTMLDocument3 doc3 = this._document as IHTMLDocument3;
+                    TestIEDocument parent = new TestIEDocument(doc3.parentDocument);
+                    return parent;
+                }
+                catch (TestException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    throw new CannotGetTestDocumentException("Can not get parent document: " + ex.ToString());
+                }
+            }
 
-        //public override IHTMLDOMNode appendChild(IHTMLDOMNode newChild)
-        //{
-        //    Notify(newChild);
-        //    return base.appendChild(newChild);
-        //}
+            return null;
+        }
 
-        //public override mshtml.IHTMLDOMNode insertBefore(IHTMLDOMNode newChild, object refChild)
-        //{
-        //    Notify(newChild);
-        //    return base.insertBefore(newChild, refChild);
-        //}
+        public ITestDocument[] GetFrames()
+        {
+            if (this._document != null)
+            {
+                IHTMLDocument[] frames = COMUtil.GetFrames(_document);
+                if (frames != null && frames.Length > 0)
+                {
+                    List<TestIEDocument> framesDocs = new List<TestIEDocument>();
+                    foreach (IHTMLDocument frame in frames)
+                    {
+                        try
+                        {
+                            TestIEDocument doc = new TestIEDocument(frame as IHTMLDocument2);
+                            framesDocs.Add(doc);
+                        }
+                        catch
+                        {
+                        }
+                    }
 
-        //public override void write(params object[] psarray)
-        //{
-        //    Notify(null);
-        //    base.write(psarray);
-        //}
+                    return framesDocs.ToArray();
+                }
+            }
 
-        //public override void writeln(params object[] psarray)
-        //{
-        //    Notify(null);
-        //    base.writeln(psarray);
-        //}
+            return null;
+        }
 
-        #endregion
+        public String GetHTMLContent()
+        {
+            if (this._document != null)
+            {
+                try
+                {
+                    return this._document.body.outerHTML;
+                }
+                catch
+                {
+                }
+            }
+
+            return null;
+        }
 
         #endregion
 

@@ -47,20 +47,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseClass\TestApp\TestBrowser.cs" />
-    <Compile Include="BaseClass\TestApp\TestPage.cs" />
+    <Compile Include="BaseClass\TestApp\InternetExplorer\TestInternetExplorer.cs" />
+    <Compile Include="BaseClass\TestApp\InternetExplorer\TestIEDocument.cs" />
+    <Compile Include="BaseClass\TestApp\InternetExplorer\TestIEPage.cs" />
     <Compile Include="BaseClass\TestApp\TestWindow.cs" />
     <Compile Include="BaseClass\TestConstants.cs" />
     <Compile Include="BaseClass\TestEvent.cs" />
     <Compile Include="BaseClass\TestException\TestAppException.cs" />
     <Compile Include="BaseClass\TestException\TestBrowserException.cs" />
     <Compile Include="BaseClass\TestException\TestDataExpception.cs" />
+    <Compile Include="BaseClass\TestException\TestDocumentException.cs" />
     <Compile Include="BaseClass\TestException\TestEventException.cs" />
     <Compile Include="BaseClass\TestException\TestFrameworkException.cs" />
     <Compile Include="BaseClass\TestException\TestInterfaceException.cs" />
     <Compile Include="BaseClass\TestException\TestLogException.cs" />
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
     <Compile Include="BaseClass\TestCheckPoint.cs" />
+    <Compile Include="BaseClass\TestException\TestPageException.cs" />
     <Compile Include="BaseClass\TestObject\TestObjectMap.cs" />
     <Compile Include="BaseClass\TestObject\TestObjectType.cs" />
     <Compile Include="BaseClass\TestSession.cs" />
@@ -76,6 +79,7 @@
     <Compile Include="Helper\Searcher.cs" />
     <Compile Include="Helper\SocketWrapper.cs" />
     <Compile Include="Helper\WindowsAsstFunctions.cs" />
+    <Compile Include="Interface\ITestDocument.cs" />
     <Compile Include="Interface\ITestEventDispatcher.cs" />
     <Compile Include="Interface\ITestObjectMap.cs" />
     <Compile Include="Interface\ITestPage.cs" />

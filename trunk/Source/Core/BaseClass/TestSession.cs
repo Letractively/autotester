@@ -13,7 +13,7 @@ namespace Shrinerain.AutoTester.Core
         #region fields
 
         protected TestApp _app;
-        protected TestBrowser _browser;
+        protected TestInternetExplorer _browser;
         protected TestObjectMap _objectMap;
         protected TestCheckPoint _cp;
         protected ITestEventDispatcher _dispatcher;
@@ -86,7 +86,7 @@ namespace Shrinerain.AutoTester.Core
             this._app = application;
         }
 
-        public TestSession(TestBrowser browser)
+        public TestSession(TestInternetExplorer browser)
         {
             this._browser = browser;
         }

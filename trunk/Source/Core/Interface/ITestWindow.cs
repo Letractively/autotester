@@ -11,5 +11,7 @@ namespace Shrinerain.AutoTester.Core.Interface
         IntPtr Handle { get; }
         ITestApp App { get; }
         ITestObjectMap Objects { get; }
+
+        ITestObjectPool GetObjectPool();
     }
 }

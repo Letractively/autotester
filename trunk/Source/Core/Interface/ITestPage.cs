@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 
-using mshtml;
-
 namespace Shrinerain.AutoTester.Core.Interface
 {
     public interface ITestPage
@@ -12,11 +10,11 @@ namespace Shrinerain.AutoTester.Core.Interface
         String URL { get; }
         ITestObjectMap Objects { get; }
         ITestBrowser Browser { get; }
-        IHTMLDocument Document { get; }
+        ITestDocument Document { get; }
 
-        IHTMLDocument GetDocument();
+        ITestDocument GetDocument();
         //return all documents, include frames.
-        IHTMLDocument[] GetAllDocuments();
+        ITestDocument[] GetAllDocuments();
         String GetAllHTML();
 
         ITestObjectPool GetObjectPool();
