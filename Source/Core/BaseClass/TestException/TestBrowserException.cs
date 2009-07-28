@@ -151,18 +151,4 @@ namespace Shrinerain.AutoTester.Core.TestExceptions
         {
         }
     }
-
-    public class CannotGetTestPageException : TestBrowserException
-    {
-        public CannotGetTestPageException()
-            : this("Can not get test page.")
-        {
-        }
-
-        public CannotGetTestPageException(string message)
-            : base(message)
-        {
-        }
-    }
-
 }

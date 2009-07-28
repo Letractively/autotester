@@ -19,7 +19,6 @@
 namespace Shrinerain.AutoTester.Core.Interface
 {
     using System;
-    using mshtml;
 
     public interface ITestBrowser : ITestApp
     {
@@ -62,7 +61,6 @@ namespace Shrinerain.AutoTester.Core.Interface
         ITestPage Page(int index);
         ITestPage Page(string title, string url);
         ITestPage CurrentPage { get; }
-        ITestPage GetPage(ITestBrowser browser, int pageIndex);
         int GetPageIndex(ITestPage page);
     }
 }

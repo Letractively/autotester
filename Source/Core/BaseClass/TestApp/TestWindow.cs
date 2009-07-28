@@ -35,6 +35,11 @@ namespace Shrinerain.AutoTester.Core
             get { throw new NotImplementedException(); }
         }
 
+        public ITestObjectPool GetObjectPool()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

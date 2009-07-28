@@ -11,12 +11,12 @@ using Shrinerain.AutoTester.Core.Helper;
 
 namespace Shrinerain.AutoTester.Core
 {
-    public class TestPage : ITestPage
+    public class TestIEPage : ITestPage
     {
         #region fields
 
-        protected TestBrowser _browser;
-        protected IHTMLDocument _rootDocument;
+        protected TestInternetExplorer _browser;
+        protected ITestDocument _rootDocument;
 
         protected TestObjectMap _objMap;
         protected String _title;
@@ -34,11 +34,7 @@ namespace Shrinerain.AutoTester.Core
                 {
                     if (_rootDocument != null)
                     {
-                        IHTMLDocument2 doc2 = _rootDocument as IHTMLDocument2;
-                        if (doc2 != null)
-                        {
-                            _title = doc2.title;
-                        }
+                        _title = _rootDocument.Title;
                     }
                 }
 
@@ -54,11 +50,7 @@ namespace Shrinerain.AutoTester.Core
                 {
                     if (_rootDocument != null)
                     {
-                        IHTMLDocument2 doc2 = _rootDocument as IHTMLDocument2;
-                        if (doc2 != null)
-                        {
-                            _url = doc2.url;
-                        }
+                        _url = _rootDocument.URL;
                     }
                 }
 
@@ -88,7 +80,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public virtual IHTMLDocument Document
+        public virtual ITestDocument Document
         {
             get
             {
@@ -102,7 +94,7 @@ namespace Shrinerain.AutoTester.Core
 
         #region ctor
 
-        public TestPage(TestBrowser browser, IHTMLDocument rootDoc)
+        public TestIEPage(TestInternetExplorer browser, ITestDocument rootDoc)
         {
             if (browser == null || rootDoc == null)
             {
@@ -114,22 +106,22 @@ namespace Shrinerain.AutoTester.Core
 
         #endregion
 
-        public virtual IHTMLDocument GetDocument()
+        public virtual ITestDocument GetDocument()
         {
             return _rootDocument;
         }
 
         //return all documents, include frames.
-        public virtual IHTMLDocument[] GetAllDocuments()
+        public virtual ITestDocument[] GetAllDocuments()
         {
             if (_rootDocument != null)
             {
                 try
                 {
-                    List<IHTMLDocument> res = new List<IHTMLDocument>();
+                    List<ITestDocument> res = new List<ITestDocument>();
                     res.Add(_rootDocument);
 
-                    IHTMLDocument[] frames = COMUtil.GetFrames(_rootDocument);
+                    ITestDocument[] frames = _rootDocument.GetFrames();
                     if (frames != null)
                     {
                         res.AddRange(frames);
@@ -150,15 +142,16 @@ namespace Shrinerain.AutoTester.Core
       */
         public virtual string GetAllHTML()
         {
-            IHTMLDocument[] allDocs = GetAllDocuments();
+            ITestDocument[] allDocs = GetAllDocuments();
             StringBuilder sb = new StringBuilder();
-            foreach (HTMLDocument doc in allDocs)
+            foreach (ITestDocument doc in allDocs)
             {
                 try
                 {
-                    if (doc.body != null && doc.body.innerHTML != null)
+                    String content = doc.GetHTMLContent();
+                    if (!String.IsNullOrEmpty(content))
                     {
-                        sb.Append(doc.body.innerHTML);
+                        sb.Append(content);
                     }
                 }
                 catch

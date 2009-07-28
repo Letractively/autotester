@@ -10,7 +10,7 @@ using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestPage : TestPage
+    public class HTMLTestPage : TestIEPage
     {
         #region fields
 
@@ -32,25 +32,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
-        public HTMLTestPage(HTMLTestBrowser browser, IHTMLDocument document)
+        public HTMLTestPage(HTMLTestBrowser browser, HTMLTestDocument document)
             : base(browser, document)
         {
-            this._htmlDoc = new HTMLTestDocument(document as IHTMLDocument2);
+            this._htmlDoc = document;
             HTMLTestObjectPool pool = new HTMLTestObjectPool(this);
             this._objMap = new HTMLTestObjectMap(pool);
         }
 
         #endregion
 
-        public override IHTMLDocument[] GetAllDocuments()
+        public override ITestDocument[] GetAllDocuments()
         {
-            IHTMLDocument[] allDocs = base.GetAllDocuments();
+            ITestDocument[] allDocs = base.GetAllDocuments();
             HTMLTestDocument[] allDocuments = new HTMLTestDocument[allDocs.Length];
             for (int i = 0; i < allDocs.Length; i++)
             {
                 try
                 {
-                    IHTMLDocument doc = allDocs[i];
+                    IHTMLDocument doc = (allDocs[i] as TestIEDocument).Document;
                     HTMLTestDocument testDoc = new HTMLTestDocument(doc as IHTMLDocument2);
                     allDocuments[i] = testDoc;
                 }
@@ -74,12 +74,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                IHTMLDocument[] allDocs = GetAllDocuments();
+                ITestDocument[] allDocs = GetAllDocuments();
                 foreach (HTMLTestDocument doc in allDocs)
                 {
                     try
                     {
-                        IHTMLElement[] elements = doc.GetAllElements();
+                        IHTMLElement[] elements = doc.GetAllElements() as IHTMLElement[];
                         allObjectList.AddRange(elements);
                     }
                     catch
@@ -111,13 +111,13 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             try
             {
-                IHTMLElement element = _htmlDoc.GetElementByID(id);
+                IHTMLElement element = _htmlDoc.GetElementByID(id) as IHTMLElement;
                 if (element == null)
                 {
-                    IHTMLDocument[] allDocs = GetAllDocuments();
+                    ITestDocument[] allDocs = GetAllDocuments();
                     foreach (HTMLTestDocument doc in allDocs)
                     {
-                        element = doc.GetElementByID(id);
+                        element = doc.GetElementByID(id) as IHTMLElement;
                         if (element != null)
                         {
                             return element;
@@ -152,12 +152,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 name = name.ToUpper();
                 List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                IHTMLDocument[] allDocs = GetAllDocuments();
+                ITestDocument[] allDocs = GetAllDocuments();
                 foreach (HTMLTestDocument doc in allDocs)
                 {
                     try
                     {
-                        IHTMLElement[] res = doc.GetElementsByName(name);
+                        IHTMLElement[] res = doc.GetElementsByName(name) as IHTMLElement[];
                         allObjectList.AddRange(res);
                     }
                     catch
@@ -192,12 +192,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 tag = tag.ToUpper();
 
                 List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                IHTMLDocument[] allDocs = GetAllDocuments();
+                ITestDocument[] allDocs = GetAllDocuments();
                 foreach (HTMLTestDocument doc in allDocs)
                 {
                     try
                     {
-                        IHTMLElement[] res = doc.GetElementsByTagName(tag);
+                        IHTMLElement[] res = doc.GetElementsByTagName(tag) as IHTMLElement[];
                         allObjectList.AddRange(res);
                     }
                     catch
@@ -219,7 +219,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             try
             {
-                return _htmlDoc.GetElementByPoint(x, y);
+                return _htmlDoc.GetElementByPoint(x, y) as IHTMLElement;
             }
             catch (Exception ex)
             {

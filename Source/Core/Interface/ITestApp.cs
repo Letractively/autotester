@@ -99,5 +99,6 @@ namespace Shrinerain.AutoTester.Core.Interface
         ITestWindow Window(IntPtr handle);
         ITestWindow Window(string title, string className);
         ITestWindow CurrentWindow { get; }
+        int GetWindowIndex(ITestWindow window);
     }
 }

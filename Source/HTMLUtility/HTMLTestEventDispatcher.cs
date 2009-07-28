@@ -454,7 +454,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (application != null && application is HTMLTestBrowser)
             {
                 this._browser = application as HTMLTestBrowser;
-                RegisterEvents(this._browser.CurrentPage.GetDocument() as IHTMLDocument2);
+                IHTMLDocument2 doc2 = (this._browser.CurrentPage.GetDocument() as TestIEDocument).Document as IHTMLDocument2;
+                RegisterEvents(doc2);
             }
         }
 
@@ -463,7 +464,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (application != null && application is HTMLTestBrowser)
             {
                 this._browser = application as HTMLTestBrowser;
-                RegisterEvents(this._browser.CurrentPage.GetDocument() as IHTMLDocument2);
+                IHTMLDocument2 doc2 = (this._browser.CurrentPage.GetDocument() as TestIEDocument).Document as IHTMLDocument2;            
+                RegisterEvents(doc2);
             }
         }
 
@@ -481,7 +483,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 this._browser = app as HTMLTestBrowser;
                 this._browser.OnAfterAppStart += new TestAppEventHandler(OnBrowserStart);
                 this._browser.OnAfterAppFound += new TestAppEventHandler(OnBrowserFound);
-                RegisterEvents(this._browser.CurrentPage.GetDocument() as IHTMLDocument2);
+                IHTMLDocument2 doc2 = (this._browser.CurrentPage.GetDocument() as TestIEDocument).Document as IHTMLDocument2;
+                RegisterEvents(doc2);
                 return true;
             }
             else

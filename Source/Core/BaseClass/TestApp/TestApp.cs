@@ -310,6 +310,11 @@ namespace Shrinerain.AutoTester.Core
             throw new NotImplementedException();
         }
 
+        public int GetWindowIndex(ITestWindow window)
+        {
+            return -1;
+        }
+
         public virtual void Move(int x, int y)
         {
             if (this._rootHandle == IntPtr.Zero)

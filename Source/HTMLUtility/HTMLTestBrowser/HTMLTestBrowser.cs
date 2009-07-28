@@ -28,7 +28,7 @@ using Shrinerain.AutoTester.Core.Helper;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
-    public class HTMLTestBrowser : TestBrowser
+    public class HTMLTestBrowser : TestInternetExplorer
     {
         #region Fileds
 
@@ -63,14 +63,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region GetObject methods
 
-        public override ITestPage GetPage(ITestBrowser browser, int pageIndex)
+        protected override ITestPage GetPage(int pageIndex)
         {
-            if (browser != null && pageIndex >= 0 && pageIndex < this._browserList.Count)
+            if (pageIndex >= 0 && pageIndex < this._browserList.Count)
             {
                 try
                 {
                     InternetExplorer ie = _browserList[pageIndex];
-                    return new HTMLTestPage(this, ie.Document as IHTMLDocument);
+                    HTMLTestDocument doc = new HTMLTestDocument(ie.Document as IHTMLDocument2);
+                    return new HTMLTestPage(this, doc);
                 }
                 catch (Exception ex)
                 {

@@ -399,7 +399,7 @@ namespace Shrinerain.AutoTester.Framework
             {
                 if (_testBrowser == null)
                 {
-                    _testBrowser = (TestBrowser)_objEngine.GetTestBrowser();
+                    _testBrowser = (TestInternetExplorer)_objEngine.GetTestBrowser();
                 }
 
                 string action = step._testAction.ToUpper();
