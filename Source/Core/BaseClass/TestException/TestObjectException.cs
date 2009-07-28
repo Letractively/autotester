@@ -20,7 +20,7 @@ using System.Text;
 namespace Shrinerain.AutoTester.Core.TestExceptions
 {
 
-    public class TestObjectException : TestException
+    public class TestObjectException : TestPageException
     {
         public TestObjectException()
             : this("Test object exception.")

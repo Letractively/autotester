@@ -92,6 +92,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 htmlType = HTMLTestObjectType.Table;
             }
+            else if (type == "FORM")
+            {
+                htmlType = HTMLTestObjectType.Form;
+            }
             else if (type == "DIALOG" || type == "WINDOWS")
             {
                 htmlType = HTMLTestObjectType.Dialog;
@@ -147,6 +151,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     break;
                 case HTMLTestObjectType.ActiveX:
                     res = new string[] { "object" };
+                    break;
+                case HTMLTestObjectType.Form:
+                    res = new string[] { "form" };
                     break;
                 case HTMLTestObjectType.Dialog:
                     res = new string[] { };
@@ -251,6 +258,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.ActiveX;
             }
+            else if (tag == "FORM")
+            {
+                return HTMLTestObjectType.Form;
+            }
 
             return HTMLTestObjectType.Unknown;
         }
@@ -326,6 +337,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         break;
                     case HTMLTestObjectType.Table:
                         tmp = new HTMLTestTable(element, page);
+                        break;
+                    case HTMLTestObjectType.Form:
+                        tmp = new HTMLTestForm(element, page);
                         break;
                     case HTMLTestObjectType.ActiveX:
                         tmp = new HTMLTestActiveXObject(element, page);

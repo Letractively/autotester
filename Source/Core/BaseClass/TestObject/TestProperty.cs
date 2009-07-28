@@ -21,6 +21,9 @@ namespace Shrinerain.AutoTester.Core
         private Object _value;
         private Regex _regValue;
         private bool _isRegex = false;
+        private String _category;
+        private String _descriptor;
+
         //weight of the property, should between 0 and 100.
         //more bigger, more important.
         private int _weight;
@@ -29,17 +32,32 @@ namespace Shrinerain.AutoTester.Core
         {
             get { return _weight; }
         }
+
         public bool IsRegex
         {
             get { return _isRegex; }
         }
+
         public Object Value
         {
             get { return _value; }
         }
+
         public String Name
         {
             get { return _name; }
+        }
+
+        public String Descriptor
+        {
+            get { return _descriptor; }
+            set { _descriptor = value; }
+        }
+
+        public String Category
+        {
+            get { return _category; }
+            set { _category = value; }
         }
 
         #endregion
@@ -59,6 +77,11 @@ namespace Shrinerain.AutoTester.Core
         }
 
         public TestProperty(String name, object value, bool isReg, int weight)
+            : this(name, value, isReg, weight, null, null)
+        {
+        }
+
+        public TestProperty(String name, object value, bool isReg, int weight, String category, String desc)
         {
             this._name = name;
             this._value = value;
@@ -90,6 +113,9 @@ namespace Shrinerain.AutoTester.Core
             {
                 this._weight = weight;
             }
+
+            this._category = category;
+            this._descriptor = desc;
         }
 
         public TestProperty(String str)

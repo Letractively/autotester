@@ -13,6 +13,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public const String ActiveX = "ActiveX";
         public const String Dialog = "Dialog";
+        public const String Form = "Form";
 
         #endregion
 
