@@ -58,6 +58,7 @@
     <Compile Include="HTMLTestObject\HTMLTestActiveXObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestDialog.cs" />
     <Compile Include="HTMLTestBrowser\HTMLTestDocument.cs" />
+    <Compile Include="HTMLTestObject\HTMLTestForm.cs" />
     <Compile Include="HTMLTestObject\HTMLTestGUIObject.cs" />
     <Compile Include="HTMLTestObject\HTMLTestButton.cs" />
     <Compile Include="HTMLTestObject\HTMLTestCheckBox.cs" />

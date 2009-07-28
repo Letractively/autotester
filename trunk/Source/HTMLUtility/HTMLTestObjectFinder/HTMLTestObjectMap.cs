@@ -418,6 +418,46 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region form
+
+        public HTMLTestForm Form()
+        {
+            return Form(String.Empty);
+        }
+
+        public HTMLTestForm Form(String name)
+        {
+            return Forms(name)[0];
+        }
+
+        public HTMLTestForm Form(TestProperty[] properties)
+        {
+            return Forms(properties)[0];
+        }
+
+        public HTMLTestForm[] Forms()
+        {
+            return Forms(String.Empty);
+        }
+
+        public HTMLTestForm[] Forms(String name)
+        {
+            GetMapObjects(HTMLTestObjectType.Form, name);
+            HTMLTestForm[] tmp = new HTMLTestForm[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        public HTMLTestForm[] Forms(TestProperty[] properties)
+        {
+            GetMapObjects(HTMLTestObjectType.Form, properties);
+            HTMLTestForm[] tmp = new HTMLTestForm[_lastObjects.Length];
+            _lastObjects.CopyTo(tmp, 0);
+            return tmp;
+        }
+
+        #endregion
+
         #region activex
 
         public HTMLTestActiveXObject ActiveX()
