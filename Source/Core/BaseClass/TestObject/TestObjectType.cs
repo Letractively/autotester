@@ -25,19 +25,19 @@ namespace Shrinerain.AutoTester.Core
         public const String Image = "Image";
         public const String Table = "Table";
 
-        protected List<String> _validTypes = new List<string>();
+        protected static List<String> _validTypes = new List<string>();
 
         #endregion
 
         #region methods
 
-        public TestObjectType()
+        static TestObjectType()
         {
             FieldInfo[] fields = typeof(TestObjectType).GetFields();
             SetValidType(fields);
         }
 
-        protected void SetValidType(FieldInfo[] fields)
+        protected static void SetValidType(FieldInfo[] fields)
         {
             foreach (FieldInfo fi in fields)
             {
@@ -52,12 +52,12 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public virtual List<String> GetValidTypes()
+        public static List<String> GetValidTypes()
         {
-            return this._validTypes;
+            return _validTypes;
         }
 
-        public virtual bool IsValidType(String typeStr)
+        public static bool IsValidType(String typeStr)
         {
             if (!String.IsNullOrEmpty(typeStr))
             {
