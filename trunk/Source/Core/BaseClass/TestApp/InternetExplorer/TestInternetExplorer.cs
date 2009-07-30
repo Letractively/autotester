@@ -1206,7 +1206,7 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void AttachBrowser(InternetExplorer ie)
         {
-            if (ie != null && this._browser != ie && this._browser.Document != ie.Document)
+            if (ie != null && this._browser != ie)
             {
                 try
                 {
