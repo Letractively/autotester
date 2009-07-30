@@ -134,10 +134,9 @@ namespace Shrinerain.AutoTester.Core.Helper
                                 object index = i;
                                 IHTMLWindow2 frame = frames.item(ref index) as IHTMLWindow2;
                                 IHTMLDocument temp = GetFrameDocument(frame);
-                                IHTMLDocument[] curFrameDocs = GetFrames(temp);
-                                if (curFrameDocs != null)
+                                if (temp != null)
                                 {
-                                    res.AddRange(curFrameDocs);
+                                    res.Add(temp);
                                 }
                             }
                             return res.ToArray();

@@ -16,7 +16,8 @@ namespace Shrinerain.AutoTester.Core
         #region fields
 
         protected TestInternetExplorer _browser;
-        protected ITestDocument _rootDocument;
+        protected InternetExplorer _internalIE;
+        protected TestIEDocument _rootDocument;
 
         protected TestObjectMap _objMap;
         protected String _title;
@@ -25,6 +26,46 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region properties
+
+        public virtual int Left
+        {
+            get
+            {
+                return _internalIE.Left;
+            }
+        }
+
+        public virtual int Top
+        {
+            get
+            {
+                return _internalIE.Top;
+            }
+        }
+
+        public virtual int Width
+        {
+            get
+            {
+                return _internalIE.Width;
+            }
+        }
+
+        public virtual int Height
+        {
+            get
+            {
+                return _internalIE.Height;
+            }
+        }
+
+        public virtual IntPtr Handle
+        {
+            get
+            {
+                return (IntPtr)_internalIE.HWND;
+            }
+        }
 
         public virtual String Title
         {
@@ -62,13 +103,7 @@ namespace Shrinerain.AutoTester.Core
         {
             get
             {
-                if (_objMap == null)
-                {
-                    ITestObjectPool pool = GetObjectPool();
-                    _objMap = new TestObjectMap(pool);
-                }
-
-                return _objMap;
+                return GetObjectMap();
             }
         }
 
@@ -94,14 +129,27 @@ namespace Shrinerain.AutoTester.Core
 
         #region ctor
 
-        public TestIEPage(TestInternetExplorer browser, ITestDocument rootDoc)
+        public TestIEPage(TestInternetExplorer browser, InternetExplorer ie)
         {
-            if (browser == null || rootDoc == null)
+            if (browser == null || ie == null)
             {
-                throw new CannotGetTestPageException("Browser and Document can not be null.");
+                throw new CannotGetTestPageException("Browser can not be null.");
             }
-            this._browser = browser;
-            this._rootDocument = rootDoc;
+
+            try
+            {
+                this._browser = browser;
+                this._internalIE = ie;
+                this._rootDocument = new TestIEDocument(ie.Document as IHTMLDocument2);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotGetTestPageException(ex.ToString());
+            }
         }
 
         #endregion
@@ -118,20 +166,45 @@ namespace Shrinerain.AutoTester.Core
             {
                 try
                 {
-                    List<ITestDocument> res = new List<ITestDocument>();
-                    res.Add(_rootDocument);
-
-                    ITestDocument[] frames = _rootDocument.GetFrames();
-                    if (frames != null)
-                    {
-                        res.AddRange(frames);
-                    }
-
-                    return res.ToArray();
+                    return GetFrames(_rootDocument);
                 }
-                catch
+                catch (TestException)
                 {
+                    throw;
                 }
+                catch (Exception ex)
+                {
+                    throw new CannotGetTestDocumentException("Can not get all documents in this page: " + ex.ToString());
+                }
+            }
+
+            return null;
+        }
+
+        protected virtual TestIEDocument[] GetFrames(TestIEDocument root)
+        {
+            if (root != null)
+            {
+                List<TestIEDocument> allDocs = new List<TestIEDocument>();
+                allDocs.Add(root);
+
+                TestIEDocument[] frames = root.GetFrames() as TestIEDocument[];
+                if (frames != null && frames.Length > 0)
+                {
+                    foreach (TestIEDocument frame in frames)
+                    {
+                        try
+                        {
+                            TestIEDocument[] subFrames = GetFrames(frame);
+                            allDocs.AddRange(subFrames);
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+
+                return allDocs.ToArray();
             }
 
             return null;
@@ -140,7 +213,7 @@ namespace Shrinerain.AutoTester.Core
         /* string GetHTML()
       * return the HTML code of current page.
       */
-        public virtual string GetAllHTML()
+        public virtual string GetAllHTMLContent()
         {
             ITestDocument[] allDocs = GetAllDocuments();
             StringBuilder sb = new StringBuilder();
@@ -165,6 +238,11 @@ namespace Shrinerain.AutoTester.Core
         public virtual ITestObjectPool GetObjectPool()
         {
             throw new TestObjectPoolExcpetion("Plugin must implement GetObjectPool");
+        }
+
+        public virtual ITestObjectMap GetObjectMap()
+        {
+            throw new TestObjectMapException("Plugin must implement GetObjectMap");
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -86,9 +87,6 @@ namespace Shrinerain.AutoTester.Core
         //document load complete happened when the web page is loaded, then we can start to 
         //search the HTML object.
         protected AutoResetEvent _documentLoadComplete = new AutoResetEvent(false);
-
-        //happened when internet explorer found.
-        protected AutoResetEvent _browserExisted = new AutoResetEvent(false);
 
         #endregion
 
@@ -181,12 +179,6 @@ namespace Shrinerain.AutoTester.Core
 
         public virtual void Dispose()
         {
-            if (_browserExisted != null)
-            {
-                _browserExisted.Close();
-                _browserExisted = null;
-            }
-
             if (_documentLoadComplete != null)
             {
                 _documentLoadComplete.Close();
@@ -240,12 +232,13 @@ namespace Shrinerain.AutoTester.Core
                 }
 
                 _appProcess = Process.Start(startInfo);
-                //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
-                Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
-                ieExistT.Start(null);
-                //wait until the internet explorer started.
-                _browserExisted.WaitOne(AppTimeout * 1000, true);
-                if (_browser == null)
+
+                InternetExplorer ie = WaitForBrowserExist(null, null);
+                if (ie != null)
+                {
+                    AttachBrowser(ie);
+                }
+                else
                 {
                     throw new CannotStartBrowserException("Can not start test browser.");
                 }
@@ -268,9 +261,19 @@ namespace Shrinerain.AutoTester.Core
          *  find an instance of browser by its title.
          *  eg: Google.com.
          */
-        public override void Find(string browserTitle)
+        public override void Find(string title)
         {
-            if (String.IsNullOrEmpty(browserTitle))
+            Find(title, null);
+        }
+
+        public override void Find(string title, string url)
+        {
+            Find(title, url, false);
+        }
+
+        public virtual void Find(string title, string url, bool isRegex)
+        {
+            if (String.IsNullOrEmpty(title))
             {
                 throw new CannotAttachBrowserException("Browser title can not be empty.");
             }
@@ -278,21 +281,14 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 BeforeFound();
-
-                _browser = null;
-                //start a new thread to check the browser status, if OK, we will attach _ie to Internet Explorer
-                Thread ieExistT = new Thread(new ParameterizedThreadStart(WaitForBrowserExist));
-                ieExistT.Start(browserTitle);
-                //wait until the internet explorer is found.
-                _browserExisted.WaitOne(this.AppTimeout * 1000, true);
-
-                if (_browser != null)
+                InternetExplorer ie = WaitForBrowserExist(title, url, isRegex);
+                if (ie != null)
                 {
                     AttachBrowser(_browser);
                 }
                 else
                 {
-                    throw new CannotAttachBrowserException("Can not find test browser.");
+                    throw new BrowserNotFoundException(String.Format("Can not find browser by title:{0}, url:{1}.", title, url));
                 }
             }
             catch (TestException)
@@ -557,8 +553,7 @@ namespace Shrinerain.AutoTester.Core
                 {
                     try
                     {
-                        TestIEDocument doc = new TestIEDocument(ie.Document as IHTMLDocument2);
-                        TestIEPage page = new TestIEPage(this, doc);
+                        TestIEPage page = new TestIEPage(this, ie);
                         pages.Add(page);
                     }
                     catch
@@ -592,7 +587,7 @@ namespace Shrinerain.AutoTester.Core
                         if (times >= AppTimeout || ie.ReadyState == tagREADYSTATE.READYSTATE_INTERACTIVE ||
                             ie.ReadyState == tagREADYSTATE.READYSTATE_COMPLETE)
                         {
-                            return PageChange(this, index);
+                            return PageChange(index);
                         }
                     }
 
@@ -635,7 +630,7 @@ namespace Shrinerain.AutoTester.Core
                             if ((String.IsNullOrEmpty(title) || String.Compare(curTitle, title, true) == 0) &&
                                 (String.IsNullOrEmpty(url) || String.Compare(url, curUrl, true) == 0))
                             {
-                                return PageChange(this, i);
+                                return PageChange(i);
                             }
                         }
                     }
@@ -663,8 +658,7 @@ namespace Shrinerain.AutoTester.Core
                 try
                 {
                     InternetExplorer ie = _browserList[pageIndex];
-                    TestIEDocument doc = new TestIEDocument(ie.Document as IHTMLDocument2);
-                    return new TestIEPage(this, doc);
+                    return new TestIEPage(this, ie);
                 }
                 catch (Exception ex)
                 {
@@ -838,6 +832,11 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        public override string GetAppName()
+        {
+            return GetBrowserName();
+        }
+
         /* string GetBrowserName()
          * return the name of the browser. eg: Internet Explorer.
          * 
@@ -845,6 +844,11 @@ namespace Shrinerain.AutoTester.Core
         public virtual String GetBrowserName()
         {
             return _browserName;
+        }
+
+        public override string GetVersion()
+        {
+            return GetBrowserVersion();
         }
 
         /* string GetBrowserVersion()
@@ -944,20 +948,34 @@ namespace Shrinerain.AutoTester.Core
             _documentLoadComplete.WaitOne(seconds * 1000, true);
         }
 
+        protected virtual InternetExplorer WaitForBrowserExist(string title, string url)
+        {
+            return WaitForBrowserExist(title, url, false);
+        }
+
         /* void WaitForBrowser(int seconds.)
       * wait for 120 seconds max to detect if IE browser is started.
       * if title is not empty, we need to check the title of browser.
       * we will use "Fuzzy Search" in this method
       */
-        protected virtual void WaitForBrowserExist(string title, string url, int seconds)
+        protected virtual InternetExplorer WaitForBrowserExist(string title, string url, bool isReg)
         {
-            if (seconds < 0)
+            Regex titleReg = null;
+            Regex urlReg = null;
+            if (isReg)
             {
-                seconds = 0;
+                if (!String.IsNullOrEmpty(title))
+                {
+                    titleReg = new Regex(title, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                }
+                if (!String.IsNullOrEmpty(url))
+                {
+                    urlReg = new Regex(url, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                }
             }
 
             int times = 0;
-            while (times <= seconds)
+            while (times <= AppTimeout)
             {
                 bool browserFound = false;
 
@@ -981,7 +999,14 @@ namespace Shrinerain.AutoTester.Core
                     {
                         try
                         {
-                            browserFound = p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                            if (isReg)
+                            {
+                                browserFound = titleReg != null && titleReg.IsMatch(p.MainWindowTitle);
+                            }
+                            else
+                            {
+                                browserFound = p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                            }
                         }
                         catch
                         {
@@ -993,13 +1018,23 @@ namespace Shrinerain.AutoTester.Core
                     if (!String.IsNullOrEmpty(url))
                     {
                         ie = GetInternetExplorer(p.Id);
-                        try
+                        if (ie != null)
                         {
-                            browserFound = ie != null && ie.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase);
-                        }
-                        catch
-                        {
-                            continue;
+                            try
+                            {
+                                if (isReg)
+                                {
+                                    browserFound = urlReg != null && urlReg.IsMatch(ie.LocationURL);
+                                }
+                                else
+                                {
+                                    browserFound = ie.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase);
+                                }
+                            }
+                            catch
+                            {
+                                continue;
+                            }
                         }
                     }
 
@@ -1012,10 +1047,7 @@ namespace Shrinerain.AutoTester.Core
 
                         if (ie != null)
                         {
-                            _appProcess = p;
-                            AttachBrowser(ie);
-                            _browserExisted.Set();
-                            return;
+                            return ie;
                         }
                     }
                 }
@@ -1035,18 +1067,7 @@ namespace Shrinerain.AutoTester.Core
                 Thread.Sleep(Interval * 1000);
             }
 
-            throw new BrowserNotFoundException("Can not find browser by title:" + title);
-        }
-
-        protected virtual void WaitForBrowserExist()
-        {
-            WaitForBrowserExist(null, null, AppTimeout);
-        }
-
-        protected virtual void WaitForBrowserExist(object title)
-        {
-            String titleStr = title == null ? "" : title.ToString();
-            WaitForBrowserExist(titleStr, null, AppTimeout);
+            return null;
         }
 
         /* void WaitForNewBrowserSync()
@@ -1073,8 +1094,6 @@ namespace Shrinerain.AutoTester.Core
                     times += Interval;
                 }
             }
-
-            this._browserExisted.Set();
         }
 
         /* void WaitForNewBrowserAsyn()
@@ -1199,6 +1218,9 @@ namespace Shrinerain.AutoTester.Core
 
                     this._browser = ie;
                     this._rootHandle = (IntPtr)ie.HWND;
+                    int pid = Win32API.GetWindowThreadProcessId(_rootHandle);
+                    this._appProcess = Process.GetProcessById(pid);
+
                     if (this._currentPage == null)
                     {
                         this._currentPage = GetPage(0) as TestIEPage;
@@ -1217,23 +1239,10 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        /* void GetPrevTestBrowserStatus()
-         * Get previous browser status. eg: when pop up window disapper, we need to return to the main window.
-         */
-        protected virtual InternetExplorer GetPrevBrowser()
-        {
-            if (_browserList.Count > 0)
-            {
-                return _browserList[_browserList.Count - 1];
-            }
-
-            return this._browser;
-        }
-
-        protected virtual ITestPage PageChange(ITestBrowser browser, int pageIndex)
+        protected virtual ITestPage PageChange(int pageIndex)
         {
 
-            if (browser != null && pageIndex >= 0 && pageIndex < this._browserList.Count)
+            if (pageIndex >= 0 && pageIndex < this._browserList.Count)
             {
                 InternetExplorer ie = _browserList[pageIndex];
                 try
@@ -1514,6 +1523,7 @@ namespace Shrinerain.AutoTester.Core
             if (isRegistered == null)
             {
                 RegDownloadEvent(ie);
+                RegWin32Event(ie);
                 RegDocumentCompleteEvent(ie);
                 RegNavigateEvent(ie);
                 RegNewWindowEvent(ie);
@@ -1526,6 +1536,10 @@ namespace Shrinerain.AutoTester.Core
                     OnBrowserAttached(this, e);
                 }
             }
+        }
+
+        protected virtual void RegWin32Event(InternetExplorer ie)
+        {
         }
 
         protected virtual void RegQuitEvent(InternetExplorer ie)
@@ -1719,7 +1733,7 @@ namespace Shrinerain.AutoTester.Core
             if (_browserList.Count > 0)
             {
                 InternetExplorer ie = _browserList[0];
-                PageChange(this, 0);
+                PageChange(0);
             }
         }
 

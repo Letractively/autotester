@@ -288,6 +288,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (_sendMsgOnly)
             {
                 this._radioElement.@checked = true;
+                FireEvent("onmousedown");
+                FireEvent("onmouseup");
                 FireEvent("onclick");
             }
             else

@@ -107,7 +107,7 @@ namespace Shrinerain.AutoTester.Core
             get { return this._rootHandle; }
         }
 
-        public ITestWindow CurrentWindow
+        public virtual ITestWindow CurrentWindow
         {
             get { return this._currentWindow; }
         }
@@ -241,13 +241,16 @@ namespace Shrinerain.AutoTester.Core
             IntPtr handle = IntPtr.Zero;
             if (!String.IsNullOrEmpty(processName) && index >= 0)
             {
-                foreach (Process p in System.Diagnostics.Process.GetProcesses())
+                foreach (Process p in System.Diagnostics.Process.GetProcessesByName(processName))
                 {
                     if (String.Compare(p.ProcessName, processName, true) == 0)
                     {
                         handle = p.MainWindowHandle;
+                        if (handle == IntPtr.Zero)
+                        {
+                            handle = p.Handle;
+                        }
                         index--;
-
                         if (index < 0)
                         {
                             Find(handle);

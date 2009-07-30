@@ -52,8 +52,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
         //current object used.
         private TestObject _testObj;
 
+        private HTMLTestDialog _lastDialog;
+        private TestProperty[] _lastDialogProperties;
+
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
-        private int _searchTimeout = 15;
+        private int _searchTimeout = 30;
         //very time we sleep for 2 seconds, and find again.
         private const int Interval = 2;
 
@@ -145,7 +148,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     //get IHTMLElement interface
-                    _tempElement = _htmlTestPage.GetObjectByID(id);
+                    _tempElement = _htmlTestPage.GetElementByID(id);
                     if (_tempElement != null)
                     {
                         //build actual test object.
@@ -191,7 +194,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     List<TestObject> result = new List<TestObject>();
 
-                    IHTMLElement[] nameObjectsCol = _htmlTestPage.GetObjectsByName(name);
+                    IHTMLElement[] nameObjectsCol = _htmlTestPage.GetElementsByName(name);
                     for (int i = 0; i < nameObjectsCol.Length; i++)
                     {
                         _tempElement = (IHTMLElement)nameObjectsCol[i];
@@ -310,7 +313,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                         string searchVal = System.Web.HttpUtility.HtmlEncode(properties[0].Value.ToString());
                         if (!String.IsNullOrEmpty(searchVal))
                         {
-                            string htmlContent = this._htmlTestPage.GetAllHTML();
+                            string htmlContent = this._htmlTestPage.GetAllHTMLContent();
                             int startPos = htmlContent.IndexOf(searchVal);
                             if (startPos > 0)
                             {
@@ -437,10 +440,25 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
                 if (typeValue == HTMLTestObjectType.Dialog)
                 {
-                    IntPtr dialogHandle = GetHTMLDialogObject(properties);
-                    if (dialogHandle != IntPtr.Zero)
+                    HTMLTestDialog dialog = null;
+                    if (_lastDialogProperties == properties && _lastDialog != null && _lastDialog.IsExists())
                     {
-                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(dialogHandle, this._htmlTestPage);
+                        dialog = _lastDialog;
+                    }
+                    else
+                    {
+                        IntPtr dialogHandle = GetHTMLDialogObject(properties);
+                        if (dialogHandle != IntPtr.Zero)
+                        {
+                            dialog = HTMLTestObjectFactory.BuildHTMLTestObject(dialogHandle, this._htmlTestPage) as HTMLTestDialog;
+                            _lastDialog = dialog;
+                            _lastDialogProperties = properties;
+                        }
+                    }
+
+                    if (dialog != null)
+                    {
+                        _testObj = dialog;
                         AfterObjectFound(_testObj);
                         result.Add(_testObj);
                     }
@@ -456,7 +474,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     {
                         if (candidateElements == null)
                         {
-                            candidateElements = this._htmlTestPage.GetObjectsByTagName(tag);
+                            candidateElements = this._htmlTestPage.GetElementsByTagName(tag);
                         }
 
                         if (candidateElements != null && candidateElements.Length > 0)
@@ -475,7 +493,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                         _regCache.Add(tag, tagReg);
                                     }
 
-                                    string htmlContent = this._htmlTestPage.GetAllHTML();
+                                    string htmlContent = this._htmlTestPage.GetAllHTMLContent();
                                     int startPos = htmlContent.IndexOf(searchVal);
                                     if (startPos > 0)
                                     {
@@ -578,7 +596,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 try
                 {
-                    _tempElement = this._htmlTestPage.GetObjectFromPoint(x, y);
+                    _tempElement = this._htmlTestPage.GetElementByPoint(x, y);
                     if (HTMLTestObjectFactory.IsVisible(_tempElement))
                     {
                         _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(_tempElement, this._htmlTestPage);
@@ -765,7 +783,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     if (!String.IsNullOrEmpty(id))
                     {
-                        IHTMLElement element = this._htmlTestPage.GetObjectByID(id);
+                        IHTMLElement element = this._htmlTestPage.GetElementByID(id);
                         if (element != null)
                         {
                             return new IHTMLElement[] { element };
@@ -773,7 +791,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else if (!String.IsNullOrEmpty(name))
                     {
-                        IHTMLElement[] tmp = this._htmlTestPage.GetObjectsByName(name);
+                        IHTMLElement[] tmp = this._htmlTestPage.GetElementsByName(name);
                         if (tmp != null && tmp.Length > 0)
                         {
                             return tmp;
@@ -781,7 +799,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     }
                     else if (!String.IsNullOrEmpty(tagName))
                     {
-                        IHTMLElement[] tmp = this._htmlTestPage.GetObjectsByTagName(tagName);
+                        IHTMLElement[] tmp = this._htmlTestPage.GetElementsByTagName(tagName);
                         if (tmp != null && tmp.Length > 0)
                         {
                             return tmp;

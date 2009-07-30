@@ -52,7 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HTMLTestBrowser\HTMLTestPage.cs" />
-    <Compile Include="HTMLTestEventDispatcher.cs" />
+    <Compile Include="HTMLTestEvent\HTMLTestEventDispatcher.cs" />
+    <Compile Include="HTMLTestEvent\HTMLTestEventMonitor.cs" />
     <Compile Include="HTMLTestObjectFinder\HTMLTestObjectFactory.cs" />
     <Compile Include="HTMLTestObjectFinder\HTMLTestObjectMap.cs" />
     <Compile Include="HTMLTestObject\HTMLTestActiveXObject.cs" />

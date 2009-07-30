@@ -622,9 +622,13 @@ namespace Shrinerain.AutoTester.Core
             catch (Exception ex)
             {
                 StringBuilder sb = new StringBuilder();
-                foreach (TestProperty tp in properties)
+
+                if (properties != null && properties.Length > 0)
                 {
-                    sb.Append("{" + tp.ToString() + "},");
+                    foreach (TestProperty tp in properties)
+                    {
+                        sb.Append("{" + tp.ToString() + "},");
+                    }
                 }
 
                 throw new ObjectNotFoundException(String.Format("Can not get object {0} with error: {1} ", sb.ToString(), ex.ToString()));

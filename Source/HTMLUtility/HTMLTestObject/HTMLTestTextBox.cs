@@ -48,7 +48,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _currentStr;
 
         //we may have 2 types of textbox, one is <input type="text"> and the other maybe "<textarea>"
-        protected IHTMLInputTextElement _textInputElement;
+        protected IHTMLInputElement _textInputElement;
         protected IHTMLTextAreaElement _textAreaElement;
 
         protected HTMLTestTextBoxType _textBoxType = HTMLTestTextBoxType.Unknow;
@@ -87,7 +87,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else if (this._tag == "INPUT")
                 {
-                    _textInputElement = (IHTMLInputTextElement)element;
+                    _textInputElement = (IHTMLInputElement)element;
                     _currentStr = _textInputElement.value;
                     this._textBoxType = GetTextBoxType();
                 }
@@ -315,7 +315,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     this._sourceElement.innerHTML = value;
                 }
-
+            
+                FireEvent("onkeydown");
+                FireEvent("onkeyup");
                 FireEvent("onchange");
             }
             else

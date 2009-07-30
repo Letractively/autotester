@@ -41,6 +41,7 @@ namespace Shrinerain.AutoTester.Core.Interface
         void Start();
         void Load(String url);
         void Load(String url, bool waitForPage);
+        void Find(String title, String url, bool isRegex);
 
         void Home();
         void Back();

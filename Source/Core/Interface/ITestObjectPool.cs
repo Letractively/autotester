@@ -19,9 +19,6 @@
 
 namespace Shrinerain.AutoTester.Core.Interface
 {
-    using System;
-    using System.Collections.Generic;
-
     public interface ITestObjectPool
     {
         event TestObjectEventHandler OnObjectFound;

@@ -42,8 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MSAATestApp\MSAATestApp.cs" />
-    <Compile Include="MSAATestEventDispatcher.cs" />
-    <Compile Include="MSAATestEventHook.cs" />
+    <Compile Include="MSAATestEvent\MSAATestEventDispatcher.cs" />
+    <Compile Include="MSAATestEvent\MSAATestEventHook.cs" />
     <Compile Include="MSAATestObjectFinder\MSAATestObjectMap.cs" />
     <Compile Include="MSAATestObjectFinder\MSAATestObjectPool.cs" />
     <Compile Include="MSAATestObjectFinder\MSAATestObjectType.cs" />
