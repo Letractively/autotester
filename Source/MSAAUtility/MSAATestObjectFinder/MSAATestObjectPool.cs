@@ -326,7 +326,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
             }
             else
             {
-                this._msaaTestWin = (MSAATestWindow)_msaaTestWin;
+                this._msaaTestWin = (MSAATestWindow)testWin;
             }
         }
 
