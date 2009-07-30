@@ -62,7 +62,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             catch (Exception ex)
             {
-                throw new CannotBuildObjectException("Can not build test button: " + ex.ToString());
+                throw new CannotBuildObjectException("Can not build test form: " + ex.ToString());
             }
         }
 

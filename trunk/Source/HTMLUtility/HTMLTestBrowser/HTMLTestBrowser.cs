@@ -25,6 +25,7 @@ using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Core.Interface;
 using Shrinerain.AutoTester.Core.TestExceptions;
 using Shrinerain.AutoTester.Core.Helper;
+using Shrinerain.AutoTester.MSAAUtility;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
@@ -50,15 +51,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region Methods
 
-        public HTMLTestBrowser()
-        {
-        }
-
-        ~HTMLTestBrowser()
-        {
-            Dispose();
-        }
-
         #region public methods
 
         #region GetObject methods
@@ -70,8 +62,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     InternetExplorer ie = _browserList[pageIndex];
-                    HTMLTestDocument doc = new HTMLTestDocument(ie.Document as IHTMLDocument2);
-                    return new HTMLTestPage(this, doc);
+                    return new HTMLTestPage(this, ie);
                 }
                 catch (Exception ex)
                 {
@@ -106,6 +97,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _dispatcher.RegisterEvents(ie.Document as IHTMLDocument2);
             }
         }
+
+        protected override void RegWin32Event(InternetExplorer ie)
+        {
+            HTMLTestEventMonitor monitor = new HTMLTestEventMonitor();
+        }
+
 
         #endregion
 

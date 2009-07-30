@@ -6,12 +6,18 @@ namespace Shrinerain.AutoTester.Core.Interface
 {
     public interface ITestWindow
     {
+        int Left { get; }
+        int Top { get; }
+        int Width { get; }
+        int Height { get; }
+        IntPtr Handle { get; }
+
         String Caption { get; }
         String ClassName { get; }
-        IntPtr Handle { get; }
         ITestApp App { get; }
         ITestObjectMap Objects { get; }
 
         ITestObjectPool GetObjectPool();
+        ITestObjectMap GetObjectMap();
     }
 }

@@ -287,6 +287,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (_sendMsgOnly)
             {
                 this._checkBoxElement.@checked = !this._checkBoxElement.@checked;
+                FireEvent("onmousedown");
+                FireEvent("onmouseup");
                 FireEvent("onclick");
             }
             else

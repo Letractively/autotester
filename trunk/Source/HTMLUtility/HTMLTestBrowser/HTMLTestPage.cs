@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using mshtml;
+using SHDocVw;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Core.TestExceptions;
@@ -23,7 +24,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new HTMLTestObjectMap Objects
         {
-            get { return _objMap as HTMLTestObjectMap; }
+            get
+            {
+                return GetObjectMap() as HTMLTestObjectMap;
+            }
         }
 
         #endregion
@@ -32,12 +36,23 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region ctor
 
-        public HTMLTestPage(HTMLTestBrowser browser, HTMLTestDocument document)
-            : base(browser, document)
+        public HTMLTestPage(HTMLTestBrowser browser, InternetExplorer ie)
+            : base(browser, ie)
         {
-            this._htmlDoc = document;
-            HTMLTestObjectPool pool = new HTMLTestObjectPool(this);
-            this._objMap = new HTMLTestObjectMap(pool);
+            try
+            {
+                this._htmlDoc = new HTMLTestDocument(ie.Document as IHTMLDocument2);
+                HTMLTestObjectPool pool = new HTMLTestObjectPool(this);
+                this._objMap = new HTMLTestObjectMap(pool);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotGetTestPageException(ex.ToString());
+            }
         }
 
         #endregion
@@ -62,9 +77,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return allDocuments;
         }
 
-        /* IHTMLElementCollection GetAllObjects()
- * return all element of HTML DOM.
- */
         public IHTMLElement[] GetAllHTMLElements()
         {
             if (_rootDocument == null)
@@ -99,7 +111,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElement GetObjectByID(string id)
          * return element by .id property.
          */
-        public IHTMLElement GetObjectByID(string id)
+        public IHTMLElement GetElementByID(string id)
         {
             if (String.IsNullOrEmpty(id))
             {
@@ -136,7 +148,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetObjectsByName(string name)
          * return elements by .name property.
          */
-        public IHTMLElement[] GetObjectsByName(string name)
+        public IHTMLElement[] GetElementsByName(string name)
         {
             if (String.IsNullOrEmpty(name))
             {
@@ -175,7 +187,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElementCollection GetObjectsByTagName(string name)
          * return elements by tag, eg: <a> will return all link.
          */
-        public IHTMLElement[] GetObjectsByTagName(string tag)
+        public IHTMLElement[] GetElementsByTagName(string tag)
         {
             if (String.IsNullOrEmpty(tag))
             {
@@ -215,7 +227,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         /* IHTMLElement GetObjectFromPoint(int x, int y)
          * return element at expected point.
          */
-        public IHTMLElement GetObjectFromPoint(int x, int y)
+        public IHTMLElement GetElementByPoint(int x, int y)
         {
             try
             {
@@ -235,6 +247,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
 
             return _objPool;
+        }
+
+        public override ITestObjectMap GetObjectMap()
+        {
+            if (_objMap == null)
+            {
+                HTMLTestObjectPool pool = GetObjectPool() as HTMLTestObjectPool;
+                pool.SetTestPage(this);
+                _objMap = new HTMLTestObjectMap(pool);
+            }
+
+            return _objMap;
         }
 
         #endregion

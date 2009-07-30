@@ -31,16 +31,19 @@ namespace Shrinerain.AutoTester.Core
         public int Weight
         {
             get { return _weight; }
+            set { _weight = value; }
         }
 
         public bool IsRegex
         {
             get { return _isRegex; }
+            set { _isRegex = value; }
         }
 
         public Object Value
         {
             get { return _value; }
+            set { _value = value; }
         }
 
         public String Name
@@ -368,6 +371,16 @@ namespace Shrinerain.AutoTester.Core
             {
                 return str[index - 1] == '\\' && !IsEscaped(str, index - 2);
             }
+        }
+
+        private static String WidecardToRegex(String regStr)
+        {
+            if (!String.IsNullOrEmpty(regStr))
+            {
+
+            }
+
+            return regStr;
         }
 
         #endregion

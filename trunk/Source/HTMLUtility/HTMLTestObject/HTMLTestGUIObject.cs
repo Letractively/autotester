@@ -801,6 +801,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (_sendMsgOnly && this._sourceElement != null)
             {
                 this._sourceElement.click();
+                FireEvent("onmousedown");
+                FireEvent("onmouseup");
                 FireEvent("onclick");
             }
             else if (_centerPoint != null && _centerPoint.X > 0 && _centerPoint.Y > 0)

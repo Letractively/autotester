@@ -64,6 +64,7 @@
     <Compile Include="BaseClass\TestException\TestObjectException.cs" />
     <Compile Include="BaseClass\TestCheckPoint.cs" />
     <Compile Include="BaseClass\TestException\TestPageException.cs" />
+    <Compile Include="BaseClass\TestException\TestWindowException.cs" />
     <Compile Include="BaseClass\TestObject\TestObjectMap.cs" />
     <Compile Include="BaseClass\TestObject\TestObjectType.cs" />
     <Compile Include="BaseClass\TestSession.cs" />

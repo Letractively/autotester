@@ -26,8 +26,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
             SetValidType(fields);
         }
 
-
         #endregion
-
     }
 }

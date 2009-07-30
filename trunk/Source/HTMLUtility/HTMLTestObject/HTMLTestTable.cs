@@ -80,7 +80,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 _rowCount = _tableElement.rows.length;
                 //get col count of the first row.
                 _tableRowElement = (IHTMLTableRow)_tableElement.rows.item((object)0, (object)0);
-                _colCount = _tableRowElement.cells.length;
+                _colCount = _tableRowElement == null ? 0 : _tableRowElement.cells.length;
             }
             catch (Exception ex)
             {
@@ -128,7 +128,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _tableRowElement = (IHTMLTableRow)_tableElement.rows.item((object)row, (object)row);
-                return _tableRowElement.cells.length;
+                return _tableRowElement == null ? 0 : _tableRowElement.cells.length;
             }
             catch (Exception ex)
             {

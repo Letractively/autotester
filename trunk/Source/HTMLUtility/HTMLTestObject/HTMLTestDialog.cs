@@ -110,6 +110,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public bool IsExists()
+        {
+            return _mainHandle != IntPtr.Zero && Win32API.IsWindowVisible(_mainHandle);
+        }
+
         #endregion
 
         #endregion

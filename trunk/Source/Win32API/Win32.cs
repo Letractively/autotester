@@ -1275,6 +1275,13 @@ namespace Shrinerain.AutoTester.Win32
         [DllImport("User32.dll")]
         public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int processId);
 
+        public static int GetWindowThreadProcessId(IntPtr hWnd)
+        {
+            int pid;
+            GetWindowThreadProcessId(hWnd, out pid);
+            return pid;
+        }
+
         [DllImport("User32.dll")]
         public unsafe static extern UInt32 SendInput(UInt32 nInputs, INPUT* pInputs, int cbSize);
 

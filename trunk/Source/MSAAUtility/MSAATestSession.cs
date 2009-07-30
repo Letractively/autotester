@@ -14,7 +14,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
             get
             {
-                return _objectMap as MSAATestObjectMap;
+                return base.Objects as MSAATestObjectMap;
             }
         }
 

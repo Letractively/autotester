@@ -21,8 +21,6 @@ namespace Shrinerain.AutoTester.Core.Interface
 {
     public interface ITestObjectMap
     {
-        #region test object
-
         IClickable Button();
         IClickable Button(string description);
         IClickable Button(TestProperty[] properties);
@@ -105,7 +103,5 @@ namespace Shrinerain.AutoTester.Core.Interface
         IVisible[] AnyObjects(String type, TestProperty[] properties);
 
         ITestObjectPool ObjectPool { set; get; }
-
-        #endregion
     }
 }

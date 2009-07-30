@@ -6,6 +6,12 @@ namespace Shrinerain.AutoTester.Core.Interface
 {
     public interface ITestPage
     {
+        int Left { get; }
+        int Top { get; }
+        int Width { get; }
+        int Height { get; }
+        IntPtr Handle { get; }
+
         String Title { get; }
         String URL { get; }
         ITestObjectMap Objects { get; }
@@ -15,8 +21,9 @@ namespace Shrinerain.AutoTester.Core.Interface
         ITestDocument GetDocument();
         //return all documents, include frames.
         ITestDocument[] GetAllDocuments();
-        String GetAllHTML();
+        String GetAllHTMLContent();
 
         ITestObjectPool GetObjectPool();
+        ITestObjectMap GetObjectMap();
     }
 }

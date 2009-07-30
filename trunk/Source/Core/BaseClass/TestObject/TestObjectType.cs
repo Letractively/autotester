@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 using System.Reflection;
+
+using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.Core
 {
@@ -12,7 +13,7 @@ namespace Shrinerain.AutoTester.Core
         #region fields
 
         public const String Unknown = "UnKnown";
-        public const String AnyType = "AnyType";   
+        public const String AnyType = "AnyType";
         public const String Button = "Button";
         public const String TextBox = "TextBox";
         public const String Label = "Label";
@@ -51,7 +52,7 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public virtual List<String> GetValieTypes()
+        public virtual List<String> GetValidTypes()
         {
             return this._validTypes;
         }

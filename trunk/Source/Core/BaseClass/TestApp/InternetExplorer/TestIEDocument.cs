@@ -263,24 +263,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (this._document != null)
             {
-                IHTMLDocument[] frames = COMUtil.GetFrames(_document);
-                if (frames != null && frames.Length > 0)
-                {
-                    List<TestIEDocument> framesDocs = new List<TestIEDocument>();
-                    foreach (IHTMLDocument frame in frames)
-                    {
-                        try
-                        {
-                            TestIEDocument doc = new TestIEDocument(frame as IHTMLDocument2);
-                            framesDocs.Add(doc);
-                        }
-                        catch
-                        {
-                        }
-                    }
-
-                    return framesDocs.ToArray();
-                }
+                return GetFrames(this);
             }
 
             return null;
@@ -296,6 +279,37 @@ namespace Shrinerain.AutoTester.Core
                 }
                 catch
                 {
+                }
+            }
+
+            return null;
+        }
+
+        protected virtual TestIEDocument[] GetFrames(TestIEDocument root)
+        {
+            if (root != null)
+            {
+                IHTMLDocument doc = root.Document;
+                if (doc != null)
+                {
+                    IHTMLDocument[] frames = COMUtil.GetFrames(doc);
+                    if (frames != null && frames.Length > 0)
+                    {
+                        List<TestIEDocument> framesDocs = new List<TestIEDocument>();
+                        foreach (IHTMLDocument frame in frames)
+                        {
+                            try
+                            {
+                                TestIEDocument frameDoc = new TestIEDocument(frame as IHTMLDocument2);
+                                framesDocs.Add(frameDoc);
+                            }
+                            catch
+                            {
+                            }
+                        }
+
+                        return framesDocs.ToArray();
+                    }
                 }
             }
 
