@@ -549,11 +549,11 @@ namespace Shrinerain.AutoTester.Core
             if (_browserList != null && _browserList.Count > 0)
             {
                 List<ITestPage> pages = new List<ITestPage>();
-                foreach (InternetExplorer ie in _browserList)
+                for (int i = 0; i < _browserList.Count; i++)
                 {
                     try
                     {
-                        TestIEPage page = new TestIEPage(this, ie);
+                        TestIEPage page = GetPage(i) as TestIEPage;
                         pages.Add(page);
                     }
                     catch
