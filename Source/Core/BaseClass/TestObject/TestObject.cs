@@ -33,9 +33,10 @@ namespace Shrinerain.AutoTester.Core
 
         //domain means the object type, eg: Win32
         protected string _domain;
+        protected string _type;
 
         protected List<String> _idenProperties = new List<String>();
-       
+
         #endregion
 
         #region properties
@@ -43,6 +44,11 @@ namespace Shrinerain.AutoTester.Core
         public string Domain
         {
             get { return this._domain; }
+        }
+
+        public String Type
+        {
+            get { return _type; }
         }
 
         public TestApp ParentApp

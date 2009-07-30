@@ -47,8 +47,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _innerText;
         protected string _innerHTML;
         protected string _outterText;
-        protected string _outterHTML;
-        protected string _type;
+        protected string _outterHTML;   
 
         protected IHTMLElement _sourceElement;
         protected HTMLTestPage _page;
@@ -104,11 +103,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public string ClassName
         {
             get { return _className; }
-        }
-
-        public String Type
-        {
-            get { return _type; }
         }
 
         public HTMLTestPage Page

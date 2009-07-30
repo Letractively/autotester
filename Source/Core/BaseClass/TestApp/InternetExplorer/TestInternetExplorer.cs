@@ -1079,7 +1079,7 @@ namespace Shrinerain.AutoTester.Core
             while (times < this.AppTimeout)
             {
                 InternetExplorer ie = GetTopmostBrowser();
-                if (this._browser != ie)
+                if (this._browser != ie && this._browser.Document != ie.Document)
                 {
                     if (!_browserList.Contains(ie))
                     {
@@ -1206,7 +1206,7 @@ namespace Shrinerain.AutoTester.Core
 
         protected virtual void AttachBrowser(InternetExplorer ie)
         {
-            if (ie != null && this._browser != ie)
+            if (ie != null && this._browser != ie && this._browser.Document != ie.Document)
             {
                 try
                 {
