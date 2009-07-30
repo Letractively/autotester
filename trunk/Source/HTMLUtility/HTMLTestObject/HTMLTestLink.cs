@@ -132,6 +132,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #endregion
 
+        #region private
+        #endregion
+
         #region public methods
 
         /* void Click()

@@ -43,14 +43,14 @@ namespace Shrinerain.AutoTester.Core
         public const string PROPERTY_TYPE = "Type";
         public const string PROPERTY_INNERTEXT = "InnerText";
         public const string PROPERTY_INNERHTML = "InnerHTML";
-        public const string PROPERTY_OUTERHTML = "outerHTML";
-        public const string PROPERTY_OUTERTEXT = "outerText";
+        public const string PROPERTY_OUTERHTML = "OuterHTML";
+        public const string PROPERTY_OUTERTEXT = "OuterText";
         public const string PROPERTY_CAPTION = "Caption";
         public const string PROPERTY_LABEL = "Label";
         public const string PROPERTY_VALUE = "Value";
         public const string PROPERTY_ISCHECKED = "IsChecked";
-        public const string PROPERTY_CLASS = "class";
-        public const string PROPERTY_VISIBLE = "VisibleProperty";
+        public const string PROPERTY_CLASS = "Class";
+        public const string PROPERTY_VISIBLE = "VisibleText";
 
 
         #endregion
