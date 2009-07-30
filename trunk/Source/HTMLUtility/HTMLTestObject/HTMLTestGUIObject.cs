@@ -139,6 +139,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public override bool TryGetProperty(string propertyName, out object value)
+        {
+            if (String.Compare(TestConstants.PROPERTY_VISIBLE, propertyName, true) == 0)
+            {
+                value = GetLabel();
+                return true;
+            }
+            else
+            {
+                return base.TryGetProperty(propertyName, out value);
+            }
+        }
+
         /* Point GetCenterPoint()
          * Get the center point of the object.
          * Some actions like click, we need to find the center point, and move mouse to the point.

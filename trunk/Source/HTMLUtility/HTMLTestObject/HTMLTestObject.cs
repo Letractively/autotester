@@ -171,7 +171,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
-
         #region action
 
         #endregion
