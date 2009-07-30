@@ -127,6 +127,18 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region public methods
 
+        public override object GetProperty(string propertyName)
+        {
+            if (String.Compare(TestConstants.PROPERTY_VISIBLE, propertyName, true) == 0)
+            {
+                return GetLabel();
+            }
+            else
+            {
+                return base.GetProperty(propertyName);
+            }
+        }
+
         /* Point GetCenterPoint()
          * Get the center point of the object.
          * Some actions like click, we need to find the center point, and move mouse to the point.
@@ -794,6 +806,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         #endregion
 
         #region private methods
+
+        protected override void SetIdenProperties()
+        {
+            base.SetIdenProperties();
+            this._idenProperties.Add(TestConstants.PROPERTY_VISIBLE);
+        }
 
         protected virtual void PerformClick()
         {

@@ -47,7 +47,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _innerText;
         protected string _innerHTML;
         protected string _outterText;
-        protected string _outterHTML;   
+        protected string _outterHTML;
 
         protected IHTMLElement _sourceElement;
         protected HTMLTestPage _page;
