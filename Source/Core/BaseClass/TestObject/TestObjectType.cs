@@ -8,9 +8,9 @@ using Shrinerain.AutoTester.Core.Interface;
 namespace Shrinerain.AutoTester.Core
 {
     //defines the supported types.
-    public class TestObjectType
+    public class TestObjectType : ITestObjectType
     {
-        #region fields
+        #region types
 
         public const String Unknown = "UnKnown";
         public const String AnyType = "AnyType";
@@ -25,19 +25,29 @@ namespace Shrinerain.AutoTester.Core
         public const String Image = "Image";
         public const String Table = "Table";
 
-        protected static List<String> _validTypes = new List<string>();
+        #endregion
+
+        #region fields
+
+        protected List<String> _validTypes = new List<string>();
 
         #endregion
 
+
         #region methods
 
-        static TestObjectType()
+        public TestObjectType()
+        {
+            SetValidType();
+        }
+
+        protected virtual void SetValidType()
         {
             FieldInfo[] fields = typeof(TestObjectType).GetFields();
             SetValidType(fields);
         }
 
-        protected static void SetValidType(FieldInfo[] fields)
+        protected virtual void SetValidType(FieldInfo[] fields)
         {
             foreach (FieldInfo fi in fields)
             {
@@ -52,20 +62,30 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
-        public static List<String> GetValidTypes()
+        public virtual String[] GetValidTypes()
         {
-            return _validTypes;
+            if (_validTypes != null)
+            {
+                return _validTypes.ToArray();
+            }
+
+            return null;
         }
 
-        public static bool IsValidType(String typeStr)
+        public virtual bool IsValidType(String typeStr)
         {
-            if (!String.IsNullOrEmpty(typeStr))
+            if (!String.IsNullOrEmpty(typeStr) && String.Compare(Unknown, typeStr, true) != 0)
             {
                 typeStr = typeStr.Trim().ToUpper();
                 return _validTypes.Contains(typeStr);
             }
 
             return false;
+        }
+
+        public virtual String GetImage(String type)
+        {
+            return null;
         }
 
         #endregion

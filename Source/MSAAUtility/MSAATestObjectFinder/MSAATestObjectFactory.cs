@@ -43,29 +43,29 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public static MSAATestObject BuildObject(IAccessible iAcc, int childID)
         {
-            MSAATestObject.Type type = GetObjectType(iAcc, childID);
+            String type = GetObjectType(iAcc, childID);
             return BuildObjectByType(iAcc, childID, type);
         }
 
-        public static MSAATestObject BuildObjectByType(IAccessible iAcc, int childID, MSAATestObject.Type type)
+        public static MSAATestObject BuildObjectByType(IAccessible iAcc, int childID, String type)
         {
-            if (type == MSAATestObject.Type.Button)
+            if (type == MSAATestObjectType.Button)
             {
                 return new MSAATestButton(iAcc, childID);
             }
-            else if (type == MSAATestObject.Type.TextBox)
+            else if (type == MSAATestObjectType.TextBox)
             {
                 return new MSAATestTextBox(iAcc, childID);
             }
-            else if (type == MSAATestObject.Type.CheckBox)
+            else if (type == MSAATestObjectType.CheckBox)
             {
                 return new MSAATestCheckBox(iAcc, childID);
             }
-            else if (type == MSAATestObject.Type.RadioBox)
+            else if (type == MSAATestObjectType.RadioBox)
             {
                 return new MSAATestRadioButton(iAcc, childID);
             }
-            else if (type == MSAATestObject.Type.ComboBox)
+            else if (type == MSAATestObjectType.ComboBox)
             {
                 return new MSAATestComboBox(iAcc, childID);
             }
@@ -76,7 +76,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         /* MSAATestObject.Type GetObjectType(IAccessible iAcc) 
          * return the acc object type.
          */
-        public static MSAATestObject.Type GetObjectType(IAccessible iAcc, int childID)
+        public static String GetObjectType(IAccessible iAcc, int childID)
         {
             if (iAcc != null && childID >= 0)
             {
@@ -88,7 +88,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     if (role == MSAATestObject.RoleType.PushButton || role == MSAATestObject.RoleType.SplitButton || role == MSAATestObject.RoleType.SpinButton)
                     {
-                        return MSAATestObject.Type.Button;
+                        return MSAATestObjectType.Button;
                     }
                     else if (role == MSAATestObject.RoleType.Text)
                     {
@@ -96,42 +96,42 @@ namespace Shrinerain.AutoTester.MSAAUtility
                         {
                             if (state.IndexOf("read only", StringComparison.CurrentCultureIgnoreCase) >= 0)
                             {
-                                return MSAATestObject.Type.Label;
+                                return MSAATestObjectType.Label;
                             }
                         }
                         else
                         {
                             if (action.IndexOf("Jump", StringComparison.CurrentCultureIgnoreCase) >= 0)
                             {
-                                return MSAATestObject.Type.Link;
+                                return MSAATestObjectType.Link;
                             }
                         }
 
-                        return MSAATestObject.Type.TextBox;
+                        return MSAATestObjectType.TextBox;
                     }
                     else if (role == MSAATestObject.RoleType.ComboBox || role == MSAATestObject.RoleType.DropList)
                     {
-                        return MSAATestObject.Type.ComboBox;
+                        return MSAATestObjectType.ComboBox;
                     }
                     else if (role == MSAATestObject.RoleType.RadioButton)
                     {
-                        return MSAATestObject.Type.RadioBox;
+                        return MSAATestObjectType.RadioBox;
                     }
                     else if (role == MSAATestObject.RoleType.CheckButton)
                     {
-                        return MSAATestObject.Type.CheckBox;
+                        return MSAATestObjectType.CheckBox;
                     }
                     else if (role == MSAATestObject.RoleType.StaticText)
                     {
-                        return MSAATestObject.Type.Label;
+                        return MSAATestObjectType.Label;
                     }
                     else if (role == MSAATestObject.RoleType.Table)
                     {
-                        return MSAATestObject.Type.Table;
+                        return MSAATestObjectType.Table;
                     }
                     else if (role == MSAATestObject.RoleType.Graphic)
                     {
-                        return MSAATestObject.Type.Image;
+                        return MSAATestObjectType.Image;
                     }
                 }
 
@@ -139,16 +139,16 @@ namespace Shrinerain.AutoTester.MSAAUtility
                 {
                     if (action.IndexOf("Press", StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
-                        return MSAATestObject.Type.Button;
+                        return MSAATestObjectType.Button;
                     }
                     else if (action.IndexOf("Collapse", StringComparison.CurrentCultureIgnoreCase) >= 0 || action.IndexOf("Expand", StringComparison.CurrentCultureIgnoreCase) >= 0)
                     {
-                        return MSAATestObject.Type.Tree;
+                        return MSAATestObjectType.Tree;
                     }
                 }
             }
 
-            return MSAATestObject.Type.Unknow;
+            return MSAATestObjectType.Unknown;
         }
 
         public static MSAATestObject.RoleType[] GetMSAATypeByString(string type)

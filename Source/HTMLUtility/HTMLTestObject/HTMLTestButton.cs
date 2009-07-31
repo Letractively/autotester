@@ -108,7 +108,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public override List<TestProperty> GetIdenProperties()
         {
             List<TestProperty> properties = base.GetIdenProperties();
-            properties.Add(new TestProperty(TestConstants.PROPERTY_CAPTION, _buttonCaption));
+            properties.Add(new TestProperty(HTMLTestConstants.PROPERTY_CAPTION, _buttonCaption));
             return properties;
         }
 

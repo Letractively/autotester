@@ -156,9 +156,7 @@ namespace Shrinerain.AutoTester.Core
                     else
                     {
                         object tpValue;
-                        if (TryGetProperty(tpName, out tpValue))
-                        {
-                        }
+                        TryGetProperty(tpName, out tpValue);
                         properties.Add(new TestProperty(tpName, tpValue == null ? "" : tpValue.ToString()));
                     }
                 }

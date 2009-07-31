@@ -37,7 +37,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
     {
         #region fields
 
-        public const string DOMAIN = "HTML";
+        public const string DOMAIN = HTMLTestConstants.DOMAIN_HTML;
 
         //tag for this object, like "A" ,"INPUT"...
         protected string _tag;
@@ -194,7 +194,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public override bool TryGetProperty(string propertyName, out object value)
         {
             value = null;
-            if (String.Compare(propertyName, TestConstants.PROPERTY_ID, true) == 0)
+            if (String.Compare(propertyName, HTMLTestConstants.PROPERTY_ID, true) == 0)
             {
                 if (!String.IsNullOrEmpty(_id))
                 {
@@ -202,7 +202,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return true;
                 }
             }
-            else if (String.Compare(propertyName, TestConstants.PROPERTY_NAME, true) == 0)
+            else if (String.Compare(propertyName, HTMLTestConstants.PROPERTY_NAME, true) == 0)
             {
                 if (!String.IsNullOrEmpty(_name))
                 {
@@ -210,7 +210,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return true;
                 }
             }
-            else if (String.Compare(propertyName, TestConstants.PROPERTY_TAG, true) == 0)
+            else if (String.Compare(propertyName, HTMLTestConstants.PROPERTY_TAG, true) == 0)
             {
                 if (!String.IsNullOrEmpty(_tag))
                 {
@@ -218,7 +218,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     return true;
                 }
             }
-            else if (String.Compare(propertyName, TestConstants.PROPERTY_TYPE, true) == 0)
+            else if (String.Compare(propertyName, HTMLTestConstants.PROPERTY_TYPE, true) == 0)
             {
                 if (!String.IsNullOrEmpty(_type.ToString()))
                 {
@@ -257,12 +257,12 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             base.SetIdenProperties();
 
-            this._idenProperties.Add(TestConstants.PROPERTY_TYPE);
-            this._idenProperties.Add(TestConstants.PROPERTY_TAG);
-            this._idenProperties.Add(TestConstants.PROPERTY_ID);
-            this._idenProperties.Add(TestConstants.PROPERTY_NAME);
-            this._idenProperties.Add(TestConstants.PROPERTY_CLASS);
-            this._idenProperties.Add(TestConstants.PROPERTY_OUTERHTML);
+            this._idenProperties.Add(HTMLTestConstants.PROPERTY_TYPE);
+            this._idenProperties.Add(HTMLTestConstants.PROPERTY_TAG);
+            this._idenProperties.Add(HTMLTestConstants.PROPERTY_ID);
+            this._idenProperties.Add(HTMLTestConstants.PROPERTY_NAME);
+            this._idenProperties.Add(HTMLTestConstants.PROPERTY_CLASS);
+            this._idenProperties.Add(HTMLTestConstants.PROPERTY_OUTERHTML);
         }
 
         /* bool TryGetValueByProperty(IHTMLElement element, string properyName)

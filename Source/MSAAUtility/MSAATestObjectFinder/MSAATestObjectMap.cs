@@ -3,12 +3,27 @@ using System.Collections.Generic;
 using System.Text;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.MSAAUtility
 {
     public class MSAATestObjectMap : TestObjectMap
     {
         #region fields
+
+        public override ITestObjectType ObjectType
+        {
+            get
+            {
+                if (_objType == null)
+                {
+                    _objType = new MSAATestObjectType();
+                }
+
+                return _objType;
+            }
+        }
+
         #endregion
 
         #region methods

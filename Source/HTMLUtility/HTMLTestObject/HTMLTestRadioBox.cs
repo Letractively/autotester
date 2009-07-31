@@ -71,8 +71,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public override List<TestProperty> GetIdenProperties()
         {
             List<TestProperty> properties = base.GetIdenProperties();
-            properties.Add(new TestProperty(TestConstants.PROPERTY_LABEL, GetLabel()));
-            properties.Add(new TestProperty(TestConstants.PROPERTY_ISCHECKED, IsChecked().ToString()));
+            properties.Add(new TestProperty(HTMLTestConstants.PROPERTY_LABEL, GetLabel()));
+            properties.Add(new TestProperty(HTMLTestConstants.PROPERTY_ISCHECKED, IsChecked().ToString()));
             return properties;
         }
 

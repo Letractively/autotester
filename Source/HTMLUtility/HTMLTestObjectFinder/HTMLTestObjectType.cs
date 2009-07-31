@@ -19,20 +19,15 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         #region methods
 
-        static HTMLTestObjectType()
+        public HTMLTestObjectType()
         {
+        }
+
+        protected override void SetValidType()
+        {
+            base.SetValidType();
             FieldInfo[] fields = typeof(HTMLTestObjectType).GetFields();
             SetValidType(fields);
-        }
-
-        public static List<String> GetValidTypes()
-        {
-            return TestObjectType.GetValidTypes();
-        }
-
-        public static bool IsValidType(String typeStr)
-        {
-            return TestObjectType.IsValidType(typeStr);
         }
 
         #endregion

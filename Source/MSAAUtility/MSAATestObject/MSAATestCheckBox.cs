@@ -279,7 +279,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         protected override void GetMSAAInfo()
         {
-            this._type = Type.CheckBox;
+            this._type = MSAATestObjectType.CheckBox;
             base.GetMSAAInfo();
         }
         #endregion
