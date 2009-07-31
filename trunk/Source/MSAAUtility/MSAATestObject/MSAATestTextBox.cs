@@ -222,7 +222,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
         #region private methods
         protected override void GetMSAAInfo()
         {
-            this._type = Type.TextBox;
+            this._type = MSAATestObjectType.TextBox;
             base.GetMSAAInfo();
 
             if (this._state.IndexOf("Protected") >= 0)

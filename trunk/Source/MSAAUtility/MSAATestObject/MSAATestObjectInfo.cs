@@ -191,27 +191,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         #endregion
 
-        #region type
-        public enum Type
-        {
-            Unknow = 0,
-            Label, //display text, readonly
-            Button,
-            CheckBox, //check/uncheck 
-            RadioBox, //in a group, you can only check one.
-            TextBox,  //you can input something in it.
-            ComboBox, //a dropdown list.
-            ListBox,  //provide a list of items, you can select/unselect.
-            Table,    //a matrix.
-            Image,
-            Link,     //navigate to other controls.
-            Menu,
-            Tab, //MDI, like IE7, you can have more than 1 tab.
-            Tree,
-            ScrollBar
-        }
-        #endregion
-
         #region get information
         public static Object GetProperty(IAccessible iAcc, int childID, String propertyName)
         {

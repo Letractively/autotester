@@ -32,7 +32,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
     {
         #region fields
 
-        public const string DOMAIN = "MSAA";
+        public const string DOMAIN = MSAATestConstants.DOMAIN_MSAA;
 
         //MSAA interface.
         protected IAccessible _iAcc;
@@ -48,7 +48,6 @@ namespace Shrinerain.AutoTester.MSAAUtility
         protected String _state;
         protected String _value;
         protected IntPtr _handle;
-        protected Type _type;
 
         #endregion
 

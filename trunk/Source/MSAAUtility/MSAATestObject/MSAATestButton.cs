@@ -184,7 +184,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         protected override void GetMSAAInfo()
         {
-            this._type = Type.Button;
+            this._type = MSAATestObjectType.Button;
             base.GetMSAAInfo();
         }
 

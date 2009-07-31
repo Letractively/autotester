@@ -317,7 +317,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         protected override void GetMSAAInfo()
         {
-            this._type = Type.ComboBox;
+            this._type = MSAATestObjectType.ComboBox;
             base.GetMSAAInfo();
         }
 

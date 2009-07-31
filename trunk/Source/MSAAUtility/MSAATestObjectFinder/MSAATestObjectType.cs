@@ -28,18 +28,22 @@ namespace Shrinerain.AutoTester.MSAAUtility
         public const String PageTab = "PageTab";
         public const String ProgressBar = "ProgressBar";
         public const String Clock = "Clock";
+        public const String Tree = "Tree";
 
         #endregion
 
         #region methods
 
         public MSAATestObjectType()
-            : base()
         {
+        }
+
+        protected override void SetValidType()
+        {
+            base.SetValidType();
             FieldInfo[] fields = typeof(MSAATestObjectType).GetFields();
             SetValidType(fields);
         }
-
 
         #endregion
 

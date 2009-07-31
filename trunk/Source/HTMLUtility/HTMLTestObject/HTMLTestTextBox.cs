@@ -118,8 +118,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
             string label = GetLabel();
             string inputedText = GetText();
             label = String.Compare(label, inputedText, true) == 0 ? "" : label;
-            properties.Add(new TestProperty(TestConstants.PROPERTY_LABEL, label));
-            properties.Add(new TestProperty(TestConstants.PROPERTY_VALUE, inputedText));
+            properties.Add(new TestProperty(HTMLTestConstants.PROPERTY_LABEL, label));
+            properties.Add(new TestProperty(HTMLTestConstants.PROPERTY_VALUE, inputedText));
             return properties;
         }
 

@@ -33,25 +33,8 @@ namespace Shrinerain.AutoTester.Core
         #region properties
 
         public const string PROPERTY_DOMAIN = "Domain";
-        public const string PROPERTY_HTML = "HTML";
-        public const string PROPERTY_MSAA = "MSAA";
         public const string PROPERTY_URL = "URL";
-
-        public const string PROPERTY_ID = "ID";
-        public const string PROPERTY_NAME = "Name";
-        public const string PROPERTY_TAG = "Tag";
-        public const string PROPERTY_TYPE = "Type";
-        public const string PROPERTY_INNERTEXT = "InnerText";
-        public const string PROPERTY_INNERHTML = "InnerHTML";
-        public const string PROPERTY_OUTERHTML = "OuterHTML";
-        public const string PROPERTY_OUTERTEXT = "OuterText";
-        public const string PROPERTY_CAPTION = "Caption";
-        public const string PROPERTY_LABEL = "Label";
-        public const string PROPERTY_VALUE = "Value";
-        public const string PROPERTY_ISCHECKED = "IsChecked";
-        public const string PROPERTY_CLASS = "Class";
         public const string PROPERTY_VISIBLE = "VisibleText";
-
 
         #endregion
 

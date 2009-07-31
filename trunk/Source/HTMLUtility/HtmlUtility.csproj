@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HTMLTestBrowser\HTMLTestPage.cs" />
+    <Compile Include="HTMLTestConstants.cs" />
     <Compile Include="HTMLTestEvent\HTMLTestEventDispatcher.cs" />
     <Compile Include="HTMLTestEvent\HTMLTestEventMonitor.cs" />
     <Compile Include="HTMLTestObjectFinder\HTMLTestObjectFactory.cs" />

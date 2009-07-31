@@ -284,7 +284,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         protected override void GetMSAAInfo()
         {
-            this._type = Type.RadioBox;
+            this._type = MSAATestObjectType.RadioBox;
             base.GetMSAAInfo();
         }
 

@@ -3,11 +3,30 @@ using System.Collections.Generic;
 using System.Text;
 
 using Shrinerain.AutoTester.Core;
+using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.HTMLUtility
 {
     public class HTMLTestObjectMap : TestObjectMap
     {
+
+        #region properties
+
+        public override ITestObjectType ObjectType
+        {
+            get
+            {
+                if (_objType == null)
+                {
+                    _objType = new HTMLTestObjectType();
+                }
+
+                return _objType;
+            }
+        }
+
+        #endregion
+
         #region
 
         public HTMLTestObjectMap(HTMLTestObjectPool pool)
