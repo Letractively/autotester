@@ -91,8 +91,6 @@ namespace Shrinerain.AutoTester.Core.Interface
         //other information
         string GetAppName();
         string GetVersion();
-        string GetCompany();
-        string GetAuthor();
 
         ITestWindow[] AllWindows();
         ITestWindow Window(int index);

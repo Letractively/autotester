@@ -77,6 +77,7 @@
     <Compile Include="HTMLTestObject\HTMLTestTextBox.cs" />
     <Compile Include="HTMLTestCheckPoint.cs" />
     <Compile Include="HTMLTestBrowser\HTMLTestBrowser.cs" />
+    <Compile Include="HTMLTestPlugin.cs" />
     <Compile Include="HTMLTestSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
