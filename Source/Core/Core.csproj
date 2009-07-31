@@ -67,6 +67,7 @@
     <Compile Include="BaseClass\TestException\TestWindowException.cs" />
     <Compile Include="BaseClass\TestObject\TestObjectMap.cs" />
     <Compile Include="BaseClass\TestObject\TestObjectType.cs" />
+    <Compile Include="BaseClass\TestPluginManager.cs" />
     <Compile Include="BaseClass\TestSession.cs" />
     <Compile Include="BaseClass\TestObject\TestProperty.cs" />
     <Compile Include="Helper\COMUtil.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="Interface\ITestObjectMap.cs" />
     <Compile Include="Interface\ITestObjectType.cs" />
     <Compile Include="Interface\ITestPage.cs" />
+    <Compile Include="Interface\ITestPlugin.cs" />
     <Compile Include="Interface\ITestSession.cs" />
     <Compile Include="Interface\ITestWindow.cs" />
     <Compile Include="BaseClass\TestObject\Interface\ICheckable.cs" />

@@ -717,16 +717,6 @@ namespace Shrinerain.AutoTester.Core
             return this._appVersion;
         }
 
-        public virtual string GetCompany()
-        {
-            return this._appCompany;
-        }
-
-        public virtual string GetAuthor()
-        {
-            return this._appAuthor;
-        }
-
         #endregion
 
         #endregion

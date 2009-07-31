@@ -58,6 +58,7 @@
     <Compile Include="MSAATestObject\MSAATestObjectInfo.cs" />
     <Compile Include="MSAATestObject\MSAATestRadioButton.cs" />
     <Compile Include="MSAATestObject\MSAATestTextBox.cs" />
+    <Compile Include="MSAATestPlugin.cs" />
     <Compile Include="MSAATestSession.cs" />
     <Compile Include="MSAATestApp\MSAATestWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
