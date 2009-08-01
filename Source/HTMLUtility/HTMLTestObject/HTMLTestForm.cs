@@ -119,6 +119,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return false;
         }
 
+        public override bool IsReadyForAction()
+        {
+            return IsEnable() && IsReadonly() && IsReady();
+        }
+
         #region IInteractive Members
 
         public string GetAction()
