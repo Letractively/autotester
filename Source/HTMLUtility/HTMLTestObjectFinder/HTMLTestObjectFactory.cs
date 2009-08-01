@@ -120,7 +120,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             switch (type)
             {
                 case HTMLTestObjectType.Label:
-                    res = new string[] { "label", "span", "font" };
+                    res = new string[] { "label", "span" };
                     break;
                 case HTMLTestObjectType.Link:
                     res = new string[] { "a" };
@@ -185,7 +185,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 return HTMLTestObjectType.Link;
             }
-            else if (tag == "SPAN" || tag == "LABEL" || tag == "FONT")
+            else if (tag == "SPAN" || tag == "LABEL")
             {
                 return HTMLTestObjectType.Label;
             }

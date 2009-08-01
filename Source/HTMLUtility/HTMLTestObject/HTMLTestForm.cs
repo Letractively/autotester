@@ -114,6 +114,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public override bool IsVisible()
+        {
+            return false;
+        }
+
         #region IInteractive Members
 
         public string GetAction()
