@@ -115,6 +115,115 @@ namespace Shrinerain.AutoTester.Core.Helper
             return IntPtr.Zero;
         }
 
+        /* IntPtr GetIEMainHandle()
+      * return the handle of IEFrame, this is the parent handle of Internet Explorer. 
+      * we can use Spy++ to get the the handle.
+      */
+        public static IntPtr GetIEMainHandle()
+        {
+            return Win32API.FindWindow(TestConstants.IE_IEframe, null);
+        }
+
+        /* IntPtr GetShellDocHandle(IntPtr mainHandle)
+         * return the handle of Shell DocObject View.
+         * we can use Spy++ to get the tree structrue of Internet Explorer handles. 
+         */
+        public static IntPtr GetShellDocHandle(IntPtr mainHandle, int ieVersion)
+        {
+            if (mainHandle == IntPtr.Zero)
+            {
+                mainHandle = GetIEMainHandle();
+            }
+
+            IntPtr shellDocHandle = IntPtr.Zero;
+
+            //lower version than IE 7.0
+            if (ieVersion < 7)
+            {
+                shellDocHandle = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
+            }
+            else if (ieVersion == 7)
+            {
+                IntPtr tabWindow = IntPtr.Zero;
+                //get the active tab.
+                while (!Win32API.IsWindowVisible(tabWindow))
+                {
+                    tabWindow = Win32API.FindWindowEx(mainHandle, tabWindow, TestConstants.IE_TabWindow_Class, null);
+                }
+
+                shellDocHandle = Win32API.FindWindowEx(tabWindow, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
+            }
+            else if (ieVersion == 8)
+            {
+                IntPtr frame = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, TestConstants.IE_FrameTab_Class, null);
+
+                if (frame != IntPtr.Zero)
+                {
+                    IntPtr tabWindow = IntPtr.Zero;
+                    //get the active tab.
+                    while (!Win32API.IsWindowVisible(tabWindow))
+                    {
+                        tabWindow = Win32API.FindWindowEx(frame, tabWindow, TestConstants.IE_TabWindow_Class, null);
+                    }
+                    shellDocHandle = Win32API.FindWindowEx(tabWindow, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
+                }
+            }
+
+            return shellDocHandle;
+        }
+
+        /* IntPtr GetIEServerHandle(IntPtr shellHandle)
+         * return the handle of Internet Explorer_Server.
+         * This control is used to display web page.
+         */
+        public static IntPtr GetIEServerHandle(IntPtr shellHandle, int ieVersion)
+        {
+            if (shellHandle == IntPtr.Zero)
+            {
+                shellHandle = GetShellDocHandle(IntPtr.Zero, ieVersion);
+            }
+
+            return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, TestConstants.IE_Server_Class, null);
+        }
+
+        /* IntPtr GetDialogHandle(IntPtr mainHandle)
+         * return the handle of pop up page.
+         * the name is Internet Explorer_TridentDlgFrame.
+         */
+        public static IntPtr GetDialogHandle(IntPtr mainHandle)
+        {
+            if (mainHandle == IntPtr.Zero)
+            {
+                mainHandle = GetIEMainHandle();
+            }
+
+            IntPtr popHandle = Win32API.FindWindow(TestConstants.IE_Dialog_Class, null);
+            if (popHandle != IntPtr.Zero)
+            {
+                IntPtr parentHandle = Win32API.GetParent(popHandle);
+                if (parentHandle == mainHandle)
+                {
+                    return popHandle;
+                }
+            }
+
+            return IntPtr.Zero;
+        }
+
+        public static IntPtr GetTabHandle(IntPtr mainHandle, int ieVersion)
+        {
+            if (ieVersion > 6 && mainHandle != IntPtr.Zero)
+            {
+                IntPtr directUI = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, "CommandBarClass", null);
+                directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "ReBarWindow32", null);
+                directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "TabBandClass", null);
+                directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "DirectUIHWND", null);
+                return directUI;
+            }
+
+            return IntPtr.Zero;
+        }
+
         #endregion
 
         #endregion
