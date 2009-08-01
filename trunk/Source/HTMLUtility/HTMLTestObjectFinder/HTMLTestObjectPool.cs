@@ -778,7 +778,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         private IHTMLElement[] GetAllElements()
         {
-            this._allElements = this._htmlTestPage.GetAllHTMLElements();
+            this._allElements = this._htmlTestPage.GetAllElements();
             return this._allElements;
         }
 

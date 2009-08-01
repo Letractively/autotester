@@ -23,6 +23,12 @@ namespace Shrinerain.AutoTester.Core.Interface
         ITestDocument[] GetAllDocuments();
         String GetAllHTMLContent();
 
+        Object GetElementByID(String id);
+        Object GetElementByPoint(int x, int y);
+        Object[] GetElementsByName(string name);
+        Object[] GetElementsByTagName(String tag);
+        Object[] GetAllElements();
+
         ITestObjectPool GetObjectPool();
         ITestObjectMap GetObjectMap();
     }

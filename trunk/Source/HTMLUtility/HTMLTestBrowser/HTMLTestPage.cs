@@ -17,6 +17,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private HTMLTestDocument _htmlDoc;
         private HTMLTestObjectPool _objPool;
+        private HTMLTestObjectMap _htmlMap;
 
         #endregion
 
@@ -26,7 +27,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         {
             get
             {
-                return GetObjectMap() as HTMLTestObjectMap;
+                return _htmlMap;
             }
         }
 
@@ -85,166 +86,29 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return allDocuments;
         }
 
-        public IHTMLElement[] GetAllHTMLElements()
+        public new IHTMLElement GetElementByID(String id)
         {
-            if (_rootDocument == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-            try
-            {
-                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                ITestDocument[] allDocs = GetAllDocuments();
-                foreach (HTMLTestDocument doc in allDocs)
-                {
-                    try
-                    {
-                        IHTMLElement[] elements = doc.GetAllElements() as IHTMLElement[];
-                        allObjectList.AddRange(elements);
-                    }
-                    catch
-                    {
-                    }
-                }
-
-                return allObjectList.ToArray();
-
-            }
-            catch (Exception ex)
-            {
-                throw new ObjectNotFoundException("Can not get all objects: " + ex.ToString());
-            }
+            return base.GetElementByID(id) as IHTMLElement;
         }
 
-        /* IHTMLElement GetObjectByID(string id)
-         * return element by .id property.
-         */
-        public IHTMLElement GetElementByID(string id)
+        public new IHTMLElement GetElementByPoint(int x, int y)
         {
-            if (String.IsNullOrEmpty(id))
-            {
-                throw new PropertyNotFoundException("ID can not be null.");
-            }
-            if (_rootDocument == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-            try
-            {
-                IHTMLElement element = _htmlDoc.GetElementByID(id) as IHTMLElement;
-                if (element == null)
-                {
-                    ITestDocument[] allDocs = GetAllDocuments();
-                    foreach (HTMLTestDocument doc in allDocs)
-                    {
-                        element = doc.GetElementByID(id) as IHTMLElement;
-                        if (element != null)
-                        {
-                            return element;
-                        }
-                    }
-                }
-
-                return element;
-            }
-            catch (Exception ex)
-            {
-                throw new ObjectNotFoundException("Can not found test object by id:" + id + ": " + ex.ToString());
-            }
+            return GetElementByPoint(x, y) as IHTMLElement;
         }
 
-        /* IHTMLElementCollection GetObjectsByName(string name)
-         * return elements by .name property.
-         */
-        public IHTMLElement[] GetElementsByName(string name)
+        public new IHTMLElement[] GetElementsByName(string name)
         {
-            if (String.IsNullOrEmpty(name))
-            {
-                throw new PropertyNotFoundException("Name can not be null.");
-            }
-
-            if (_rootDocument == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-
-            try
-            {
-                name = name.ToUpper();
-                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                ITestDocument[] allDocs = GetAllDocuments();
-                foreach (HTMLTestDocument doc in allDocs)
-                {
-                    try
-                    {
-                        IHTMLElement[] res = doc.GetElementsByName(name) as IHTMLElement[];
-                        allObjectList.AddRange(res);
-                    }
-                    catch
-                    {
-                    }
-                }
-                return allObjectList.ToArray();
-            }
-            catch (Exception ex)
-            {
-                throw new ObjectNotFoundException("Can not found test object by name:" + name + ":" + ex.ToString());
-            }
+            return base.GetElementsByName(name) as IHTMLElement[];
         }
 
-        /* IHTMLElementCollection GetObjectsByTagName(string name)
-         * return elements by tag, eg: <a> will return all link.
-         */
-        public IHTMLElement[] GetElementsByTagName(string tag)
+        public new IHTMLElement[] GetElementsByTagName(String tag)
         {
-            if (String.IsNullOrEmpty(tag))
-            {
-                throw new PropertyNotFoundException("Tag name can not be null.");
-            }
-
-            if (_rootDocument == null)
-            {
-                throw new BrowserNotFoundException();
-            }
-
-            try
-            {
-                tag = tag.ToUpper();
-
-                List<IHTMLElement> allObjectList = new List<IHTMLElement>();
-                ITestDocument[] allDocs = GetAllDocuments();
-                foreach (HTMLTestDocument doc in allDocs)
-                {
-                    try
-                    {
-                        IHTMLElement[] res = doc.GetElementsByTagName(tag) as IHTMLElement[];
-                        allObjectList.AddRange(res);
-                    }
-                    catch
-                    {
-                    }
-                }
-                return allObjectList.ToArray();
-            }
-            catch (Exception ex)
-            {
-                throw new ObjectNotFoundException("Can not found test object by tag name:" + tag + ":" + ex.ToString());
-            }
+            return base.GetElementsByTagName(tag) as IHTMLElement[];
         }
 
-        /* IHTMLElement GetObjectFromPoint(int x, int y)
-         * return element at expected point.
-         */
-        public IHTMLElement GetElementByPoint(int x, int y)
+        public new IHTMLElement[] GetAllElements()
         {
-            try
-            {
-                return _htmlDoc.GetElementByPoint(x, y) as IHTMLElement;
-            }
-            catch (Exception ex)
-            {
-                throw new ObjectNotFoundException("Can not found object at point: (" + x.ToString() + "," + y.ToString() + "): " + ex.ToString());
-            }
+            return base.GetAllElements() as IHTMLElement[];
         }
 
         public override ITestObjectPool GetObjectPool()
@@ -259,14 +123,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public override ITestObjectMap GetObjectMap()
         {
-            if (_objMap == null)
+            if (_htmlMap == null)
             {
                 HTMLTestObjectPool pool = GetObjectPool() as HTMLTestObjectPool;
                 pool.SetTestPage(this);
-                _objMap = new HTMLTestObjectMap(pool);
+                _htmlMap = new HTMLTestObjectMap(pool);
             }
 
-            return _objMap;
+            return _htmlMap;
         }
 
         #endregion
