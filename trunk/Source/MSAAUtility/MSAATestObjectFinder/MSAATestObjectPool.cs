@@ -274,7 +274,7 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         }
 
-        public TestObject GetObjectByPoint(int x, int y)
+        public TestObject GetObjectByPoint(int x, int y, bool isAbsPosition)
         {
             //we will try 30s to find an object.
             int times = 0;

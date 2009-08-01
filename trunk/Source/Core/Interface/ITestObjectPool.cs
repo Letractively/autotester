@@ -52,7 +52,7 @@ namespace Shrinerain.AutoTester.Core.Interface
         /* GetObjectByPoint(int x, int y);
          * find object at specfic point.
          */
-        TestObject GetObjectByPoint(int x, int y);
+        TestObject GetObjectByPoint(int x, int y, bool isAbsolutePosition);
 
         /* Object GetObjectByRect(int top, int left, int width, int height, string typeStr, bool isPercent);
          * find object by specfic rect, type means what type of the object you want return, eg: button
@@ -77,6 +77,6 @@ namespace Shrinerain.AutoTester.Core.Interface
 
         int SearchTimeout { set; get; }
 
-        bool FuzzySearch{ set; get; }
+        bool FuzzySearch { set; get; }
     }
 }

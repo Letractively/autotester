@@ -22,9 +22,9 @@ namespace Shrinerain.AutoTester.MSAAUtility
             return "MSAA";
         }
 
-        public string GetPluginType()
+        public TestPluginAppType GetPluginType()
         {
-            return "All";
+            return TestPluginAppType.Windows;
         }
 
         public string GetPluginVersion()

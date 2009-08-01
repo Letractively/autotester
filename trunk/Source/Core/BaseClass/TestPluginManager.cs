@@ -6,6 +6,12 @@ using Shrinerain.AutoTester.Core.Interface;
 
 namespace Shrinerain.AutoTester.Core
 {
+    public enum TestPluginAppType
+    {
+        Web,
+        Windows
+    }
+
     public class TestPluginManager
     {
         #region fields

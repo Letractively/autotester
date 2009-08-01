@@ -257,6 +257,40 @@ namespace Shrinerain.AutoTester.Core
             }
         }
 
+        public override void Find(IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                throw new BrowserNotFoundException("Handle can not be 0.");
+            }
+
+            IntPtr oriHandle = handle;
+
+            string title = null;
+            while (handle != IntPtr.Zero)
+            {
+                String className = Win32API.GetClassName(handle);
+                if (String.Compare(className, TestConstants.IE_IEframe, true) == 0)
+                {
+                    title = Win32API.GetWindowText(handle);
+                    break;
+                }
+                else
+                {
+                    handle = Win32API.GetParent(handle);
+                }
+            }
+
+            if (!String.IsNullOrEmpty(title))
+            {
+                Find(title);
+            }
+            else
+            {
+                throw new BrowserNotFoundException("Can not find browser by handle: " + oriHandle);
+            }
+        }
+
         /*  void Find(object browserTitle)
          *  find an instance of browser by its title.
          *  eg: Google.com.
@@ -284,7 +318,7 @@ namespace Shrinerain.AutoTester.Core
                 InternetExplorer ie = WaitForBrowserExist(title, url, isRegex);
                 if (ie != null)
                 {
-                    AttachBrowser(_browser);
+                    AttachBrowser(ie);
                 }
                 else
                 {
@@ -1132,21 +1166,24 @@ namespace Shrinerain.AutoTester.Core
             }
 
             //get all shell browser.
-            InternetExplorer[] allBrowsers = GetAllBrowsers();
-            if (allBrowsers != null && allBrowsers.Length > 0)
+            SHDocVw.ShellWindows allBrowsers = new ShellWindows();
+            if (allBrowsers.Count > 0)
             {
-                for (int i = 0; i < allBrowsers.Length; i++)
+                for (int i = allBrowsers.Count - 1; i >= 0; i--)
                 {
-                    InternetExplorer tempIE = allBrowsers[i];
                     try
                     {
-                        if (tempIE != null && tempIE.HWND != 0)
+                        InternetExplorer curIE = (InternetExplorer)allBrowsers.Item(i);
+                        if (curIE != null && curIE.Document is IHTMLDocument)
                         {
-                            int pid = 0;
-                            Win32API.GetWindowThreadProcessId((IntPtr)tempIE.HWND, out pid);
-                            if (processID == pid)
+                            if (curIE.HWND != 0)
                             {
-                                return tempIE;
+                                int pid = 0;
+                                Win32API.GetWindowThreadProcessId((IntPtr)curIE.HWND, out pid);
+                                if (processID == pid)
+                                {
+                                    return curIE;
+                                }
                             }
                         }
                     }

@@ -8,7 +8,7 @@ namespace Shrinerain.AutoTester.Core.Interface
     {
         String GetPluginID();
         String GetPluginName();
-        String GetPluginType();
+        TestPluginAppType GetPluginType();
         String GetPluginVersion();
         String GetPluginFileName();
 

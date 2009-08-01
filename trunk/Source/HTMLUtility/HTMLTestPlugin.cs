@@ -22,9 +22,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             return "HTML";
         }
 
-        public string GetPluginType()
+        public TestPluginAppType GetPluginType()
         {
-            return "Web";
+            return TestPluginAppType.Web;
         }
 
         public string GetPluginVersion()

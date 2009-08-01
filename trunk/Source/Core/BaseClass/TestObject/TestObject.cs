@@ -24,12 +24,15 @@ namespace Shrinerain.AutoTester.Core
     using System.Text;
     using System.Runtime.Serialization;
 
+    using Shrinerain.AutoTester.Core.Interface;
+
     [Serializable]
-    public class TestObject : IProperty
+    public class TestObject : ITestObject
     {
         #region fields
 
-        protected TestApp _parentApp;
+        protected ITestWindow _parentWindow;
+        protected ITestPage _parentPage;
 
         //domain means the object type, eg: Win32
         protected string _domain;
@@ -51,10 +54,14 @@ namespace Shrinerain.AutoTester.Core
             get { return _type; }
         }
 
-        public TestApp ParentApp
+        public ITestWindow ParentWindow
         {
-            get { return _parentApp; }
-            set { _parentApp = value; }
+            get { return _parentWindow; }
+        }
+
+        public ITestPage ParentPage
+        {
+            get { return _parentPage; }
         }
 
         #endregion
@@ -62,18 +69,31 @@ namespace Shrinerain.AutoTester.Core
         #region public methods
 
         public TestObject()
-            : this(null)
+        {
+            SetIdenProperties();
+        }
+
+        public TestObject(ITestWindow window)
+            : this(window, "Unknow")
         {
         }
 
-        public TestObject(TestApp app)
-            : this(app, "Unknow")
+        public TestObject(ITestPage page)
+            : this(page, "Unknow")
         {
         }
 
-        public TestObject(TestApp app, String domain)
+        public TestObject(ITestWindow window, String domain)
         {
-            this._parentApp = app;
+            this._parentWindow = window;
+            this._domain = domain;
+
+            SetIdenProperties();
+        }
+
+        public TestObject(ITestPage page, String domain)
+        {
+            this._parentPage = page;
             this._domain = domain;
 
             SetIdenProperties();
@@ -179,15 +199,6 @@ namespace Shrinerain.AutoTester.Core
 
             return sb.ToString();
         }
-
-        #endregion
-
-        #region actions
-
-
-        #endregion
-
-        #region parent and children
 
         #endregion
 

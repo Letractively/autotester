@@ -21,6 +21,7 @@ using System.Threading;
 
 using mshtml;
 
+using Shrinerain.AutoTester.MSAAUtility;
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.Core.TestExceptions;
 using Shrinerain.AutoTester.Core.Helper;
@@ -587,9 +588,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
          * x, y is the offset with browser, NOT screen.
          * 
          */
-        public TestObject GetObjectByPoint(int x, int y)
+        public TestObject GetObjectByPoint(int x, int y, bool isAbsolutePosition)
         {
             BeforeObjectFound();
+
+            if (isAbsolutePosition)
+            {
+                IHTMLDocument doc = (this._htmlTestPage.Document as HTMLTestDocument).Document;
+                IHTMLElement body = (doc as IHTMLDocument2).body;
+                MSAATestObject docObj = new MSAATestObject(body);
+                System.Drawing.Rectangle rect = docObj.GetRect();
+                x = x - rect.Left;
+                y = y - rect.Top;
+            }
 
             int times = 0;
             while (times <= _searchTimeout)
@@ -671,7 +682,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     if (i == 0)
                     {
-                        tmpObj[0] = (HTMLTestGUIObject)GetObjectByPoint(x, y);
+                        tmpObj[0] = (HTMLTestGUIObject)GetObjectByPoint(x, y, false);
                     }
                     else if (width > 3 && height > 3)
                     {
