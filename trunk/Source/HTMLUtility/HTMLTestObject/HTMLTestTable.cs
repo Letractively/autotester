@@ -37,6 +37,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected int _rowCount;
         protected int _colCount;
 
+        protected int _border;
         #endregion
 
         #region properties
@@ -68,6 +69,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 _tableElement = (IHTMLTable)element;
+                _border = _tableElement.border == null ? 0 : Convert.ToInt32(_tableElement.border);
             }
             catch (Exception ex)
             {
@@ -227,6 +229,11 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new ObjectNotFoundException("Can not get objects by cell[" + row.ToString() + "],[" + col.ToString() + "]: " + ex.ToString());
             }
+        }
+
+        public override bool IsVisible()
+        {
+            return base.IsVisible() && _border != 0;
         }
 
         #endregion

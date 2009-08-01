@@ -35,8 +35,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected IHTMLLabelElement _labelElement;
         //<span>
         protected IHTMLSpanElement _spanElement;
-        //<font>
-        protected IHTMLFontElement _fontElement;
 
         protected string _styleStr;
         #endregion
@@ -68,11 +66,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 {
                     _spanElement = (IHTMLSpanElement)element;
                 }
-                else if (element.tagName == "FONT")
-                {
-                    _fontElement = (IHTMLFontElement)element;
-                }
-
             }
             catch (Exception ex)
             {
@@ -103,7 +96,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 string fontFamily = GetStyleProperty("font-family");
 
-                if (String.IsNullOrEmpty(fontFamily) && _fontElement != null)
+                if (String.IsNullOrEmpty(fontFamily))
                 {
                     if (!HTMLTestObject.TryGetProperty(this._sourceElement, "face", out fontFamily))
                     {
@@ -128,7 +121,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 string fontSize = GetStyleProperty("font-size");
-                if (String.IsNullOrEmpty(fontSize) && _fontElement != null)
+                if (String.IsNullOrEmpty(fontSize))
                 {
                     if (!HTMLTestObject.TryGetProperty(this._sourceElement, "size", out fontSize))
                     {
@@ -154,7 +147,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 string fontColor = GetStyleProperty("font-color");
 
-                if (String.IsNullOrEmpty(fontColor) && _fontElement != null)
+                if (String.IsNullOrEmpty(fontColor))
                 {
                     if (!HTMLTestObject.TryGetProperty(this._sourceElement, "color", out fontColor))
                     {
