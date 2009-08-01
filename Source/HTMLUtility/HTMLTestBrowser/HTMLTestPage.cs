@@ -30,6 +30,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public new HTMLTestDocument Document
+        {
+            get
+            {
+                return _htmlDoc;
+            }
+        }
+
         #endregion
 
         #region methods

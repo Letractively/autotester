@@ -83,6 +83,7 @@
     <Compile Include="Helper\WindowsAsstFunctions.cs" />
     <Compile Include="Interface\ITestDocument.cs" />
     <Compile Include="Interface\ITestEventDispatcher.cs" />
+    <Compile Include="Interface\ITestObject.cs" />
     <Compile Include="Interface\ITestObjectMap.cs" />
     <Compile Include="Interface\ITestObjectType.cs" />
     <Compile Include="Interface\ITestPage.cs" />
