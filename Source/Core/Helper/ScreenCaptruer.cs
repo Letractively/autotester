@@ -220,14 +220,49 @@ namespace Shrinerain.AutoTester.Core.Helper
             return CaptureScreenArea(rect.Left, rect.Top, rect.Width, rect.Height);
         }
 
+        public static void HighlightScreenRect(IntPtr handle, Rectangle rect, int mseconds)
+        {
+            int left = rect.Left;
+            int top = rect.Top;
+            int width = rect.Width;
+            int height = rect.Height;
+
+            if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
+            {
+                HighlightScreenRect(handle, left, top, width, height, mseconds);
+            }
+        }
+
+        public static void HighlightScreenRect(Rectangle rect, int mseconds)
+        {
+            int left = rect.Left;
+            int top = rect.Top;
+            int width = rect.Width;
+            int height = rect.Height;
+
+            if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
+            {
+                IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
+                HighlightScreenRect(handle, left, top, width, height, mseconds);
+            }
+        }
+
         public static void HighlightScreenRect(int left, int top, int width, int height, int mseconds)
+        {
+            if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
+            {
+                IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
+                HighlightScreenRect(handle, left, top, width, height, mseconds);
+            }
+        }
+
+        public static void HighlightScreenRect(IntPtr handle, int left, int top, int width, int height, int mseconds)
         {
             if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
             {
                 try
                 {
-                    IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
-                    IntPtr hDC = Win32API.GetWindowDC(handle);
+                    IntPtr hDC = Win32API.GetDC(handle);
                     using (Pen pen = new Pen(Color.Red, 2))
                     {
                         using (Graphics g = Graphics.FromHdc(hDC))
@@ -242,7 +277,7 @@ namespace Shrinerain.AutoTester.Core.Helper
                     //refresh the window
                     Win32API.InvalidateRect(handle, IntPtr.Zero, 1);
                     Win32API.UpdateWindow(handle);
-                    Win32API.RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, Win32API.RDW_FRAME | Win32API.RDW_INVALIDATE | Win32API.RDW_UPDATENOW | Win32API.RDW_ALLCHILDREN);
+                    //Win32API.RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, Win32API.RDW_FRAME | Win32API.RDW_INVALIDATE | Win32API.RDW_UPDATENOW | Win32API.RDW_ALLCHILDREN);
                 }
                 catch (Exception ex)
                 {
@@ -250,6 +285,7 @@ namespace Shrinerain.AutoTester.Core.Helper
                 }
             }
         }
+
         #endregion
 
         #region private methods

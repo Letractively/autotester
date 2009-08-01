@@ -104,7 +104,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             return false;
                         }
 
-                        String curHTML = obj.Page.GetAllHTMLContent();
+                        String curHTML = obj.ParentPage.GetAllHTMLContent();
 
                         curHTML = _htmlTagReg.Replace(curHTML, "");
 

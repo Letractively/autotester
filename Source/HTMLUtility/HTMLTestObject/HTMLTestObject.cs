@@ -50,7 +50,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected string _outterHTML;
 
         protected IHTMLElement _sourceElement;
-        protected HTMLTestPage _page;
 
         protected IAccessible _pAcc;
 
@@ -105,9 +104,9 @@ namespace Shrinerain.AutoTester.HTMLUtility
             get { return _className; }
         }
 
-        public HTMLTestPage Page
+        public new HTMLTestPage ParentPage
         {
-            get { return _page; }
+            get { return _parentPage as HTMLTestPage; }
         }
 
         public IHTMLDocument Document
@@ -159,7 +158,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     this._name = "";
                 }
 
-                this._page = page;
+                this._parentPage = page;
             }
             catch (Exception ex)
             {
@@ -370,7 +369,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 try
                 {
                     IHTMLElement ele = this._sourceElement.parentElement;
-                    HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._page);
+                    HTMLTestObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._parentPage as HTMLTestPage);
                     return obj;
                 }
                 catch (TestException)
@@ -423,7 +422,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             try
                             {
                                 IHTMLElement ele = childrenElements.item(i, i) as IHTMLElement;
-                                HTMLTestGUIObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._page);
+                                HTMLTestGUIObject obj = HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._parentPage as HTMLTestPage);
                                 if (obj != null)
                                 {
                                     children.Add(obj);
@@ -461,7 +460,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                     if (childrenElements != null && childIndex < childrenElements.length)
                     {
                         IHTMLElement ele = childrenElements.item(childIndex, childIndex) as IHTMLElement;
-                        return HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._page);
+                        return HTMLTestObjectFactory.BuildHTMLTestObject(ele, this._parentPage as HTMLTestPage);
                     }
                 }
                 catch (TestException)

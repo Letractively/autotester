@@ -543,7 +543,7 @@ namespace Shrinerain.AutoTester.Core
                     return;
                 }
 
-                IntPtr tabHandle = GetTabHandle();
+                IntPtr tabHandle = WindowsAsstFunctions.GetTabHandle(_rootHandle, _majorVersion);
                 if (tabHandle != IntPtr.Zero)
                 {
                     IAccessible iAcc = null;
@@ -1347,13 +1347,12 @@ namespace Shrinerain.AutoTester.Core
          */
         protected void GetClientRect()
         {
-            _rootHandle = GetMainHandle();
             if (_rootHandle != IntPtr.Zero)
             {
-                _shellDocHandle = GetShellDocHandle(_rootHandle);
+                _shellDocHandle = WindowsAsstFunctions.GetShellDocHandle(_rootHandle, _majorVersion);
                 if (_shellDocHandle != IntPtr.Zero)
                 {
-                    _ieServerHandle = GetIEServerHandle(_shellDocHandle);
+                    _ieServerHandle = WindowsAsstFunctions.GetIEServerHandle(_shellDocHandle, _majorVersion);
                     if (_ieServerHandle != IntPtr.Zero)
                     {
                         try
@@ -1414,128 +1413,7 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region get handles of each windows control
-        /* IntPtr GetIEMainHandle()
-         * return the handle of IEFrame, this is the parent handle of Internet Explorer. 
-         * we can use Spy++ to get the the handle.
-         */
-        protected IntPtr GetMainHandle()
-        {
-            if (_rootHandle == IntPtr.Zero)
-            {
-                _rootHandle = Win32API.FindWindow(TestConstants.IE_IEframe, null);
-            }
 
-            return _rootHandle;
-        }
-
-        /* IntPtr GetShellDocHandle(IntPtr mainHandle)
-         * return the handle of Shell DocObject View.
-         * we can use Spy++ to get the tree structrue of Internet Explorer handles. 
-         */
-        protected IntPtr GetShellDocHandle(IntPtr mainHandle)
-        {
-            if (mainHandle == IntPtr.Zero)
-            {
-                mainHandle = GetMainHandle();
-            }
-
-            //lower version than IE 7.0
-            if (_majorVersion < 7)
-            {
-                _shellDocHandle = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
-            }
-            else if (_majorVersion == 7)
-            {
-                IntPtr tabWindow = IntPtr.Zero;
-                //get the active tab.
-                while (!Win32API.IsWindowVisible(tabWindow))
-                {
-                    tabWindow = Win32API.FindWindowEx(mainHandle, tabWindow, TestConstants.IE_TabWindow_Class, null);
-                }
-
-                _shellDocHandle = Win32API.FindWindowEx(tabWindow, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
-            }
-            else if (_majorVersion == 8)
-            {
-                IntPtr frame = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, TestConstants.IE_FrameTab_Class, null);
-
-                if (frame != IntPtr.Zero)
-                {
-                    IntPtr tabWindow = IntPtr.Zero;
-                    //get the active tab.
-                    if (_isHide)
-                    {
-                        tabWindow = Win32API.FindWindowEx(frame, tabWindow, TestConstants.IE_TabWindow_Class, null);
-                    }
-                    else
-                    {
-                        while (!Win32API.IsWindowVisible(tabWindow))
-                        {
-                            tabWindow = Win32API.FindWindowEx(frame, tabWindow, TestConstants.IE_TabWindow_Class, null);
-                        }
-                    }
-                    _shellDocHandle = Win32API.FindWindowEx(tabWindow, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
-                }
-            }
-
-            return _shellDocHandle;
-        }
-
-        /* IntPtr GetIEServerHandle(IntPtr shellHandle)
-         * return the handle of Internet Explorer_Server.
-         * This control is used to display web page.
-         */
-        protected IntPtr GetIEServerHandle(IntPtr shellHandle)
-        {
-            if (shellHandle == IntPtr.Zero)
-            {
-                shellHandle = GetShellDocHandle(IntPtr.Zero);
-            }
-
-            _ieServerHandle = Win32API.FindWindowEx(shellHandle, IntPtr.Zero, TestConstants.IE_Server_Class, null);
-            return _ieServerHandle;
-        }
-
-        /* IntPtr GetDialogHandle(IntPtr mainHandle)
-         * return the handle of pop up page.
-         * the name is Internet Explorer_TridentDlgFrame.
-         */
-        protected IntPtr GetDialogHandle(IntPtr mainHandle)
-        {
-            if (mainHandle == IntPtr.Zero)
-            {
-                mainHandle = GetMainHandle();
-            }
-
-            IntPtr popHandle = Win32API.FindWindow(TestConstants.IE_Dialog_Class, null);
-            if (popHandle != IntPtr.Zero)
-            {
-                IntPtr parentHandle = Win32API.GetParent(popHandle);
-                if (parentHandle == mainHandle)
-                {
-                    return popHandle;
-                }
-            }
-
-            return IntPtr.Zero;
-        }
-
-        private IntPtr GetTabHandle()
-        {
-            if (_tabHandle == IntPtr.Zero && GetBrowserMajorVersion() > 6)
-            {
-                IntPtr browserHandle = _rootHandle;
-                if (browserHandle != IntPtr.Zero)
-                {
-                    IntPtr directUI = Win32API.FindWindowEx(browserHandle, IntPtr.Zero, "CommandBarClass", null);
-                    directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "ReBarWindow32", null);
-                    directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "TabBandClass", null);
-                    directUI = Win32API.FindWindowEx(directUI, IntPtr.Zero, "DirectUIHWND", null);
-                    _tabHandle = directUI;
-                }
-            }
-            return _tabHandle;
-        }
 
         protected void CalPerformanceTime()
         {

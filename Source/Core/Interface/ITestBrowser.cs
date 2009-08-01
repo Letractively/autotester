@@ -52,6 +52,7 @@ namespace Shrinerain.AutoTester.Core.Interface
         //Browser information
         string GetBrowserName(); //get the  browser name, eg: Internet Explorer
         string GetBrowserVersion(); //get the browser version, eg: 7.0
+        int GetBrowserMajorVersion();
         string GetStatusText();
         string GetTitle();
         string GetUrl();

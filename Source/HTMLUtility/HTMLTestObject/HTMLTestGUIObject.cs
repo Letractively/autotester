@@ -46,6 +46,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected Rectangle _rect;
         protected MSAATestObject _rectObj;
 
+        protected IntPtr _ieServerHandle;
+
         //the center point of the object, this is very useful for GUI testing.
         //lot's of our actions we need move the mouse to the center point.
         protected Point _centerPoint;
@@ -206,6 +208,48 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public virtual Rectangle GetRectOnPage()
+        {
+            try
+            {
+                if (_rectObj == null)
+                {
+                    IHTMLElement tmp = this._sourceElement;
+                    while (tmp != null)
+                    {
+                        MSAATestObject obj = new MSAATestObject(tmp);
+                        if (obj.GetIAccInterface() != null)
+                        {
+                            _rectObj = obj;
+                            break;
+                        }
+                        else
+                        {
+                            tmp = tmp.parentElement;
+                        }
+                    }
+                }
+
+                Rectangle objRect = _rectObj.GetRect();
+
+                IntPtr ieServerHandle = GetIEServerHandle();
+                Win32API.Rect pageRect = new Win32API.Rect();
+                Win32API.GetWindowRect(ieServerHandle, ref pageRect);
+
+                int offsetLeft = objRect.Left - pageRect.left;
+                int offsetTop = objRect.Top - pageRect.top;
+
+                return new Rectangle(offsetLeft, offsetTop, objRect.Width, objRect.Height);
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotGetObjectPositionException("Can not get object position: " + ex.ToString());
+            }
+        }
 
         /* Bitmap GetControlPrint()
          * return the image of the object.
@@ -600,7 +644,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
                 else
                 {
-                    this.Page.Browser.Active();
+                    this.ParentPage.Browser.Active();
 
                     //if the object is not visible, then move it.
                     ScrollIntoView();
@@ -686,7 +730,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 BeforeAction();
-                ThreadPool.QueueUserWorkItem(HighLightRectCallback, null);
+
+                Rectangle pageRect = GetRectOnPage();
+                IntPtr ieServerHandle = GetIEServerHandle();
+                ScreenCaptruer.HighlightScreenRect(ieServerHandle, pageRect, 600);
             }
             catch (TestException)
             {
@@ -888,7 +935,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             int right = this._rect.X + this._rect.Width;
             int buttom = this._rect.Y + this._rect.Height;
 
-            HTMLTestBrowser browser = this.Page.Browser as HTMLTestBrowser;
+            HTMLTestBrowser browser = this.ParentPage.Browser as HTMLTestBrowser;
             int currentWidth = browser.ClientLeft + browser.ClientWidth;
             int currentHeight = browser.ClientTop + browser.ClientHeight;
 
@@ -906,26 +953,16 @@ namespace Shrinerain.AutoTester.HTMLUtility
             GetRectOnScreen();
         }
 
-        /* void HighLightRectCallback(Object obj)
-         * callback function to highlight the object.
-         */
-        protected virtual void HighLightRectCallback(Object obj)
+        protected IntPtr GetIEServerHandle()
         {
-            try
+            if (_ieServerHandle == IntPtr.Zero)
             {
-                GetRectOnScreen();
-
-                int left = this._rect.Left;
-                int top = this._rect.Top;
-                int width = this._rect.Width;
-                int height = this._rect.Height;
-
-                ScreenCaptruer.HighlightScreenRect(left, top, width, height, 1000);
+                int browserVersion = this.ParentPage.Browser.GetBrowserMajorVersion();
+                IntPtr shellHandle = WindowsAsstFunctions.GetShellDocHandle(this.ParentPage.Handle, browserVersion);
+                _ieServerHandle = WindowsAsstFunctions.GetIEServerHandle(shellHandle, browserVersion);
             }
-            catch (Exception ex)
-            {
-                throw new CannotHighlightObjectException("Can not high light object: " + ex.ToString());
-            }
+
+            return _ieServerHandle;
         }
 
         #endregion
