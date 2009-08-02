@@ -35,7 +35,7 @@ namespace Shrinerain.AutoTester.SpySharp
         private HTMLTestSession _ts;
         private IntPtr _lastHandle;
         private bool _isSupported;
-        private Point _lastMousePoint;
+        private TestObject _lastObj;
 
         #endregion
 
@@ -135,11 +135,6 @@ namespace Shrinerain.AutoTester.SpySharp
             try
             {
                 Point p = MouseOp.GetMousePos();
-                if (_lastMousePoint == p)
-                {
-                    return;
-                }
-                _lastMousePoint = p;
 
                 if (_html == null)
                 {
@@ -161,11 +156,21 @@ namespace Shrinerain.AutoTester.SpySharp
                 if (_isSupported)
                 {
                     TestObject obj = _ts.Objects.ObjectPool.GetObjectByPoint(p.X, p.Y, true);
-                    Thread t = new Thread(new ParameterizedThreadStart(SetText));
-                    t.Start(obj);
-                    Thread t2 = new Thread(new ParameterizedThreadStart(HighLight));
-                    t2.Start(obj);
-                    t2.Join();
+
+                    if (!obj.Equals(_lastObj))
+                    {
+                        Thread t = new Thread(new ParameterizedThreadStart(SetText));
+                        t.Start(obj);
+                        _lastObj = obj;
+                    }
+                    else
+                    {
+                        IVisible v = obj as IVisible;
+                        v.HighLight();
+                    }
+                    //Thread t2 = new Thread(new ParameterizedThreadStart(HighLight));
+                    //t2.Start(obj);
+                    //t2.Join();
                 }
             }
             catch
