@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Runtime.InteropServices;
 using System.Web;
 
 using mshtml;
@@ -550,6 +551,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 throw new CannotPerformActionException("Can not get ready status: " + ex.ToString());
             }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !(obj is HTMLTestObject))
+            {
+                return false;
+            }
+
+            HTMLTestObject htmlObj = obj as HTMLTestObject;
+            return Marshal.GetIUnknownForObject(htmlObj._sourceElement) == Marshal.GetIUnknownForObject(_sourceElement);
         }
 
         #endregion
