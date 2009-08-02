@@ -168,20 +168,11 @@ namespace Shrinerain.AutoTester.SpySharp
                         IVisible v = obj as IVisible;
                         v.HighLight();
                     }
-                    //Thread t2 = new Thread(new ParameterizedThreadStart(HighLight));
-                    //t2.Start(obj);
-                    //t2.Join();
                 }
             }
             catch
             {
             }
-        }
-
-        private void HighLight(Object obj)
-        {
-            IVisible v = obj as IVisible;
-            v.HighLight();
         }
 
         private void SetText(Object obj)
