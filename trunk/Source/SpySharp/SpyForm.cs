@@ -142,11 +142,12 @@ namespace Shrinerain.AutoTester.SpySharp
                     if (_ts == null)
                     {
                         _ts = _html.CreateTestSession() as HTMLTestSession;
+                        _ts.Browser.Find(curHandle);
                     }
 
-                    _ts.Browser.Find(curHandle);
-
                     TestObject obj = _ts.Objects.ObjectPool.GetObjectByPoint(p.X, p.Y, true);
+                    this.richTextBox1.Text = obj.ToString();
+
                     IVisible v = obj as IVisible;
                     v.HighLight();
                 }
