@@ -32,6 +32,9 @@ namespace Shrinerain.AutoTester.SpySharp
 
         private HTMLTestPlugin _html;
         private HTMLTestSession _ts;
+        private IntPtr _lastHandle;
+        private bool _isSupported;
+        private Point _lastMousePoint;
 
         #endregion
 
@@ -131,27 +134,37 @@ namespace Shrinerain.AutoTester.SpySharp
             try
             {
                 Point p = MouseOp.GetMousePos();
-                IntPtr curHandle = Win32API.WindowFromPoint(p.X, p.Y);
+                if (_lastMousePoint == p)
+                {
+                    return;
+                }
+                _lastMousePoint = p;
+
                 if (_html == null)
                 {
                     _html = new HTMLTestPlugin();
+                    _ts = _html.CreateTestSession() as HTMLTestSession;
                 }
 
-                if (_html.IsSupportedApp(curHandle))
+                IntPtr curHandle = Win32API.WindowFromPoint(p.X, p.Y);
+                if (curHandle != _lastHandle)
                 {
-                    if (_ts == null)
+                    _lastHandle = curHandle;
+                    _isSupported = _html.IsSupportedApp(curHandle);
+                    if (_isSupported)
                     {
-                        _ts = _html.CreateTestSession() as HTMLTestSession;
                         _ts.Browser.Find(curHandle);
                     }
+                }
 
+                if (_isSupported)
+                {
                     TestObject obj = _ts.Objects.ObjectPool.GetObjectByPoint(p.X, p.Y, true);
                     this.richTextBox1.Text = obj.ToString();
 
                     IVisible v = obj as IVisible;
                     v.HighLight();
                 }
-
             }
             catch
             {
