@@ -219,7 +219,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
             else if (String.Compare(propertyName, HTMLTestConstants.PROPERTY_TYPE, true) == 0)
             {
-                if (!String.IsNullOrEmpty(_type.ToString()))
+                if (!String.IsNullOrEmpty(_type))
                 {
                     value = _type.ToString();
                     return true;

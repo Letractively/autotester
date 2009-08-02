@@ -8,7 +8,6 @@
 *
 * Description: This class provide functions to get screen/window print.
 *
-* History: 2008/01/23 wan,yu Init version.
 *
 *********************************************************************/
 
@@ -198,14 +197,11 @@ namespace Shrinerain.AutoTester.Core.Helper
                 }
 
                 Rectangle controlRect = new Rectangle(left, top, width, height);
-
                 Image rectImg = new Bitmap(width, height);
-
-                Graphics g = Graphics.FromImage(rectImg);
-
-                g.CopyFromScreen(left, top, 0, 0, controlRect.Size);
-
-                g.Dispose();
+                using (Graphics g = Graphics.FromImage(rectImg))
+                {
+                    g.CopyFromScreen(left, top, 0, 0, controlRect.Size);
+                }
 
                 return rectImg;
             }
@@ -220,7 +216,7 @@ namespace Shrinerain.AutoTester.Core.Helper
             return CaptureScreenArea(rect.Left, rect.Top, rect.Width, rect.Height);
         }
 
-        public static void HighlightScreenRect(IntPtr handle, Rectangle rect, int mseconds)
+        public static void HighlightWindowRect(IntPtr handle, Rectangle rect, int mseconds)
         {
             int left = rect.Left;
             int top = rect.Top;
@@ -229,7 +225,7 @@ namespace Shrinerain.AutoTester.Core.Helper
 
             if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
             {
-                HighlightScreenRect(handle, left, top, width, height, mseconds);
+                HighlightWindowRect(handle, left, top, width, height, mseconds);
             }
         }
 
@@ -250,17 +246,17 @@ namespace Shrinerain.AutoTester.Core.Helper
         {
             if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
             {
-                IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
+                IntPtr handle = Win32API.WindowFromPoint(left + width / 2, top + height / 2);
                 Win32API.Rect windRect = new Win32API.Rect();
                 Win32API.GetWindowRect(handle, ref windRect);
 
                 left -= windRect.left;
                 top -= windRect.top;
-                HighlightScreenRect(handle, left, top, width, height, mseconds);
+                HighlightWindowRect(handle, left, top, width, height, mseconds);
             }
         }
 
-        public static void HighlightScreenRect(IntPtr handle, int left, int top, int width, int height, int mseconds)
+        public static void HighlightWindowRect(IntPtr handle, int left, int top, int width, int height, int mseconds)
         {
             if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
             {
@@ -281,7 +277,6 @@ namespace Shrinerain.AutoTester.Core.Helper
                     //refresh the window
                     Win32API.InvalidateRect(handle, IntPtr.Zero, 1);
                     Win32API.UpdateWindow(handle);
-                    //Win32API.RedrawWindow(handle, IntPtr.Zero, IntPtr.Zero, Win32API.RDW_FRAME | Win32API.RDW_INVALIDATE | Win32API.RDW_UPDATENOW | Win32API.RDW_ALLCHILDREN);
                 }
                 catch (Exception ex)
                 {

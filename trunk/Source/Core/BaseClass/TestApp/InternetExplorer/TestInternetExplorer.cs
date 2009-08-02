@@ -892,10 +892,7 @@ namespace Shrinerain.AutoTester.Core
         {
             if (String.IsNullOrEmpty(_version))
             {
-                using (Microsoft.Win32.RegistryKey versionKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(TestConstants.IE_Reg_Path))
-                {
-                    _version = versionKey.GetValue("Version").ToString();
-                }
+                _version = WindowsAsstFunctions.GetIEVersion();
             }
 
             return _version;
@@ -1349,10 +1346,10 @@ namespace Shrinerain.AutoTester.Core
         {
             if (_rootHandle != IntPtr.Zero)
             {
-                _shellDocHandle = WindowsAsstFunctions.GetShellDocHandle(_rootHandle, _majorVersion);
+                _shellDocHandle = WindowsAsstFunctions.GetShellDocHandle(_rootHandle);
                 if (_shellDocHandle != IntPtr.Zero)
                 {
-                    _ieServerHandle = WindowsAsstFunctions.GetIEServerHandle(_shellDocHandle, _majorVersion);
+                    _ieServerHandle = WindowsAsstFunctions.GetIEServerHandle(_shellDocHandle);
                     if (_ieServerHandle != IntPtr.Zero)
                     {
                         try

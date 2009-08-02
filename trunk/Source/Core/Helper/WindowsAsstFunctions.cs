@@ -9,7 +9,20 @@ namespace Shrinerain.AutoTester.Core.Helper
 {
     public sealed class WindowsAsstFunctions
     {
+        #region fields
+
+        private static String IE_Version;
+        private static int IE_MajorVersion = 0;
+
+        #endregion
+
         #region methods
+
+        static WindowsAsstFunctions()
+        {
+            IE_Version = GetIEVersion();
+            IE_MajorVersion = GetIEMajorVersion();
+        }
 
         #region private
 
@@ -128,7 +141,7 @@ namespace Shrinerain.AutoTester.Core.Helper
          * return the handle of Shell DocObject View.
          * we can use Spy++ to get the tree structrue of Internet Explorer handles. 
          */
-        public static IntPtr GetShellDocHandle(IntPtr mainHandle, int ieVersion)
+        public static IntPtr GetShellDocHandle(IntPtr mainHandle)
         {
             if (mainHandle == IntPtr.Zero)
             {
@@ -138,11 +151,11 @@ namespace Shrinerain.AutoTester.Core.Helper
             IntPtr shellDocHandle = IntPtr.Zero;
 
             //lower version than IE 7.0
-            if (ieVersion < 7)
+            if (IE_MajorVersion < 7)
             {
                 shellDocHandle = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
             }
-            else if (ieVersion == 7)
+            else if (IE_MajorVersion == 7)
             {
                 IntPtr tabWindow = IntPtr.Zero;
                 //get the active tab.
@@ -153,7 +166,7 @@ namespace Shrinerain.AutoTester.Core.Helper
 
                 shellDocHandle = Win32API.FindWindowEx(tabWindow, IntPtr.Zero, TestConstants.IE_ShellDocView_Class, null);
             }
-            else if (ieVersion == 8)
+            else if (IE_MajorVersion == 8)
             {
                 IntPtr frame = Win32API.FindWindowEx(mainHandle, IntPtr.Zero, TestConstants.IE_FrameTab_Class, null);
 
@@ -176,11 +189,11 @@ namespace Shrinerain.AutoTester.Core.Helper
          * return the handle of Internet Explorer_Server.
          * This control is used to display web page.
          */
-        public static IntPtr GetIEServerHandle(IntPtr shellHandle, int ieVersion)
+        public static IntPtr GetIEServerHandle(IntPtr shellHandle)
         {
             if (shellHandle == IntPtr.Zero)
             {
-                shellHandle = GetShellDocHandle(IntPtr.Zero, ieVersion);
+                shellHandle = GetShellDocHandle(IntPtr.Zero);
             }
 
             return Win32API.FindWindowEx(shellHandle, IntPtr.Zero, TestConstants.IE_Server_Class, null);
@@ -222,6 +235,30 @@ namespace Shrinerain.AutoTester.Core.Helper
             }
 
             return IntPtr.Zero;
+        }
+
+        public static String GetIEVersion()
+        {
+            if (IE_Version == null)
+            {
+                using (Microsoft.Win32.RegistryKey versionKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(TestConstants.IE_Reg_Path))
+                {
+                    IE_Version = versionKey.GetValue("Version").ToString();
+                }
+            }
+
+            return IE_Version;
+        }
+
+        public static int GetIEMajorVersion()
+        {
+            if (IE_MajorVersion == 0)
+            {
+                String version = GetIEVersion();
+                IE_MajorVersion = int.Parse(version[0].ToString());
+            }
+
+            return IE_MajorVersion;
         }
 
         #endregion
