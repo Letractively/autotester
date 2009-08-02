@@ -242,8 +242,7 @@ namespace Shrinerain.AutoTester.Core.Helper
 
             if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
             {
-                IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
-                HighlightScreenRect(handle, left, top, width, height, mseconds);
+                HighlightScreenRect(left, top, width, height, mseconds);
             }
         }
 
@@ -252,6 +251,11 @@ namespace Shrinerain.AutoTester.Core.Helper
             if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
             {
                 IntPtr handle = Win32API.WindowFromPoint(left + 1, top + 1);
+                Win32API.Rect windRect = new Win32API.Rect();
+                Win32API.GetWindowRect(handle, ref windRect);
+
+                left -= windRect.left;
+                top -= windRect.top;
                 HighlightScreenRect(handle, left, top, width, height, mseconds);
             }
         }

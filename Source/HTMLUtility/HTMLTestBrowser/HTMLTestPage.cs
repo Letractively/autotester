@@ -93,7 +93,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         public new IHTMLElement GetElementByPoint(int x, int y)
         {
-            return GetElementByPoint(x, y) as IHTMLElement;
+            return base.GetElementByPoint(x, y) as IHTMLElement;
         }
 
         public new IHTMLElement[] GetElementsByName(string name)

@@ -66,6 +66,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected bool _isDelayAfterAction = false;
         protected const int ActionTimeout = 3 * 1000;
         protected const int ActionDelayTime = 200;
+        protected const int HighlightTime = 600;
 
         //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
         //then we will not see the mouse move.
@@ -197,49 +198,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 }
 
                 return this._rect;
-            }
-            catch (TestException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new CannotGetObjectPositionException("Can not get object position: " + ex.ToString());
-            }
-        }
-
-        public virtual Rectangle GetRectOnPage()
-        {
-            try
-            {
-                if (_rectObj == null)
-                {
-                    IHTMLElement tmp = this._sourceElement;
-                    while (tmp != null)
-                    {
-                        MSAATestObject obj = new MSAATestObject(tmp);
-                        if (obj.GetIAccInterface() != null)
-                        {
-                            _rectObj = obj;
-                            break;
-                        }
-                        else
-                        {
-                            tmp = tmp.parentElement;
-                        }
-                    }
-                }
-
-                Rectangle objRect = _rectObj.GetRect();
-
-                IntPtr ieServerHandle = GetIEServerHandle();
-                Win32API.Rect pageRect = new Win32API.Rect();
-                Win32API.GetWindowRect(ieServerHandle, ref pageRect);
-
-                int offsetLeft = objRect.Left - pageRect.left;
-                int offsetTop = objRect.Top - pageRect.top;
-
-                return new Rectangle(offsetLeft, offsetTop, objRect.Width, objRect.Height);
             }
             catch (TestException)
             {
@@ -730,10 +688,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             try
             {
                 BeforeAction();
-
-                Rectangle pageRect = GetRectOnPage();
-                IntPtr ieServerHandle = GetIEServerHandle();
-                ScreenCaptruer.HighlightScreenRect(ieServerHandle, pageRect, 600);
+                ScreenCaptruer.HighlightScreenRect(GetRectOnScreen(), HighlightTime);
             }
             catch (TestException)
             {
@@ -951,18 +906,6 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //re-calculate the position, because we had move it.
             GetRectOnScreen();
-        }
-
-        protected IntPtr GetIEServerHandle()
-        {
-            if (_ieServerHandle == IntPtr.Zero)
-            {
-                int browserVersion = this.ParentPage.Browser.GetBrowserMajorVersion();
-                IntPtr shellHandle = WindowsAsstFunctions.GetShellDocHandle(this.ParentPage.Handle, browserVersion);
-                _ieServerHandle = WindowsAsstFunctions.GetIEServerHandle(shellHandle, browserVersion);
-            }
-
-            return _ieServerHandle;
         }
 
         #endregion
