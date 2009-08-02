@@ -36,7 +36,7 @@ namespace Shrinerain.AutoTester.Core
 
         //domain means the object type, eg: Win32
         protected string _domain;
-        protected string _type;
+        protected string _type = TestObjectType.Unknown;
 
         protected List<String> _idenProperties = new List<String>();
 

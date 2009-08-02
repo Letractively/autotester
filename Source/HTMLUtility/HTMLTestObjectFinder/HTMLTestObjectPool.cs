@@ -55,6 +55,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
         private HTMLTestDialog _lastDialog;
         private TestProperty[] _lastDialogProperties;
+        private IntPtr _lastPageHandle;
+        private IntPtr _ieServerHandle;
 
         //the max time we need to wait, eg: we may wait for 30s to find a test object.
         private int _searchTimeout = 30;
@@ -594,12 +596,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             if (isAbsolutePosition)
             {
-                IHTMLDocument doc = (this._htmlTestPage.Document as HTMLTestDocument).Document;
-                IHTMLElement body = (doc as IHTMLDocument2).body;
-                MSAATestObject docObj = new MSAATestObject(body);
-                System.Drawing.Rectangle rect = docObj.GetRect();
-                x = x - rect.Left;
-                y = y - rect.Top;
+                IntPtr curPageHandle = this._htmlTestPage.Handle;
+                if (_lastPageHandle != curPageHandle)
+                {
+                    IntPtr shellHandle = WindowsAsstFunctions.GetShellDocHandle(curPageHandle);
+                    _ieServerHandle = WindowsAsstFunctions.GetIEServerHandle(shellHandle);
+                }
+                _lastPageHandle = curPageHandle;
+
+                if (_ieServerHandle != IntPtr.Zero)
+                {
+                    Win32API.Rect rect = Win32API.GetWindowRect(_ieServerHandle);
+                    x = x - rect.left;
+                    y = y - rect.top;
+                }
             }
 
             int times = 0;
@@ -735,14 +745,24 @@ namespace Shrinerain.AutoTester.HTMLUtility
             {
                 //firstly, get all IHTMLElement from the browser
                 GetAllElements();
+                List<TestObject> allObjs = new List<TestObject>();
                 _allObjects = new TestObject[this._allElements.Length];
 
                 //convert IHTMLELementCollection to an array.
                 for (int i = 0; i < this._allElements.Length; i++)
                 {
-                    _allObjects[i] = HTMLTestObjectFactory.BuildHTMLTestObject((IHTMLElement)this._allElements[i], this._htmlTestPage);
+                    IHTMLElement curEle = (IHTMLElement)this._allElements[i];
+                    if (HTMLTestObjectFactory.IsVisible(curEle))
+                    {
+                        _testObj = HTMLTestObjectFactory.BuildHTMLTestObject(curEle, this._htmlTestPage);
+                        allObjs.Add(_testObj);
+                        if (OnObjectFound != null)
+                        {
+                            OnObjectFound(_testObj, null);
+                        }
+                    }
                 }
-
+                _allObjects = allObjs.ToArray();
                 return _allObjects;
             }
             catch (TestException)

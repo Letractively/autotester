@@ -9,6 +9,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 using Shrinerain.AutoTester.Core;
 using Shrinerain.AutoTester.HTMLUtility;
@@ -160,14 +161,42 @@ namespace Shrinerain.AutoTester.SpySharp
                 if (_isSupported)
                 {
                     TestObject obj = _ts.Objects.ObjectPool.GetObjectByPoint(p.X, p.Y, true);
-                    this.richTextBox1.Text = obj.ToString();
-
-                    IVisible v = obj as IVisible;
-                    v.HighLight();
+                    Thread t = new Thread(new ParameterizedThreadStart(SetText));
+                    t.Start(obj);
+                    Thread t2 = new Thread(new ParameterizedThreadStart(HighLight));
+                    t2.Start(obj);
+                    t2.Join();
                 }
             }
             catch
             {
+            }
+        }
+
+        private void HighLight(Object obj)
+        {
+            IVisible v = obj as IVisible;
+            v.HighLight();
+        }
+
+        private void SetText(Object obj)
+        {
+            TestObject testobj = obj as TestObject;
+            SetText(testobj.ToString());
+        }
+
+        delegate void SetTextCallback(string text);
+
+        private void SetText(String text)
+        {
+            if (richTextBox1.InvokeRequired)
+            {
+                SetTextCallback d = new SetTextCallback(SetText);
+                this.Invoke(d, new object[] { text });
+            }
+            else
+            {
+                richTextBox1.Text = text;
             }
         }
 

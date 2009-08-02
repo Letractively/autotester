@@ -12,7 +12,7 @@ namespace Shrinerain.AutoTester.Core
     {
         #region types
 
-        public const String Unknown = "UnKnown";
+        public const String Unknown = "Unknown";
         public const String AnyType = "AnyType";
         public const String Button = "Button";
         public const String TextBox = "TextBox";

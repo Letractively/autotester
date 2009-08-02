@@ -1333,6 +1333,13 @@ namespace Shrinerain.AutoTester.Win32
         [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hwnd, ref Rect rectangle);
 
+        public static Rect GetWindowRect(IntPtr hwnd)
+        {
+            Win32API.Rect rect = new Win32API.Rect();
+            Win32API.GetWindowRect(hwnd, ref rect);
+            return rect;
+        }
+
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hwnd, ref Rect rectangle);
 
