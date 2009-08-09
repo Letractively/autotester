@@ -19,7 +19,7 @@ namespace Shrinerain.AutoTester.Core
     using System;
     using System.Drawing;
 
-    public interface IVisible
+    public interface IVisible : IHighLight
     {
         //some visible information for object.
         string GetLabel();
@@ -37,9 +37,6 @@ namespace Shrinerain.AutoTester.Core
         void Hover();
         void MouseClick(int x, int y);
         void KeyboardInput(String value);
-
-        //high light the object.
-        void HighLight();
 
         //status of visible object.
         bool IsVisible();

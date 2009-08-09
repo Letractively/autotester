@@ -150,6 +150,7 @@ namespace Shrinerain.AutoTester.SpySharp
                     if (_isSupported)
                     {
                         _ts.Browser.Find(curHandle);
+                        //_ts.Event.OnMouseOver += new TestObjectEventHandler(Event_OnMouseOver);
                     }
                 }
 
@@ -166,12 +167,30 @@ namespace Shrinerain.AutoTester.SpySharp
                     else
                     {
                         IVisible v = obj as IVisible;
-                        v.HighLight();
+                        v.HighLight(1000);
                     }
                 }
             }
             catch
             {
+            }
+        }
+
+        void Event_OnMouseOver(TestObject sender, TestEventArgs e)
+        {
+            if (_isSupported)
+            {
+                if (!sender.Equals(_lastObj))
+                {
+                    Thread t = new Thread(new ParameterizedThreadStart(SetText));
+                    t.Start(sender);
+                    _lastObj = sender;
+                }
+                else
+                {
+                    IVisible v = sender as IVisible;
+                    v.HighLight(1000);
+                }
             }
         }
 

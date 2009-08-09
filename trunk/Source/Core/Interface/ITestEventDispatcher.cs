@@ -35,6 +35,8 @@ namespace Shrinerain.AutoTester.Core.Interface
         event TestObjectEventHandler OnKeyDown;
         event TestObjectEventHandler OnKeyUp;
 
+        event TestObjectEventHandler OnMouseOver;
+        event TestObjectEventHandler OnMouseOut;
         event TestObjectEventHandler OnMouseDown;
         event TestObjectEventHandler OnMouseUp;
         event TestObjectEventHandler OnMouseClick;

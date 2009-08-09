@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
 using System.Runtime.InteropServices.ComTypes;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -178,6 +179,47 @@ namespace Shrinerain.AutoTester.Core.Helper
         public static IAccessible IHTMLElementToMSAA(IHTMLElement element)
         {
             return ObjectToMSAA(element);
+        }
+
+        public static IAccessible IHTMLDocumentToMSAA(IHTMLDocument doc)
+        {
+            return ObjectToMSAA(doc);
+        }
+
+        public static Rectangle GetIHTMLDocumentPosition(IHTMLDocument doc)
+        {
+            if (doc != null)
+            {
+                IAccessible pAcc = IHTMLDocumentToMSAA(doc);
+                if (pAcc != null)
+                {
+                    int left, top, width, height;
+                    pAcc.accLocation(out left, out top, out width, out height, 0);
+                    return new Rectangle(left, top, width, height);
+                }
+            }
+
+            return new Rectangle(0, 0, 0, 0);
+        }
+
+        public static Rectangle GetIHTMLPosition(IHTMLElement element)
+        {
+            while (element != null)
+            {
+                IAccessible pAcc = IHTMLElementToMSAA(element);
+                if (pAcc != null)
+                {
+                    int left, top, width, height;
+                    pAcc.accLocation(out left, out top, out width, out height, 0);
+                    return new Rectangle(left, top, width, height);
+                }
+                else
+                {
+                    element = element.parentElement;
+                }
+            }
+
+            return new Rectangle(0, 0, 0, 0);
         }
 
         public static IAccessible ObjectToMSAA(object element)

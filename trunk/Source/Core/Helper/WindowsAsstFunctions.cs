@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Drawing;
+
+using mshtml;
 
 using Shrinerain.AutoTester.Win32;
 
@@ -259,6 +262,21 @@ namespace Shrinerain.AutoTester.Core.Helper
             }
 
             return IE_MajorVersion;
+        }
+
+        public static Rectangle GetOffsetPostion(IHTMLDocument root, IHTMLDocument frame)
+        {
+            if (root != null && frame != null)
+            {
+                Rectangle rootPosition = COMUtil.GetIHTMLDocumentPosition(root);
+                Rectangle framePosition = COMUtil.GetIHTMLDocumentPosition(frame);
+
+                int left = framePosition.Left - rootPosition.Left;
+                int top = framePosition.Top - rootPosition.Top;
+                return new Rectangle(left, top, framePosition.Width, framePosition.Height);
+            }
+
+            return new Rectangle();
         }
 
         #endregion

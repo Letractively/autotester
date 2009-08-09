@@ -92,6 +92,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected override void RegBrowserEvent(InternetExplorer ie)
         {
             base.RegBrowserEvent(ie);
+            GetEventDispatcher();
             if (_dispatcher != null)
             {
                 _dispatcher.RegisterEvents(ie.Document as IHTMLDocument2);
