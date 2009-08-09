@@ -61,6 +61,17 @@ namespace Shrinerain.AutoTester.Core.Helper
             return null;
         }
 
+        public static IHTMLDocument GetFrameDocument(IHTMLIFrameElement frameElement)
+        {
+            if (frameElement != null)
+            {
+                IHTMLFrameBase2 frame2 = frameElement as IHTMLFrameBase2;
+                return GetFrameDocument(frame2.contentWindow);
+            }
+
+            return null;
+        }
+
         public static IHTMLDocument GetFrameDocument(IHTMLWindow2 frameWindow)
         {
             if (frameWindow != null)
@@ -178,12 +189,50 @@ namespace Shrinerain.AutoTester.Core.Helper
 
         public static IAccessible IHTMLElementToMSAA(IHTMLElement element)
         {
-            return ObjectToMSAA(element);
+            if (element == null)
+            {
+                return null;
+            }
+
+            IServiceProvider spServiceProvider = element as IServiceProvider;
+            if (spServiceProvider == null)
+            {
+                return null;
+            }
+
+            object spAccessible;
+            Guid guid = typeof(IAccessible).GUID;
+            int hRes = spServiceProvider.QueryService(ref guid, ref guid, out spAccessible);
+            if (hRes != 0)
+            {
+                return null;
+            }
+
+            return spAccessible as IAccessible;
         }
 
         public static IAccessible IHTMLDocumentToMSAA(IHTMLDocument doc)
         {
-            return ObjectToMSAA(doc);
+            if (doc == null)
+            {
+                return null;
+            }
+
+            IServiceProvider spServiceProvider = doc as IServiceProvider;
+            if (spServiceProvider == null)
+            {
+                return null;
+            }
+
+            object spAccessible;
+            Guid guid = typeof(IAccessible).GUID;
+            int hRes = spServiceProvider.QueryService(ref guid, ref guid, out spAccessible);
+            if (hRes != 0)
+            {
+                return null;
+            }
+
+            return spAccessible as IAccessible;
         }
 
         public static Rectangle GetIHTMLDocumentPosition(IHTMLDocument doc)
@@ -220,30 +269,6 @@ namespace Shrinerain.AutoTester.Core.Helper
             }
 
             return new Rectangle(0, 0, 0, 0);
-        }
-
-        public static IAccessible ObjectToMSAA(object element)
-        {
-            if (element == null)
-            {
-                return null;
-            }
-
-            IServiceProvider spServiceProvider = element as IServiceProvider;
-            if (spServiceProvider == null)
-            {
-                return null;
-            }
-
-            object spAccessible;
-            Guid guid = typeof(IAccessible).GUID;
-            int hRes = spServiceProvider.QueryService(ref guid, ref guid, out spAccessible);
-            if (hRes != 0)
-            {
-                return null;
-            }
-
-            return spAccessible as IAccessible;
         }
 
         public static IMarkupContainer2 GetMarkupContainer(IHTMLDocument2 doc2)
