@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Drawing;
 
 using mshtml;
 using SHDocVw;
@@ -406,7 +407,25 @@ namespace Shrinerain.AutoTester.Core
         {
             try
             {
-                return _rootDocument.GetElementByPoint(x, y) as IHTMLElement;
+                IHTMLElement ele = _rootDocument.GetElementByPoint(x, y) as IHTMLElement;
+                while (ele is IHTMLIFrameElement)
+                {
+                    TestIEDocument[] frames = _rootDocument.GetFrames() as TestIEDocument[];
+                    for (int i = 0; i < frames.Length; i++)
+                    {
+                        TestIEDocument curFrame = frames[i];
+                        Rectangle rect = WindowsAsstFunctions.GetOffsetPostion(_rootDocument.Document, curFrame.Document);
+                        if (rect.Left <= x && rect.Right >= x && rect.Top <= y && rect.Bottom >= y)
+                        {
+                            x = x - rect.Left;
+                            y = y - rect.Top;
+                            ele = curFrame.GetElementByPoint(x, y) as IHTMLElement;
+                            break;
+                        }
+                    }
+                }
+
+                return ele;
             }
             catch (Exception ex)
             {

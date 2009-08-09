@@ -268,6 +268,14 @@ namespace Shrinerain.AutoTester.MSAAUtility
         {
         }
 
+        public virtual void HighLight(int mseconds)
+        {
+        }
+
+        public virtual void Restore()
+        {
+        }
+
         #endregion
 
         #endregion

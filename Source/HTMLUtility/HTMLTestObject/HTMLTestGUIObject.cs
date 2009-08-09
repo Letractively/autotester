@@ -66,7 +66,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         protected bool _isDelayAfterAction = false;
         protected const int ActionTimeout = 3 * 1000;
         protected const int ActionDelayTime = 200;
-        protected const int HighlightTime = 600;
+        protected const int HighlightTime = 500;
 
         //if set the flag to ture, we will not control the actual mouse and keyboard, just send windows message.
         //then we will not see the mouse move.
@@ -685,10 +685,19 @@ namespace Shrinerain.AutoTester.HTMLUtility
          */
         public virtual void HighLight()
         {
+            HighLight(HighlightTime);
+        }
+
+        /*  void HighLight()
+       *  Highlight the object, we will see a red rect around the object.
+       */
+        public virtual void HighLight(int mseconds)
+        {
             try
             {
                 BeforeAction();
-                ScreenCaptruer.HighlightScreenRect(GetRectOnScreen(), HighlightTime);
+                Thread t = new Thread(new ParameterizedThreadStart(PerformHighlight));
+                t.Start(mseconds);
             }
             catch (TestException)
             {
@@ -704,12 +713,33 @@ namespace Shrinerain.AutoTester.HTMLUtility
             }
         }
 
+        public virtual void Restore()
+        {
+            try
+            {
+                BeforeAction();
+                Thread t = new Thread(new ThreadStart(PerformRestore));
+                t.Start();
+            }
+            catch (TestException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CannotHighlightObjectException("Can not restore highlight on the object: " + ex.ToString());
+            }
+            finally
+            {
+                AfterAction();
+            }
+        }
+
         /* bool IsVisible()
        * return true if it is a visible object.
        */
         public virtual bool IsVisible()
         {
-
             if (this._sourceElement.offsetWidth < 1 || this._sourceElement.offsetHeight < 1)
             {
                 return false;
@@ -906,6 +936,17 @@ namespace Shrinerain.AutoTester.HTMLUtility
 
             //re-calculate the position, because we had move it.
             GetRectOnScreen();
+        }
+
+        protected void PerformHighlight(object mseconds)
+        {
+            int ms = mseconds == null ? HighlightTime : Convert.ToInt32(mseconds);
+            ScreenCaptruer.HighlightScreenRect(GetRectOnScreen(), ms);
+        }
+
+        protected void PerformRestore()
+        {
+            ScreenCaptruer.RestoreHighLight(this._rect);
         }
 
         #endregion

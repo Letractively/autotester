@@ -1247,7 +1247,6 @@ namespace Shrinerain.AutoTester.Core
                     if (!_browserList.Contains(ie))
                     {
                         _browserList.Add(ie);
-                        RegBrowserEvent(ie);
                     }
 
                     this._browser = ie;
@@ -1259,8 +1258,8 @@ namespace Shrinerain.AutoTester.Core
                     {
                         this._currentPage = GetPage(0) as TestIEPage;
                     }
-
                     GetSize();
+                    RegBrowserEvent(ie);
                 }
                 catch (TestException)
                 {

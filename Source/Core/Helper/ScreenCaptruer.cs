@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 using Shrinerain.AutoTester.Core.TestExceptions;
@@ -27,7 +28,7 @@ namespace Shrinerain.AutoTester.Core.Helper
     {
 
         #region fields
-
+        private const int Hight_Border = 2;
         #endregion
 
         #region properties
@@ -222,11 +223,7 @@ namespace Shrinerain.AutoTester.Core.Helper
             int top = rect.Top;
             int width = rect.Width;
             int height = rect.Height;
-
-            if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
-            {
-                HighlightWindowRect(handle, left, top, width, height, mseconds);
-            }
+            HighlightWindowRect(handle, left, top, width, height, mseconds);
         }
 
         public static void HighlightScreenRect(Rectangle rect, int mseconds)
@@ -235,35 +232,28 @@ namespace Shrinerain.AutoTester.Core.Helper
             int top = rect.Top;
             int width = rect.Width;
             int height = rect.Height;
-
-            if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
-            {
-                HighlightScreenRect(left, top, width, height, mseconds);
-            }
+            HighlightScreenRect(left, top, width, height, mseconds);
         }
 
         public static void HighlightScreenRect(int left, int top, int width, int height, int mseconds)
         {
-            if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
-            {
-                IntPtr handle = Win32API.WindowFromPoint(left + width / 2, top + height / 2);
-                Win32API.Rect windRect = new Win32API.Rect();
-                Win32API.GetWindowRect(handle, ref windRect);
+            IntPtr handle = Win32API.WindowFromPoint(left + width / 2, top + height / 2);
+            Win32API.Rect windRect = new Win32API.Rect();
+            Win32API.GetWindowRect(handle, ref windRect);
 
-                left -= windRect.left;
-                top -= windRect.top;
-                HighlightWindowRect(handle, left, top, width, height, mseconds);
-            }
+            left -= windRect.left;
+            top -= windRect.top;
+            HighlightWindowRect(handle, left, top, width, height, mseconds);
         }
 
         public static void HighlightWindowRect(IntPtr handle, int left, int top, int width, int height, int mseconds)
         {
-            if (left >= 0 && top >= 0 && width > 0 && height > 0 && mseconds > 0)
+            if (width > 0 && height > 0 && mseconds > 0)
             {
                 try
                 {
                     IntPtr hDC = Win32API.GetDC(handle);
-                    using (Pen pen = new Pen(Color.Red, 2))
+                    using (Pen pen = new Pen(Color.Red, Hight_Border))
                     {
                         using (Graphics g = Graphics.FromHdc(hDC))
                         {
@@ -271,18 +261,53 @@ namespace Shrinerain.AutoTester.Core.Helper
                         }
                     }
                     Win32API.ReleaseDC(handle, hDC);
-
                     Thread.Sleep(mseconds);
 
-                    //refresh the window
-                    Win32API.InvalidateRect(handle, IntPtr.Zero, 1);
-                    Win32API.UpdateWindow(handle);
+                    RestoreHighLight(left, top, width, height, handle);
                 }
                 catch (Exception ex)
                 {
                     throw new CannotHighlightObjectException("Can not high light: " + ex.ToString());
                 }
             }
+        }
+
+        public static void RestoreHighLight(Rectangle rect)
+        {
+            int left = rect.Left;
+            int top = rect.Top;
+            int width = rect.Width;
+            int height = rect.Height;
+
+            RestoreHighLight(left, top, width, height, IntPtr.Zero);
+        }
+
+        public static void RestoreHighLight(int left, int top, int width, int height, IntPtr handle)
+        {
+            if (handle == IntPtr.Zero)
+            {
+                handle = Win32API.WindowFromPoint(left + width / 2, top + height / 2);
+            }
+
+            Win32API.Rect rect = new Win32API.Rect();
+            rect.left = left;
+            rect.top = top;
+            rect.right = left + width;
+            rect.bottom = top + height;
+
+            RestoreHighLight(rect, handle);
+        }
+
+        public static void RestoreHighLight(Win32API.Rect rect, IntPtr handle)
+        {
+            Win32API.Rect invalidRect = new Win32API.Rect();
+            invalidRect.left = rect.left - Hight_Border;
+            invalidRect.top = rect.top - Hight_Border;
+            invalidRect.right = rect.right + Hight_Border;
+            invalidRect.bottom = rect.bottom + Hight_Border;
+            //refresh the window
+            Win32API.InvalidateRect(handle, ref invalidRect, 1);
+            //Win32API.UpdateWindow(handle);
         }
 
         #endregion

@@ -52,6 +52,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 IHTMLDocument3 doc3 = doc2 as IHTMLDocument3;
                 if (doc3 != null)
                 {
+                    doc3.attachEvent("onmouseover", this);
+                    doc3.attachEvent("onmouseout", this);
                     doc3.attachEvent("onmousedown", this);
                     doc3.attachEvent("onmouseup", this);
                     doc3.attachEvent("onkeydown", this);
@@ -73,6 +75,8 @@ namespace Shrinerain.AutoTester.HTMLUtility
                 IHTMLDocument3 doc3 = doc2 as IHTMLDocument3;
                 if (doc3 != null)
                 {
+                    doc3.detachEvent("onmouseover", this);
+                    doc3.detachEvent("onmouseout", this);
                     doc3.detachEvent("onmousedown", this);
                     doc3.detachEvent("onmouseup", this);
                     doc3.detachEvent("onkeydown", this);
@@ -123,6 +127,14 @@ namespace Shrinerain.AutoTester.HTMLUtility
                             {
                                 _lastMouseDownElement = null;
                             }
+                        }
+                        else if (String.Compare(eventType, "mouseover", true) == 0)
+                        {
+                            CheckMouseEvent(pEvtObj, out obj);
+                        }
+                        else if (String.Compare(eventType, "mouseout", true) == 0)
+                        {
+                            CheckMouseEvent(pEvtObj, out obj);
                         }
                         else if (String.Compare(eventType, "keydown", true) == 0)
                         {
@@ -197,7 +209,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
         private bool CheckMouseEvent(IHTMLEventObj pEvtObj, out HTMLTestObject obj)
         {
             obj = null;
-            if (OnMouseDown != null || OnMouseUp != null || OnMouseClick != null)
+            if (OnMouseDown != null || OnMouseUp != null || OnMouseClick != null || OnMouseOver != null || OnMouseOut != null)
             {
                 String tp = pEvtObj.type;
                 if (tp.IndexOf("mouse") >= 0)
@@ -228,6 +240,20 @@ namespace Shrinerain.AutoTester.HTMLUtility
                                 {
                                     OnMouseClick(obj, mouseEventArgs);
                                 }
+                            }
+                        }
+                        else if (String.Compare(tp, "mouseover", true) == 0)
+                        {
+                            if (OnMouseOver != null)
+                            {
+                                OnMouseOver(obj, mouseEventArgs);
+                            }
+                        }
+                        else if (String.Compare(tp, "mouseout", true) == 0)
+                        {
+                            if (OnMouseOut != null)
+                            {
+                                OnMouseOut(obj, mouseEventArgs);
                             }
                         }
                     }
@@ -464,7 +490,7 @@ namespace Shrinerain.AutoTester.HTMLUtility
             if (application != null && application is HTMLTestBrowser)
             {
                 this._browser = application as HTMLTestBrowser;
-                IHTMLDocument2 doc2 = (this._browser.CurrentPage.GetDocument() as TestIEDocument).Document as IHTMLDocument2;            
+                IHTMLDocument2 doc2 = (this._browser.CurrentPage.GetDocument() as TestIEDocument).Document as IHTMLDocument2;
                 RegisterEvents(doc2);
             }
         }
@@ -545,6 +571,10 @@ namespace Shrinerain.AutoTester.HTMLUtility
         public event TestObjectEventHandler OnStatusChange;
 
         public event TestObjectEventHandler OnShow;
+
+        public event TestObjectEventHandler OnMouseOver;
+
+        public event TestObjectEventHandler OnMouseOut;
 
         #endregion
     }

@@ -1365,6 +1365,9 @@ namespace Shrinerain.AutoTester.Win32
         public static extern int InvalidateRect(IntPtr hWnd, IntPtr lpRect, int bErase);
 
         [DllImport("user32.dll")]
+        public static extern int InvalidateRect(IntPtr hWnd, ref Win32API.Rect lpRect, int bErase);
+
+        [DllImport("user32.dll")]
         public static extern int UpdateWindow(IntPtr hWnd);
 
         [DllImport("user32.dll")]

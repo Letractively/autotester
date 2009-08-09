@@ -291,6 +291,10 @@ namespace Shrinerain.AutoTester.MSAAUtility
 
         public event TestObjectEventHandler OnMouseClick;
 
+        public event TestObjectEventHandler OnMouseOver;
+
+        public event TestObjectEventHandler OnMouseOut;
+
         #endregion
     }
 }
