@@ -408,21 +408,16 @@ namespace Shrinerain.AutoTester.Core
             try
             {
                 IHTMLElement ele = _rootDocument.GetElementByPoint(x, y) as IHTMLElement;
-                while (ele is IHTMLIFrameElement)
+                IHTMLDocument rootDoc = _rootDocument.Document;
+                IHTMLDocument frameDoc = null;
+                while (ele != null && ele is IHTMLIFrameElement)
                 {
-                    TestIEDocument[] frames = _rootDocument.GetFrames() as TestIEDocument[];
-                    for (int i = 0; i < frames.Length; i++)
-                    {
-                        TestIEDocument curFrame = frames[i];
-                        Rectangle rect = WindowsAsstFunctions.GetOffsetPostion(_rootDocument.Document, curFrame.Document);
-                        if (rect.Left <= x && rect.Right >= x && rect.Top <= y && rect.Bottom >= y)
-                        {
-                            x = x - rect.Left;
-                            y = y - rect.Top;
-                            ele = curFrame.GetElementByPoint(x, y) as IHTMLElement;
-                            break;
-                        }
-                    }
+                    frameDoc = COMUtil.GetFrameDocument(ele as IHTMLIFrameElement);
+                    Rectangle rect = WindowsAsstFunctions.GetOffsetPostion(rootDoc, frameDoc);
+                    x = x - rect.Left;
+                    y = y - rect.Top;
+                    ele = (frameDoc as IHTMLDocument2).elementFromPoint(x, y);
+                    rootDoc = frameDoc;
                 }
 
                 return ele;
