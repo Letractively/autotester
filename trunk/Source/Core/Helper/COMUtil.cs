@@ -61,12 +61,11 @@ namespace Shrinerain.AutoTester.Core.Helper
             return null;
         }
 
-        public static IHTMLDocument GetFrameDocument(IHTMLIFrameElement frameElement)
+        public static IHTMLDocument GetFrameDocument(IHTMLFrameBase2 frameElement)
         {
             if (frameElement != null)
             {
-                IHTMLFrameBase2 frame2 = frameElement as IHTMLFrameBase2;
-                return GetFrameDocument(frame2.contentWindow);
+                return GetFrameDocument(frameElement.contentWindow);
             }
 
             return null;

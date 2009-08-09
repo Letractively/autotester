@@ -167,7 +167,7 @@ namespace Shrinerain.AutoTester.SpySharp
                     else
                     {
                         IVisible v = obj as IVisible;
-                        v.HighLight(1000);
+                        v.HighLight();
                     }
                 }
             }

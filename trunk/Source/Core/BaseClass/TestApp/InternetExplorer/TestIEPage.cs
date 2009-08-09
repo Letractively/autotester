@@ -410,9 +410,9 @@ namespace Shrinerain.AutoTester.Core
                 IHTMLElement ele = _rootDocument.GetElementByPoint(x, y) as IHTMLElement;
                 IHTMLDocument rootDoc = _rootDocument.Document;
                 IHTMLDocument frameDoc = null;
-                while (ele != null && ele is IHTMLIFrameElement)
+                while (ele != null && (ele is IHTMLIFrameElement || ele is IHTMLFrameElement))
                 {
-                    frameDoc = COMUtil.GetFrameDocument(ele as IHTMLIFrameElement);
+                    frameDoc = COMUtil.GetFrameDocument(ele as IHTMLFrameBase2);
                     Rectangle rect = WindowsAsstFunctions.GetOffsetPostion(rootDoc, frameDoc);
                     x = x - rect.Left;
                     y = y - rect.Top;
