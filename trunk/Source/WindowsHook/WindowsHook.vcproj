@@ -202,6 +202,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CaptureHook.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Commands.cpp"
 				>
 			</File>
@@ -263,6 +267,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\CaptureHook.h"
+				>
+			</File>
 			<File
 				RelativePath=".\Commands.h"
 				>

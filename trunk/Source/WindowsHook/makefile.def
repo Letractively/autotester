@@ -2,4 +2,6 @@ LIBRARY	WindowsHook
 EXPORTS
    MessageHookProc
    LowLevelMouseProc
-   LowLevelKeyProc
+   LowLevelKeyProc 
+   MouseCaptureProc
+   KeyboardCaptureProc
