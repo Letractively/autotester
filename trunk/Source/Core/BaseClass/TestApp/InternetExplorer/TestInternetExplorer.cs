@@ -38,6 +38,7 @@ namespace Shrinerain.AutoTester.Core
         protected IntPtr _dialogHandle;
         protected IntPtr _tabHandle;
 
+        protected IntPtr _lastFindHandle;
 
         //timespan to store the response time.
         //the time is the interval between starting download and downloading finish.
@@ -264,11 +265,19 @@ namespace Shrinerain.AutoTester.Core
                 throw new BrowserNotFoundException("Handle can not be 0.");
             }
 
+            String oriClassName = Win32API.GetClassName(handle);
             IntPtr oriHandle = handle;
+
+            bool isComboBox = String.Compare(oriClassName, TestConstants.IE_ComboBox_Class) == 0;
 
             string title = null;
             while (handle != IntPtr.Zero)
             {
+                if (isComboBox && _lastFindHandle == handle)
+                {
+                    return;
+                }
+
                 String className = Win32API.GetClassName(handle);
                 if (String.Compare(className, TestConstants.IE_IEframe, true) == 0)
                 {
@@ -283,6 +292,7 @@ namespace Shrinerain.AutoTester.Core
 
             if (!String.IsNullOrEmpty(title))
             {
+                _lastFindHandle = handle;
                 Find(title);
             }
             else
@@ -984,11 +994,6 @@ namespace Shrinerain.AutoTester.Core
             return WaitForBrowserExist(title, url, false);
         }
 
-        /* void WaitForBrowser(int seconds.)
-      * wait for 120 seconds max to detect if IE browser is started.
-      * if title is not empty, we need to check the title of browser.
-      * we will use "Fuzzy Search" in this method
-      */
         protected virtual InternetExplorer WaitForBrowserExist(string title, string url, bool isReg)
         {
             Regex titleReg = null;
@@ -1010,75 +1015,76 @@ namespace Shrinerain.AutoTester.Core
             {
                 bool browserFound = false;
 
-                Process[] pArr = Process.GetProcessesByName(TestConstants.IE_Process_Name);
-                for (int i = pArr.Length - 1; i >= 0; i--)
+                //get all shell browser.
+                SHDocVw.ShellWindows allBrowsers = new ShellWindows();
+                if (allBrowsers.Count > 0)
                 {
-                    Process p = pArr[i];
-                    InternetExplorer ie = null;
-
-                    //if all null, use any one.
-                    browserFound = _appProcess == null && String.IsNullOrEmpty(title) && String.IsNullOrEmpty(url);
-
-                    //find by process id.
-                    if (_appProcess != null)
-                    {
-                        browserFound = _appProcess.Id == p.Id;
-                    }
-
-                    //by title
-                    if (!String.IsNullOrEmpty(title))
+                    for (int i = allBrowsers.Count - 1; i >= 0; i--)
                     {
                         try
                         {
-                            if (isReg)
+                            InternetExplorer curIE = (InternetExplorer)allBrowsers.Item(i);
+                            if (curIE != null && curIE.Document is IHTMLDocument)
                             {
-                                browserFound = titleReg != null && titleReg.IsMatch(p.MainWindowTitle);
-                            }
-                            else
-                            {
-                                browserFound = p.MainWindowTitle.IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                                if (curIE.HWND != 0)
+                                {
+                                    //if all null, use any one.
+                                    browserFound = _appProcess == null && String.IsNullOrEmpty(title) && String.IsNullOrEmpty(url);
+
+                                    //by title
+                                    if (!String.IsNullOrEmpty(title))
+                                    {
+                                        try
+                                        {
+                                            if (isReg)
+                                            {
+                                                browserFound = titleReg != null && titleReg.IsMatch(curIE.LocationName);
+                                            }
+                                            else
+                                            {
+                                                browserFound = (curIE.LocationName + TestConstants.IE_Title_Tail).IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            continue;
+                                        }
+                                    }
+
+                                    //by URL
+                                    if (!String.IsNullOrEmpty(url))
+                                    {
+                                        try
+                                        {
+                                            if (isReg)
+                                            {
+                                                browserFound = urlReg != null && urlReg.IsMatch(curIE.LocationURL);
+                                            }
+                                            else
+                                            {
+                                                browserFound = curIE.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase);
+                                            }
+                                        }
+                                        catch
+                                        {
+                                            continue;
+                                        }
+                                    }
+
+                                    if (browserFound)
+                                    {
+                                        int pid = 0;
+                                        Win32API.GetWindowThreadProcessId((IntPtr)curIE.HWND, out pid);
+                                        _appProcess = System.Diagnostics.Process.GetProcessById(pid);
+
+                                        return curIE;
+                                    }
+                                }
                             }
                         }
                         catch
                         {
                             continue;
-                        }
-                    }
-
-                    //by URL
-                    if (!String.IsNullOrEmpty(url))
-                    {
-                        ie = GetInternetExplorer(p.Id);
-                        if (ie != null)
-                        {
-                            try
-                            {
-                                if (isReg)
-                                {
-                                    browserFound = urlReg != null && urlReg.IsMatch(ie.LocationURL);
-                                }
-                                else
-                                {
-                                    browserFound = ie.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase);
-                                }
-                            }
-                            catch
-                            {
-                                continue;
-                            }
-                        }
-                    }
-
-                    if (browserFound)
-                    {
-                        if (ie == null)
-                        {
-                            ie = GetInternetExplorer(p.Id);
-                        }
-
-                        if (ie != null)
-                        {
-                            return ie;
                         }
                     }
                 }
@@ -1150,49 +1156,6 @@ namespace Shrinerain.AutoTester.Core
         #endregion
 
         #region protected virtual help methods
-
-        /* InternetExplorer AttachBrowser(IntPtr ieHandle)
-         * return the instance of InternetExplorer.
-         * 
-         */
-        protected virtual InternetExplorer GetInternetExplorer(int processID)
-        {
-            if (processID <= 0)
-            {
-                throw new CannotAttachBrowserException("IE process can not be 0.");
-            }
-
-            //get all shell browser.
-            SHDocVw.ShellWindows allBrowsers = new ShellWindows();
-            if (allBrowsers.Count > 0)
-            {
-                for (int i = allBrowsers.Count - 1; i >= 0; i--)
-                {
-                    try
-                    {
-                        InternetExplorer curIE = (InternetExplorer)allBrowsers.Item(i);
-                        if (curIE != null && curIE.Document is IHTMLDocument)
-                        {
-                            if (curIE.HWND != 0)
-                            {
-                                int pid = 0;
-                                Win32API.GetWindowThreadProcessId((IntPtr)curIE.HWND, out pid);
-                                if (processID == pid)
-                                {
-                                    return curIE;
-                                }
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        continue;
-                    }
-                }
-            }
-
-            return null;
-        }
 
         /* InternetExplorer GetTopmostBrowser()
          * get the current active browser.

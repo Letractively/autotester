@@ -10,6 +10,7 @@ namespace Shrinerain.AutoTester.Core
 
         public const string IE_Server_Class = "Internet Explorer_Server";
         public const string IE_Dialog_Class = "Internet Explorer_TridentDlgFrame";
+        public const string IE_ComboBox_Class = "Internet Explorer_TridentCmboBx";
         public const string IE_TabWindow_Class = "TabWindowClass";
         public const string IE_ShellDocView_Class = "Shell DocObject View";
         public const string IE_FrameTab_Class = "Frame Tab";
@@ -27,6 +28,7 @@ namespace Shrinerain.AutoTester.Core
         public const string IE_Reg_Path = @"Software\Microsoft\Internet Explorer";
         public const string IE_BlankPage_Url = "about:blank";
         public const string IE_ALREADY_REGISTERED = "IE_AlreadyRegistered";
+        public const string IE_Title_Tail = " - Windows Internet Explorer";
 
         #endregion
 
