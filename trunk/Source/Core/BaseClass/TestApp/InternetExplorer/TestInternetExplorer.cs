@@ -1031,43 +1031,51 @@ namespace Shrinerain.AutoTester.Core
                                     //if all null, use any one.
                                     browserFound = _appProcess == null && String.IsNullOrEmpty(title) && String.IsNullOrEmpty(url);
 
-                                    //by title
-                                    if (!String.IsNullOrEmpty(title))
+                                    if (_appProcess != null && GetBrowserMajorVersion() < 8)
                                     {
-                                        try
-                                        {
-                                            if (isReg)
-                                            {
-                                                browserFound = titleReg != null && titleReg.IsMatch(curIE.LocationName);
-                                            }
-                                            else
-                                            {
-                                                browserFound = (curIE.LocationName + TestConstants.IE_Title_Tail).IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0;
-                                            }
-                                        }
-                                        catch
-                                        {
-                                            continue;
-                                        }
+                                        int pid = _appProcess.Id;
+                                        browserFound = pid == Win32API.GetWindowThreadProcessId((IntPtr)curIE.HWND);
                                     }
-
-                                    //by URL
-                                    if (!String.IsNullOrEmpty(url))
+                                    else
                                     {
-                                        try
+                                        //by title
+                                        if (!String.IsNullOrEmpty(title))
                                         {
-                                            if (isReg)
+                                            try
                                             {
-                                                browserFound = urlReg != null && urlReg.IsMatch(curIE.LocationURL);
+                                                if (isReg)
+                                                {
+                                                    browserFound = titleReg != null && titleReg.IsMatch(curIE.LocationName);
+                                                }
+                                                else
+                                                {
+                                                    browserFound = (curIE.LocationName + TestConstants.IE_Title_Tail).IndexOf(title, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                                                }
                                             }
-                                            else
+                                            catch
                                             {
-                                                browserFound = curIE.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase);
+                                                continue;
                                             }
                                         }
-                                        catch
+
+                                        //by URL
+                                        if (!String.IsNullOrEmpty(url))
                                         {
-                                            continue;
+                                            try
+                                            {
+                                                if (isReg)
+                                                {
+                                                    browserFound = urlReg != null && urlReg.IsMatch(curIE.LocationURL);
+                                                }
+                                                else
+                                                {
+                                                    browserFound = curIE.LocationURL.EndsWith(url, StringComparison.CurrentCultureIgnoreCase);
+                                                }
+                                            }
+                                            catch
+                                            {
+                                                continue;
+                                            }
                                         }
                                     }
 
