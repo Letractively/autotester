@@ -420,6 +420,11 @@ namespace Shrinerain.AutoTester.Core
                     rootDoc = frameDoc;
                 }
 
+                if (ele.parentElement is IHTMLAnchorElement)
+                {
+                    ele = ele.parentElement;
+                }
+
                 return ele;
             }
             catch (Exception ex)
