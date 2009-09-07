@@ -1322,6 +1322,22 @@ namespace Shrinerain.AutoTester.Win32
         public static extern bool GetWindowInfo(IntPtr hwnd, ref WindowInfo info);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr GetAncestor(IntPtr hwnd, uint flags);
+
+        public enum AncestorFlagsEnum : uint
+        {
+            GA_PARENT = 1,
+            GA_ROOT = 2,
+            GA_ROOTOWNER = 3,
+            GA_MAC = 4
+        }
+
+        public static IntPtr GetRoot(IntPtr hwnd)
+        {
+            return GetAncestor(hwnd, (uint)AncestorFlagsEnum.GA_ROOT);
+        }
+
+        [DllImport("user32.dll")]
         public static extern IntPtr GetWindowDC(IntPtr hwnd);
 
         [DllImport("user32.dll")]
